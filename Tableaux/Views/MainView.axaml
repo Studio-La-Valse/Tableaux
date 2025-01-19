@@ -3,15 +3,38 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:Tableaux.ViewModels"
-			 xmlns:views="clr-namespace:Tableaux.Views"
+			 xmlns:converters="clr-namespace:StudioLaValse.Drawable.Avalonia.Converters;assembly=StudioLaValse.Drawable.Avalonia"
+			 xmlns:views="clr-namespace:Tableaux.Views;assembly=Tableaux"
+			 xmlns:viewse="clr-namespace:StudioLaValse.Drawable.Avalonia.Controls;assembly=StudioLaValse.Drawable.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Tableaux.Views.MainView"
              x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
+	<UserControl.Resources>
+		<converters:BoundsConverter x:Key="boundsConverter"/>
+	</UserControl.Resources>
 
-  <views:CanvasView DataContext="{Binding CanvasViewModel}" x:Name="CanvasView"/>
+	<Grid ColumnDefinitions="200 3 *">
+		
+		<views:AddinCollectionView Grid.Column="0"
+								   x:DataType="vm:AddinCollectionViewModel"
+								   DataContext="{Binding AddinCollectionViewModel}"/>
+
+		<GridSplitter Grid.Column="1" 
+					  BorderBrush="Red" 
+					  BorderThickness="3"/>
+		
+		<viewse:InteractiveControl Grid.Column="2"
+								   DataContext="{Binding CanvasViewModel}"
+								   Bounds="{Binding Bounds, Mode=OneWayToSource, Converter={StaticResource boundsConverter}}"
+								   ElementEmitter="{Binding ElementEmitter}"
+								   SelectionBorder="{Binding SelectionBorder}"
+								   InputObserver="{Binding InputObserver}"
+								   TranslateX="{Binding TranslateX, Mode=TwoWay}"
+								   TranslateY="{Binding TranslateY, Mode=TwoWay}"
+								   Zoom="{Binding Zoom, Mode=TwoWay}"
+								   EnablePan="{Binding EnablePan, Mode=TwoWay}"
+								   EnableZoom="{Binding EnableZoom, Mode=TwoWay}"/>
+	</Grid>
+	
+
 </UserControl>

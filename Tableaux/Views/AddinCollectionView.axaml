@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="clr-namespace:Tableaux.ViewModels;assembly=Tableaux"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Tableaux.Views.AddinCollectionView">
+
+	<TreeView ItemsSource="{Binding GroupedItems}" 
+			  x:DataType="vm:AddinCollectionViewModel">
+		<TreeView.DataTemplates>
+			
+			<TreeDataTemplate x:DataType="vm:SceneDesignerGroupViewModel" 
+							  ItemsSource="{Binding Items}">
+				<TextBlock Text="{Binding Creator}" 
+						   FontWeight="Bold" 
+						   FontSize="16"/>
+			</TreeDataTemplate >
+			
+			<TreeDataTemplate x:DataType="vm:SceneDesignerViewModel">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+					<TextBlock Text="{Binding Name}" 
+							   Grid.Column="0"
+							   VerticalAlignment="Center"/>
+					<Button Content="Activate"
+							Grid.Column="1"
+							Command="{Binding ActivateCommand}">
+					</Button>
+				</Grid>
+			</TreeDataTemplate >
+			
+		</TreeView.DataTemplates>
+	</TreeView>
+</UserControl>
+
