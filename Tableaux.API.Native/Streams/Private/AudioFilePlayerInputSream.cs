@@ -25,7 +25,9 @@ namespace Tableaux.API.Native.Streams.Private
         public AudioFilePlayerInputSream(string fileName, IFastFourierTransformer fastFourier, int bufferSize = 16384) : base(fastFourier)
         {
             if (!File.Exists(fileName))
+            {
                 throw new Exception($"File {fileName} does not exist!");
+            }
 
             _fileReader = new AudioFileReader(fileName);
 
@@ -58,6 +60,39 @@ namespace Tableaux.API.Native.Streams.Private
 
         public override IList<float> GetBuffer() =>
             _aggregator.GetBuffer();
+
+
+        private bool disposedValue;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    StopStream();
+
+                    // TODO: dispose managed state (managed objects)
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~SystemAudioInputStream()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public override void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
 
     }
 }

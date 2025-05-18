@@ -23,5 +23,10 @@ namespace Tableaux.API.Native.Streams
         {
             return new EmptyState();
         }
+
+        public override void Dispose()
+        {
+            
+        }
     }
 }

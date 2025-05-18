@@ -6,12 +6,11 @@ using Tableaux.API.Native.Signals;
 
 namespace Tableaux.API.Native.Streams.Private
 {
-    public class SystemAudioInputStream : BaseSystemAudioInputStream
+    public class SystemAudioInputStream : BaseSystemAudioInputStream, IDisposable
     {
         private readonly WasapiLoopbackCapture _waveIn;
         private readonly IList<float> _samplesInBuffer;
         private readonly int _bufferSize;
-
 
         public override int SampleRate => _waveIn.WaveFormat.SampleRate;
 
@@ -82,6 +81,40 @@ namespace Tableaux.API.Native.Streams.Private
                     _samplesInBuffer.RemoveAt(0);
                 }
             }
+        }
+
+
+        private bool disposedValue;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    StopStream();
+
+                    // TODO: dispose managed state (managed objects)
+                    _waveIn.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~SystemAudioInputStream()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public override void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

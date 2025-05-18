@@ -47,6 +47,7 @@ internal class AnimationService : IAnimationService
                 await syncContext.PostAsync(async () => 
                 {
                     await drawFrame(token);
+                    notifyEntityChanged.Invalidate(0);
                     notifyEntityChanged.RenderChanges();
                 });
             }

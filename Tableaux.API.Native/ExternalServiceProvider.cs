@@ -8,5 +8,6 @@ internal class ExternalServiceProvider : IExternalServiceProvider<IServiceCollec
     public void AddTo(IServiceCollection container)
     {
         container.AddSingleton<TestScene>();
+        container.AddSingleton<ParticleScene>();
     }
 }
