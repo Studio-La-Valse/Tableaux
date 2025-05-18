@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="clr-namespace:Tableaux.ViewModels;assembly=Tableaux"
+			 xmlns:vmbase="clr-namespace:Tableaux.ViewModels.Base;assembly=Tableaux"
+			 xmlns:api="clr-namespace:Tableaux.API;assembly=Tableaux.API"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Tableaux.Views.AddinPropertiesView">
+
+    <ScrollViewer >
+        <ListBox x:DataType="vm:AddinPropertiesViewModel" 
+				 ItemsSource="{Binding Properties}" 
+				 BorderBrush="Transparent">
+			<ListBox.DataTemplates>
+				<DataTemplate x:DataType="vmbase:PropertyViewModelString">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<TextBlock Text="{Binding Description}" FontWeight="Bold"/>
+						<TextBox Grid.Column="1" Text="{Binding Value}" />
+						<Button Grid.Column="2" Command="{Binding Restore}">Restore</Button>
+					</Grid>
+				</DataTemplate>
+
+				<DataTemplate x:DataType="vmbase:PropertyViewModelDouble">
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+						<TextBlock Text="{Binding Description}" FontWeight="Bold"/>
+						<TextBox Grid.Column="1" Text="{Binding Value}" />
+						<Button Grid.Column="2" Command="{Binding Restore}">Restore</Button>
+					</Grid>
+				</DataTemplate>
+			</ListBox.DataTemplates>
+        </ListBox>
+    </ScrollViewer>
+
+</UserControl>

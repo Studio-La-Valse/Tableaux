@@ -13,7 +13,7 @@
 		<converters:BoundsConverter x:Key="boundsConverter"/>
 	</UserControl.Resources>
 
-	<Grid ColumnDefinitions="200 3 *">
+	<Grid ColumnDefinitions="200 3 * 3 200">
 		
 		<views:AddinCollectionView Grid.Column="0"
 								   x:DataType="vm:AddinCollectionViewModel"
@@ -34,6 +34,14 @@
 								   Zoom="{Binding Zoom, Mode=TwoWay}"
 								   EnablePan="{Binding EnablePan, Mode=TwoWay}"
 								   EnableZoom="{Binding EnableZoom, Mode=TwoWay}"/>
+
+		<GridSplitter Grid.Column="3"
+					  BorderBrush="Red"
+					  BorderThickness="3"/>
+
+		<views:AddinPropertiesView Grid.Column="4"
+								   x:DataType="vm:AddinPropertiesViewModel"
+								   DataContext="{Binding AddinPropertiesViewModel}"/>
 	</Grid>
 	
 

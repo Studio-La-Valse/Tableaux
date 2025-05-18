@@ -12,7 +12,7 @@ namespace Tableaux.API
         bool EnableZoom { get; }
         BaseContentWrapper CreateScene();
         IInputObserver Behavior(SceneManager<int> sceneManager, INotifyEntityChanged<int> notifyEntityChanged);
-        void RegisterSettings(SettingsProvider settingsProvider);
+        void RegisterSettings(ISettingsProvider settingsProvider);
         void OnActivate();
         void OnDeactivate();
     }

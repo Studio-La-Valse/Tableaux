@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Tableaux.API;
 
 namespace Tableaux.Models;
-public class DefaultSynchronizationContextService : ISynchronizationContextService
+public class SynchronizationContextService : ISynchronizationContextService
 {
     private readonly SynchronizationContext syncContext;
 
-    public DefaultSynchronizationContextService()
+    public SynchronizationContextService()
     {
         this.syncContext = SynchronizationContext.Current ?? new SynchronizationContext();
     }

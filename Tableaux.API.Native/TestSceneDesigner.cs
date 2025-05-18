@@ -62,7 +62,7 @@ internal class TestSceneDesigner : ISceneDesigner
         await Task.CompletedTask;
     }
 
-    public void RegisterSettings(SettingsProvider settingsProvider)
+    public void RegisterSettings(ISettingsProvider settingsProvider)
     {
          
     }
@@ -105,12 +105,14 @@ internal class ParticleSceneDesigner : ISceneDesigner
 
     public void OnDeactivate()
     {
-         
+        particleScene.Clear();    
     }
 
-    public void RegisterSettings(SettingsProvider settingsProvider)
+    
+    public void RegisterSettings(ISettingsProvider settingsProvider)
     {
-         
+        
+        settingsProvider.RegisterDouble(() => particleScene.Speed, (e) => { particleScene.Speed = e; }, "Testestest", 2);
     }
 
     public IInputObserver Behavior(SceneManager<int> sceneManager, INotifyEntityChanged<int> notifyEntityChanged)

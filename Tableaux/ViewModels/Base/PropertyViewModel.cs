@@ -1,5 +1,7 @@
 ﻿using Avalonia.Media;
+using ReactiveUI;
 using System;
+using System.Windows.Input;
 
 namespace Tableaux.ViewModels.Base
 {
@@ -10,7 +12,6 @@ namespace Tableaux.ViewModels.Base
             get => GetValue(() => Description);
             set => SetValue(() => Description, value);
         }
-
 
         public PropertyViewModel(string description)
         {
@@ -25,7 +26,7 @@ namespace Tableaux.ViewModels.Base
 
         public TProperty Value
         {
-            get => getValue()!;
+            get => getValue();
             set
             {
                 setValue(value);
@@ -33,16 +34,20 @@ namespace Tableaux.ViewModels.Base
             }
         }
 
-        public PropertyViewModel(Func<TProperty> getValue, Action<TProperty> setValue, string description) : base(description)
+        public ICommand Restore { get; }
+
+        public PropertyViewModel(Func<TProperty> getValue, Action<TProperty> setValue, string description, TProperty @default) : base(description)
         {
             this.setValue = setValue;
             this.getValue = getValue;
+
+            Restore = ReactiveCommand.Create(() => this.Value = @default);
         }
     }
 
     public class PropertyViewModelDouble : PropertyViewModel<double>
     {
-        public PropertyViewModelDouble(Func<double> getValue, Action<double> setValue, string description) : base(getValue, setValue, description)
+        public PropertyViewModelDouble(Func<double> getValue, Action<double> setValue, string description, double @default) : base(getValue, setValue, description, @default)
         {
 
         }
@@ -50,7 +55,7 @@ namespace Tableaux.ViewModels.Base
 
     public class PropertyViewModelInt : PropertyViewModel<int>
     {
-        public PropertyViewModelInt(Func<int> getValue, Action<int> setValue, string description) : base(getValue, setValue, description)
+        public PropertyViewModelInt(Func<int> getValue, Action<int> setValue, string description, int @default) : base(getValue, setValue, description, @default)
         {
 
         }
@@ -58,7 +63,7 @@ namespace Tableaux.ViewModels.Base
 
     public class PropertyViewModelString : PropertyViewModel<string>
     {
-        public PropertyViewModelString(Func<string> getValue, Action<string> setValue, string description) : base(getValue, setValue, description)
+        public PropertyViewModelString(Func<string> getValue, Action<string> setValue, string description, string @default) : base(getValue, setValue, description, @default)
         {
 
         }
@@ -67,7 +72,7 @@ namespace Tableaux.ViewModels.Base
 
     public class PropertyViewModelColor : PropertyViewModel<Color>
     {
-        public PropertyViewModelColor(Func<Color> getValue, Action<Color> setValue, string description) : base(getValue, setValue, description)
+        public PropertyViewModelColor(Func<Color> getValue, Action<Color> setValue, string description, Color @default) : base(getValue, setValue, description, @default)
         {
 
         }

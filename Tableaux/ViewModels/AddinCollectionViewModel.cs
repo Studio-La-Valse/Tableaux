@@ -13,6 +13,9 @@ using StudioLaValse.Drawable;
 using StudioLaValse.Drawable.ContentWrappers;
 using StudioLaValse.Drawable.Interaction.UserInput;
 using StudioLaValse.Drawable.Interaction.Extensions;
+using Tableaux.ViewModels.Base;
+using System.Windows.Input;
+using ReactiveUI;
 
 namespace Tableaux.ViewModels;
 
@@ -20,19 +23,28 @@ public class AddinCollectionViewModel
 {
     private readonly IAddinCollection<ISceneDesigner> sceneDesigners;
     private readonly CanvasViewModel canvasViewModel;
+    private readonly AddinPropertiesViewModel addinPropertiesViewModel;
     private readonly INotifyEntityChanged<int> notifyEntityChanged;
     private readonly IAnimationService animationService;
+    private readonly ISettingsProvider settingsProvider;
     private ISceneDesigner? activeSceneDesigner;
     private IDisposable? animationSubscription;
 
     public ObservableCollection<SceneDesignerGroupViewModel> GroupedItems { get; } = [];
 
-    public AddinCollectionViewModel(IAddinCollection<ISceneDesigner> sceneDesigners, CanvasViewModel canvasViewModel, INotifyEntityChanged<int> notifyEntityChanged, IAnimationService animationService)
+    public ICommand DeactivateCommand { get; }
+
+    public AddinCollectionViewModel(IAddinCollection<ISceneDesigner> sceneDesigners, CanvasViewModel canvasViewModel, AddinPropertiesViewModel addinPropertiesViewModel, INotifyEntityChanged<int> notifyEntityChanged, IAnimationService animationService, ISettingsProvider settingsProvider)
     {
         this.sceneDesigners = sceneDesigners;
         this.canvasViewModel = canvasViewModel;
+        this.addinPropertiesViewModel = addinPropertiesViewModel;
         this.notifyEntityChanged = notifyEntityChanged;
         this.animationService = animationService;
+        this.settingsProvider = settingsProvider;
+
+        DeactivateCommand = ReactiveCommand.Create(Deactivate);
+
         BuildTree();
     }
 
@@ -70,13 +82,18 @@ public class AddinCollectionViewModel
         sceneManager.Rerender();
 
         sceneDesigner.OnActivate();
+
+        addinPropertiesViewModel.Clear();
+        sceneDesigner.RegisterSettings(settingsProvider);
     }
 
     public void Deactivate()
     {
         activeSceneDesigner?.OnDeactivate();
+        addinPropertiesViewModel?.Clear();
         animationSubscription?.Dispose();
         animationService.Stop();
+        canvasViewModel.CanvasPainter.FinishDrawing();
     }
 
 

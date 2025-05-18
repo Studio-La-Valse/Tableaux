@@ -37,12 +37,15 @@ public class ParticleScene : BaseInteractiveParent<int>
 {
     private readonly IList<BaseVisualParticle> particles = [];
 
+    public double Speed { get; set; } = 2;
+
     public ParticleScene() : base(1)
     {
 
     }
 
     private bool leftMouseDown = false;
+    private int hue = 0;
     public override bool HandleLeftMouseButtonDown()
     {
         leftMouseDown = true;
@@ -62,12 +65,12 @@ public class ParticleScene : BaseInteractiveParent<int>
 
     public void Update()
     {
+        hue = (hue + 1) % 360;
         if (leftMouseDown)
         {
-            var speed = 5;
-            var vector = new XY((Random.Shared.NextDouble() - 0.5) * speed, (Random.Shared.NextDouble() - 0.5) * speed);
+            var vector = new XY((Random.Shared.NextDouble() - 0.5) * Speed, (Random.Shared.NextDouble() - 0.5) * Speed);
             var size = Random.Shared.NextDouble() * 100;
-            var color = new ColorARGB(255, 0, 0);
+            var color = new ColorAHSV(hue, 255, 255).ToColorARGB();
             particles.Add(new BaseVisualParticle(LastMousePosition, vector, size, color));
         }
 
@@ -80,6 +83,11 @@ public class ParticleScene : BaseInteractiveParent<int>
                 particles.RemoveAt(i);
             }
         }
+    }
+
+    public void Clear()
+    {
+        particles.Clear();
     }
 }
 

@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton<CanvasViewModel>();
         services.AddSingleton<AddinCollectionViewModel>();
+        services.AddSingleton<AddinPropertiesViewModel>();
         services.AddSingleton<MainViewModel>();
         return services;
     }
@@ -42,8 +43,9 @@ public static class ServiceCollectionExtensions
     {
         services.AddSingleton(SceneManager<int>.CreateObservable());
         services.AddSingleton<ICanvasService, CanvasService>();
+        services.AddSingleton<ISettingsProvider, SettingsProvider>();
         services.AddSingleton<IAnimationService, AnimationService>();
-        services.AddSingleton<ISynchronizationContextService, DefaultSynchronizationContextService>();
+        services.AddSingleton<ISynchronizationContextService, SynchronizationContextService>();
         services.AddLogging(e =>
         {
             e.ClearProviders();

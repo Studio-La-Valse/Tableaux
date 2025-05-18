@@ -33,6 +33,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\AddinPropertiesView.axaml.cs">
+      <DependentUpon>AddinPropertiesView.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="External Addins\Tableaux.API.Native.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
