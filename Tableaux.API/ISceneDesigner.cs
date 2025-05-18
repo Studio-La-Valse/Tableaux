@@ -10,10 +10,11 @@ namespace Tableaux.API
         string Name { get; }
         bool EnablePan { get; }
         bool EnableZoom { get; }
-        BaseContentWrapper CreateScene();
-        IInputObserver Behavior(SceneManager<int> sceneManager, INotifyEntityChanged<int> notifyEntityChanged);
+        BaseContentWrapper Scene { get; }
+
         void RegisterSettings(ISettingsProvider settingsProvider);
         void OnActivate();
+        Task OnUpdate(AnimationFrame animationFrame, CancellationToken cancellationToken);
         void OnDeactivate();
     }
 }

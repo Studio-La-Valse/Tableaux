@@ -2,6 +2,7 @@
 using StudioLaValse.Drawable;
 using StudioLaValse.Drawable.BitmapPainters;
 using StudioLaValse.Drawable.Interaction.ViewModels;
+using StudioLaValse.Geometry;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -18,17 +19,21 @@ internal class AnimationService : IAnimationService
     private Timer? timer;
     private readonly ISynchronizationContextService syncContext;
     private readonly INotifyEntityChanged<int> notifyEntityChanged;
+    private readonly CanvasViewModel canvasViewModel;
+    private long index = 0;
+    private DateTime lastUpdated = DateTime.MinValue;
 
     public bool Streaming => timer is not null;
 
-    public AnimationService(ILogger<AnimationService> logger, ISynchronizationContextService syncContext, INotifyEntityChanged<int> notifyEntityChanged)
+    public AnimationService(ILogger<AnimationService> logger, ISynchronizationContextService syncContext, INotifyEntityChanged<int> notifyEntityChanged, CanvasViewModel canvasViewModel)
     {
         this.logger = logger;
         this.syncContext = syncContext;
         this.notifyEntityChanged = notifyEntityChanged;
+        this.canvasViewModel = canvasViewModel;
     }
 
-    public void Start(int frameDuration, Func<CancellationToken, Task> drawFrame)
+    public void Start(int frameDuration, ISceneDesigner sceneDesigner)
     {
         lock (_lock)
         {
@@ -39,17 +44,25 @@ internal class AnimationService : IAnimationService
         }
 
         var token = cancellationTokenSource.Token;
+        lastUpdated = DateTime.Now;
 
         timer = new Timer(async _ =>
         {
             try
             {
+                index++;
+                var elapsed = DateTime.Now - lastUpdated;
+
                 await syncContext.PostAsync(async () => 
                 {
-                    await drawFrame(token);
+                    var translation = new XY(canvasViewModel.TranslateX, canvasViewModel.TranslateY);
+                    var animationFrame = new AnimationFrame(index, elapsed.Milliseconds, canvasViewModel.Bounds, translation, canvasViewModel.Zoom);
+                    await sceneDesigner.OnUpdate(animationFrame, token);
                     notifyEntityChanged.Invalidate(0);
                     notifyEntityChanged.RenderChanges();
                 });
+
+                lastUpdated = DateTime.Now;
             }
             catch (Exception ex)
             {
@@ -65,6 +78,8 @@ internal class AnimationService : IAnimationService
         {
             cancellationTokenSource.Cancel();
             timer?.Dispose();
+            index = 0;
+            lastUpdated = DateTime.MinValue;
         }
     }
 }

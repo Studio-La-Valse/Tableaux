@@ -26,4 +26,10 @@ public class SettingsProvider : ISettingsProvider
         var tunnel = new PropertyViewModelDouble(getValue, setValue, description, @default);
         addinPropertiesViewModel.Properties.Add(tunnel);
     }
+
+    public void RegisterInt(Func<int> getValue, Action<int> setValue, string description, int @default)
+    {
+        var tunnel = new PropertyViewModelInt(getValue, setValue, description, @default);
+        addinPropertiesViewModel.Properties.Add(tunnel);
+    }
 }

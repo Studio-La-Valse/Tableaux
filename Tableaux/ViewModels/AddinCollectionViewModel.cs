@@ -16,6 +16,7 @@ using StudioLaValse.Drawable.Interaction.Extensions;
 using Tableaux.ViewModels.Base;
 using System.Windows.Input;
 using ReactiveUI;
+using StudioLaValse.Drawable.DrawableElements;
 
 namespace Tableaux.ViewModels;
 
@@ -75,7 +76,7 @@ public class AddinCollectionViewModel
         var sceneWrapper = new SceneWrapper(activeSceneDesigner);
         var sceneManager = new SceneManager<int>(sceneWrapper, canvasViewModel.CanvasPainter);
 
-        canvasViewModel.InputObserver = sceneDesigner.Behavior(sceneManager, notifyEntityChanged);
+        canvasViewModel.InputObserver = new BaseInputObserver().AddDefaultBehavior(sceneManager).AddRerender(notifyEntityChanged);
 
         animationSubscription = notifyEntityChanged.Subscribe(sceneManager.CreateObserver());
 
@@ -85,6 +86,8 @@ public class AddinCollectionViewModel
 
         addinPropertiesViewModel.Clear();
         sceneDesigner.RegisterSettings(settingsProvider);
+
+        animationService.Start(16, sceneDesigner);
     }
 
     public void Deactivate()
@@ -108,8 +111,7 @@ public class AddinCollectionViewModel
 
         public override IEnumerable<BaseContentWrapper> GetContentWrappers()
         {
-            var scene = sceneDesigner.CreateScene();
-            yield return scene;
+            yield return sceneDesigner.Scene;
         }
     }
 }
