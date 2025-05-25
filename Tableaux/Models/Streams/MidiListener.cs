@@ -22,6 +22,7 @@ namespace Tableaux.Models.Streams
         public MidiListener(MidiIn midiIn, ILogger<MidiListener> logger)
         {
             _midiIn = midiIn;
+
             this.logger = logger;
         }
 

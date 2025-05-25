@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 xmlns:vm="clr-namespace:Tableaux.ViewModels;assembly=Tableaux"
+             x:Class="Tableaux.Views.MidiConfigurationView">
+	<StackPanel>
+		<ComboBox x:DataType="vm:MidiConfigurationViewModel"
+				  ItemsSource="{Binding AvailableDevices, Mode=TwoWay}"
+				  SelectedItem="{Binding SelectedDevice, Mode=TwoWay}">
+			<ComboBox.ItemTemplate>
+				<DataTemplate x:DataType="vm:MidiDeviceViewModel">
+					<TextBlock Text="{Binding ProductName}"/>
+				</DataTemplate>
+			</ComboBox.ItemTemplate>
+		</ComboBox>
+	</StackPanel>
+</UserControl>

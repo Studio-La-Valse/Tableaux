@@ -18,6 +18,7 @@ using System.Linq;
 using System.Reflection;
 using Tableaux.API;
 using Tableaux.Models;
+using Tableaux.Models.Streams;
 using Tableaux.ViewModels;
 
 namespace Tableaux;
@@ -35,6 +36,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<SceneCanvasViewModel>();
         services.AddSingleton<AddinCollectionViewModel>();
         services.AddSingleton<AddinPropertiesViewModel>();
+        services.AddSingleton<MidiConfigurationViewModel>();
         services.AddSingleton<MainViewModel>();
         return services;
     }
@@ -47,6 +49,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAnimationService, AnimationService>();
         services.AddSingleton<ISynchronizationContextService, SynchronizationContextService>();
         services.AddSingleton<Clock>();
+        services.AddSingleton<MidiReaderFactory>();
         services.AddSingleton<MidiService>();
         services.AddLogging(e =>
         {

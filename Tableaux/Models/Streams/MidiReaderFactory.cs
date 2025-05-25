@@ -1,4 +1,5 @@
-﻿using NAudio.Midi;
+﻿using Microsoft.Extensions.Logging;
+using NAudio.Midi;
 using System.Linq;
 
 namespace Tableaux.Models.Streams
@@ -6,10 +7,12 @@ namespace Tableaux.Models.Streams
     public class MidiReaderFactory
     {
         private readonly Clock clock;
+        private readonly ILoggerFactory loggerFactory;
 
-        public MidiReaderFactory(Clock clock)
+        public MidiReaderFactory(Clock clock, ILoggerFactory loggerFactory)
         {
             this.clock = clock;
+            this.loggerFactory = loggerFactory;
         }
 
         public MidiReader CreateReader(string fileLocation)
@@ -26,6 +29,13 @@ namespace Tableaux.Models.Streams
             var ticksPerMiliseconds = ticksPerQuarterNote / milisecondsPerQuarterNote;
 
             return new MidiReader(midiEvents, ticksPerQuarterNote, clock);
+        }
+
+        public MidiListener CreateListener(int deviceIndex)
+        {
+            var midiIn = new MidiIn(deviceIndex);
+            var listener = new MidiListener(midiIn, loggerFactory.CreateLogger<MidiListener>());
+            return listener;
         }
     }
 }

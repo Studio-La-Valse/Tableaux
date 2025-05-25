@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -6,9 +7,9 @@ using Tableaux.API;
 
 namespace Tableaux.Models;
 
-internal class MidiService 
+public class MidiService 
 {
-    private readonly HashSet<IMidiProvider> midiProviders = [];
+    private IMidiProvider? midiProvider;
 
     public MidiService()
     {
@@ -17,17 +18,18 @@ internal class MidiService
 
     public void RegisterMidiProvider(IMidiProvider midiProvider)
     {
-        midiProviders.Add(midiProvider);
-    }
-
-    public void RemoveMidiProvider(IMidiProvider midiProvider)
-    {
-        midiProviders.Remove(midiProvider);
+        this.midiProvider = midiProvider;
     }
 
     public IMidiBuffer ReadBuffer()
     {
-        var midiBuffer = MidiBuffer.Consume(midiProviders);
+        if (this.midiProvider == null)
+        {
+            var msg = "";
+            throw new Exception(msg);
+        }
+
+        var midiBuffer = MidiBuffer.Consume(midiProvider);
         return midiBuffer;
     }
 }

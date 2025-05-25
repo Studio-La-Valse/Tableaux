@@ -46,6 +46,17 @@ internal class MidiBuffer : IMidiBuffer
         return midiBuffer;
     }
 
+    public static IMidiBuffer Consume(IMidiProvider midiProvider)
+    {
+        var notesOn = new Queue<NoteOn>();
+        var notesOff = new Queue<NoteOff>();
+
+        midiProvider.ProvideBuffer(ref notesOn, ref notesOff);
+
+        var midiBuffer = Consume(notesOn, notesOff);
+        return midiBuffer;
+    }
+
     public IEnumerable<NoteOff> NotesOff()
     {
         return notesOff;

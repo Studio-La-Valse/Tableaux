@@ -3,7 +3,7 @@ using Tableaux.API;
 
 namespace Tableaux.Models;
 
-internal interface IMidiProvider
+public interface IMidiProvider
 {
     void ProvideBuffer(ref Queue<NoteOn> notesOn, ref Queue<NoteOff> notesOff);
 }

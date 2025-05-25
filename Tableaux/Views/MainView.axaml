@@ -39,9 +39,16 @@
 					  BorderBrush="Red"
 					  BorderThickness="3"/>
 
-		<views:AddinPropertiesView Grid.Column="4"
-								   x:DataType="vm:AddinPropertiesViewModel"
-								   DataContext="{Binding AddinPropertiesViewModel}"/>
+		<ScrollViewer Grid.Column="4">
+			<StackPanel>
+				<views:MidiConfigurationView x:DataType="vm:MidiConfigurationViewModel"
+											 DataContext="{Binding MidiConfigurationViewModel}"/>
+				
+				<views:AddinPropertiesView x:DataType="vm:AddinPropertiesViewModel"
+										   DataContext="{Binding AddinPropertiesViewModel}"/>
+			</StackPanel>
+		</ScrollViewer>
+
 	</Grid>
 	
 
