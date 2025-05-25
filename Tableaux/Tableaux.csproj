@@ -18,6 +18,7 @@
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    <PackageReference Include="NAudio.Midi" Version="2.2.1" />
     <PackageReference Include="StudioLaValse.DependencyInjection.Microsoft" Version="1.0.0" />
     <PackageReference Include="StudioLaValse.Drawable" Version="6.0.1" />
     <PackageReference Include="StudioLaValse.Drawable.Avalonia" Version="6.0.1" />

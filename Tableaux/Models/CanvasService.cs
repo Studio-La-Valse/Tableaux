@@ -1,6 +1,7 @@
 ﻿using StudioLaValse.Drawable.Interaction.ViewModels;
 using StudioLaValse.Geometry;
 using Tableaux.API;
+using Tableaux.ViewModels;
 
 namespace Tableaux.Models;
 
@@ -8,7 +9,7 @@ internal class CanvasService : ICanvasService
 {
     private readonly CanvasViewModel canvasViewModel;
 
-    public CanvasService(CanvasViewModel canvasViewModel)
+    public CanvasService(SceneCanvasViewModel canvasViewModel)
     {
         this.canvasViewModel = canvasViewModel;
     }

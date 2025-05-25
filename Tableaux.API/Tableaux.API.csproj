@@ -10,6 +10,7 @@
     <PackageReference Include="StudioLaValse.DependencyInjection" Version="1.0.0" />
     <PackageReference Include="StudioLaValse.Drawable.Interaction" Version="6.0.1" />
     <PackageReference Include="StudioLaValse.Geometry" Version="2.0.0" />
+    <PackageReference Include="StudioLaValse.ScoreDocument.Core" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

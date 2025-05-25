@@ -1,30 +1,29 @@
 ﻿using StudioLaValse.Drawable.ContentWrappers;
 using StudioLaValse.Drawable.DrawableElements;
 using StudioLaValse.Geometry;
-using System.Collections.Generic;
-using Tableaux.API.Native.Streams;
+using Tableaux.API.Native.Engine;
 
 namespace Tableaux.API.Native.Classic
 {
     public class ClassicAnimationContentWrapper : BaseContentWrapper
     {
-        private readonly State state;
+        private readonly Klavier klavier;
+        private readonly CircleOfFifths circleOfFifths;
         private readonly Queue<int> volumeHistory;
 
 
 
         private VisualCircleOfFifths CircleOfFifths =>
-            new VisualCircleOfFifths(state.CircleOfFifths, CanvasWidth / 2, CanvasHeight / 2);
+            new VisualCircleOfFifths(circleOfFifths, CanvasWidth / 2, CanvasHeight / 2);
         private AnimatedRainbowBoxes RainbowBoxes =>
-            new AnimatedRainbowBoxes(state.CircleOfFifths, CanvasHeight, CanvasWidth);
+            new AnimatedRainbowBoxes(circleOfFifths, CanvasHeight, CanvasWidth);
         private AnimatedKlavier Klavier =>
-            new AnimatedKlavier(state.Klavier, CanvasHeight, CanvasWidth);
+            new AnimatedKlavier(klavier, CanvasHeight, CanvasWidth);
         private AnimatedVolumeBoxes VolumeBoxes =>
-            new AnimatedVolumeBoxes(state.CircleOfFifths, CanvasWidth / 6, CanvasHeight / 2 + 50, volumeHistory, 50);
+            new AnimatedVolumeBoxes(circleOfFifths, CanvasWidth / 6, CanvasHeight / 2 + 50, volumeHistory, 50);
         private AnimatedSaturationBoxes SaturationBoxes =>
-            new AnimatedSaturationBoxes(state.CircleOfFifths, CanvasWidth / 4, CanvasHeight / 2 + 50);
-        private AnimatedSignal? Signal => state.FFTSignal is null ? null :
-            new AnimatedSignal(state.FFTSignal, CanvasWidth * 0.7, CanvasHeight / 2 - 100, 100, CanvasWidth / 5, 80, 400);
+            new AnimatedSaturationBoxes(circleOfFifths, CanvasWidth / 4, CanvasHeight / 2 + 50);
+
 
 
 
@@ -33,15 +32,16 @@ namespace Tableaux.API.Native.Classic
 
 
 
-        public ClassicAnimationContentWrapper(State state, double canvasWidth, double canvasHeight, Queue<int> volumeHistory, double cofRadius)
+        public ClassicAnimationContentWrapper(Klavier klavier, CircleOfFifths circleOfFifths, double canvasWidth, double canvasHeight, Queue<int> volumeHistory, double cofRadius)
         {
-            this.state = state;
+            this.klavier = klavier;
+            this.circleOfFifths = circleOfFifths;
             this.volumeHistory = volumeHistory;
 
             CanvasHeight = canvasHeight;
             CanvasWidth = canvasWidth;
 
-            state.CircleOfFifths.Radius = cofRadius;
+            circleOfFifths.Radius = cofRadius;
         }
 
 
@@ -53,17 +53,12 @@ namespace Tableaux.API.Native.Classic
                 CircleOfFifths, RainbowBoxes, Klavier, VolumeBoxes, SaturationBoxes
             };
 
-            if (Signal != null)
-            {
-                elements.Add(Signal);
-            }
-
             return elements;
         }
 
         public override IEnumerable<BaseDrawableElement> GetDrawableElements()
         {
-            var color = state.CircleOfFifths.KeyPointer.Color;
+            var color = circleOfFifths.KeyPointer.Color;
 
             color = new ColorAHSV(color.Hue, (int)(color.Saturation * 0.8), (int)(color.Value * 0.5));
 

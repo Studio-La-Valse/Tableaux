@@ -9,5 +9,6 @@ internal class ExternalServiceProvider : IExternalServiceProvider<IServiceCollec
     {
         container.AddSingleton<TestScene>();
         container.AddSingleton<ParticleScene>();
+        container.AddSingleton<AnimationFrameInfo>();
     }
 }

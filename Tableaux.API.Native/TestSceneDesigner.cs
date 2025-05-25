@@ -1,61 +1,44 @@
-﻿using StudioLaValse.Drawable;
-using StudioLaValse.Drawable.ContentWrappers;
-using StudioLaValse.Drawable.Interaction;
-using StudioLaValse.Drawable.Interaction.UserInput;
-using Tableaux.API.Native.Signals;
-using Tableaux.API.Native.Streams;
-using Tableaux.API.Native.Streams.Private;
+﻿using StudioLaValse.Drawable.ContentWrappers;
+using Tableaux.API.Native.Classic;
+using Tableaux.API.Native.Engine;
 
 namespace Tableaux.API.Native;
 
 internal class TestSceneDesigner : ISceneDesigner
 {
     private readonly TestScene scene;
-    private BaseAudioStream? input;
-    private readonly IFastFourierTransformer fastFourierTransformer;
+    private readonly Klavier klavier = new(new double[88]);
+    private readonly CircleOfFifths circleOfFifths = new();
+    private readonly Queue<int> volumeHistory = new();
+    private readonly AnimationFrameInfo animationFrameInfo;
 
     public string Creator => "Native";
     public string Name => "Test";
     public bool EnablePan => false;
     public bool EnableZoom => false;
     public BaseContentWrapper Scene => scene;
+    public BaseContentWrapper HUD => animationFrameInfo;
+    private double lerpFactor = 0.1;
 
-    public TestSceneDesigner(TestScene testScene)
+    public TestSceneDesigner(TestScene testScene, AnimationFrameInfo animationFrameInfo)
     {
         this.scene = testScene;
-
-        fastFourierTransformer = new FastFourierSharpTransformer();
+        this.animationFrameInfo = animationFrameInfo;
     }
 
 
     public void RegisterSettings(ISettingsProvider settingsProvider)
     {
-
+        settingsProvider.RegisterDouble(() => this.lerpFactor, v => this.lerpFactor = v, "Lerp", 0.1);
     }
 
-    public void OnActivate()
+    public BaseContentWrapper OnUpdate(IMidiBuffer midiBuffer, AnimationFrame animationFrame)
     {
-        input = new MicrophoneInputStream(0, 44_100, 32, 24, 16_384, fastFourierTransformer);
-        input.StartStream();
-    }
+        this.animationFrameInfo.Update(animationFrame);
+        this.klavier.Lerp(klavier, this.lerpFactor);
+        this.circleOfFifths.Update(klavier);
 
-    public async Task OnUpdate(AnimationFrame animationFrame, CancellationToken cancellationToken)
-    {
-        if (input is null)
-        {
-            return;
-        }
-
-        var state = input.GetState();
-        var radius = state.CreateKlavier().Keys.Max(e => e.Loudness) * 500;
-        scene.SetRadius(radius);
-
-        await Task.CompletedTask;
-    }
-
-    public void OnDeactivate()
-    {
-        input?.StopStream();
-        input?.Dispose();
+        this.scene.Update(new ClassicAnimationContentWrapper(klavier, circleOfFifths, animationFrame.BoundingBox.Width, animationFrame.BoundingBox.Height, volumeHistory, 300));
+        return this.scene;
     }
 }

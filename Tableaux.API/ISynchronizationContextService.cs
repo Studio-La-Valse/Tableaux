@@ -2,6 +2,8 @@
 {
     public interface ISynchronizationContextService 
     { 
-        Task PostAsync(Func<Task> action); 
+        Task PostAsync(Func<Task> action);
+
+        void Post(Action action);
     }
 }

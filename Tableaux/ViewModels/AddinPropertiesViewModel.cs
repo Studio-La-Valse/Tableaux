@@ -15,5 +15,6 @@ public class AddinPropertiesViewModel : PropertyCollectionViewModel
     public void Clear()
     {
         this.Properties.Clear();
+        this.Actions.Clear();
     }
 }

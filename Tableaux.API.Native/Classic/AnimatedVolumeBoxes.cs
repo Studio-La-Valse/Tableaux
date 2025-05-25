@@ -1,9 +1,6 @@
 ﻿using StudioLaValse.Drawable.ContentWrappers;
 using StudioLaValse.Drawable.DrawableElements;
 using StudioLaValse.Geometry;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Tableaux.API.Native.Engine;
 using Tableaux.API.Native.Utils;
 

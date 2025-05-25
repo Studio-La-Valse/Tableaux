@@ -32,4 +32,9 @@ public class SynchronizationContextService : ISynchronizationContextService
 
         return tcs.Task;
     }
+
+    public void Post(Action action)
+    {
+        syncContext.Send(_ => action(), null);
+    }
 }

@@ -5,6 +5,7 @@ using System.Windows.Input;
 
 namespace Tableaux.ViewModels.Base
 {
+
     public abstract class PropertyViewModel : BaseViewModel
     {
         public string Description

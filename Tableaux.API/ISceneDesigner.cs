@@ -1,6 +1,5 @@
 ﻿using StudioLaValse.Drawable;
 using StudioLaValse.Drawable.ContentWrappers;
-using StudioLaValse.Drawable.Interaction;
 
 namespace Tableaux.API
 {
@@ -10,11 +9,8 @@ namespace Tableaux.API
         string Name { get; }
         bool EnablePan { get; }
         bool EnableZoom { get; }
-        BaseContentWrapper Scene { get; }
 
         void RegisterSettings(ISettingsProvider settingsProvider);
-        void OnActivate();
-        Task OnUpdate(AnimationFrame animationFrame, CancellationToken cancellationToken);
-        void OnDeactivate();
+        BaseContentWrapper OnUpdate(IMidiBuffer midiBuffer, AnimationFrame animationFrame);
     }
 }

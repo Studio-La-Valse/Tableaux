@@ -1,5 +1,4 @@
-﻿using Tableaux.API.Native.Signals;
-using Tableaux.API.Native.Utils;
+﻿using Tableaux.API.Native.Utils;
 
 namespace Tableaux.API.Native.Engine
 {
@@ -27,11 +26,6 @@ namespace Tableaux.API.Native.Engine
 
 
 
-
-        public Klavier(FFTSignal signal) : this(ToKeyValues(signal))
-        {
-
-        }
         public Klavier(double[] keyValues)
         {
             if (keyValues.Length != 88)
@@ -59,21 +53,7 @@ namespace Tableaux.API.Native.Engine
 
 
 
-        public static double[] ToKeyValues(FFTSignal fFTSignal)
-        {
-            var keys = new double[88];
-            for (var i = 0; i < 88; i++)
-            {
-                var tone = new Tone(i.ToPitch(), 0);
-                var frequencyAtKey = Convert.ToDouble(tone.Pitch.Frequency);
-                var value = fFTSignal?.ValueAtNearestFrequency(frequencyAtKey) ?? 0;
-                keys[i] = value;
 
-                i++;
-            }
-
-            return keys;
-        }
         private double CalculateSpectralCentroid()
         {
             var tempSpectrum = new double[88];

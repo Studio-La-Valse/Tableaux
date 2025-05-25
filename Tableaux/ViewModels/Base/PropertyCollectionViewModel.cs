@@ -18,9 +18,16 @@ namespace Tableaux.ViewModels.Base
             set => SetValue(() => Properties, value);
         }
 
+        public ObservableCollection<ActionViewModel> Actions
+        {
+            get => GetValue(() => Actions);
+            set => SetValue(() => Actions, value);
+        }
+
         public PropertyCollectionViewModel()
         {
             Properties = [];
+            Actions = [];
             IsExpanded = true;
         }
     }

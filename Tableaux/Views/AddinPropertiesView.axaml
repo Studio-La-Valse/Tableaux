@@ -9,50 +9,67 @@
              x:Class="Tableaux.Views.AddinPropertiesView">
 
     <ScrollViewer >
-        <ListBox x:DataType="vm:AddinPropertiesViewModel" 
-				 ItemsSource="{Binding Properties}" 
-				 BorderBrush="Transparent">
-			<ListBox.DataTemplates>
-				<DataTemplate x:DataType="vmbase:PropertyViewModelString">
-					<Grid>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="*" />
-						</Grid.ColumnDefinitions>
-						<TextBlock Text="{Binding Description}" FontWeight="Bold"/>
-						<TextBox Grid.Column="1" Text="{Binding Value}" />
-						<Button Grid.Column="2" Command="{Binding Restore}">Restore</Button>
-					</Grid>
-				</DataTemplate>
+		
+		<StackPanel>
+			
+			<ListBox x:DataType="vm:AddinPropertiesViewModel"
+					 ItemsSource="{Binding Properties}"
+					 BorderBrush="Transparent">
+				<ListBox.DataTemplates>
+					<DataTemplate x:DataType="vmbase:PropertyViewModelString">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<TextBlock Text="{Binding Description}" FontWeight="Bold"/>
+							<TextBox Grid.Column="1" Text="{Binding Value}" />
+							<Button Grid.Column="2" Command="{Binding Restore}">Restore</Button>
+						</Grid>
+					</DataTemplate>
 
-				<DataTemplate x:DataType="vmbase:PropertyViewModelDouble">
-					<Grid>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="*" />
-						</Grid.ColumnDefinitions>
-						<TextBlock Text="{Binding Description}" FontWeight="Bold"/>
-						<TextBox Grid.Column="1" Text="{Binding Value}" />
-						<Button Grid.Column="2" Command="{Binding Restore}">Restore</Button>
-					</Grid>
-				</DataTemplate>
+					<DataTemplate x:DataType="vmbase:PropertyViewModelDouble">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<TextBlock Text="{Binding Description}" FontWeight="Bold"/>
+							<TextBox Grid.Column="1" Text="{Binding Value}" />
+							<Button Grid.Column="2" Command="{Binding Restore}">Restore</Button>
+						</Grid>
+					</DataTemplate>
 
-				<DataTemplate x:DataType="vmbase:PropertyViewModelInt">
-					<Grid>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="*" />
-						</Grid.ColumnDefinitions>
-						<TextBlock Text="{Binding Description}" FontWeight="Bold"/>
-						<TextBox Grid.Column="1" Text="{Binding Value}" />
-						<Button Grid.Column="2" Command="{Binding Restore}">Restore</Button>
-					</Grid>
-				</DataTemplate>
-			</ListBox.DataTemplates>
-        </ListBox>
+					<DataTemplate x:DataType="vmbase:PropertyViewModelInt">
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="*" />
+								<ColumnDefinition Width="*" />
+							</Grid.ColumnDefinitions>
+							<TextBlock Text="{Binding Description}" FontWeight="Bold"/>
+							<TextBox Grid.Column="1" Text="{Binding Value}" />
+							<Button Grid.Column="2" Command="{Binding Restore}">Restore</Button>
+						</Grid>
+					</DataTemplate>
+
+				</ListBox.DataTemplates>
+			</ListBox>
+
+			<ListBox x:DataType="vm:AddinPropertiesViewModel"
+					 ItemsSource="{Binding Actions}"
+					 BorderBrush="Transparent">
+				<ListBox.DataTemplates>
+					<DataTemplate x:DataType="vmbase:ActionViewModel">
+						<Button Command="{Binding Command}" Content="{Binding Description}"></Button>
+					</DataTemplate>
+				</ListBox.DataTemplates>
+			</ListBox>	
+			
+		</StackPanel>
+
     </ScrollViewer>
 
 </UserControl>

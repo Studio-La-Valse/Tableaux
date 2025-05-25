@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddViewModels(this IServiceCollection services)
     {
-        services.AddSingleton<CanvasViewModel>();
+        services.AddSingleton<SceneCanvasViewModel>();
         services.AddSingleton<AddinCollectionViewModel>();
         services.AddSingleton<AddinPropertiesViewModel>();
         services.AddSingleton<MainViewModel>();
@@ -46,6 +46,8 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ISettingsProvider, SettingsProvider>();
         services.AddSingleton<IAnimationService, AnimationService>();
         services.AddSingleton<ISynchronizationContextService, SynchronizationContextService>();
+        services.AddSingleton<Clock>();
+        services.AddSingleton<MidiService>();
         services.AddLogging(e =>
         {
             e.ClearProviders();

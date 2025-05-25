@@ -9,12 +9,13 @@ using System;
 public class ParticleScene : BaseInteractiveParent<int>
 {
     private readonly IList<VisualParticle> particles = [];
-    private AnimationFrame animationFrame;
     private bool leftMouseDown = false;
     private int hue = 0;
 
     public double Speed { get; set; } = 2;
     public int SpawnCount { get; set; } = 1;
+    public int MaxLife { get; set; } = 100;
+    public double Decay { get; set; } = 1.0;
 
     public ParticleScene() : base(1)
     {
@@ -40,14 +41,10 @@ public class ParticleScene : BaseInteractiveParent<int>
         {
             yield return particle;
         }
-
-        yield return new AnimationFrameInfo(animationFrame);
     }
 
     public void Update(AnimationFrame animationFrame)
     {
-        this.animationFrame = animationFrame;
-
         if (leftMouseDown)
         {
             hue = (hue + 1) % 360;
@@ -59,7 +56,7 @@ public class ParticleScene : BaseInteractiveParent<int>
         {
             particles[i].Update();
 
-            if (particles[i].LifeTime > 90)
+            if (particles[i].LifeTime > MaxLife)
             {
                 particles.RemoveAt(i);
             }
@@ -71,7 +68,7 @@ public class ParticleScene : BaseInteractiveParent<int>
         var vector = new XY((Random.Shared.NextDouble() - 0.5) * Speed, (Random.Shared.NextDouble() - 0.5) * Speed);
         var size = Random.Shared.NextDouble() * 100;
         var color = new ColorAHSV(hue, 255, 255).ToColorARGB();
-        var particle = new VisualParticle(LastMousePosition, vector, size, color);
+        var particle = new VisualParticle(LastMousePosition, vector, size, Decay, color);
 
         particles.Add(particle);
     }
