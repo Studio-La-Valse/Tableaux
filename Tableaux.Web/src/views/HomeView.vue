@@ -3,7 +3,7 @@
     <MidiControls class="controls" />
     <div id="split-vertical">
       <Canvas class="canvas">
-        <rect height="100" width="100" x="50" y="50" fill="crimson"></rect>
+        <Circle/>
       </Canvas>
       <Canvas class="canvas">
         <rect height="100" width="100" x="50" y="50" fill="blue"></rect>
@@ -17,6 +17,7 @@ import MidiControls from "@/components/MidiController.vue";
 import Canvas from "@/components/Canvas.vue";
 import Split from "split.js";
 import { onMounted } from "vue";
+import Circle from "@/components/Circle.vue";
 
 onMounted(() => {
   // Split MidiControls and canvas-container horizontally
