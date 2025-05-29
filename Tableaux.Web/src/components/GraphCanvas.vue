@@ -1,24 +1,10 @@
 <template>
-  <div
-    ref="containerRef"
-    class="canvas-container"
-    @mousedown="onMouseDown"
-    @mousemove="onMouseMove"
-    @mouseup="onMouseUp"
-    @mouseleave="onMouseUp"
-    @wheel="onWheel"
-    @touchstart="onTouchStart"
-    @touchmove="onTouchMove"
-    @touchend="onTouchEnd"
-    @touchcancel="onTouchEnd"
-  >
-    <svg
-      ref="svgRef"
-      :viewBox="`0 0 ${canvasSize.width} ${canvasSize.height}`"
-      class="canvas-svg"
-    >
+  <div ref="containerRef" class="canvas-container" @mousedown="onMouseDown" @mousemove="onMouseMove"
+    @mouseup="onMouseUp" @mouseleave="onMouseUp" @wheel="onWheel" @touchstart="onTouchStart" @touchmove="onTouchMove"
+    @touchend="onTouchEnd" @touchcancel="onTouchEnd">
+    <svg ref="svgRef" :viewBox="`0 0 ${canvasSize.width} ${canvasSize.height}`" overflow="hidden" class="canvas-svg">
       <g :transform="`translate(${position.x}, ${position.y}) scale(${scale})`">
-        <slot></slot>
+        <slot />
       </g>
     </svg>
   </div>
@@ -46,7 +32,7 @@ let resizeObserver: ResizeObserver | null = null;
 onMounted(() => {
   updateCanvasSize();
 
-  if (containerRef.value){
+  if (containerRef.value) {
     // Use ResizeObserver to track parent container size changes
     resizeObserver = new ResizeObserver(() => updateCanvasSize());
     resizeObserver.observe(containerRef.value);
@@ -74,6 +60,7 @@ const onMouseDown = (event: MouseEvent) => {
   }
 };
 
+
 const onMouseMove = (event: MouseEvent) => {
   if (isDragging.value) {
     const dx = event.clientX - startPosition.value.x;
@@ -91,14 +78,14 @@ const onMouseUp = () => {
 // Zoom with wheel
 const onWheel = (event: WheelEvent) => {
   event.preventDefault();
-  if (svgRef.value == null){
+  if (svgRef.value == null) {
     return;
   }
 
   const zoomIntensity = 0.1;
   const delta = event.deltaY < 0 ? zoomIntensity : -zoomIntensity;
   const newScale = scale.value * (1 + delta);
-  if (newScale > 5 || newScale < 0.2){
+  if (newScale > 5 || newScale < 0.2) {
     return;
   }
 
@@ -148,10 +135,16 @@ const onTouchEnd = () => {
 .canvas-container {
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
+  border: 2px dashed blue;
 }
+
 .canvas-svg {
   width: 100%;
   height: 100%;
+  overflow: hidden;
+  border: 2px dashed blue;
 }
+
+
 </style>

@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import { MidiListenerService } from "@/services/midi-listener-service";
-import { MidiMessage, parse } from "@/models/midi-message";
+import { MidiMessage, parse } from "@/models/midi/midi-message";
 
 const midiService = new MidiListenerService();
 const listening = ref(false);
@@ -16,8 +16,8 @@ const buttonLabel = ref("Start Listening");
 const latestNote = ref<MidiMessage | null>(null);
 
 const onMIDIMessage = (message: MIDIMessageEvent) => {
-    const parsedMessage = parse(message);
-    latestNote.value = parsedMessage; // Extract MIDI note
+  const parsedMessage = parse(message);
+  latestNote.value = parsedMessage; // Extract MIDI note
 };
 
 const toggleListening = async () => {
@@ -43,6 +43,7 @@ onUnmounted(() => midiService.cleanup());
   padding: 1rem;
   background: #f0f0f0;
 }
+
 button {
   margin-top: 1rem;
   padding: 0.5rem 1rem;

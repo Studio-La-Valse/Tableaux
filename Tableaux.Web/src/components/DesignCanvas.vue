@@ -1,39 +1,20 @@
 <template>
-  <div
-    ref="containerRef"
-    class="canvas-container"
-    @mousedown="onMouseDown"
-    @mousemove="onMouseMove"
-    @mouseup="onMouseUp"
-    @mouseleave="onMouseUp"
-    @wheel="onWheel"
-    @touchstart="onTouchStart"
-    @touchmove="onTouchMove"
-    @touchend="onTouchEnd"
-    @touchcancel="onTouchEnd"
-  >
-    <canvas
-      ref="canvasRef"
-      :width="canvasSize.width"
-      :height="canvasSize.height"
-      class="canvas-bitmap"
-    ></canvas>
+  <div ref="containerRef" class="canvas-container" @mousedown="onMouseDown" @mousemove="onMouseMove"
+    @mouseup="onMouseUp" @mouseleave="onMouseUp" @wheel="onWheel" @touchstart="onTouchStart" @touchmove="onTouchMove"
+    @touchend="onTouchEnd" @touchcancel="onTouchEnd">
+    <canvas ref="canvasRef" :width="canvasSize.width" :height="canvasSize.height" class="canvas-bitmap"></canvas>
   </div>
 </template>
 
 <script setup lang="ts">
+import { BitmapPainter } from '@/models/bitmap-painters/bitmap-painter';
+import { CanvasRenderingContextPainter } from '@/models/bitmap-painters/canvas-rendering-context-painter';
+import type { DrawableElement } from '@/models/drawable-elements/drawable-element';
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 
-/**  
- * External elements must implement the Drawable interface.
- * Their draw() methods will be invoked in world-coordinates after the grid is drawn.
- */
-export interface Drawable {
-  draw: (ctx: CanvasRenderingContext2D) => void;
-}
 
 const props = defineProps<{
-  elements?: Drawable[];
+  elements: DrawableElement[];
 }>();
 
 // --- Element & Size Handling ---
@@ -52,7 +33,8 @@ const isDragging = ref(false);
 const startPosition = ref({ x: 0, y: 0 });
 
 // --- 2D Drawing Context ---
-let ctx: CanvasRenderingContext2D | null = null;
+let canvasPainter: BitmapPainter | null = null;
+let resizeObserver: ResizeObserver | null = null;
 
 // --- Update Canvas Size ---
 // This method updates the canvas pixel size from the container.
@@ -66,7 +48,7 @@ const updateCanvasSize = () => {
     };
     canvasRef.value.width = canvasSize.value.width;
     canvasRef.value.height = canvasSize.value.height;
-    ctx = canvasRef.value.getContext('2d');
+
     nextTick(() => {
       setTimeout(() => {
         draw();
@@ -75,58 +57,26 @@ const updateCanvasSize = () => {
   }
 };
 
-let resizeObserver: ResizeObserver | null = null;
 
 // --- Drawing Routine ---
-// draw() resets the canvas, applies the world transform, and then calls drawContent().
 const draw = () => {
-  if (!ctx) return;
-  ctx.save();
-  // Reset transform and clear the entire canvas.
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, canvasSize.value.width, canvasSize.value.height);
-  // Apply the current world transform.
-  ctx.setTransform(scale.value, 0, 0, scale.value, position.value.x, position.value.y);
-  // Draw the infinite grid and any externally provided elements.
-  drawContent(ctx);
-  ctx.restore();
+  if (canvasPainter == null) {
+    return;
+  }
+
+  canvasPainter
+    .Init(
+      canvasSize.value.width,
+      canvasSize.value.height,
+      position.value.x,
+      position.value.y,
+      scale.value
+    )
+    .DrawElements(props.elements)
+    .Finish()
+
 };
 
-// drawContent() renders the grid and then iterates over external drawable elements.
-const drawContent = (ctx: CanvasRenderingContext2D) => {
-  const gridSpacing = 50;
-  
-  // Compute visible world boundaries in world coordinates.
-  const worldMinX = (-position.value.x) / scale.value;
-  const worldMinY = (-position.value.y) / scale.value;
-  const worldMaxX = (canvasSize.value.width - position.value.x) / scale.value;
-  const worldMaxY = (canvasSize.value.height - position.value.y) / scale.value;
-  
-  // Draw vertical gridlines.
-  ctx.strokeStyle = '#ddd';
-  ctx.lineWidth = 1 / scale.value; // Keep line width consistent when zooming.
-  const startX = Math.floor(worldMinX / gridSpacing) * gridSpacing;
-  for (let x = startX; x < worldMaxX; x += gridSpacing) {
-    ctx.beginPath();
-    ctx.moveTo(x, worldMinY);
-    ctx.lineTo(x, worldMaxY);
-    ctx.stroke();
-  }
-  
-  // Draw horizontal gridlines.
-  const startY = Math.floor(worldMinY / gridSpacing) * gridSpacing;
-  for (let y = startY; y < worldMaxY; y += gridSpacing) {
-    ctx.beginPath();
-    ctx.moveTo(worldMinX, y);
-    ctx.lineTo(worldMaxX, y);
-    ctx.stroke();
-  }
-  
-  // --- Draw External Elements ---
-  if (props.elements) {
-    props.elements.forEach((element) => element.draw(ctx));
-  }
-};
 
 onMounted(() => {
   updateCanvasSize();
@@ -135,7 +85,8 @@ onMounted(() => {
     resizeObserver.observe(containerRef.value);
   }
   if (canvasRef.value) {
-    ctx = canvasRef.value.getContext('2d');
+    const ctx = canvasRef.value.getContext('2d') as CanvasRenderingContext2D;
+    canvasPainter = new CanvasRenderingContextPainter(ctx);
     draw();
   }
 });
@@ -187,10 +138,10 @@ const onWheel = (event: WheelEvent) => {
   const zoomIntensity = 0.1;
   const delta = event.deltaY < 0 ? zoomIntensity : -zoomIntensity;
   const newScale = scale.value * (1 + delta);
-  if (newScale > 5 || newScale < 0.2){
+  if (newScale > 5 || newScale < 0.2) {
     return;
   }
-  
+
   if (canvasRef.value) {
     const rect = canvasRef.value.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
@@ -242,6 +193,7 @@ const onTouchEnd = () => {
   overflow: hidden;
   position: relative;
 }
+
 .canvas-bitmap {
   display: block;
   width: 100%;
