@@ -1,2 +1,19 @@
 @import './base.css';
 
+.gutter {
+  background: #ccc;
+  cursor: default;
+  transition: background 0.2s ease;
+}
+
+.gutter:hover {
+  background: #aaa;
+}
+
+.gutter-horizontal:hover {
+  cursor: col-resize;
+}
+
+.gutter-vertical:hover {
+  cursor: row-resize;
+}
