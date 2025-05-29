@@ -1,55 +1,49 @@
+export class MidiListenerService {
+  private midiAccess: MIDIAccess | null = null;
+  private listeners: Set<(message: MIDIMessageEvent) => void> = new Set();
 
-
-function onMIDISuccess(midiAccess: MIDIAccess) {
-  console.log("MIDI ready!");
-
-  startLoggingMIDIInput(midiAccess)
-}
-
-function onMIDIFailure(msg: string) {
-  console.error(`Failed to get MIDI access - ${msg}`);
-}
-
-navigator.requestMIDIAccess().then(onMIDISuccess, onMIDIFailure);
-
-function listInputsAndOutputs() {
-
-    navigator.requestMIDIAccess().then(midiAccess => {
-            for (const entry of midiAccess.inputs) {
-        const input = entry[1];
-        console.log(
-            `Input port [type:'${input.type}']` +
-            ` id:'${input.id}'` +
-            ` manufacturer:'${input.manufacturer}'` +
-            ` name:'${input.name}'` +
-            ` version:'${input.version}'`,
-        );
-        }
-    
-        for (const entry of midiAccess.outputs) {
-        const output = entry[1];
-        console.log(
-            `Output port [type:'${output.type}'] id:'${output.id}' manufacturer:'${output.manufacturer}' name:'${output.name}' version:'${output.version}'`,
-        );
-        }
-    },
-    (message) => {
-        alert(message)
-    })
-
-    
-  }
-
-  function onMIDIMessage(event: MIDIMessageEvent) {
-    let message = parse(event);
-    if (message instanceof NoteOnMidiMissage || message instanceof NoteOffMidiMessage){
-
-    console.log(message);
+  async initMIDI(): Promise<void> {
+    try {
+      this.midiAccess = await navigator.requestMIDIAccess();
+    } catch (error) {
+      console.error("Failed to access MIDI:", error);
+      throw error;
     }
   }
-  
-  function startLoggingMIDIInput(midiAccess) {
-    midiAccess.inputs.forEach((entry) => {
-      entry.onmidimessage = onMIDIMessage;
-    });
+
+  startListening(callback: (message: MIDIMessageEvent) => void): void {
+    if (!this.midiAccess) {
+      console.warn("MIDI access not initialized.");
+      return;
+    }
+
+    this.listeners.add(callback);
+
+    this.midiAccess.inputs.forEach((input) =>
+      input.addEventListener("midimessage", callback)
+    );
   }
+
+  stopListening(): void {
+    if (!this.midiAccess) return;
+
+    this.listeners.forEach((callback) => {
+      this.midiAccess!.inputs.forEach((input) =>
+        input.removeEventListener("midimessage", callback)
+      );
+    });
+
+    this.listeners.clear();
+  }
+
+  cleanup(): void {
+    if (!this.midiAccess) return;
+
+    this.stopListening();
+
+    this.midiAccess.inputs.forEach((input) => input.close());
+    this.midiAccess.outputs.forEach((output) => output.close());
+
+    this.midiAccess = null;
+  }
+}
