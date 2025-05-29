@@ -1,56 +1,65 @@
 <script setup lang="ts">
-import { MidiMessage, NoteOnMidiMissage, parse } from '@/models/midi-message';
-import { ref, type Ref } from 'vue';
+import { MidiMessage, parse } from '@/models/midi-message';
+import { ref, watch, onUnmounted, type Ref } from 'vue';
 
 const messages: Ref<MidiMessage[]> = ref([]);
-const midiAccess: Ref<MidiAccess | null> = ref(null);
-const listening: Ref<bool> = ref(false);
+const midiAccess = ref<MIDIAccess | null>(null);
+const listening = ref(false);
+const buttonContent = ref("Start Listening");
 
-const onClick = () => {
+watch(listening, (nowListening) => {
+    buttonContent.value = nowListening ? "Stop listening" : "Start listening";
+});
 
-    if (listening.value){
+const cleanupMIDI = () => {
+    if (!midiAccess.value) return;
 
+    midiAccess.value.inputs.forEach((input) => {
+        input.removeEventListener("midimessage", onMIDIMessage);
+        input.close();
+    });
+
+    midiAccess.value.outputs.forEach((output) => output.close());
+    midiAccess.value = null;
+};
+
+const onClick = async () => {
+    if (listening.value) {
+        cleanupMIDI();
+        listening.value = false;
+    } else {
+        try {
+            midiAccess.value = await navigator.requestMIDIAccess();
+            midiAccess.value.inputs.forEach((input) =>
+                input.addEventListener("midimessage", onMIDIMessage)
+            );
+            listening.value = true;
+        } catch (error) {
+            alert(error);
+        }
     }
-    else{
-        navigator.requestMIDIAccess().then(
-            midiAccess => {
-                midiAccess.inputs.forEach((entry) => {
-                    entry.onmidimessage = onMIDIMessage;
-                });
+};
 
-                listening.value = true;
-            }, 
-            failureReason => {
-                alert(failureReason)
-            }
-        )
+const onMIDIMessage = (message: MIDIMessageEvent) => {
+    messages.value.push(parse(message));
+    if (messages.value.length > 8) messages.value.shift();
+};
 
-    }
-
-
-}
-
-function onMIDIMessage(message: MIDIMessageEvent){
-    const parsedMessage = parse(message)
-    messages.value.push(parsedMessage)
-
-    while (messages.value.length > 8){
-        messages.value.splice(0, 1)
-    }
-}
-
+// Ensure cleanup when component is unmounted
+onUnmounted(cleanupMIDI);
 </script>
+
 
 <template>
     <h1>Hello, world!</h1>
 
-    <button @click="onClick" type="button">Start listening</button>
+    <button @click="onClick" type="button">
+        {{ buttonContent }}
+    </button>
 
     <li v-for="message in messages">
         {{ message }}
     </li>
 </template>
 
-<style lang="css" scoped>
-
-</style>
+<style lang="css" scoped></style>
