@@ -3,6 +3,7 @@ import './assets/main.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+import { NoteOffMidiMessage, NoteOnMidiMissage, parse } from './services/midi-listener-service'
 
 const app = createApp(App)
 
@@ -14,6 +15,9 @@ let midi: MIDIAccess | null = null; // global MIDIAccess object
 function onMIDISuccess(midiAccess: MIDIAccess) {
   console.log("MIDI ready!");
   midi = midiAccess; // store in the global (in real usage, would probably keep in an object instance)
+ listInputsAndOutputs(midi)
+
+  startLoggingMIDIInput(midi)
 }
 
 function onMIDIFailure(msg) {
@@ -42,12 +46,12 @@ function listInputsAndOutputs(midiAccess) {
     }
   }
 
-  function onMIDIMessage(event) {
-    let str = `MIDI message received at timestamp ${event.timeStamp}[${event.data.length} bytes]: `;
-    for (const character of event.data) {
-      str += `0x${character.toString(16)} `;
+  function onMIDIMessage(event: MIDIMessageEvent) {
+    let message = parse(event);
+    if (message instanceof NoteOnMidiMissage || message instanceof NoteOffMidiMessage){
+
+    console.log(message);
     }
-    console.log(str);
   }
   
   function startLoggingMIDIInput(midiAccess) {
