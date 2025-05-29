@@ -2,22 +2,43 @@
   <div id="split-horizontal">
     <MidiControls class="controls" />
     <div id="split-vertical">
-      <Canvas class="canvas">
-        <Circle/>
-      </Canvas>
-      <Canvas class="canvas">
-        <rect height="100" width="100" x="50" y="50" fill="blue"></rect>
-      </Canvas>
+      <DesignCanvas class="canvas" :elements="drawableElements"/>
+
+      <GraphCanvas class="canvas">
+        <rect width="100" height="100" x="100" y="100" fill="red"/>
+      </GraphCanvas>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import MidiControls from "@/components/MidiController.vue";
-import Canvas from "@/components/Canvas.vue";
+import GraphCanvas from "@/components/GraphCanvas.vue";
+import DesignCanvas, { type Drawable } from "@/components/DesignCanvas.vue";
 import Split from "split.js";
-import { onMounted } from "vue";
-import Circle from "@/components/Circle.vue";
+import { onMounted, ref } from "vue";
+
+class Rectangle implements Drawable {
+  constructor(
+    public x: number,
+    public y: number,
+    public width: number,
+    public height: number,
+    public color: string = 'red'
+  ) {}
+
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
+  }
+}
+
+// Reactive list of drawable elements.
+const drawableElements = ref<Drawable[]>([
+  new Rectangle(50, 50, 100, 100, 'blue'),
+  new Rectangle(200, 150, 150, 80, 'green'),
+]);
+
 
 onMounted(() => {
   // Split MidiControls and canvas-container horizontally
