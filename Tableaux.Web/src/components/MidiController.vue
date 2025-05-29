@@ -42,7 +42,6 @@ onUnmounted(() => midiService.cleanup());
 .controller {
   padding: 1rem;
   background: #f0f0f0;
-  border-radius: 8px;
 }
 button {
   margin-top: 1rem;

@@ -65,7 +65,7 @@ const startPosition = ref({ x: 0, y: 0 });
 
 // Mouse interactions
 const onMouseDown = (event) => {
-  if (event.button === 1) {
+  if (event.button === 0) {
     isDragging.value = true;
     startPosition.value = { x: event.clientX, y: event.clientY };
     event.preventDefault();
