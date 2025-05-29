@@ -3,19 +3,30 @@ import { MidiMessage, NoteOnMidiMissage, parse } from '@/models/midi-message';
 import { ref, type Ref } from 'vue';
 
 const messages: Ref<MidiMessage[]> = ref([]);
+const midiAccess: Ref<MidiAccess | null> = ref(null);
+const listening: Ref<bool> = ref(false);
 
 const onClick = () => {
 
-    navigator.requestMIDIAccess().then(
-        midiAccess => {
-            midiAccess.inputs.forEach((entry) => {
-                entry.onmidimessage = onMIDIMessage;
-            });
-        }, 
-        failureReason => {
-            alert(failureReason)
-        }
-    )
+    if (listening.value){
+
+    }
+    else{
+        navigator.requestMIDIAccess().then(
+            midiAccess => {
+                midiAccess.inputs.forEach((entry) => {
+                    entry.onmidimessage = onMIDIMessage;
+                });
+
+                listening.value = true;
+            }, 
+            failureReason => {
+                alert(failureReason)
+            }
+        )
+
+    }
+
 
 }
 
