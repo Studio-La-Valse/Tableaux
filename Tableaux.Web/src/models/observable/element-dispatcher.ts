@@ -27,7 +27,7 @@ export class ElementDispatcher implements Observable<DrawableElement> {
         this.doneObservables = new Set();
     }
 
-    subscribe(observer: Observer<DrawableElement>): Disposable {
+    public subscribe(observer: Observer<DrawableElement>): Disposable {
         this.observers.add(observer);
         return new Unsubscriber(this.observers, observer);
     }

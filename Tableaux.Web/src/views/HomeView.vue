@@ -4,21 +4,16 @@
     <div id="split-vertical">
       <DesignCanvasPainter class="canvas"/>
 
-      <GraphCanvas class="canvas">
-        <RedSquare/>
-        <RedSquare/>
-        <RedSquare/>
-      </GraphCanvas>
+      <GraphCanvas class="canvas"/>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import MidiControls from "@/components/MidiController.vue";
-import GraphCanvas from "@/components/GraphCanvas.vue";
+import GraphCanvas from "@/components/graph/GraphCanvas.vue";
 import Split from "split.js";
 import { onMounted } from "vue";
-import RedSquare from "@/components/RedSquare.vue";
 import DesignCanvasPainter from "@/components/DesignCanvasPainter.vue";
 
 onMounted(() => {
@@ -70,5 +65,4 @@ onMounted(() => {
   justify-content: center;
   background: #7193b5;
 }
-
 </style>

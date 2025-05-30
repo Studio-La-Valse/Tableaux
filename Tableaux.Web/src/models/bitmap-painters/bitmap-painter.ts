@@ -2,7 +2,7 @@ import type { DrawableElement } from "../drawable-elements/drawable-element";
 
 export abstract class BitmapPainter{
     public DrawElements(elements: Iterable<DrawableElement>): BitmapPainter{
-        for (let element of elements){
+        for (const element of elements){
             this.DrawElement(element)
         }
 
