@@ -52,7 +52,7 @@ const updateCanvasSize = () => {
     nextTick(() => {
       setTimeout(() => {
         draw();
-      }, 50);
+      }, 3);
     });
   }
 };
@@ -79,6 +79,15 @@ const draw = () => {
 
 
 onMounted(() => {
+  // --- Redraw when external elements change ---
+  watch(
+    () => props.elements,
+    () => {
+      draw();
+    },
+    { deep: true, immediate: true }
+  );
+
   updateCanvasSize();
   if (containerRef.value) {
     resizeObserver = new ResizeObserver(() => updateCanvasSize());
@@ -98,14 +107,7 @@ onUnmounted(() => {
   }
 });
 
-// --- Redraw when external elements change ---
-watch(
-  () => props.elements,
-  () => {
-    draw();
-  },
-  { deep: true }
-);
+
 
 // --- Mouse & Touch Interaction Handlers ---
 // Panning via left-click dragging.

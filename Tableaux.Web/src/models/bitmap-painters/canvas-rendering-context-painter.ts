@@ -15,38 +15,9 @@ export class CanvasRenderingContextPainter extends BitmapPainter{
         // Reset transform and clear the entire canvas.
         this.canvas.setTransform(1, 0, 0, 1, 0, 0);
         this.canvas.clearRect(0, 0, width, height);
-        
+
         // Apply the current world transform.
         this.canvas.setTransform(zoom, 0, 0, zoom, translateX, translateY);
-
-        const gridSpacing = 50;
-
-        // Compute visible world boundaries in world coordinates.
-        const worldMinX = (-translateX) / zoom;
-        const worldMinY = (-translateY) / zoom;
-        const worldMaxX = (width - translateX) / zoom;
-        const worldMaxY = (height - translateY) / zoom;
-
-        // Draw vertical gridlines.
-        this.canvas.strokeStyle = '#ddd';
-        this.canvas.lineWidth = 1 / zoom; // Keep line width consistent when zooming.
-        const startX = Math.floor(worldMinX / gridSpacing) * gridSpacing;
-        for (let x = startX; x < worldMaxX; x += gridSpacing) {
-            this.canvas.beginPath();
-            this.canvas.moveTo(x, worldMinY);
-            this.canvas.lineTo(x, worldMaxY);
-            this.canvas.stroke();
-        }
-
-        // Draw horizontal gridlines.
-        const startY = Math.floor(worldMinY / gridSpacing) * gridSpacing;
-        for (let y = startY; y < worldMaxY; y += gridSpacing) {
-            this.canvas.beginPath();
-            this.canvas.moveTo(worldMinX, y);
-            this.canvas.lineTo(worldMaxX, y);
-            this.canvas.stroke();
-        }
-
         return this;
     }
 
