@@ -6,20 +6,20 @@ import type { Unsubscriber } from './subscription'
 export class GraphNodeOutput {
   constructor(
     public graphNode: GraphNode,
-    public observable: Emitter,
+    public emitter: Emitter,
     public outputIndex: number,
   ) {}
 
   public subscribe(graphNodeInput: GraphNodeInput): Unsubscriber {
-    const unsubscriber = this.observable.subscribe(graphNodeInput.observer)
+    const unsubscriber = this.emitter.subscribe(graphNodeInput.observer)
     return unsubscriber;
   }
 
   public trySubscribe(graphId: string): void {
-    this.observable.trySubscribe(graphId)
+    this.emitter.trySubscribe(graphId)
   }
 
   public arm(): void {
-    this.observable.arm()
+    this.emitter.arm()
   }
 }

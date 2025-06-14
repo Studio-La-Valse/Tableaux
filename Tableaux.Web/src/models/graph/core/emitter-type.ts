@@ -17,7 +17,6 @@ export class EmitterType<T> extends Emitter {
     this.payload.forEach((value) => {
       observer.onNext(value)
     })
-    observer.onCompleted()
     return subscription
   }
 

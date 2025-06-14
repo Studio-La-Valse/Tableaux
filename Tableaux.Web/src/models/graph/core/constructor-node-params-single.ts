@@ -45,7 +45,5 @@ export abstract class ConstructorNodeParamsSingle<TIn, TOut> extends Constructor
 
     this._inputs.pop()
     this.observers.pop()
-
-    this.complete()
   }
 }
