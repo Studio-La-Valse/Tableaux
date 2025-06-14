@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import Split from "split.js";
 import { onMounted } from "vue";
-import GraphCanvas from "@/components/graph/GraphCanvasV2.vue";
+import GraphCanvas from "@/components/graph/GraphCanvas.vue";
 import DesignCanvasPainter from "@/components/design/DesignCanvasPainter.vue";
 import GraphRenderer from "@/components/graph/GraphRenderer.vue";
 

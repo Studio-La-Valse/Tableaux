@@ -1,28 +1,26 @@
 import { GraphNode } from './graph-node'
 import { GraphNodeInput } from './graph-node-input'
+import { GraphNodeInputType } from './graph-node-input-type'
 import type { GraphNodeOutput } from './graph-node-output'
-import { ObserverType } from './observer-type'
 
 export abstract class LeafGraphNode<TIn> extends GraphNode {
-  protected observer: ObserverType<TIn>
-  protected input: GraphNodeInput
+  protected input: GraphNodeInputType<TIn>
 
   constructor() {
     super()
 
-    this.observer = new ObserverType<TIn>(this)
-    this.input = new GraphNodeInput(this, this.observer, 0)
+    this.input = new GraphNodeInputType<TIn>(this, 0)
   }
 
   public complete(): void {
     try {
       for (const input of this.inputs()) {
-        if (input.observer.armed) {
+        if (input.armed) {
           return
         }
       }
 
-      const result = this.observer.payload;
+      const result = this.input.payload;
       this.onComplete(result)
     } catch (err) {
       console.error(err)

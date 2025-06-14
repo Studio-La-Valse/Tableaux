@@ -5,8 +5,8 @@ export class Merge extends ConstructorNodeParamsSingle<object, object> {
 
   protected getValue(): object[] {
     const res: object[] = []
-    this.observers.forEach((observer) => {
-      observer.payload.forEach((value) => {
+    this._inputs.forEach((input) => {
+      input.payload.forEach((value) => {
         res.push(value)
       })
     })

@@ -34,10 +34,10 @@ const logger = addNode(["Generic", "Logger"], { x: 300, y: 100 })
 merge.add();
 merge.add();
 
-merge.inputAt(0).subscribeTo(text.outputAt(0))
-merge.inputAt(1).subscribeTo(number1.outputAt(0))
-merge.inputAt(2).subscribeTo(number2.outputAt(0))
-logger.inputAt(0).subscribeTo(merge.outputAt(0));
+text.outputAt(0).connectTo(merge.inputAt(0));
+number1.outputAt(0).connectTo(merge.inputAt(1))
+number2.outputAt(0).connectTo(merge.inputAt(2))
+merge.outputAt(0).connectTo(logger.inputAt(0));
 
 onMounted(() => {
     nodes().map(n => n.graphNode).filter(n => n.numberOfInputs == 0).forEach(n => n.complete())
