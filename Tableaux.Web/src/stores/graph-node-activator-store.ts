@@ -37,21 +37,42 @@ export const useGraphNodeActivatorCollection = defineStore('graph-node-activator
     return tree.findActivator(path[path.length - 1])
   }
 
-  return { getFromPath, register }
+  function getAll(): string[][] {
+    function traverse(tree: ActivatorGroup, currentPath: string[]): string[][] {
+      let paths: string[][] = []
+
+      // Add activators at the current level
+      for (const activator of tree.activators) {
+        paths.push([...currentPath]) // Use the current path as-is
+      }
+
+      // Recursively traverse children
+      for (const child of tree.children) {
+        paths.push(...traverse(child, [...currentPath, child.name]))
+      }
+
+      return paths
+    }
+
+    return traverse(activatorTree, [])
+  }
+
+
+  return { getFromPath, getAll, register }
 })
 
 class Activator {
   constructor(
     public name: string,
     public activate: () => GraphNode,
-  ) {}
+  ) { }
 }
 
 class ActivatorGroup {
   public children: ActivatorGroup[] = []
   public activators: Activator[] = []
 
-  constructor(public name: string) {}
+  constructor(public name: string) { }
 
   findChild(name: string): ActivatorGroup | undefined {
     return this.children.find((e) => e.name === name)
