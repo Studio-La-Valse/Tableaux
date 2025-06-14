@@ -1,7 +1,5 @@
 @import './base.css';
 
-@import 'litegraph.js/css/litegraph.css';
-
 .gutter {
   background: #dac7c7;
   cursor: default;

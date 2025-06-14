@@ -17,4 +17,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  esbuild: {
+    target: 'es2022', // Ensures ES2022 features like '.at()' are supported
+  },
 })
