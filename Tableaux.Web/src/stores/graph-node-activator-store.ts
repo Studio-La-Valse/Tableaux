@@ -7,7 +7,7 @@ export const useGraphNodeActivatorCollection = defineStore('graph-node-activator
   function register(path: string[], activate: () => GraphNode) {
     let tree = activatorTree
 
-    path.forEach((segment) => {
+    path.slice(0, -1).forEach((segment) => {
       let branch = tree.findChild(segment)
 
       if (!branch) {
@@ -26,7 +26,7 @@ export const useGraphNodeActivatorCollection = defineStore('graph-node-activator
   function getFromPath(path: string[]): Activator | undefined {
     let tree = activatorTree
 
-    for (const segment of path) {
+    for (const segment of path.slice(0, -1)) {
       const branch = tree.findChild(segment)
       if (!branch) {
         return undefined // Path not found
@@ -38,25 +38,24 @@ export const useGraphNodeActivatorCollection = defineStore('graph-node-activator
   }
 
   function getAll(): string[][] {
-    function traverse(tree: ActivatorGroup, currentPath: string[]): string[][] {
-      let paths: string[][] = []
+    const paths: string[][] = []
 
+    function traverse(tree: ActivatorGroup, currentPath: string[]): void {
       // Add activators at the current level
       for (const activator of tree.activators) {
-        paths.push([...currentPath]) // Use the current path as-is
+        paths.push([...currentPath, activator.name])
       }
 
       // Recursively traverse children
       for (const child of tree.children) {
-        paths.push(...traverse(child, [...currentPath, child.name]))
+        const childPath = [...currentPath, child.name]
+        traverse(child, childPath)
       }
-
-      return paths
     }
 
-    return traverse(activatorTree, [])
+    traverse(activatorTree, [])
+    return paths
   }
-
 
   return { getFromPath, getAll, register }
 })
@@ -65,14 +64,14 @@ class Activator {
   constructor(
     public name: string,
     public activate: () => GraphNode,
-  ) { }
+  ) {}
 }
 
 class ActivatorGroup {
   public children: ActivatorGroup[] = []
   public activators: Activator[] = []
 
-  constructor(public name: string) { }
+  constructor(public name: string) {}
 
   findChild(name: string): ActivatorGroup | undefined {
     return this.children.find((e) => e.name === name)

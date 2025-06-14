@@ -1,5 +1,5 @@
 <template>
-  <PanelRenderer :emitters="computedNodes.map(e => e.graphNode)" />
+  <PanelRenderer :emitters="computedNodes" />
 </template>
 
 
@@ -15,14 +15,16 @@ import PanelRenderer from './PanelRenderer.vue';
 
 
 const { clear, addNode, nodes } = useGraph();
-const { register } = useGraphNodeActivatorCollection();
+const { register, getAll } = useGraphNodeActivatorCollection();
 
-const computedNodes = computed(nodes);
+const computedNodes = computed(() => nodes().map(e => e.graphNode));
 
 register(["Emitters", "Text"], () => new TextEmitter())
 register(['Emitters', 'Number'], () => new NumberEmitter())
 register(["Generic", "Merge"], () => new Merge())
 register(["Generic", "Logger"], () => new Logger())
+
+console.log(getAll())
 
 clear();
 
