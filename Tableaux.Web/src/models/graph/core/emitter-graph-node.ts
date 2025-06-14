@@ -17,14 +17,11 @@ export abstract class EmitterGraphNode<T> extends ConstructorNode<T> {
     super.arm()
   }
 
-  public inputs(): GraphNodeInput[] {
+  public get inputs(): GraphNodeInput[] {
     return []
   }
 
   public inputAt(): GraphNodeInput {
     throw new Error()
   }
-
-  public numberOfInputs: number = 0
-  public numberOfOutputs: number = 1
 }

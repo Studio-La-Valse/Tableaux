@@ -1,33 +1,33 @@
-import type { ObserverType } from "./observer-type";
+import type { GraphNodeInput } from "./graph-node-input"
 
 export interface Unsubscriber {
   unsubscribe(): void
 }
 
-export class Subscription<T> implements Unsubscriber{
-  constructor(private observers: Set<ObserverType<T>>, private observer: ObserverType<T>){
+export class Subscription implements Unsubscriber{
+  constructor(private inputs: Set<GraphNodeInput>, private observer: GraphNodeInput){
 
   }
 
   public unsubscribe(): void {
     this.observer.onArm();
-    this.observers.delete(this.observer);
+    this.inputs.delete(this.observer);
   }
 
-  public static subscribeOrThrow<T>(observers: Set<ObserverType<T>>, observer: ObserverType<T>): Unsubscriber{
-    if (!observers.add(observer)){
+  public static subscribeOrThrow(alreadyConnectedInputs: Set<GraphNodeInput>, graphNodeOutput: GraphNodeInput): Unsubscriber{
+    if (!alreadyConnectedInputs.add(graphNodeOutput)){
       throw new Error("Observer already subscribed.");
     }
 
     try{
-      observer.onTrySubscribeSelf();
+      graphNodeOutput.onTrySubscribeSelf();
     }
     catch (err){
-      observers.delete(observer);
+      alreadyConnectedInputs.delete(graphNodeOutput);
       throw err;
     }
 
-    const subscription = new Subscription<T>(observers, observer);
+    const subscription = new Subscription(alreadyConnectedInputs, graphNodeOutput);
     return subscription;
   }
 }

@@ -1,15 +1,13 @@
 import { ConstructorNode } from './constructor-node'
 import { GraphNodeInput } from './graph-node-input'
-import { ObserverType } from './observer-type'
+import { GraphNodeInputType } from './graph-node-input-type'
 
 export abstract class ConstructorNodeParamsSingle<TIn, TOut> extends ConstructorNode<TOut> {
-  protected observers: ObserverType<TIn>[]
-  protected _inputs: GraphNodeInput[]
+  protected _inputs: GraphNodeInputType<TIn>[]
 
   constructor() {
     super()
 
-    this.observers = []
     this._inputs = []
 
     this.add()
@@ -17,22 +15,14 @@ export abstract class ConstructorNodeParamsSingle<TIn, TOut> extends Constructor
 
   protected abstract getValue(): TOut[]
 
-  public inputs(): GraphNodeInput[] {
+  public get inputs(): GraphNodeInput[] {
     return [...this._inputs]
   }
-
-  public get numberOfInputs(): number {
-    return this._inputs.length
-  }
-  public numberOfOutputs: number = 1
 
   public add(): void {
     this.arm()
 
-    const observer = new ObserverType<TIn>(this)
-    const input = new GraphNodeInput(this, observer, 0)
-
-    this.observers.push(observer)
+    const input = new GraphNodeInputType<TIn>(this, 0)
     this._inputs.push(input)
   }
 
@@ -44,8 +34,5 @@ export abstract class ConstructorNodeParamsSingle<TIn, TOut> extends Constructor
     this.arm()
 
     this._inputs.pop()
-    this.observers.pop()
-
-    this.complete()
   }
 }

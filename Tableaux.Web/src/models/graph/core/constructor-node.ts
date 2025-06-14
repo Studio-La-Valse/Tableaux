@@ -1,19 +1,19 @@
-import { EmitterType } from './emitter-type'
 import { GraphNode } from './graph-node'
 import { GraphNodeOutput } from './graph-node-output'
+import { GraphNodeOutputType } from './graph-node-output-type'
 
 export abstract class ConstructorNode<T> extends GraphNode {
+  private output: GraphNodeOutputType<T>
   private _outputs: GraphNodeOutput[]
-  private _emitter: EmitterType<T>
 
   constructor() {
     super()
 
-    this._emitter = new EmitterType<T>()
-    this._outputs = [new GraphNodeOutput(this, this._emitter, 0)]
+    this.output = new GraphNodeOutputType<T>(this, 0)
+    this._outputs = [this.output]
   }
 
-  public override outputs(): GraphNodeOutput[] {
+  public override get outputs(): GraphNodeOutput[] {
     return this._outputs
   }
 
@@ -23,22 +23,22 @@ export abstract class ConstructorNode<T> extends GraphNode {
 
   public override complete(): void {
     try {
-      for (const input of this.inputs()) {
-        if (input.observer.armed) {
+      for (const input of this.inputs) {
+        if (input.armed) {
           return
         }
       }
 
-      this.outputs().forEach((e) => {
+      this.outputs.forEach((e) => {
         e.arm()
       })
 
       const result = this.getValue()
       result.forEach((r) => {
-        this._emitter.next(r)
+        this.output.next(r)
       })
 
-      this._emitter.complete()
+      this.output.complete()
     } catch (err) {
       console.error(err)
     } finally {

@@ -33,7 +33,9 @@ export const useGraph = defineStore('graph', () => {
     }
 
     const graphNode = activator.activate()
+    graphNode.onInitialize();
     graphNodes.value.push({ graphNode, position })
+
     return graphNode
   }
 
