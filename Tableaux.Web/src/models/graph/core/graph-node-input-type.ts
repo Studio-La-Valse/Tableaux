@@ -1,7 +1,6 @@
 import type { GraphNode } from './graph-node'
 import { GraphNodeInput } from './graph-node-input'
 import type { GraphNodeOutputType } from './graph-node-output-type'
-import { Subscription } from './subscription'
 
 export class GraphNodeInputType<T> extends GraphNodeInput {
   public payload: T[] = []
@@ -13,9 +12,7 @@ export class GraphNodeInputType<T> extends GraphNodeInput {
   public connectTo(graphNodeOutput: GraphNodeOutputType<T>): void {
     this.closeConnection()
 
-    this.subscription = Subscription.subscribeOrThrow(graphNodeOutput.targetInputs, this)
-
-    graphNodeOutput.onSubscribe(this)
+    this.subscription = graphNodeOutput.onSubscribe(this)
   }
 
   public override onArm(): void {
