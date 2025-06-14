@@ -15,7 +15,7 @@ export abstract class GraphNodeInput {
     public inputIndex: number,
   ) {}
 
-  public abstract subscribeTo(graphNodeOutput: GraphNodeOutput): void;
+  public abstract connectTo(graphNodeOutput: GraphNodeOutput): void
 
   public closeConnection() {
     this.subscription?.unsubscribe()
@@ -30,11 +30,10 @@ export abstract class GraphNodeInput {
     this.graphNode.trySubscribeParent(componentId)
   }
 
-  public abstract onArm(): void;
+  public abstract onArm(): void
 
   public onCompleted(): void {
     this._armed = false
     this.graphNode.complete()
   }
 }
-

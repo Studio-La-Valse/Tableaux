@@ -1,5 +1,6 @@
-import type { GraphNodeInputType } from "./graph-node-input-type"
-import { GraphNodeOutput } from "./graph-node-output"
+import type { GraphNodeInputType } from './graph-node-input-type'
+import { GraphNodeOutput } from './graph-node-output'
+import { Subscription, type Unsubscriber } from './subscription'
 
 export class GraphNodeOutputType<T> extends GraphNodeOutput {
   private payload: T[] = []
@@ -20,11 +21,15 @@ export class GraphNodeOutputType<T> extends GraphNodeOutput {
     })
   }
 
-  public onSubscribe(graphNodeInput: GraphNodeInputType<T>): void{
-    graphNodeInput.onArm();
-    
+  public onSubscribe(graphNodeInput: GraphNodeInputType<T>): Unsubscriber {
+    const subscription = Subscription.subscribeOrThrow(this.targetInputs, graphNodeInput)
+
+    graphNodeInput.onArm()
+
     this.payload.forEach((value) => {
       graphNodeInput.onNext(value)
     })
+
+    return subscription
   }
 }

@@ -15,14 +15,9 @@ export abstract class ConstructorNodeParamsSingle<TIn, TOut> extends Constructor
 
   protected abstract getValue(): TOut[]
 
-  public inputs(): GraphNodeInput[] {
+  public get inputs(): GraphNodeInput[] {
     return [...this._inputs]
   }
-
-  public get numberOfInputs(): number {
-    return this._inputs.length
-  }
-  public numberOfOutputs: number = 1
 
   public add(): void {
     this.arm()

@@ -15,8 +15,9 @@ import PanelRenderer from './PanelRenderer.vue';
 
 
 const { clear, addNode, nodes } = useGraph();
-const computedNodes = computed(nodes);
 const { register } = useGraphNodeActivatorCollection();
+
+const computedNodes = computed(nodes);
 
 register(["Emitters", "Text"], () => new TextEmitter())
 register(['Emitters', 'Number'], () => new NumberEmitter())

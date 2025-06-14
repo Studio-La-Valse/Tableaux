@@ -9,8 +9,8 @@ export abstract class GraphNodeOutput {
     public outputIndex: number,
   ) {}
 
-  public connectTo(graphNodeInput: GraphNodeInput){
-    graphNodeInput.subscribeTo(this);
+  public connectTo(graphNodeInput: GraphNodeInput) {
+    graphNodeInput.connectTo(this)
   }
 
   public trySubscribe(graphNodeId: string): void {
@@ -27,4 +27,3 @@ export abstract class GraphNodeOutput {
     })
   }
 }
-

@@ -10,12 +10,12 @@ export class GraphNodeInputType<T> extends GraphNodeInput {
     super(graphNode, inputIndex)
   }
 
-  public subscribeTo(graphNodeOutput: GraphNodeOutputType<T>): void {
+  public connectTo(graphNodeOutput: GraphNodeOutputType<T>): void {
     this.closeConnection()
 
     this.subscription = Subscription.subscribeOrThrow(graphNodeOutput.targetInputs, this)
 
-    graphNodeOutput.onSubscribe(this);
+    graphNodeOutput.onSubscribe(this)
   }
 
   public override onArm(): void {
