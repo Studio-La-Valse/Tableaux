@@ -1,9 +1,13 @@
+import { ref, type Ref } from 'vue'
 import { GraphNodeInput } from './graph-node-input'
 import { GraphNodeOutput } from './graph-node-output'
 
 export abstract class GraphNode {
   public abstract path: string[]
   public id: string
+
+  public x: Ref<number> = ref(0)
+  public y: Ref<number> = ref(0)
 
   constructor() {
     this.id = crypto.randomUUID()

@@ -1,5 +1,7 @@
 <template>
-  <PanelRenderer :emitters="computedNodes" />
+  <div v-for="graphNode in computedNodes" :key="graphNode.graphNode.id">
+    <GraphNodeRenderer :graphNode="graphNode.graphNode" :initialPos="graphNode.position" />
+  </div>
 </template>
 
 
@@ -11,13 +13,13 @@ import { Merge } from '@/models/graph/graph-nodes/generic/merge';
 import { useGraphNodeActivatorCollection } from '@/stores/graph-node-activator-store';
 import { useGraph } from '@/stores/graph-store';
 import { computed, onMounted } from 'vue';
-import PanelRenderer from './PanelRenderer.vue';
+import GraphNodeRenderer from './GraphNodeRenderer.vue';
 
 
 const { clear, addNode, nodes } = useGraph();
 const { register, getAll } = useGraphNodeActivatorCollection();
 
-const computedNodes = computed(() => nodes().map(e => e.graphNode));
+const computedNodes = computed(nodes);
 
 register(["Emitters", "Text"], () => new TextEmitter())
 register(['Emitters', 'Number'], () => new NumberEmitter())
@@ -28,11 +30,11 @@ console.log(getAll())
 
 clear();
 
-const text = addNode(["Emitters", "Text"], { x: 100, y: 100 })
-const number1 = addNode(['Emitters', 'Number'], { x: 200, y: 50 })
-const number2 = addNode(['Emitters', 'Number'], { x: 200, y: 150 })
-const merge = addNode(["Generic", "Merge"], { x: 300, y: 100 }) as Merge
-const logger = addNode(["Generic", "Logger"], { x: 300, y: 100 })
+const text = addNode(["Emitters", "Text"], { x: 0, y: 0 })
+const number1 = addNode(['Emitters', 'Number'], { x: 0, y: 100 })
+const number2 = addNode(['Emitters', 'Number'], { x: 0, y: 200 })
+const merge = addNode(["Generic", "Merge"], { x: 200, y: 100 }) as Merge
+const logger = addNode(["Generic", "Logger"], { x: 400, y: 100 })
 
 merge.add();
 merge.add();
@@ -43,6 +45,9 @@ number2.outputAt(0).connectTo(merge.inputAt(2))
 merge.outputAt(0).connectTo(logger.inputAt(0));
 
 onMounted(() => {
-    nodes().map(n => n.graphNode).filter(n => n.numberOfInputs == 0).forEach(n => n.complete())
+  nodes()
+  .map(n => n.graphNode)
+  .filter(n => n.numberOfInputs == 0)
+  .forEach(n => n.complete())
 })
 </script>

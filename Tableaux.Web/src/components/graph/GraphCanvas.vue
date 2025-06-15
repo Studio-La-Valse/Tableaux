@@ -1,8 +1,22 @@
 <template>
-  <div ref="containerRef" class="canvas-container" @mousedown="onMouseDown" @mousemove="onMouseMove"
-    @mouseup="onMouseUp" @mouseleave="onMouseUp" @wheel="onWheel" @touchstart="onTouchStart" @touchmove="onTouchMove"
-    @touchend="onTouchEnd" @touchcancel="onTouchEnd">
-    <div class="canvas-content" :style="{ transform: `translate(${position.x}px, ${position.y}px) scale(${scale})` }">
+  <div
+    ref="containerRef"
+    class="canvas-container"
+    @mousedown="onMouseDown"
+    @mousemove="onMouseMove"
+    @mouseup="onMouseUp"
+    @mouseleave="onMouseUp"
+    @wheel="onWheel"
+    @touchstart="onTouchStart"
+    @touchmove="onTouchMove"
+    @touchend="onTouchEnd"
+    @touchcancel="onTouchEnd"
+  >
+    <div
+      ref="contentRef"
+      class="canvas-content"
+      :style="{ transform: `translate(${position.x}px, ${position.y}px) scale(${scale})` }"
+    >
       <slot></slot>
     </div>
   </div>
@@ -11,12 +25,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
 
-// Element references
+// References for container and inner content.
 const containerRef = ref<HTMLDivElement | null>(null);
-// Using client dimensions from container for calculations.
-const canvasSize = ref({ width: 300, height: 300 });
+const contentRef = ref<HTMLDivElement | null>(null);
 
-// Update the canvas dimensions based on container size
+// We track the container’s size (for zoom calculations)
+const canvasSize = ref({ width: 300, height: 300 });
 const updateCanvasSize = () => {
   if (containerRef.value) {
     canvasSize.value = {
@@ -25,35 +39,32 @@ const updateCanvasSize = () => {
     };
   }
 };
-
 let resizeObserver: ResizeObserver | null = null;
-
 onMounted(() => {
-  // Ensure the parent layout (Split.js) has been applied.
   nextTick(() => {
     updateCanvasSize();
     if (containerRef.value) {
-      // Observe size changes in the container element.
       resizeObserver = new ResizeObserver(() => updateCanvasSize());
       resizeObserver.observe(containerRef.value);
     }
   });
 });
-
 onUnmounted(() => {
   if (resizeObserver) {
     resizeObserver.disconnect();
   }
 });
 
-// Interaction state
+// Pan/zoom state for the canvas.
 const position = ref({ x: 0, y: 0 });
 const scale = ref(1);
+
+// Canvas panning variables.
 const isDragging = ref(false);
 const startPosition = ref({ x: 0, y: 0 });
 
-// Mouse interactions
 const onMouseDown = (event: MouseEvent) => {
+  // If the panel stops propagation, these won't fire.
   if (event.button === 0) {
     isDragging.value = true;
     startPosition.value = { x: event.clientX, y: event.clientY };
@@ -75,7 +86,6 @@ const onMouseUp = () => {
   isDragging.value = false;
 };
 
-// Zoom with mouse wheel
 const onWheel = (event: WheelEvent) => {
   event.preventDefault();
   if (!containerRef.value) return;
@@ -85,6 +95,7 @@ const onWheel = (event: WheelEvent) => {
   const newScale = scale.value * (1 + delta);
   if (newScale > 5 || newScale < 0.2) return;
 
+  // Convert the mouse position into “logical” canvas coordinates.
   const containerRect = containerRef.value.getBoundingClientRect();
   const localMouse = {
     x:
@@ -95,12 +106,12 @@ const onWheel = (event: WheelEvent) => {
       containerRect.height,
   };
 
+  // Adjust the canvas position so that the zoom is centered around the mouse.
   position.value.x -= delta * (localMouse.x - position.value.x);
   position.value.y -= delta * (localMouse.y - position.value.y);
   scale.value = newScale;
 };
 
-// Touch events mimic mouse dragging.
 const onTouchStart = (event: TouchEvent) => {
   if (event.touches.length === 1) {
     isDragging.value = true;
@@ -132,7 +143,6 @@ const onTouchEnd = () => {
 </script>
 
 <style scoped lang="css">
-/* Ensure our component fills the area provided by Split.js */
 .canvas-container {
   width: 100%;
   height: 100%;
@@ -145,6 +155,5 @@ const onTouchEnd = () => {
   width: 100%;
   height: 100%;
   transform-origin: top left;
-  /* Optionally, add any other styles for your inner content */
 }
 </style>

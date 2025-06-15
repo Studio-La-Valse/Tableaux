@@ -1,8 +1,5 @@
 <template>
-  <div class="emitter-graph">
-    <component v-for="(graphNode, index) in emitters" :key="index" :is="getGraphNodePanel(graphNode)"
-      :graphNode="graphNode" />
-  </div>
+   <component :is="getGraphNodePanel(graphNode)" :graphNode="graphNode" />
 </template>
 
 <script setup lang="ts">
@@ -14,23 +11,23 @@ import type { GraphNode } from '@/models/graph/core/graph-node';
 import LoggerPanel from './Nodes/LoggerPanel.vue';
 
 defineProps({
-  emitters: {
-    type: Array as () => GraphNode[],
+  graphNode: {
+    type: Object as () => GraphNode,
     required: true,
   }
 })
 
 const registry: Record<string, Component> = {
-      NumberEmitter: NumberEmitterPanel,
-      TextEmitter: TextEmitterPanel,
-      Logger: LoggerPanel
-      // Other emitter types can be added here.
-    };
+  NumberEmitter: NumberEmitterPanel,
+  TextEmitter: TextEmitterPanel,
+  Logger: LoggerPanel
+  // Other emitter types can be added here.
+};
 
 const getGraphNodePanel = (emitter: GraphNode) => {
-      // constructor.name may fail when minimized.. We'll see. :) 
-      const type = emitter.constructor.name;
-      return registry[type] || GraphNodePanel;
-    }
+  // constructor.name may fail when minimized.. We'll see. :)
+  const type = emitter.constructor.name;
+  return registry[type] || GraphNodePanel;
+}
 
 </script>
