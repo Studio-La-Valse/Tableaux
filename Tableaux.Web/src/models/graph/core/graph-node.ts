@@ -5,6 +5,11 @@ export abstract class GraphNode {
   public abstract path: string[]
   public id: string
 
+  public width: number = 150
+  public heigth: number = 50
+  public x: number = 0
+  public y: number = 0
+
   constructor() {
     this.id = crypto.randomUUID()
   }
@@ -29,7 +34,7 @@ export abstract class GraphNode {
   }
 
   public arm(): void {
-    this.outputs.forEach(e => e.arm)
+    this.outputs.forEach(e => e.arm())
   }
 
   public abstract complete(): void

@@ -1,3 +1,4 @@
+import type { GraphEdge } from './graph-edge'
 import type { GraphNode } from './graph-node'
 import type { GraphNodeOutput } from './graph-node-output'
 import { type Unsubscriber } from './subscription'
@@ -15,7 +16,7 @@ export abstract class GraphNodeInput {
     public inputIndex: number,
   ) {}
 
-  public abstract connectTo(graphNodeOutput: GraphNodeOutput): void
+  public abstract connectTo(graphNodeOutput: GraphNodeOutput): GraphEdge
 
   public closeConnection() {
     this.subscription?.unsubscribe()

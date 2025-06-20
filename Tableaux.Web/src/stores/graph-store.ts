@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
 import { useGraphNodeActivatorCollection } from './graph-node-activator-store'
 import type { GraphNode } from '@/models/graph/core/graph-node'
+import type { GraphEdge } from '@/models/graph/core/graph-edge'
 
 // export interface Graph {
 //   clear(): void
@@ -20,7 +21,8 @@ import type { GraphNode } from '@/models/graph/core/graph-node'
 // }
 
 export const useGraph = defineStore('graph', () => {
-  const graphNodes: Ref<{ graphNode: GraphNode; position: XY }[]> = ref([])
+  const graphNodes: Ref<GraphNode[]> = ref([])
+  const graphEdges: Ref<GraphEdge[]> = ref([])
 
   const activators = useGraphNodeActivatorCollection()
 
@@ -28,19 +30,21 @@ export const useGraph = defineStore('graph', () => {
 
   const addNode = (nodePath: string[], position: XY) => {
     const activator = activators.getFromPath(nodePath)
-    if (activator == undefined){
-      throw new Error();
+    if (activator == undefined) {
+      throw new Error()
     }
 
     const graphNode = activator.activate()
-    graphNode.onInitialize();
-    graphNodes.value.push({ graphNode, position })
+    graphNode.x = position.x
+    graphNode.y = position.y
+    graphNode.onInitialize()
+    graphNodes.value.push(graphNode)
 
     return graphNode
   }
 
-  const remove = (id: string) => {
-    const existing = graphNodes.value.findIndex((e) => e.graphNode.id == id)
+  const removeNode = (id: string) => {
+    const existing = graphNodes.value.findIndex((e) => e.id == id)
     if (existing == -1) {
       return
     }
@@ -48,9 +52,65 @@ export const useGraph = defineStore('graph', () => {
     graphNodes.value.splice(existing, 1)
   }
 
-  const nodes = () => {
-    return graphNodes.value;
+  const getNode = (nodeId: string) => {
+    const node = graphNodes.value.find((e) => e.id == nodeId)
+    if (!node) {
+      const msg = `Node with id ${nodeId} not found!`
+      throw new Error(msg)
+    }
+
+    return node
   }
 
-  return { clear, addNode, remove, nodes }
+  const nodes = () => {
+    return [...graphNodes.value]
+  }
+
+  const connect = (
+    leftNodeId: string,
+    outputIndex: number,
+    rightNodeId: string,
+    inputIndex: number,
+  ) => {
+    removeEdge(rightNodeId, inputIndex)
+
+    const leftNode = getNode(leftNodeId)
+    const rightNode = getNode(rightNodeId)
+
+    const edge = leftNode.outputAt(outputIndex).connectTo(rightNode.inputAt(inputIndex))
+    graphEdges.value.push(edge)
+    return edge
+  }
+
+  const removeEdge = (rightNodeId: string, inputIndex: number) => {
+    const existingEdge = graphEdges.value.findIndex(
+      (e) => e.rightGraphNodeId == rightNodeId && e.inputIndex == inputIndex,
+    )
+    if (existingEdge == -1) {
+      return
+    }
+
+    graphEdges.value.splice(existingEdge, 1)
+  }
+
+  const edges = () => {
+    return [...graphEdges.value]
+  }
+
+  const tick = () => {
+    nodes()
+      .filter((n) => n.numberOfInputs == 0 && n.numberOfOutputs >= 1)
+      .forEach((n) => n.complete())
+  }
+
+  return {
+    clear,
+    getNode,
+    addNode,
+    removeNode,
+    nodes,
+    connect,
+    edges,
+    tick,
+  }
 })

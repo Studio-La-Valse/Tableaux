@@ -6,22 +6,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import PanelRenderer from "./PanelRenderer.vue";
 import type { GraphNode } from "@/models/graph/core/graph-node";
+import { XY } from "@/models/geometry/xy";
+import { useGraph } from "@/stores/graph-store";
 
-interface XY {
-  x: number;
-  y: number;
-}
+const { getNode } = useGraph();
 
 const props = defineProps<{
   graphNode: GraphNode;
-  initialPos?: XY;
 }>();
 
 // The panel’s position in logical (canvas-content) coordinates.
-const localPos = ref<XY>(props.initialPos || { x: 0, y: 0 });
+const localPos = computed<XY>({
+  get: () => new XY(props.graphNode.x, props.graphNode.y),
+  set: (val) => {
+    const node = getNode(props.graphNode.id)
+    node.x = val.x;
+    node.y = val.y;
+  }
+});
 
 // Drag state.
 const dragging = ref(false);

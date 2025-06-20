@@ -1,6 +1,10 @@
 <template>
-  <div v-for="graphNode in computedNodes" :key="graphNode.graphNode.id">
-    <GraphNodeRenderer :graphNode="graphNode.graphNode" :initialPos="graphNode.position" />
+  <div v-for="graphNode in computedNodes" :key="graphNode.id">
+    <GraphNodeRenderer :graphNode="graphNode" />
+  </div>
+
+  <div v-for="edge in computedEdges" :key="edge.createKey()">
+    <GraphEdgeRenderer :edge="edge" />
   </div>
 </template>
 
@@ -12,21 +16,23 @@ import { Logger } from '@/models/graph/graph-nodes/generic/logger';
 import { Merge } from '@/models/graph/graph-nodes/generic/merge';
 import { useGraphNodeActivatorCollection } from '@/stores/graph-node-activator-store';
 import { useGraph } from '@/stores/graph-store';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, provide } from 'vue';
 import GraphNodeRenderer from './GraphNodeRenderer.vue';
+import GraphEdgeRenderer from './GraphEdgeRenderer.vue';
 
+// after computedNodes is defined:
 
-const { clear, addNode, nodes } = useGraph();
-const { register, getAll } = useGraphNodeActivatorCollection();
+const { clear, addNode, nodes, connect, edges, tick } = useGraph();
+const { register } = useGraphNodeActivatorCollection();
 
 const computedNodes = computed(nodes);
+const computedEdges = computed(edges);
+provide('computedNodes', computedNodes);
 
 register(["Emitters", "Text"], () => new TextEmitter())
 register(['Emitters', 'Number'], () => new NumberEmitter())
 register(["Generic", "Merge"], () => new Merge())
 register(["Generic", "Logger"], () => new Logger())
-
-console.log(getAll())
 
 clear();
 
@@ -39,15 +45,12 @@ const logger = addNode(["Generic", "Logger"], { x: 400, y: 100 })
 merge.add();
 merge.add();
 
-text.outputAt(0).connectTo(merge.inputAt(0));
-number1.outputAt(0).connectTo(merge.inputAt(1))
-number2.outputAt(0).connectTo(merge.inputAt(2))
-merge.outputAt(0).connectTo(logger.inputAt(0));
+connect(text.id, 0, merge.id, 0)
+connect(number1.id, 0, merge.id, 1)
+connect(number2.id, 0, merge.id, 2)
+connect(merge.id, 0, logger.id, 0)
 
 onMounted(() => {
-  nodes()
-  .map(n => n.graphNode)
-  .filter(n => n.numberOfInputs == 0)
-  .forEach(n => n.complete())
+  tick()
 })
 </script>

@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, type Component } from 'vue';
+import { ref, onUnmounted, type Component, computed } from 'vue';
 import NumberEmitterPanel from './Nodes/NumberEmitter.vue';
 import TextEmitterPanel from './Nodes/TextEmitter.vue';
 import GraphNodePanel from './Nodes/GraphNodePanel.vue';
@@ -41,6 +41,9 @@ import LoggerPanel from './Nodes/LoggerPanel.vue';
 import GraphNodeInputRenderer from './Nodes/GraphNodeInputRenderer.vue';
 import GraphNodeOutputRenderer from './Nodes/GraphNodeOutputRenderer.vue';
 import type { GraphNode } from '@/models/graph/core/graph-node';
+import { useGraph } from '@/stores/graph-store';
+
+const { getNode } = useGraph()
 
 const props = defineProps({
   graphNode: {
@@ -71,13 +74,18 @@ const numOutputs = props.graphNode.outputs ? props.graphNode.outputs.length : 0;
 const computedMinHeight = Math.max(numInputs, numOutputs, 1) * 50;
 
 // INITIAL DIMENSIONS
-const width = ref(150);  // Set initial width (and minimum width) to 150px.
+const width = computed({
+  get: () => props.graphNode.width,
+  set: (val) => {
+    getNode(props.graphNode.id).width = val
+  }
+})
 const height = ref(computedMinHeight);
 
 // --- Resizing state variables ---
 interface XY { x: number; y: number; }
 let startLocal: XY = { x: 0, y: 0 };
-let startWidth = 150;
+let startWidth = width.value;
 let startHeight = computedMinHeight;
 let containerEl: HTMLElement | null = null;
 let resizerEl: HTMLElement | null = null;

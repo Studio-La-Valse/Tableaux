@@ -1,3 +1,4 @@
+import type { GraphEdge } from './graph-edge'
 import type { GraphNode } from './graph-node'
 import type { GraphNodeInput } from './graph-node-input'
 
@@ -9,8 +10,8 @@ export abstract class GraphNodeOutput {
     public outputIndex: number,
   ) {}
 
-  public connectTo(graphNodeInput: GraphNodeInput) {
-    graphNodeInput.connectTo(this)
+  public connectTo(graphNodeInput: GraphNodeInput): GraphEdge {
+    return graphNodeInput.connectTo(this)
   }
 
   public trySubscribe(graphNodeId: string): void {
