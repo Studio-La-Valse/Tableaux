@@ -3,14 +3,8 @@
     ref="containerRef"
     class="canvas-container"
     @mousedown="onMouseDown"
-    @mousemove="onMouseMove"
-    @mouseup="onMouseUp"
-    @mouseleave="onMouseUp"
     @wheel="onWheel"
     @touchstart="onTouchStart"
-    @touchmove="onTouchMove"
-    @touchend="onTouchEnd"
-    @touchcancel="onTouchEnd"
   >
     <div
       ref="contentRef"
@@ -29,7 +23,7 @@ import { ref, onMounted, onUnmounted, nextTick } from "vue";
 const containerRef = ref<HTMLDivElement | null>(null);
 const contentRef = ref<HTMLDivElement | null>(null);
 
-// We track the container’s size (for zoom calculations)
+// Track the container’s size (for zoom calculations)
 const canvasSize = ref({ width: 300, height: 300 });
 const updateCanvasSize = () => {
   if (containerRef.value) {
@@ -39,6 +33,7 @@ const updateCanvasSize = () => {
     };
   }
 };
+
 let resizeObserver: ResizeObserver | null = null;
 onMounted(() => {
   nextTick(() => {
@@ -59,33 +54,41 @@ onUnmounted(() => {
 const position = ref({ x: 0, y: 0 });
 const scale = ref(1);
 
-// Canvas panning variables.
+// Variables to track dragging.
 const isDragging = ref(false);
 const startPosition = ref({ x: 0, y: 0 });
 
+// --- Mouse Event Handlers ---
 const onMouseDown = (event: MouseEvent) => {
-  // If the panel stops propagation, these won't fire.
   if (event.button === 0) {
     isDragging.value = true;
     startPosition.value = { x: event.clientX, y: event.clientY };
+    // Attach document-level listeners so dragging continues outside the container.
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
     event.preventDefault();
   }
 };
 
 const onMouseMove = (event: MouseEvent) => {
+  if (!isDragging.value) return;
+  const dx = event.clientX - startPosition.value.x;
+  const dy = event.clientY - startPosition.value.y;
+  position.value.x += dx;
+  position.value.y += dy;
+  startPosition.value = { x: event.clientX, y: event.clientY };
+};
+
+const onMouseUp = (event: MouseEvent) => {
   if (isDragging.value) {
-    const dx = event.clientX - startPosition.value.x;
-    const dy = event.clientY - startPosition.value.y;
-    position.value.x += dx;
-    position.value.y += dy;
-    startPosition.value = { x: event.clientX, y: event.clientY };
+    isDragging.value = false;
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+    event.preventDefault();
   }
 };
 
-const onMouseUp = () => {
-  isDragging.value = false;
-};
-
+// --- Wheel / Zoom Logic ---
 const onWheel = (event: WheelEvent) => {
   event.preventDefault();
   if (!containerRef.value) return;
@@ -112,33 +115,40 @@ const onWheel = (event: WheelEvent) => {
   scale.value = newScale;
 };
 
+// --- Touch Event Handlers ---
 const onTouchStart = (event: TouchEvent) => {
   if (event.touches.length === 1) {
     isDragging.value = true;
-    startPosition.value = {
-      x: event.touches[0].clientX,
-      y: event.touches[0].clientY,
-    };
+    const touch = event.touches[0];
+    startPosition.value = { x: touch.clientX, y: touch.clientY };
+    // Attach document-level touch events.
+    document.addEventListener("touchmove", onTouchMove, { passive: false });
+    document.addEventListener("touchend", onTouchEnd);
+    document.addEventListener("touchcancel", onTouchEnd);
     event.preventDefault();
   }
 };
 
 const onTouchMove = (event: TouchEvent) => {
   if (isDragging.value && event.touches.length === 1) {
-    const dx = event.touches[0].clientX - startPosition.value.x;
-    const dy = event.touches[0].clientY - startPosition.value.y;
+    const touch = event.touches[0];
+    const dx = touch.clientX - startPosition.value.x;
+    const dy = touch.clientY - startPosition.value.y;
     position.value.x += dx;
     position.value.y += dy;
-    startPosition.value = {
-      x: event.touches[0].clientX,
-      y: event.touches[0].clientY,
-    };
+    startPosition.value = { x: touch.clientX, y: touch.clientY };
     event.preventDefault();
   }
 };
 
-const onTouchEnd = () => {
-  isDragging.value = false;
+const onTouchEnd = (event: TouchEvent) => {
+  if (isDragging.value) {
+    isDragging.value = false;
+    document.removeEventListener("touchmove", onTouchMove);
+    document.removeEventListener("touchend", onTouchEnd);
+    document.removeEventListener("touchcancel", onTouchEnd);
+    event.preventDefault();
+  }
 };
 </script>
 
