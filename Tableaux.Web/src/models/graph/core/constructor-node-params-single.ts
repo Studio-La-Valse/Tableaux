@@ -22,7 +22,7 @@ export abstract class ConstructorNodeParamsSingle<TIn, TOut> extends Constructor
   public add(): void {
     this.arm()
 
-    const input = new GraphNodeInputType<TIn>(this, 0)
+    const input = new GraphNodeInputType<TIn>(this, this._inputs.length)
     this._inputs.push(input)
   }
 

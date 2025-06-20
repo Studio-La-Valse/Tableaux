@@ -1,5 +1,5 @@
 <template>
-  <input type="number" :value="graphNode.value" @input="handleInput" @mousedown.stop @mousemove.stop @mouseup.stop
+  <input class="number-input" type="number" :value="graphNode.value" @input="handleInput" @mousedown.stop @mousemove.stop @mouseup.stop
     @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop />
 </template>
 
@@ -23,3 +23,9 @@ onMounted(() => {
 
 })
 </script>
+
+<style>
+.number-input {
+  width: 100%;
+}
+</style>
