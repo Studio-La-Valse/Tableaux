@@ -94,7 +94,5 @@ onUnmounted(() => {
 <style scoped>
 .edge-svg {
   color: inherit;
-  /* Optionally set a z-index so that nodes (if rendered above) are not blocked */
-  z-index: 1;
 }
 </style>

@@ -142,7 +142,7 @@ onUnmounted(() => {
   position: relative;
   border: 2px solid #ccc;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: visible;
   background: #989494;
 }
 
@@ -182,6 +182,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   padding: 10px;
+  overflow: hidden;
 }
 
 /* Resizer styling remains unchanged */

@@ -93,7 +93,6 @@ const pathD = computed(() => {
 
 <style lang="css" scoped>
 .edge-svg {
-  z-index: 1;
   pointer-events: none;
 }
 

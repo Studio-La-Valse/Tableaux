@@ -1,7 +1,9 @@
 <template>
+  <GraphEdgesRenderer />
+
+
   <GraphNodesRenderer />
 
-  <GraphEdgesRenderer />
 </template>
 
 
