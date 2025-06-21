@@ -1,6 +1,8 @@
 import { ref } from 'vue'
 import { useCanvasTransform } from './useCanvasTransform'
 
+const { getCanvasContent, getLocalMousePos } = useCanvasTransform()
+
 export interface TempEdgeData {
   fromNodeId: string
   fromOutputIndex: number
@@ -18,9 +20,35 @@ export interface GraphEdgePrototype {
 const tempEdge = ref<TempEdgeData | null>(null)
 const containerEl = ref<HTMLElement | null>(null)
 
-export function useEdgeDrag() {
-  const { getCanvasContent, getLocalMousePos } = useCanvasTransform()
+function cancelEdgeDrag() {
+  tempEdge.value = null
+  if (mouseMoveHandler) window.removeEventListener('mousemove', mouseMoveHandler)
+  if (mouseUpHandler) window.removeEventListener('mouseup', mouseUpHandler)
+}
 
+function mouseMoveHandler(e: MouseEvent) {
+  if (!containerEl.value) return
+  e.stopPropagation()
+
+  const mousePos = getLocalMousePos(e, containerEl.value)
+  updateEdgeDrag(mousePos.x, mousePos.y)
+}
+
+function updateEdgeDrag(x: number, y: number) {
+  if (tempEdge.value) {
+    tempEdge.value.currentX = x
+    tempEdge.value.currentY = y
+  }
+}
+
+function mouseUpHandler() {
+  // If mouse is released without a valid drop, cancel the drag.
+  cancelEdgeDrag()
+  if (mouseMoveHandler) window.removeEventListener('mousemove', mouseMoveHandler)
+  if (mouseUpHandler) window.removeEventListener('mouseup', mouseUpHandler)
+}
+
+export function useEdgeDrag() {
   function startEdgeDrag(fromNodeId: string, fromOutputIndex: number, e: MouseEvent) {
     if (e.button !== 0) return
     // Prevent the canvas from panning.
@@ -59,39 +87,9 @@ export function useEdgeDrag() {
     return null
   }
 
-  function cancelEdgeDrag() {
-    tempEdge.value = null
-    if (mouseMoveHandler) window.removeEventListener('mousemove', mouseMoveHandler)
-    if (mouseUpHandler) window.removeEventListener('mouseup', mouseUpHandler)
-  }
-
-  const mouseMoveHandler = (e: MouseEvent) => {
-    if (!containerEl.value) return
-    e.stopPropagation()
-
-    const mousePos = getLocalMousePos(e, containerEl.value)
-    updateEdgeDrag(mousePos.x, mousePos.y)
-  }
-
-  function updateEdgeDrag(x: number, y: number) {
-    if (tempEdge.value) {
-      tempEdge.value.currentX = x
-      tempEdge.value.currentY = y
-    }
-  }
-
-  const mouseUpHandler = () => {
-    // If mouse is released without a valid drop, cancel the drag.
-    cancelEdgeDrag()
-    if (mouseMoveHandler) window.removeEventListener('mousemove', mouseMoveHandler)
-    if (mouseUpHandler) window.removeEventListener('mouseup', mouseUpHandler)
-  }
-
   return {
     tempEdge,
     startEdgeDrag,
-    updateEdgeDrag,
     finishEdgeDrag,
-    cancelEdgeDrag,
   }
 }

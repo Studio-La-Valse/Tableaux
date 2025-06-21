@@ -1,36 +1,17 @@
 <template>
-  <!-- The SVG container is now only as big as the edge's bounding box -->
-  <svg :style="svgStyle" class="edge-svg">
-    <!-- Visible line: changes color when selected -->
-    <line
-      :x1="adjustedStart.x"
-      :y1="adjustedStart.y"
-      :x2="adjustedEnd.x"
-      :y2="adjustedEnd.y"
-      :stroke="isSelected ? 'blue' : 'white'"
-      stroke-width="2"
-    />
-    <!-- Interactive overlay: invisible (but painted) so that only hits on the line register -->
-    <line
-      ref="edgeOverlay"
-      :x1="adjustedStart.x"
-      :y1="adjustedStart.y"
-      :x2="adjustedEnd.x"
-      :y2="adjustedEnd.y"
-      stroke="black"
-      stroke-opacity="0"
-      stroke-width="10"
-      style="cursor: pointer; pointer-events: stroke;"
-      @click="toggleSelection"
-    />
-  </svg>
+  <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y" :stroke="isSelected ? 'blue' : 'white'"
+    :stroke-width="1" />
+
+  <!-- Interactive overlay: invisible (but painted) so that only hits on the line register, all pointer events registered -->
+  <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y" :stroke="'black'" :stroke-opacity="0"
+    :stroke-width="10" :callback="toggleSelection" :pointer-events="'all'" />
 </template>
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue';
-import type { StyleValue } from 'vue';
 import type { GraphEdge } from '@/models/graph/core/graph-edge';
 import { useGraph } from '@/stores/graph-store';
+import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
 
 const { removeEdge, getNode } = useGraph();
 
@@ -48,7 +29,7 @@ const leftNode = computed(() =>
 );
 
 const rightNode = computed(() =>
- getNode(props.edge.rightGraphNodeId)
+  getNode(props.edge.rightGraphNodeId)
 );
 
 const leftNodeWidth = computed(() => leftNode.value?.width ?? 150);
@@ -75,53 +56,19 @@ const end = computed(() => {
   return { x, y };
 });
 
-// Use a fixed padding so that it’s easier to click the edge.
-const padding = 10;
-
-// Compute the bounding box of the edge:
-const xMin = computed(() => Math.min(start.value.x, end.value.x));
-const yMin = computed(() => Math.min(start.value.y, end.value.y));
-const boxWidth = computed(() => Math.abs(start.value.x - end.value.x));
-const boxHeight = computed(() => Math.abs(start.value.y - end.value.y));
-
-// Position the SVG container only over the edge’s area (with padding)
-const svgStyle = computed<StyleValue>(() => ({
-  position: 'absolute',
-  left: `${xMin.value - padding}px`,
-  top: `${yMin.value - padding}px`,
-  width: `${boxWidth.value + padding * 2}px`,
-  height: `${boxHeight.value + padding * 2}px`,
-  overflow: 'visible'
-}));
-
-// Adjust the coordinates relative to the SVG container.
-const adjustedStart = computed(() => ({
-  x: start.value.x - (xMin.value - padding),
-  y: start.value.y - (yMin.value - padding)
-}));
-
-const adjustedEnd = computed(() => ({
-  x: end.value.x - (xMin.value - padding),
-  y: end.value.y - (yMin.value - padding)
-}));
-
 // Track selection state.
 const isSelected = ref(false);
 
-// Reference to the interactive overlay element.
-const edgeOverlay = ref<SVGLineElement | null>(null);
-
 // Toggle edge selection on click. Notice we do NOT stop propagation.
-const toggleSelection = () => {
+const toggleSelection = (e: MouseEvent) => {
+  e.stopPropagation();
+  e.preventDefault();
   isSelected.value = !isSelected.value;
 };
 
 // When clicking anywhere in the document outside of the edge overlay,
 // unselect the edge.
-const handleDocumentClick = (event: MouseEvent) => {
-  if (edgeOverlay.value && edgeOverlay.value.contains(event.target as Node)) {
-    return;
-  }
+const handleDocumentClick = () => {
   isSelected.value = false;
 };
 
