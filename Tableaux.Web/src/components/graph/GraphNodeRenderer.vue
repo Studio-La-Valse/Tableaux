@@ -1,6 +1,5 @@
 <template>
-  <div class="panel" :style="{ transform: `translate(${localPos.x}px, ${localPos.y}px)` }" @mousedown="onMouseDown"
-    @touchstart="onTouchStart">
+  <div class="panel" :style="{ transform: `translate(${localPos.x}px, ${localPos.y}px)` }" @mousedown="onMouseDown">
     <PanelRenderer :graphNode="graphNode" />
   </div>
 </template>
@@ -18,11 +17,12 @@ const props = defineProps<{
   graphNode: GraphNode;
 }>();
 
+const node = getNode(props.graphNode.id)
+
 // The panel’s position in logical (canvas-content) coordinates.
 const localPos = computed<XY>({
   get: () => new XY(props.graphNode.x, props.graphNode.y),
   set: (val) => {
-    const node = getNode(props.graphNode.id)
     node.x = val.x;
     node.y = val.y;
   }
@@ -48,7 +48,6 @@ function getCanvasContent(el: EventTarget | null): HTMLElement | null {
  * We use DOMMatrix to invert the container’s computed transform.
  */
 function getLocalMousePos(event: MouseEvent, container: HTMLElement): XY {
-  const rect = container.getBoundingClientRect();
   const style = window.getComputedStyle(container);
   const transformStr = style.transform;
   let matrix = new DOMMatrix();
@@ -56,8 +55,8 @@ function getLocalMousePos(event: MouseEvent, container: HTMLElement): XY {
     matrix = new DOMMatrix(transformStr);
   }
   const point = new DOMPoint(
-    event.clientX - rect.left,
-    event.clientY - rect.top
+    event.clientX,
+    event.clientY
   );
   const invMatrix = matrix.inverse();
   const localPoint = point.matrixTransform(invMatrix);
@@ -103,50 +102,6 @@ function onMouseUp() {
   window.removeEventListener("mouseup", onMouseUp);
 }
 
-function onTouchStart(event: TouchEvent) {
-  if (event.touches.length !== 1) return;
-  event.stopPropagation();
-
-  const container = getCanvasContent(event.currentTarget);
-  if (!container) return;
-  containerEl.value = container;
-
-  const touch = event.touches[0];
-  // Create an object mimicking a MouseEvent.
-  const simulatedEvent = { clientX: touch.clientX, clientY: touch.clientY } as MouseEvent;
-  const mousePos = getLocalMousePos(simulatedEvent, container);
-  dragOffset.value = {
-    x: mousePos.x - localPos.value.x,
-    y: mousePos.y - localPos.value.y,
-  };
-
-  dragging.value = true;
-  window.addEventListener("touchmove", onTouchMove, { passive: false });
-  window.addEventListener("touchend", onTouchEnd);
-  window.addEventListener("touchcancel", onTouchEnd);
-}
-
-function onTouchMove(event: TouchEvent) {
-  if (!dragging.value || !containerEl.value || event.touches.length !== 1) return;
-  event.stopPropagation();
-
-  const touch = event.touches[0];
-  const simulatedEvent = { clientX: touch.clientX, clientY: touch.clientY } as MouseEvent;
-  const mousePos = getLocalMousePos(simulatedEvent, containerEl.value);
-  localPos.value = {
-    x: mousePos.x - dragOffset.value.x,
-    y: mousePos.y - dragOffset.value.y,
-  };
-  event.preventDefault();
-}
-
-function onTouchEnd() {
-  dragging.value = false;
-  containerEl.value = null;
-  window.removeEventListener("touchmove", onTouchMove);
-  window.removeEventListener("touchend", onTouchEnd);
-  window.removeEventListener("touchcancel", onTouchEnd);
-}
 </script>
 
 <style scoped>

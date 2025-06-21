@@ -1,6 +1,6 @@
 <!-- src/components/GraphNodeOutputRenderer.vue -->
 <template>
-  <div class="node-port output-port">
+  <div class="node-port output-port" @mousedown.stop="handleMouseDown">
     <div class="label">
       <span>{{ output.outputIndex }}</span>
     </div>
@@ -9,13 +9,20 @@
 </template>
 
 <script setup lang="ts">
+import { useEdgeDrag } from '@/composables/useEdgeDrag';
 import HandleRenderer from './HandleRenderer.vue';
 import type { GraphNodeOutput } from '@/models/graph/core/graph-node-output';
 
-defineProps<{
-  output: GraphNodeOutput; // Expected to include properties: nodeId and outputIndex
+const props = defineProps<{
+  output: GraphNodeOutput; // assumed properties: nodeId and outputIndex
 }>();
 
+const { startEdgeDrag } = useEdgeDrag();
+
+function handleMouseDown(e: MouseEvent) {
+  // Start the drag using the node's id and the output index.
+  startEdgeDrag(props.output.graphNode.id, props.output.outputIndex, e);
+}
 </script>
 
 <style scoped>
@@ -26,9 +33,11 @@ defineProps<{
   width: 100%;
   box-sizing: border-box;
 }
+
 .output-port {
   flex-direction: row;
 }
+
 .label {
   font-size: 10px;
   color: #333;

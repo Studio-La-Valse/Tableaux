@@ -13,7 +13,7 @@ import HandleRenderer from './HandleRenderer.vue';
 import type { GraphNodeInput } from '@/models/graph/core/graph-node-input';
 
 defineProps<{
-  input: GraphNodeInput; // Expected to include nodeId and inputIndex
+  input: GraphNodeInput;
 }>();
 
 </script>

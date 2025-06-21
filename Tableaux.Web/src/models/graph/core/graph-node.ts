@@ -22,7 +22,6 @@ export abstract class GraphNode {
     this._width = value;
   }
 
-
   public x: number = 0
   public y: number = 0
 
