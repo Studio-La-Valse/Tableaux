@@ -30,8 +30,10 @@ import GraphNodeInputRenderer from './Nodes/GraphNodeInputRenderer.vue';
 import GraphNodeOutputRenderer from './Nodes/GraphNodeOutputRenderer.vue';
 import type { GraphNode } from '@/models/graph/core/graph-node';
 import { useGraph } from '@/stores/graph-store';
+import { useCanvasTransform } from '@/composables/canvasTransform';
 
 const { getNode } = useGraph()
+const { getCanvasContent, getLocalMousePos} = useCanvasTransform();
 
 const props = defineProps({
   graphNode: {
@@ -73,41 +75,6 @@ let startWidth = width.value;
 let startHeight = props.graphNode.computedMinHeight;
 let containerEl: HTMLElement | null = null;
 let resizerEl: HTMLElement | null = null;
-
-/**
- * Finds the closest parent with class "canvas-content" to get the current
- * transform (scale, translate, etc.).
- */
-function getCanvasContent(el: EventTarget | null): HTMLElement | null {
-  if (el instanceof HTMLElement) {
-    return el.closest('.canvas-content') as HTMLElement;
-  }
-  return null;
-}
-
-/**
- * Converts the pointer event’s client coordinates into logical coordinates of
- * the container by inverting its computed transform (using DOMMatrix).
- */
-function getLocalMousePos(
-  event: MouseEvent | PointerEvent,
-  container: HTMLElement
-): XY {
-  const rect = container.getBoundingClientRect();
-  const style = window.getComputedStyle(container);
-  const transformStr = style.transform;
-  let matrix = new DOMMatrix();
-  if (transformStr && transformStr !== 'none') {
-    matrix = new DOMMatrix(transformStr);
-  }
-  const point = new DOMPoint(
-    event.clientX - rect.left,
-    event.clientY - rect.top
-  );
-  const invMatrix = matrix.inverse();
-  const localPoint = point.matrixTransform(invMatrix);
-  return { x: localPoint.x, y: localPoint.y };
-}
 
 /**
  * Called on pointer down on the resizer. It finds the canvas (transform container),

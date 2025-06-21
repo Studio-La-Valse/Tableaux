@@ -1,7 +1,5 @@
-// src/composables/useEdgeDrag.ts
-import type { XY } from '@/models/geometry/xy'
-import type { GraphEdge } from '@/models/graph/core/graph-edge'
 import { ref } from 'vue'
+import { useCanvasTransform } from './canvasTransform'
 
 export interface TempEdgeData {
   fromNodeId: string
@@ -20,24 +18,11 @@ export interface GraphEdgePrototype {
 const tempEdge = ref<TempEdgeData | null>(null)
 const containerEl = ref<HTMLElement | null>(null)
 
-/**
- * Converts the pointer event’s client coordinates into logical coordinates of
- * the container by inverting its computed transform (using DOMMatrix).
- */
-function getLocalMousePos(event: MouseEvent | PointerEvent, container: HTMLElement): XY {
-  const style = window.getComputedStyle(container)
-  const transformStr = style.transform
-  let matrix = new DOMMatrix()
-  if (transformStr && transformStr !== 'none') {
-    matrix = new DOMMatrix(transformStr)
-  }
-  const point = new DOMPoint(event.clientX, event.clientY)
-  const invMatrix = matrix.inverse()
-  const localPoint = point.matrixTransform(invMatrix)
-  return { x: localPoint.x, y: localPoint.y }
-}
 
 export function useEdgeDrag() {
+
+  const { getCanvasContent, getLocalMousePos} = useCanvasTransform();
+
   function startEdgeDrag(fromNodeId: string, fromOutputIndex: number, e: MouseEvent) {
     if (e.button !== 0) return
     // Prevent the canvas from panning.
@@ -59,10 +44,6 @@ export function useEdgeDrag() {
     window.addEventListener('mouseup', mouseUpHandler)
   }
 
-  /**
-   * Finalize the drag by "dropping" on an input. You can then use the returned
-   * connection data to create an edge.
-   */
   function finishEdgeDrag(targetNodeId: string, targetInputIndex: number): GraphEdgePrototype | null {
     if (tempEdge.value) {
       const newEdgeData = {
@@ -77,9 +58,6 @@ export function useEdgeDrag() {
     return null
   }
 
-  /**
-   * Cancel any active edge drag.
-   */
   function cancelEdgeDrag() {
     tempEdge.value = null
     if (mouseMoveHandler) window.removeEventListener('mousemove', mouseMoveHandler)
@@ -94,9 +72,6 @@ export function useEdgeDrag() {
     updateEdgeDrag(mousePos.x, mousePos.y)
   }
 
-  /**
-   * Update the drag state with the new (logical) coordinates.
-   */
   function updateEdgeDrag(x: number, y: number) {
     if (tempEdge.value) {
       tempEdge.value.currentX = x
@@ -109,17 +84,6 @@ export function useEdgeDrag() {
     cancelEdgeDrag()
     if (mouseMoveHandler) window.removeEventListener('mousemove', mouseMoveHandler)
     if (mouseUpHandler) window.removeEventListener('mouseup', mouseUpHandler)
-  }
-
-  /**
-   * Finds the closest parent with class "canvas-content" to get the current
-   * transform (scale, translate, etc.).
-   */
-  function getCanvasContent(el: EventTarget | null): HTMLElement | null {
-    if (el instanceof HTMLElement) {
-      return el.closest('.canvas-content') as HTMLElement
-    }
-    return null
   }
 
   return {

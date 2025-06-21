@@ -10,8 +10,10 @@ import PanelRenderer from "./PanelRenderer.vue";
 import type { GraphNode } from "@/models/graph/core/graph-node";
 import { XY } from "@/models/geometry/xy";
 import { useGraph } from "@/stores/graph-store";
+import { useCanvasTransform } from "@/composables/canvasTransform";
 
 const { getNode } = useGraph();
+const { getCanvasContent, getLocalMousePos} = useCanvasTransform();
 
 const props = defineProps<{
   graphNode: GraphNode;
@@ -32,36 +34,6 @@ const localPos = computed<XY>({
 const dragging = ref(false);
 const dragOffset = ref<XY>({ x: 0, y: 0 });
 const containerEl = ref<HTMLElement | null>(null);
-
-/**
- * Find the closest parent with class "canvas-content". This holds the transform.
- */
-function getCanvasContent(el: EventTarget | null): HTMLElement | null {
-  if (el instanceof HTMLElement) {
-    return el.closest(".canvas-content") as HTMLElement;
-  }
-  return null;
-}
-
-/**
- * Convert the mouse event’s coordinates into the canvas-content’s logical space.
- * We use DOMMatrix to invert the container’s computed transform.
- */
-function getLocalMousePos(event: MouseEvent, container: HTMLElement): XY {
-  const style = window.getComputedStyle(container);
-  const transformStr = style.transform;
-  let matrix = new DOMMatrix();
-  if (transformStr && transformStr !== "none") {
-    matrix = new DOMMatrix(transformStr);
-  }
-  const point = new DOMPoint(
-    event.clientX,
-    event.clientY
-  );
-  const invMatrix = matrix.inverse();
-  const localPoint = point.matrixTransform(invMatrix);
-  return { x: localPoint.x, y: localPoint.y };
-}
 
 function onMouseDown(event: MouseEvent) {
   if (event.button !== 0) return;
