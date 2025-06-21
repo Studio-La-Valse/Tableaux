@@ -1,25 +1,13 @@
 <template>
-  <div
-    ref="resizableRef"
-    class="resizable"
-    :style="{ width: width + 'px', height: height + 'px' }"
-  >
+  <div ref="resizableRef" class="resizable" :style="{ width: width + 'px', height: height + 'px' }">
     <!-- Input Ports rendered via our renderer component -->
     <div class="inputs" v-if="graphNode.inputs && graphNode.inputs.length">
-      <GraphNodeInputRenderer
-        v-for="(input, index) in graphNode.inputs"
-        :key="'input-' + index"
-        :input="input"
-      />
+      <GraphNodeInputRenderer v-for="(input, index) in graphNode.inputs" :key="'input-' + index" :input="input" />
     </div>
 
     <!-- Output Ports rendered via our renderer component -->
     <div class="outputs" v-if="graphNode.outputs && graphNode.outputs.length">
-      <GraphNodeOutputRenderer
-        v-for="(output, index) in graphNode.outputs"
-        :key="'output-' + index"
-        :output="output"
-      />
+      <GraphNodeOutputRenderer v-for="(output, index) in graphNode.outputs" :key="'output-' + index" :output="output" />
     </div>
 
     <!-- Main Content Panel -->
@@ -33,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted, type Component, computed } from 'vue';
+import { onUnmounted, type Component, computed } from 'vue';
 import NumberEmitterPanel from './Nodes/NumberEmitter.vue';
 import TextEmitterPanel from './Nodes/TextEmitter.vue';
 import GraphNodePanel from './Nodes/GraphNodePanel.vue';
@@ -52,6 +40,8 @@ const props = defineProps({
   }
 });
 
+const graphNode = getNode(props.graphNode.id)
+
 // Registry to resolve the proper node panel based on the graph node type.
 const registry: Record<string, Component> = {
   NumberEmitter: NumberEmitterPanel,
@@ -66,27 +56,21 @@ const getGraphNodePanel = (emitter: GraphNode) => {
   return registry[type] || GraphNodePanel;
 };
 
-// Calculate the minimum (and initial) height.
-// Each port is assumed to need 50px; we use the maximum number of inputs or outputs.
-// If both are empty, we default to 50px.
-const numInputs = props.graphNode.inputs ? props.graphNode.inputs.length : 0;
-const numOutputs = props.graphNode.outputs ? props.graphNode.outputs.length : 0;
-const computedMinHeight = Math.max(numInputs, numOutputs, 1) * 50;
-
 // INITIAL DIMENSIONS
 const width = computed({
-  get: () => props.graphNode.width,
-  set: (val) => {
-    getNode(props.graphNode.id).width = val
-  }
+  get: () => graphNode.width,
+  set: (val) => { graphNode.width = val }
 })
-const height = ref(computedMinHeight);
+const height = computed({
+  get: () => graphNode.height,
+  set: (val) => { graphNode.height = val }
+})
 
 // --- Resizing state variables ---
 interface XY { x: number; y: number; }
 let startLocal: XY = { x: 0, y: 0 };
 let startWidth = width.value;
-let startHeight = computedMinHeight;
+let startHeight = props.graphNode.computedMinHeight;
 let containerEl: HTMLElement | null = null;
 let resizerEl: HTMLElement | null = null;
 
@@ -164,8 +148,8 @@ const onPointerMove = (e: PointerEvent) => {
   // Update node dimensions.
   // For width, we enforce a minimum of 150px.
   // For height, the minimum is computedMinHeight.
-  width.value = Math.max(150, startWidth + deltaX);
-  height.value = Math.max(computedMinHeight, startHeight + deltaY);
+  width.value = startWidth + deltaX;
+  height.value = startHeight + deltaY;
 };
 
 const onPointerUp = (e: PointerEvent) => {
@@ -200,7 +184,7 @@ onUnmounted(() => {
 /* Place the input ports inside the node on the left side */
 .inputs {
   position: absolute;
-  left: 0;
+  left: -15px;
   top: 0;
   width: 30px;
   height: 100%;
@@ -213,7 +197,7 @@ onUnmounted(() => {
 /* Place the output ports inside the node on the right side */
 .outputs {
   position: absolute;
-  right: 0;
+  right: -15px;
   top: 0;
   width: 30px;
   height: 100%;

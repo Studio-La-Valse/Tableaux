@@ -90,6 +90,9 @@ export const useGraph = defineStore('graph', () => {
       return
     }
 
+    const rightNode = getNode(rightNodeId);
+    const input = rightNode.inputAt(inputIndex);
+    input.closeConnection();
     graphEdges.value.splice(existingEdge, 1)
   }
 
@@ -110,6 +113,7 @@ export const useGraph = defineStore('graph', () => {
     removeNode,
     nodes,
     connect,
+    removeEdge,
     edges,
     tick,
   }

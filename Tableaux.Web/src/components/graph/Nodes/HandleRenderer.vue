@@ -8,17 +8,18 @@
 
 <style scoped>
 .handle {
-  width: 12px;
-  height: 12px;
+  width: 100%; /* wider for pill shape */
+  height: 12px; /* flatter shape */
   background-color: #555;
   border: 2px solid #e3dfdf;
-  border-radius: 50%;
+  border-radius: 999px; /* ensures fully rounded ends */
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background-color 0.2s ease-in-out;
 }
+
 .handle:hover {
-  background-color: #666;
+  background-color: #d12a2a;
 }
 </style>

@@ -1,5 +1,6 @@
+<!-- src/components/GraphNodeInputRenderer.vue -->
 <template>
-  <div class="node-port input-port" @mousedown.stop>
+  <div class="node-port input-port">
     <HandleRenderer />
     <div class="label">
       <span>{{ input.inputIndex }}</span>
@@ -8,12 +9,13 @@
 </template>
 
 <script setup lang="ts">
-import { GraphNodeInput } from '@/models/graph/core/graph-node-input';
 import HandleRenderer from './HandleRenderer.vue';
+import type { GraphNodeInput } from '@/models/graph/core/graph-node-input';
 
 defineProps<{
-  input: GraphNodeInput;
+  input: GraphNodeInput; // Expected to include nodeId and inputIndex
 }>();
+
 </script>
 
 <style scoped>
@@ -22,18 +24,14 @@ defineProps<{
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  padding: 2px;
+  padding: 0;
   box-sizing: border-box;
 }
-
 .input-port {
   flex-direction: row;
 }
-
-/* The label is now snug within the port’s container */
 .label {
   font-size: 10px;
   color: #333;
-  margin-left: 4px;
 }
 </style>

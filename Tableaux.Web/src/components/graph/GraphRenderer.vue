@@ -1,11 +1,7 @@
 <template>
-  <div v-for="graphNode in computedNodes" :key="graphNode.id">
-    <GraphNodeRenderer :graphNode="graphNode" />
-  </div>
+  <GraphNodesRenderer />
 
-  <div v-for="edge in computedEdges" :key="edge.createKey()">
-    <GraphEdgeRenderer :edge="edge" />
-  </div>
+  <GraphEdgesRenderer />
 </template>
 
 
@@ -16,18 +12,12 @@ import { Logger } from '@/models/graph/graph-nodes/generic/logger';
 import { Merge } from '@/models/graph/graph-nodes/generic/merge';
 import { useGraphNodeActivatorCollection } from '@/stores/graph-node-activator-store';
 import { useGraph } from '@/stores/graph-store';
-import { computed, onMounted, provide } from 'vue';
-import GraphNodeRenderer from './GraphNodeRenderer.vue';
-import GraphEdgeRenderer from './GraphEdgeRenderer.vue';
+import { onMounted } from 'vue';
+import GraphEdgesRenderer from './GraphEdgesRenderer.vue';
+import GraphNodesRenderer from './GraphNodesRenderer.vue';
 
-// after computedNodes is defined:
-
-const { clear, addNode, nodes, connect, edges, tick } = useGraph();
+const { clear, addNode, connect, tick } = useGraph();
 const { register } = useGraphNodeActivatorCollection();
-
-const computedNodes = computed(nodes);
-const computedEdges = computed(edges);
-provide('computedNodes', computedNodes);
 
 register(["Emitters", "Text"], () => new TextEmitter())
 register(['Emitters', 'Number'], () => new NumberEmitter())
