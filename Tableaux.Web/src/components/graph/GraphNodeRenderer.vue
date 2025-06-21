@@ -10,10 +10,10 @@ import PanelRenderer from "./PanelRenderer.vue";
 import type { GraphNode } from "@/models/graph/core/graph-node";
 import { XY } from "@/models/geometry/xy";
 import { useGraph } from "@/stores/graph-store";
-import { useCanvasTransform } from "@/composables/canvasTransform";
+import { useCanvasTransform } from "@/composables/useCanvasTransform";
 
 const { getNode } = useGraph();
-const { getCanvasContent, getLocalMousePos} = useCanvasTransform();
+const { getCanvasContent, getLocalMousePos } = useCanvasTransform();
 
 const props = defineProps<{
   graphNode: GraphNode;

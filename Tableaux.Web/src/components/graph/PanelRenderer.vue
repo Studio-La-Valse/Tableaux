@@ -30,10 +30,10 @@ import GraphNodeInputRenderer from './Nodes/GraphNodeInputRenderer.vue';
 import GraphNodeOutputRenderer from './Nodes/GraphNodeOutputRenderer.vue';
 import type { GraphNode } from '@/models/graph/core/graph-node';
 import { useGraph } from '@/stores/graph-store';
-import { useCanvasTransform } from '@/composables/canvasTransform';
+import { useCanvasTransform } from '@/composables/useCanvasTransform';
 
 const { getNode } = useGraph()
-const { getCanvasContent, getLocalMousePos} = useCanvasTransform();
+const { getCanvasContent, getLocalMousePos } = useCanvasTransform();
 
 const props = defineProps({
   graphNode: {
@@ -113,8 +113,6 @@ const onPointerMove = (e: PointerEvent) => {
   const deltaY = localPos.y - startLocal.y;
 
   // Update node dimensions.
-  // For width, we enforce a minimum of 150px.
-  // For height, the minimum is computedMinHeight.
   width.value = startWidth + deltaX;
   height.value = startHeight + deltaY;
 };

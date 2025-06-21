@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { useCanvasTransform } from './canvasTransform'
+import { useCanvasTransform } from './useCanvasTransform'
 
 export interface TempEdgeData {
   fromNodeId: string
@@ -9,19 +9,17 @@ export interface TempEdgeData {
 }
 
 export interface GraphEdgePrototype {
-  fromNodeId: string,
-  fromOutputIndex: number,
-  toNodeId: string,
-  toInputIndex: number,
+  fromNodeId: string
+  fromOutputIndex: number
+  toNodeId: string
+  toInputIndex: number
 }
 
 const tempEdge = ref<TempEdgeData | null>(null)
 const containerEl = ref<HTMLElement | null>(null)
 
-
 export function useEdgeDrag() {
-
-  const { getCanvasContent, getLocalMousePos} = useCanvasTransform();
+  const { getCanvasContent, getLocalMousePos } = useCanvasTransform()
 
   function startEdgeDrag(fromNodeId: string, fromOutputIndex: number, e: MouseEvent) {
     if (e.button !== 0) return
@@ -44,7 +42,10 @@ export function useEdgeDrag() {
     window.addEventListener('mouseup', mouseUpHandler)
   }
 
-  function finishEdgeDrag(targetNodeId: string, targetInputIndex: number): GraphEdgePrototype | null {
+  function finishEdgeDrag(
+    targetNodeId: string,
+    targetInputIndex: number,
+  ): GraphEdgePrototype | null {
     if (tempEdge.value) {
       const newEdgeData = {
         fromNodeId: tempEdge.value.fromNodeId,
