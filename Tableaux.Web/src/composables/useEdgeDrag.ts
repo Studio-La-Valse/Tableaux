@@ -1,5 +1,6 @@
 // src/composables/useEdgeDrag.ts
 import type { XY } from '@/models/geometry/xy'
+import type { GraphEdge } from '@/models/graph/core/graph-edge'
 import { ref } from 'vue'
 
 export interface TempEdgeData {
@@ -7,6 +8,13 @@ export interface TempEdgeData {
   fromOutputIndex: number
   currentX: number
   currentY: number
+}
+
+export interface GraphEdgePrototype {
+  fromNodeId: string,
+  fromOutputIndex: number,
+  toNodeId: string,
+  toInputIndex: number,
 }
 
 const tempEdge = ref<TempEdgeData | null>(null)
@@ -55,7 +63,7 @@ export function useEdgeDrag() {
    * Finalize the drag by "dropping" on an input. You can then use the returned
    * connection data to create an edge.
    */
-  function finishEdgeDrag(targetNodeId: string, targetInputIndex: number) {
+  function finishEdgeDrag(targetNodeId: string, targetInputIndex: number): GraphEdgePrototype | null {
     if (tempEdge.value) {
       const newEdgeData = {
         fromNodeId: tempEdge.value.fromNodeId,
