@@ -20,7 +20,7 @@ const props = defineProps({
 });
 
 // Unwrap the ref<string[]> for easier use in the template.
-const unwrappedValues = computed(() => props.graphNode.values.value);
+const unwrappedValues = computed(() => props.graphNode.values);
 
 onMounted(() => {
   props.graphNode.onInitialize();
