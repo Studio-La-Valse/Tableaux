@@ -2,11 +2,11 @@
 import { onMounted, onUnmounted } from "vue";
 import { useSelectionStore } from "@/stores/selection-store";
 
-export function useSelectionInteraction() {
+export function useClearSelection() {
   const selectionStore = useSelectionStore();
 
   // Global click handler using capture phase.
-  function onGlobalClick(event: MouseEvent) {
+  function onClickClearSelection(event: MouseEvent) {
     const target = event.target as HTMLElement;
     // Clear selection if the click is not inside a node.
     if (!target.closest(".graph-node")) {
@@ -22,15 +22,12 @@ export function useSelectionInteraction() {
   }
 
   onMounted(() => {
-    // Listen in capture mode to catch events before they are stopped.
-    window.addEventListener("click", onGlobalClick, true);
     window.addEventListener("keydown", onKeyDown, true);
   });
 
   onUnmounted(() => {
-    window.removeEventListener("click", onGlobalClick, true);
     window.removeEventListener("keydown", onKeyDown, true);
   });
 
-  return selectionStore;
+  return { onClickClearSelection };
 }

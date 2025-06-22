@@ -1,8 +1,6 @@
 <template>
   <div id="split-horizontal">
-    <GraphCanvas class="graph">
-      <GraphRenderer/>
-    </GraphCanvas>
+    <GraphCanvas class="graph" />
 
     <DesignCanvasPainter class="design" :elements="[]" />
   </div>
@@ -13,7 +11,6 @@ import Split from "split.js";
 import { onMounted } from "vue";
 import GraphCanvas from "@/components/graph/GraphCanvas.vue";
 import DesignCanvasPainter from "@/components/design/DesignCanvasPainter.vue";
-import GraphRenderer from "@/components/graph/GraphRenderer.vue";
 
 
 onMounted(() => {

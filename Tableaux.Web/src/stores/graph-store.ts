@@ -5,21 +5,6 @@ import { useGraphNodeActivatorCollection } from './graph-node-activator-store'
 import type { GraphNode } from '@/models/graph/core/graph-node'
 import type { GraphEdge } from '@/models/graph/core/graph-edge'
 
-// export interface Graph {
-//   clear(): void
-
-//   addNode(nodeDescriptor: GraphNodeDescriptor, position: XY): GraphNode
-//   remove(graphNodeId: string): void
-//   nodes(): GraphNode[]
-
-//   getPosition(graphNodeId: string): XY
-//   setPosition(graphNodeId: string, position: XY): void
-
-//   connect(output: GraphNodeOutput, input: GraphNodeInput): void
-//   remove(graphNodeEdge: GraphEdge): void
-//   edges(): GraphEdge[]
-// }
-
 export const useGraph = defineStore('graph', () => {
   const graphNodes: Ref<GraphNode[]> = ref([])
   const graphEdges: Ref<GraphEdge[]> = ref([])
@@ -100,7 +85,7 @@ export const useGraph = defineStore('graph', () => {
 
     const rightNode = getNode(rightNodeId)
     const input = rightNode.inputAt(inputIndex)
-    input.replaceConnection()
+    input.replaceConnection(undefined)
     rightNode.arm()
     graphEdges.value.splice(existingEdge, 1)
   }

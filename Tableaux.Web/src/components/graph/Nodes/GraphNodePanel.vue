@@ -1,12 +1,12 @@
 <template>
-  <div class="default-emitter">
+  <div>
   {{ graphNode.path.at(-1) }}
   </div>
 </template>
 
 <script setup lang="ts">
 import type { GraphNode } from '@/models/graph/core/graph-node';
-import { onMounted } from 'vue';
+import { defineProps } from 'vue';
 
 defineProps({
   graphNode: {
@@ -15,8 +15,5 @@ defineProps({
   }
 })
 
-onMounted(() => {
-
-})
-
 </script>
+

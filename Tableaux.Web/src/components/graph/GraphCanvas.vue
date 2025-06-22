@@ -1,24 +1,29 @@
 <template>
-  <div
-    ref="containerRef"
-    class="canvas-container"
-    @mousedown="onMouseDown"
-    @contextmenu.prevent
-    @wheel="onWheel"
-    @touchstart="onTouchStart"
-  >
-    <div
-      ref="contentRef"
-      class="canvas-content"
-      :style="{ transform: `translate(${position.x}px, ${position.y}px) scale(${scale})` }"
-    >
-      <slot></slot>
+  <div ref="containerRef" class="canvas-container" @mousedown="_onMouseDown" @contextmenu.prevent @wheel="onWheel">
+
+    <div ref="contentRef" class="canvas-content" :style="style">
+
+      <SelectionBorder :selecting="selecting" :x="x" :y="y" :width="width" :height="height" />
+
+      <GraphRenderer />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from "vue";
+import { useSelectionArea } from "@/composables/useSelectionArea";
+import { ref, onMounted, onUnmounted, nextTick, computed, type StyleValue } from "vue";
+import SelectionBorder from "./SelectionBorder.vue";
+import GraphRenderer from "./GraphRenderer.vue";
+import { useClearSelection } from "@/composables/useClearSelection";
+
+const { onMouseDown, selecting, x, y, width, height } = useSelectionArea();
+const clearSelection = useClearSelection();
+
+const style = computed<StyleValue>(() => ({
+  transform: `translate(${position.value.x}px, ${position.value.y}px) scale(${scale.value})`,
+  pointerEvents: selecting.value ? "none" : "all"
+}))
 
 // References for container and inner content.
 const containerRef = ref<HTMLDivElement | null>(null);
@@ -61,7 +66,11 @@ const startPosition = ref({ x: 0, y: 0 });
 
 // --- Mouse Event Handlers ---
 // Note: We now respond to the right mouse button (event.button === 2).
-const onMouseDown = (event: MouseEvent) => {
+const _onMouseDown = (event: MouseEvent) => {
+  clearSelection.onClickClearSelection(event);
+  
+  onMouseDown(event)
+
   if (event.button === 2) {
     isDragging.value = true;
     startPosition.value = { x: event.clientX, y: event.clientY };
@@ -115,42 +124,6 @@ const onWheel = (event: WheelEvent) => {
   position.value.x -= delta * (localMouse.x - position.value.x);
   position.value.y -= delta * (localMouse.y - position.value.y);
   scale.value = newScale;
-};
-
-// --- Touch Event Handlers ---
-const onTouchStart = (event: TouchEvent) => {
-  if (event.touches.length === 1) {
-    isDragging.value = true;
-    const touch = event.touches[0];
-    startPosition.value = { x: touch.clientX, y: touch.clientY };
-    // Attach document-level touch events.
-    document.addEventListener("touchmove", onTouchMove, { passive: false });
-    document.addEventListener("touchend", onTouchEnd);
-    document.addEventListener("touchcancel", onTouchEnd);
-    event.preventDefault();
-  }
-};
-
-const onTouchMove = (event: TouchEvent) => {
-  if (isDragging.value && event.touches.length === 1) {
-    const touch = event.touches[0];
-    const dx = touch.clientX - startPosition.value.x;
-    const dy = touch.clientY - startPosition.value.y;
-    position.value.x += dx;
-    position.value.y += dy;
-    startPosition.value = { x: touch.clientX, y: touch.clientY };
-    event.preventDefault();
-  }
-};
-
-const onTouchEnd = (event: TouchEvent) => {
-  if (isDragging.value) {
-    isDragging.value = false;
-    document.removeEventListener("touchmove", onTouchMove);
-    document.removeEventListener("touchend", onTouchEnd);
-    document.removeEventListener("touchcancel", onTouchEnd);
-    event.preventDefault();
-  }
 };
 </script>
 
