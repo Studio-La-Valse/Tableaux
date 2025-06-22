@@ -1,22 +1,28 @@
-import { ConstructorNodeDouble } from '../../core/constructor-node-double'
+import { GraphNode } from '../../core/graph-node'
+import type { GraphNodeInputNumber } from '../../core/graph-node-input'
+import type { GraphNodeOutputType } from '../../core/graph-node-output'
 
-export class Add extends ConstructorNodeDouble<number, number, number> {
-  protected getValue(): number[] {
-    const first = this.observer1.payload
-    const second = this.observer2.payload
+export class Add extends GraphNode {
+  public path: string[] = ['Math', 'Add']
 
-    const max = Math.max(first.length, second.length)
-    const resArr = []
+  private input1: GraphNodeInputNumber
+  private input2: GraphNodeInputNumber
+  private output: GraphNodeOutputType<number>
 
-    for (let index = 0; index < max; index++) {
-      const left = first[index % first.length]
-      const right = second[index % second.length]
-      const res = left + right
-      resArr.push(res)
-    }
+  constructor(id: string, path: string[]) {
+    super(id, path)
 
-    return resArr
+    this.input1 = this.registerNumberInput()
+    this.input2 = this.registerNumberInput()
+    this.output = this.registerNumberOutput()
   }
 
-  public path: string[] = ['Math', 'Add']
+  protected solve(): void {
+    const length = this.getEqualLength();
+
+    for (let index = 0; index < length; index++) {
+      const sum = this.input1.payload[index] + this.input2.payload[index]
+      this.output.next(sum);
+    }
+  }
 }

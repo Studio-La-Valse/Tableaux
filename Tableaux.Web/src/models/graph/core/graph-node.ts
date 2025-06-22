@@ -1,39 +1,170 @@
-import { GraphNodeInput } from './graph-node-input'
-import { GraphNodeOutput } from './graph-node-output'
+import { GraphNodeAlreadyInitializedError } from './errors/graph-node-already-initialized-error'
+import {
+  GraphNodeInput,
+  GraphNodeInputBoolean,
+  GraphNodeInputObject,
+  GraphNodeInputString,
+  GraphNodeInputType,
+  GraphNodeInputUnkown,
+} from './graph-node-input'
+import { GraphNodeInputNumber } from './graph-node-input'
+import {
+  GraphNodeOutput,
+  GraphNodeOutputBoolean,
+  GraphNodeOutputNumber,
+  GraphNodeOutputObject,
+  GraphNodeOutputString,
+  GraphNodeOutputType,
+  GraphNodeOutputUnkown,
+} from './graph-node-output'
+
+export class SignalLengthsNotEqualError extends Error {}
 
 export abstract class GraphNode {
-  public abstract path: string[]
-  public id: string
+  private initialized: boolean = false
 
-  private _height = 50;
-  private _width = 150;
-  public get height(){
-    return Math.max(this._height, this.computedMinHeight)
+  private _height = 50
+  private _width = 150
+  public get height() {
+    return Math.max(this._height, this.minHeight)
   }
-  public set height(val: number){
-    const value = Math.max(val, this.computedMinHeight)
-    this._height = value;
+  public set height(val: number) {
+    const value = Math.max(val, this.minHeight)
+    this._height = value
   }
-  public get width(){
+  public get width() {
     return Math.max(this._width, this.minWidth)
   }
-  public set width(val: number){
+  public set width(val: number) {
     const value = Math.max(val, this.minWidth)
-    this._width = value;
+    this._width = value
   }
 
   public x: number = 0
   public y: number = 0
 
-  public get computedMinHeight() { return Math.max(this.numberOfInputs, this.numberOfOutputs, 1) * 50 };
-  public get minWidth() { return 150; }
+  public get minHeight() {
+    return Math.max(this.numberOfInputs, this.numberOfOutputs, 1) * 50
+  }
+  public get minWidth() {
+    return 150
+  }
 
-  constructor() {
-    this.id = crypto.randomUUID()
+  private _inputs: GraphNodeInput[] = []
+  public get inputs(): GraphNodeInput[] {
+    return [...this._inputs]
+  }
+
+  public get numberOfInputs(): number {
+    return this.inputs.length
+  }
+
+  private _outputs: GraphNodeOutput[] = []
+  public get outputs(): GraphNodeOutput[] {
+    return [...this._outputs]
+  }
+
+  public get numberOfOutputs(): number {
+    return this.outputs.length
+  }
+
+  constructor(
+    public id: string,
+    public path: string[],
+  ) {}
+
+  public registerBooleanInput(): GraphNodeInputType<boolean> {
+    if (this.initialized) {
+      throw new GraphNodeAlreadyInitializedError()
+    }
+    const input = new GraphNodeInputBoolean(this, this.numberOfInputs)
+    this._inputs.push(input)
+    return input
+  }
+
+  public registerNumberInput(): GraphNodeInputType<number> {
+    if (this.initialized) {
+      throw new GraphNodeAlreadyInitializedError()
+    }
+    const input = new GraphNodeInputNumber(this, this.numberOfInputs)
+    this._inputs.push(input)
+    return input
+  }
+
+  public registerStringInput(): GraphNodeInputType<string> {
+    if (this.initialized) {
+      throw new GraphNodeAlreadyInitializedError()
+    }
+    const input = new GraphNodeInputString(this, this.numberOfInputs)
+    this._inputs.push(input)
+    return input
+  }
+
+  public registerObjectInput(): GraphNodeInputType<object> {
+    if (this.initialized) {
+      throw new GraphNodeAlreadyInitializedError()
+    }
+    const input = new GraphNodeInputObject(this, this.numberOfInputs)
+    this._inputs.push(input)
+    return input
+  }
+
+  public registerUnkownInput(): GraphNodeInputType<unknown> {
+    if (this.initialized) {
+      throw new GraphNodeAlreadyInitializedError()
+    }
+    const input = new GraphNodeInputUnkown(this, this.numberOfInputs)
+    this._inputs.push(input)
+    return input
+  }
+
+  public registerBooleanOutput(): GraphNodeOutputType<boolean> {
+    if (this.initialized) {
+      throw new GraphNodeAlreadyInitializedError()
+    }
+    const output = new GraphNodeOutputBoolean(this, this.numberOfOutputs)
+    this._outputs.push(output)
+    return output
+  }
+
+  public registerNumberOutput(): GraphNodeOutputType<number> {
+    if (this.initialized) {
+      throw new GraphNodeAlreadyInitializedError()
+    }
+    const output = new GraphNodeOutputNumber(this, this.numberOfOutputs)
+    this._outputs.push(output)
+    return output
+  }
+
+  public registerTextOutput(): GraphNodeOutputType<string> {
+    if (this.initialized) {
+      throw new GraphNodeAlreadyInitializedError()
+    }
+    const output = new GraphNodeOutputString(this, this.numberOfOutputs)
+    this._outputs.push(output)
+    return output
+  }
+
+  public registerObjectOutput(): GraphNodeOutputType<object> {
+    if (this.initialized) {
+      throw new GraphNodeAlreadyInitializedError()
+    }
+    const output = new GraphNodeOutputObject(this, this.numberOfOutputs)
+    this._outputs.push(output)
+    return output
+  }
+
+  public registerUnkownOutput(): GraphNodeOutputType<unknown> {
+    if (this.initialized) {
+      throw new GraphNodeAlreadyInitializedError()
+    }
+    const output = new GraphNodeOutputUnkown(this, this.numberOfOutputs)
+    this._outputs.push(output)
+    return output
   }
 
   public onInitialize(): void {
-
+    this.initialized = true
   }
 
   public trySubscribeSelf(): void {
@@ -54,52 +185,79 @@ export abstract class GraphNode {
   }
 
   public arm(): void {
-    this.outputs.forEach(e => e.arm())
+    this.outputs.forEach((e) => e.arm())
   }
 
-  public abstract complete(): void
+  public complete(): void {
+    try {
+      for (const input of this.inputs) {
+        if (input.armed) {
+          return
+        }
+      }
 
-  public abstract inputs: GraphNodeInput[]
+      this.outputs.forEach((e) => {
+        e.arm()
+      })
 
-  public get numberOfInputs(): number {
-    return this.inputs.length
+      this.solve()
+
+      this.outputs.forEach((output) => {
+        output.complete()
+      })
+    } catch (err) {
+      console.error(err)
+    } finally {
+    }
   }
+
+  public getEqualLength(): number {
+    let length = 0
+    if (!this.numberOfInputs) {
+      return length
+    }
+
+    length = this.inputs[0].payloadLength
+    this.inputs.forEach((input) => {
+      if (input.payloadLength != length) {
+        throw new SignalLengthsNotEqualError()
+      }
+    })
+
+    return length
+  }
+
+  protected abstract solve(): void
 
   public inputAt(index: number): GraphNodeInput {
     return this.inputs[index]
-  }
-
-  public abstract outputs: GraphNodeOutput[]
-
-  public get numberOfOutputs(): number {
-    return this.outputs.length
   }
 
   public outputAt(index: number): GraphNodeOutput {
     return this.outputs[index]
   }
 
-  public calculateHandleFactor(index: number, of: number){
-    if (index > of){
+  public calculateHandleFactor(index: number, of: number) {
+    if (index > of) {
       const msg = `The index ${index} cannot be great than of ${of}`
       throw new Error(msg)
     }
 
-    const parts = of + 1;
-    const slices = 1 / parts;
-    const factor = slices * (index + 1);
-    return factor;
+    const parts = of + 1
+    const slices = 1 / parts
+    const factor = slices * (index + 1)
+    return factor
   }
 
-  public calculateHandleHeight(index: number, of: number){
-    const factor = this.calculateHandleFactor(index, of);
-    const height = factor * this.height;
-    return height;
+  public calculateHandleHeight(index: number, of: number) {
+    const factor = this.calculateHandleFactor(index, of)
+    const height = factor * this.height
+    return height
   }
 
-  public calculateHandleCoordinate(index: number, of: number){
-    const height = this.calculateHandleHeight(index, of);
-    const coordinate = this.y + height;
-    return coordinate;
+  public calculateHandleCoordinate(index: number, of: number) {
+    const height = this.calculateHandleHeight(index, of)
+    const coordinate = this.y + height
+    return coordinate
   }
 }

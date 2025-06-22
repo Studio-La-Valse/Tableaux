@@ -1,19 +1,29 @@
-import { EmitterGraphNode } from '../../core/emitter-graph-node'
+import { GraphNode } from '../../core/graph-node'
+import type { GraphNodeOutputType } from '../../core/graph-node-output';
 
-export class NumberEmitter extends EmitterGraphNode<number> {
-
-  public path: string[] = ['Emitters', 'Number']
+export class NumberEmitter extends GraphNode {
+  private readonly output: GraphNodeOutputType<number>;
 
   public value: number = 0
 
+  constructor(id: string, path: string[]) {
+    super(id, path)
+
+    this.output = this.registerNumberOutput();
+  }
+
   override onInitialize(): void {
-    this.next(this.value)
+    this.solve();
   }
 
   public onChange(newValue: number): void {
     this.arm()
     this.value = newValue
-    this.next(this.value)
     this.complete()
   }
+
+  protected solve(): void {
+    this.output.next(this.value)
+  }
 }
+

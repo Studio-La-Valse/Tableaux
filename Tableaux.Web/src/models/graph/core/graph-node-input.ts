@@ -1,7 +1,7 @@
-import type { GraphEdge } from './graph-edge'
+import { GraphEdge } from './graph-edge'
 import type { GraphNode } from './graph-node'
 import type { GraphNodeOutput } from './graph-node-output'
-import { type Unsubscriber } from './subscription'
+import { type Unsubscriber } from './unsubscriber'
 
 export abstract class GraphNodeInput {
   protected subscription: Unsubscriber | undefined
@@ -11,16 +11,33 @@ export abstract class GraphNodeInput {
     return this._armed
   }
 
+  public abstract get payloadLength(): number
+
   constructor(
     public graphNode: GraphNode,
     public inputIndex: number,
   ) {}
 
-  public abstract connectTo(graphNodeOutput: GraphNodeOutput): GraphEdge
+  public connectTo(graphNodeOutput: GraphNodeOutput): GraphEdge {
+    // will throw an error when cyclical subscription is detected.
+    const subscription = graphNodeOutput.onSubscribe(this)
 
-  public closeConnection() {
+    // subscription succesful, replace the existing subscription
+    this.replaceConnection(subscription)
+
+    // create a description of the new connection
+    const edge = new GraphEdge(
+      graphNodeOutput.graphNode.id,
+      graphNodeOutput.outputIndex,
+      this.graphNode.id,
+      this.inputIndex,
+    )
+    return edge
+  }
+
+  public replaceConnection(subscription: Unsubscriber | undefined) {
     this.subscription?.unsubscribe()
-    this.subscription = undefined
+    this.subscription = subscription
   }
 
   public onTrySubscribeSelf(): void {
@@ -36,5 +53,57 @@ export abstract class GraphNodeInput {
   public onCompleted(): void {
     this._armed = false
     this.graphNode.complete()
+  }
+}
+
+export abstract class GraphNodeInputType<T> extends GraphNodeInput {
+  public payload: T[] = []
+
+  public get payloadLength(): number {
+    return this.payload.length
+  }
+
+  constructor(graphNode: GraphNode, inputIndex: number) {
+    super(graphNode, inputIndex)
+  }
+
+  public override onArm(): void {
+    this.payload.length = 0
+    this._armed = true
+    this.graphNode.arm()
+  }
+
+  public onNext(value: T): void {
+    this.payload.push(value)
+  }
+}
+
+export class GraphNodeInputBoolean extends GraphNodeInputType<boolean> {
+  constructor(graphNode: GraphNode, inputIndex: number) {
+    super(graphNode, inputIndex)
+  }
+}
+
+export class GraphNodeInputNumber extends GraphNodeInputType<number> {
+  constructor(graphNode: GraphNode, inputIndex: number) {
+    super(graphNode, inputIndex)
+  }
+}
+
+export class GraphNodeInputString extends GraphNodeInputType<string> {
+  constructor(graphNode: GraphNode, inputIndex: number) {
+    super(graphNode, inputIndex)
+  }
+}
+
+export class GraphNodeInputObject extends GraphNodeInputType<object> {
+  constructor(graphNode: GraphNode, inputIndex: number) {
+    super(graphNode, inputIndex)
+  }
+}
+
+export class GraphNodeInputUnkown extends GraphNodeInputType<unknown> {
+  constructor(graphNode: GraphNode, inputIndex: number) {
+    super(graphNode, inputIndex)
   }
 }

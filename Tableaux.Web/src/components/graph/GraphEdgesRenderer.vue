@@ -2,7 +2,7 @@
 <template>
   <div class="edges-container">
     <!-- Permanent edges -->
-    <GraphEdgeRenderer v-for="edge in computedEdges" :key="edge.createKey()" :edge="edge" />
+    <GraphEdgeRenderer v-for="edge in edges" :key="edge.createKey()" :edge="edge" />
 
     <!-- Temporary (drag) edge -->
     <GraphEdgePathRenderer v-if="tempEdge" class="temp-edge-svg" :x1="startX" :y1="startY" :x2="tempEdge.currentX"
@@ -19,7 +19,6 @@ import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
 
 // Get your permanent edges from the graph store.
 const { edges, getNode } = useGraph();
-const computedEdges = computed(() => edges());
 
 // Get the reactive temporary edge state
 const { tempEdge } = useEdgeDrag();

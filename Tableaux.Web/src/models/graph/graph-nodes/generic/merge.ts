@@ -1,16 +1,29 @@
-import { ConstructorNodeParamsSingle } from '../../core/constructor-node-params-single'
+import { GraphNode } from '../../core/graph-node'
+import type { GraphNodeInputType } from '../../core/graph-node-input'
+import type { GraphNodeOutputType } from '../../core/graph-node-output';
 
-export class Merge extends ConstructorNodeParamsSingle<object, object> {
+export class Merge extends GraphNode {
+  private input1: GraphNodeInputType<unknown>;
+  private input2: GraphNodeInputType<unknown>;
+  private output: GraphNodeOutputType<unknown>;
+
   public path: string[] = ['Generic', 'Merge']
 
-  protected getValue(): object[] {
-    const res: object[] = []
-    this._inputs.forEach((input) => {
-      input.payload.forEach((value) => {
-        res.push(value)
-      })
+  constructor(id: string, path: string[]) {
+    super(id, path)
+
+    this.input1 = this.registerUnkownInput();
+    this.input2 = this.registerUnkownInput();
+    this.output = this.registerUnkownOutput();
+  }
+
+  protected solve(): void {
+    this.input1.payload.forEach((value) => {
+      this.output.next(value)
     })
 
-    return res
+    this.input2.payload.forEach((value) => {
+      this.output.next(value);
+    })
   }
 }

@@ -72,7 +72,7 @@ const height = computed({
 interface XY { x: number; y: number; }
 let startLocal: XY = { x: 0, y: 0 };
 let startWidth = width.value;
-let startHeight = props.graphNode.computedMinHeight;
+let startHeight = props.graphNode.minHeight;
 let containerEl: HTMLElement | null = null;
 let resizerEl: HTMLElement | null = null;
 

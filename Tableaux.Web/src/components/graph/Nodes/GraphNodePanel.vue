@@ -1,6 +1,6 @@
 <template>
   <div class="default-emitter">
-  Graph Node: {{ graphNode.path }} {{ graphNode.id }}
+  {{ graphNode.path.at(-1) }}
   </div>
 </template>
 
