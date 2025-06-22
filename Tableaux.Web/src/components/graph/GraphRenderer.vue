@@ -4,6 +4,7 @@
 
   <GraphNodesRenderer />
 
+  <SelectionBorder />
 </template>
 
 
@@ -13,6 +14,7 @@ import { useGraph } from '@/stores/graph-store';
 import { onMounted } from 'vue';
 import GraphEdgesRenderer from './GraphEdgesRenderer.vue';
 import GraphNodesRenderer from './GraphNodesRenderer.vue';
+import SelectionBorder from './SelectionBorder.vue';
 
 const { clear, addNode, tick } = useGraph();
 const { registerDefault } = useGraphNodeActivatorCollection();

@@ -1,88 +1,49 @@
 <template>
-  <div class="panel" :style="{ transform: `translate(${localPos.x}px, ${localPos.y}px)` }" @mousedown="onMouseDown">
+  <div
+    class="node graph-node"
+    :class="{ selected: isSelected }"
+    @mousedown="onMouseDown"
+    :style="{ transform: `translate(${localPos.x}px, ${localPos.y}px)` }"
+  >
     <PanelRenderer :graphNode="graphNode" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import PanelRenderer from "./PanelRenderer.vue";
 import type { GraphNode } from "@/models/graph/core/graph-node";
+import { useSelectionStore } from "@/stores/selection-store";
+import { useGroupDraggable } from "@/composables/useGroupDraggable";
 import { XY } from "@/models/geometry/xy";
-import { useGraph } from "@/stores/graph-store";
-import { useCanvasTransform } from "@/composables/useCanvasTransform";
 
-const { getNode } = useGraph();
-const { getCanvasContent, getLocalMousePos } = useCanvasTransform();
+const props = defineProps<{ graphNode: GraphNode }>();
 
-const props = defineProps<{
-  graphNode: GraphNode;
-}>();
+const selectionStore = useSelectionStore();
 
-const node = getNode(props.graphNode.id)
-
-// The panel’s position in logical (canvas-content) coordinates.
+// Node position is kept in sync with the graph node.
 const localPos = computed<XY>({
   get: () => new XY(props.graphNode.x, props.graphNode.y),
-  set: (val) => {
-    node.x = val.x;
-    node.y = val.y;
-  }
+  set: (pos: XY) => {
+    props.graphNode.x = pos.x;
+    props.graphNode.y = pos.y;
+  },
 });
 
-// Drag state.
-const dragging = ref(false);
-const dragOffset = ref<XY>({ x: 0, y: 0 });
-const containerEl = ref<HTMLElement | null>(null);
+// Determines visual styling based on whether the node is selected.
+const isSelected = computed(() => selectionStore.isSelected(props.graphNode.id));
 
-function onMouseDown(event: MouseEvent) {
-  if (event.button !== 0) return;
-  // Prevent the canvas from panning.
-  event.stopPropagation();
-
-  const container = getCanvasContent(event.currentTarget);
-  if (!container) return;
-  containerEl.value = container;
-
-  const mousePos = getLocalMousePos(event, container);
-  // Save the offset between where the panel is and where the mouse is.
-  dragOffset.value = {
-    x: mousePos.x - localPos.value.x,
-    y: mousePos.y - localPos.value.y,
-  };
-
-  dragging.value = true;
-  window.addEventListener("mousemove", onMouseMove);
-  window.addEventListener("mouseup", onMouseUp);
-}
-
-function onMouseMove(event: MouseEvent) {
-  if (!dragging.value || !containerEl.value) return;
-  event.stopPropagation();
-
-  const mousePos = getLocalMousePos(event, containerEl.value);
-  localPos.value = {
-    x: mousePos.x - dragOffset.value.x,
-    y: mousePos.y - dragOffset.value.y,
-  };
-}
-
-function onMouseUp() {
-  dragging.value = false;
-  containerEl.value = null;
-  window.removeEventListener("mousemove", onMouseMove);
-  window.removeEventListener("mouseup", onMouseUp);
-}
-
+// Use the updated group draggable composable; it now handles modifier-based selection on mousedown.
+const { onMouseDown } = useGroupDraggable(props.graphNode.id);
 </script>
 
 <style scoped>
-.panel {
+.node {
   position: absolute;
-  cursor: grab;
   user-select: none;
-  min-width: 50px;
-  min-height: 50px;
-  background-color: cadetblue;
+}
+
+.selected {
+  outline: 2px solid blue;
 }
 </style>

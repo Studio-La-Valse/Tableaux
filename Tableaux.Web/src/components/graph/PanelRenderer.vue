@@ -1,13 +1,25 @@
 <template>
-  <div ref="resizableRef" class="resizable" :style="{ width: width + 'px', height: height + 'px' }">
+  <div
+    ref="resizableRef"
+    class="resizable"
+    :style="{ width: width + 'px', height: height + 'px' }"
+  >
     <!-- Input Ports rendered via our renderer component -->
     <div class="inputs" v-if="graphNode.inputs && graphNode.inputs.length">
-      <GraphNodeInputRenderer v-for="(input, index) in graphNode.inputs" :key="'input-' + index" :input="input" />
+      <GraphNodeInputRenderer
+        v-for="(input, index) in graphNode.inputs"
+        :key="'input-' + index"
+        :input="input"
+      />
     </div>
 
     <!-- Output Ports rendered via our renderer component -->
     <div class="outputs" v-if="graphNode.outputs && graphNode.outputs.length">
-      <GraphNodeOutputRenderer v-for="(output, index) in graphNode.outputs" :key="'output-' + index" :output="output" />
+      <GraphNodeOutputRenderer
+        v-for="(output, index) in graphNode.outputs"
+        :key="'output-' + index"
+        :output="output"
+      />
     </div>
 
     <!-- Main Content Panel -->
@@ -21,28 +33,27 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted, type Component, computed } from 'vue';
-import NumberEmitterPanel from './Nodes/NumberEmitter.vue';
-import TextEmitterPanel from './Nodes/TextEmitter.vue';
-import GraphNodePanel from './Nodes/GraphNodePanel.vue';
-import LoggerPanel from './Nodes/LoggerPanel.vue';
-import GraphNodeInputRenderer from './Nodes/GraphNodeInputRenderer.vue';
-import GraphNodeOutputRenderer from './Nodes/GraphNodeOutputRenderer.vue';
-import type { GraphNode } from '@/models/graph/core/graph-node';
-import { useGraph } from '@/stores/graph-store';
-import { useCanvasTransform } from '@/composables/useCanvasTransform';
+import { onUnmounted, computed, type Component } from "vue";
+import NumberEmitterPanel from "./Nodes/NumberEmitter.vue";
+import TextEmitterPanel from "./Nodes/TextEmitter.vue";
+import GraphNodePanel from "./Nodes/GraphNodePanel.vue";
+import LoggerPanel from "./Nodes/LoggerPanel.vue";
+import GraphNodeInputRenderer from "./Nodes/GraphNodeInputRenderer.vue";
+import GraphNodeOutputRenderer from "./Nodes/GraphNodeOutputRenderer.vue";
+import type { GraphNode } from "@/models/graph/core/graph-node";
+import { useGraph } from "@/stores/graph-store";
+import { useResizable } from "@/composables/useResizable";
 
-const { getNode } = useGraph()
-const { getCanvasContent, getLocalMousePos } = useCanvasTransform();
-
+const { getNode } = useGraph();
 const props = defineProps({
   graphNode: {
     type: Object as () => GraphNode,
     required: true,
-  }
+  },
 });
 
-const graphNode = getNode(props.graphNode.id)
+// Get the reactive graph node instance.
+const graphNode = getNode(props.graphNode.id);
 
 // Registry to resolve the proper node panel based on the graph node type.
 const registry: Record<string, Component> = {
@@ -53,88 +64,29 @@ const registry: Record<string, Component> = {
 };
 
 const getGraphNodePanel = (emitter: GraphNode) => {
-  // Identifying the type using the constructor name.
+  // Identifying the type via the constructor name.
   const type = emitter.constructor.name;
   return registry[type] || GraphNodePanel;
 };
 
-// INITIAL DIMENSIONS
+// Create computed reactive dimensions that read/write the graph node's properties.
 const width = computed({
   get: () => graphNode.width,
-  set: (val) => { graphNode.width = val }
-})
+  set: (val) => {
+    graphNode.width = val;
+  },
+});
 const height = computed({
   get: () => graphNode.height,
-  set: (val) => { graphNode.height = val }
-})
-
-// --- Resizing state variables ---
-interface XY { x: number; y: number; }
-let startLocal: XY = { x: 0, y: 0 };
-let startWidth = width.value;
-let startHeight = props.graphNode.minHeight;
-let containerEl: HTMLElement | null = null;
-let resizerEl: HTMLElement | null = null;
-
-/**
- * Called on pointer down on the resizer. It finds the canvas (transform container),
- * records the local pointer position and the starting dimensions.
- */
-const initResize = (e: PointerEvent) => {
-  if (e.button !== 0) return; // Only for primary button
-  e.preventDefault();
-  e.stopPropagation();
-
-  // Find the canvas-content container where the transform is applied.
-  containerEl = getCanvasContent(e.currentTarget);
-  if (!containerEl) return;
-
-  // Record the starting pointer position in logical (local) coordinates.
-  startLocal = getLocalMousePos(e, containerEl);
-  startWidth = width.value;
-  startHeight = height.value;
-
-  // Set pointer capture so that all subsequent events go to this element.
-  resizerEl = e.currentTarget as HTMLElement;
-  resizerEl.setPointerCapture(e.pointerId);
-  resizerEl.addEventListener('pointermove', onPointerMove);
-  resizerEl.addEventListener('pointerup', onPointerUp);
-  resizerEl.addEventListener('pointercancel', onPointerUp);
-};
-
-const onPointerMove = (e: PointerEvent) => {
-  e.preventDefault();
-  e.stopPropagation();
-  if (!containerEl) return;
-
-  // Compute the current pointer position in the canvas's local coordinate space.
-  const localPos = getLocalMousePos(e, containerEl);
-  const deltaX = localPos.x - startLocal.x;
-  const deltaY = localPos.y - startLocal.y;
-
-  // Update node dimensions.
-  width.value = startWidth + deltaX;
-  height.value = startHeight + deltaY;
-};
-
-const onPointerUp = (e: PointerEvent) => {
-  e.preventDefault();
-  e.stopPropagation();
-  if (resizerEl) {
-    resizerEl.releasePointerCapture(e.pointerId);
-    resizerEl.removeEventListener('pointermove', onPointerMove);
-    resizerEl.removeEventListener('pointerup', onPointerUp);
-    resizerEl.removeEventListener('pointercancel', onPointerUp);
-  }
-};
-
-onUnmounted(() => {
-  if (resizerEl) {
-    resizerEl.removeEventListener('pointermove', onPointerMove);
-    resizerEl.removeEventListener('pointerup', onPointerUp);
-    resizerEl.removeEventListener('pointercancel', onPointerUp);
-  }
+  set: (val) => {
+    graphNode.height = val;
+  },
 });
+
+// Integrate the resizable composable.
+const { initResize } = useResizable(width, height);
+
+// (The onUnmounted cleanup in the composable will handle any lingering event listeners.)
 </script>
 
 <style scoped>

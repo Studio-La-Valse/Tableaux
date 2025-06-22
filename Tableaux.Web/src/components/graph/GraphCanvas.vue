@@ -3,6 +3,7 @@
     ref="containerRef"
     class="canvas-container"
     @mousedown="onMouseDown"
+    @contextmenu.prevent
     @wheel="onWheel"
     @touchstart="onTouchStart"
   >
@@ -59,8 +60,9 @@ const isDragging = ref(false);
 const startPosition = ref({ x: 0, y: 0 });
 
 // --- Mouse Event Handlers ---
+// Note: We now respond to the right mouse button (event.button === 2).
 const onMouseDown = (event: MouseEvent) => {
-  if (event.button === 0) {
+  if (event.button === 2) {
     isDragging.value = true;
     startPosition.value = { x: event.clientX, y: event.clientY };
     // Attach document-level listeners so dragging continues outside the container.

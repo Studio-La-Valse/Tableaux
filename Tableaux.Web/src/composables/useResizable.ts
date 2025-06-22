@@ -1,0 +1,94 @@
+import { onUnmounted, type Ref } from "vue";
+import { useCanvasTransform } from "@/composables/useCanvasTransform";
+
+// Define a simple XY interface.
+interface XY {
+  x: number;
+  y: number;
+}
+
+/**
+ * A composable that handles pointer-based resize functionality.
+ * 
+ * @param width - A reactive reference to the current width.
+ * @param height - A reactive reference to the current height.
+ * @returns An object exposing the initResize function, which must be bound to the pointerdown event of the resizer element.
+ */
+export function useResizable(width: Ref<number>, height: Ref<number>) {
+  const { getCanvasContent, getLocalMousePos } = useCanvasTransform();
+
+  // State variables to track the resize start.
+  let startLocal: XY = { x: 0, y: 0 };
+  let startWidth = width.value;
+  let startHeight = height.value;
+  let containerEl: HTMLElement | null = null;
+  let resizerEl: HTMLElement | null = null;
+
+  /**
+   * Called when the pointer is pressed on the resizer.
+   */
+  const initResize = (e: PointerEvent) => {
+    if (e.button !== 0) return; // Only respond to the primary (usually left) button.
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Find the container in which the canvas transform is applied.
+    containerEl = getCanvasContent(e.currentTarget);
+    if (!containerEl) return;
+
+    // Record the initial pointer position in logical coordinates.
+    startLocal = getLocalMousePos(e, containerEl);
+    startWidth = width.value;
+    startHeight = height.value;
+
+    // Set pointer capture so we can track pointermove/up events continuously.
+    resizerEl = e.currentTarget as HTMLElement;
+    resizerEl.setPointerCapture(e.pointerId);
+    resizerEl.addEventListener("pointermove", onPointerMove);
+    resizerEl.addEventListener("pointerup", onPointerUp);
+    resizerEl.addEventListener("pointercancel", onPointerUp);
+  };
+
+  /**
+   * Handles pointer movements to update the dimensions.
+   */
+  const onPointerMove = (e: PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!containerEl) return;
+
+    // Get the current pointer position.
+    const localPos = getLocalMousePos(e, containerEl);
+    const deltaX = localPos.x - startLocal.x;
+    const deltaY = localPos.y - startLocal.y;
+
+    // Update the reactive dimensions.
+    width.value = startWidth + deltaX;
+    height.value = startHeight + deltaY;
+  };
+
+  /**
+   * Finalizes the resize and removes event listeners.
+   */
+  const onPointerUp = (e: PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (resizerEl) {
+      resizerEl.releasePointerCapture(e.pointerId);
+      resizerEl.removeEventListener("pointermove", onPointerMove);
+      resizerEl.removeEventListener("pointerup", onPointerUp);
+      resizerEl.removeEventListener("pointercancel", onPointerUp);
+    }
+  };
+
+  // Ensure removal of event listeners upon unmounting.
+  onUnmounted(() => {
+    if (resizerEl) {
+      resizerEl.removeEventListener("pointermove", onPointerMove);
+      resizerEl.removeEventListener("pointerup", onPointerUp);
+      resizerEl.removeEventListener("pointercancel", onPointerUp);
+    }
+  });
+
+  return { initResize };
+}
