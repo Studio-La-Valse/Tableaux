@@ -7,8 +7,6 @@ export class Merge extends GraphNode {
   private input2: GraphNodeInputType<unknown>;
   private output: GraphNodeOutputType<unknown>;
 
-  public path: string[] = ['Generic', 'Merge']
-
   constructor(id: string, path: string[]) {
     super(id, path)
 

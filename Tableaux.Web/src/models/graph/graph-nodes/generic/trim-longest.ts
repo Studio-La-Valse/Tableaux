@@ -1,8 +1,6 @@
 import { GraphNode } from '../../core/graph-node'
 
 export class TrimLongest extends GraphNode {
-  public path: string[] = ['Generic', 'Trim Longest']
-
   private input1
   private input2
   private output1

@@ -29,7 +29,7 @@ addNode(["Math", "Add"], { x: 200, y: 200 }, crypto.randomUUID())
 addNode(["Geometry", "XY"], { x: 200, y: 300 }, crypto.randomUUID())
 addNode(["Generic", "Logger"], { x: 400, y: 100 }, crypto.randomUUID())
 addNode(["Generic", "Repeat Until"], { x: 400, y: 250 }, crypto.randomUUID())
-
+addNode(["Generic", "Repeat Shortest"], { x: 0, y: 300 }, crypto.randomUUID())
 
 onMounted(() => {
   tick()
