@@ -1,12 +1,12 @@
 // src/composables/useGroupDraggable.ts
 import { ref } from 'vue'
-import { useCanvasTransform } from '@/composables/useCanvasTransform'
+import { useTransformToCanvas } from '@/composables/useTransformToCanvas'
 import { useSelectionStore } from '@/stores/selection-store'
 import { useGraph } from '@/stores/graph-store'
 import type { XY } from '@/models/geometry/xy'
 
 export function useGroupDraggable(currentNodeId: string) {
-  const { getLocalMousePos, getCanvasContent } = useCanvasTransform()
+  const { getLocalMousePos, getCanvasContent } = useTransformToCanvas()
   const selectionStore = useSelectionStore()
   const { getNode } = useGraph()
 

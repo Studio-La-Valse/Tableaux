@@ -1,5 +1,5 @@
 import { onUnmounted, type Ref } from "vue";
-import { useCanvasTransform } from "@/composables/useCanvasTransform";
+import { useTransformToCanvas } from "@/composables/useTransformToCanvas";
 
 // Define a simple XY interface.
 interface XY {
@@ -15,7 +15,7 @@ interface XY {
  * @returns An object exposing the initResize function, which must be bound to the pointerdown event of the resizer element.
  */
 export function useResizable(width: Ref<number>, height: Ref<number>) {
-  const { getCanvasContent, getLocalMousePos } = useCanvasTransform();
+  const { getCanvasContent, getLocalMousePos } = useTransformToCanvas();
 
   // State variables to track the resize start.
   let startLocal: XY = { x: 0, y: 0 };

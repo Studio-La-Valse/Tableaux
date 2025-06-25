@@ -1,13 +1,13 @@
 // useDraggable.ts
 import { ref, type Ref } from "vue";
 import type { XY } from "@/models/geometry/xy";
-import { useCanvasTransform } from "@/composables/useCanvasTransform";
+import { useTransformToCanvas } from "@/composables/useTransformToCanvas";
 
 export function useDraggable(localPos: Ref<XY>) {
   const dragging = ref(false);
   const dragOffset = ref<XY>({ x: 0, y: 0 });
   const containerEl = ref<HTMLElement | null>(null);
-  const { getLocalMousePos, getCanvasContent } = useCanvasTransform();
+  const { getLocalMousePos, getCanvasContent } = useTransformToCanvas();
 
   function onMouseDown(event: MouseEvent) {
     if (event.button !== 0) return;

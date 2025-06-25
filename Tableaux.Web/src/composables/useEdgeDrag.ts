@@ -1,7 +1,7 @@
 import { ref } from 'vue'
-import { useCanvasTransform } from './useCanvasTransform'
+import { useTransformToCanvas } from './useTransformToCanvas'
 
-const { getCanvasContent, getLocalMousePos } = useCanvasTransform()
+const { getCanvasContent, getLocalMousePos } = useTransformToCanvas()
 
 export interface TempEdgeData {
   fromNodeId: string

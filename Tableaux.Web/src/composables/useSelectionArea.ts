@@ -1,12 +1,12 @@
 import { useGraph } from '@/stores/graph-store'
 import { useSelectionStore } from '@/stores/selection-store'
 import { ref, onUnmounted, type Ref } from 'vue'
-import { useCanvasTransform } from './useCanvasTransform'
+import { useTransformToCanvas } from './useTransformToCanvas'
 
 export function useSelectionArea() {
   const graphStore = useGraph()
   const { clearSelection, selectNode } = useSelectionStore()
-  const { getCanvasContent, getLocalMousePos } = useCanvasTransform()
+  const { getCanvasContent, getLocalMousePos } = useTransformToCanvas()
 
   // Indicates whether a selection drag is in progress.
   const selecting = ref(false)
