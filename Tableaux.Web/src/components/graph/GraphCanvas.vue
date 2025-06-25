@@ -1,5 +1,6 @@
 <template>
-  <div ref="containerRef" class="canvas-container" @dblclick="onCanvasDblClick" @mousedown="onMouseDown" @contextmenu.prevent @wheel="onWheel">
+  <div ref="containerRef" class="canvas-container" @dblclick="onCanvasDblClick" @mousedown="onMouseDown"
+    @contextmenu.prevent @wheel="onWheel">
     <div ref="contentRef" class="canvas-content" :style="contentStyle">
       <SelectionBorder :selecting="selecting" :x="x" :y="y" :width="width" :height="height" />
       <GraphRenderer />
@@ -43,6 +44,8 @@ function onMouseDown(event: MouseEvent) {
 }
 
 function onCanvasDblClick(evt: MouseEvent) {
+  if (evt.target !== containerRef.value) return;
+
   // ex: reset viewport
   position.value.x = 0
   position.value.y = 0

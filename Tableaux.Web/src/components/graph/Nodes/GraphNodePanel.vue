@@ -6,7 +6,6 @@
 
 <script setup lang="ts">
 import type { GraphNode } from '@/models/graph/core/graph-node';
-import { defineProps } from 'vue';
 
 defineProps({
   graphNode: {
