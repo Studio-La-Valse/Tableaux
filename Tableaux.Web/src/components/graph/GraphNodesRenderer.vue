@@ -1,6 +1,6 @@
 <template>
   <div v-for="graphNode in nodes" :key="graphNode.id">
-    <GraphNodeRenderer :graphNode="graphNode" />
+    <GraphNodeRenderer :graphNodeId="graphNode.id" />
   </div>
 </template>
 

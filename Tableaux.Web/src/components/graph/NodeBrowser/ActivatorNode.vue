@@ -20,20 +20,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { defineProps, defineEmits } from 'vue'
 import type { ActivatorGroup } from '@/stores/graph-node-activator-store'
 
 const props = defineProps<{
   group: ActivatorGroup
   parentPath: string[]
+  forceExpand?: boolean
 }>()
 
 defineEmits<{
   (e: 'activate', path: string[]): void
 }>()
 
-const expanded = ref(false)
+const expanded = ref(props.forceExpand ?? false)
 
 // build the path array up to *this* group
 const currentPath = computed(() => [...props.parentPath, props.group.name])
@@ -41,6 +42,12 @@ const currentPath = computed(() => [...props.parentPath, props.group.name])
 function toggle() {
   expanded.value = !expanded.value
 }
+
+onMounted(() => {
+  watch(() => props.forceExpand, (val) => {
+    expanded.value = val
+  })
+})
 </script>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <template>
-  <input class="number-input" type="number" :value="graphNode.value" @input="handleInput" @mousedown.stop @mousemove.stop @mouseup.stop
-    @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop />
+  <input class="number-input" type="number" :value="graphNode.value" @input="handleInput" @mousedown.stop
+    @mousemove.stop @mouseup.stop @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop />
 </template>
 
 <script setup lang="ts">

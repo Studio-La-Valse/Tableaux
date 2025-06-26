@@ -1,7 +1,7 @@
 <template>
   <svg :style="svgStyle" class="edge-svg">
-    <path :d="pathD" :stroke="stroke" :stroke-width="strokeWidth" :stroke-opacity="strokeOpacity" :pointer-events="pointerEvents" fill="none"
-      @click="onClick" />
+    <path :d="pathD" :stroke="stroke" :stroke-width="strokeWidth" :stroke-opacity="strokeOpacity"
+      :pointer-events="pointerEvents" fill="none" @click="onClick" />
   </svg>
 </template>
 
@@ -95,5 +95,4 @@ const pathD = computed(() => {
 .edge-svg {
   pointer-events: none;
 }
-
 </style>

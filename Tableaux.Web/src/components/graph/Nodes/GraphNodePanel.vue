@@ -1,6 +1,6 @@
 <template>
   <div>
-  {{ graphNode.path.at(-1) }}
+    {{ graphNode.path[graphNode.path.length - 1] }}
   </div>
 </template>
 
@@ -15,4 +15,3 @@ defineProps({
 })
 
 </script>
-

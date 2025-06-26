@@ -7,11 +7,10 @@
 <script setup lang="ts">
 import { useGraphNodeActivatorCollection } from '@/stores/graph-node-activator-store';
 import { useGraph } from '@/stores/graph-store';
-import { onMounted } from 'vue';
 import GraphEdgesRenderer from './GraphEdgesRenderer.vue';
 import GraphNodesRenderer from './GraphNodesRenderer.vue';
 
-const { clear, addNode, tick } = useGraph();
+const { clear, addNode } = useGraph();
 const { registerDefault } = useGraphNodeActivatorCollection();
 
 registerDefault();
@@ -28,7 +27,4 @@ addNode(["Generic", "Logger"], { x: 400, y: 100 }, crypto.randomUUID())
 addNode(["Generic", "Repeat Until"], { x: 400, y: 250 }, crypto.randomUUID())
 addNode(["Generic", "Repeat Shortest"], { x: 0, y: 300 }, crypto.randomUUID())
 
-onMounted(() => {
-  tick()
-})
 </script>

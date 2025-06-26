@@ -8,11 +8,14 @@
 
 <style scoped>
 .handle {
-  width: 200%; /* wider for pill shape */
-  height: 12px; /* flatter shape */
+  width: 200%;
+  /* wider for pill shape */
+  height: 12px;
+  /* flatter shape */
   background-color: #555;
   border: 2px solid #e3dfdf;
-  border-radius: 999px; /* ensures fully rounded ends */
+  border-radius: 999px;
+  /* ensures fully rounded ends */
   display: flex;
   align-items: center;
   justify-content: center;

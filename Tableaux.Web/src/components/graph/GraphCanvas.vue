@@ -1,6 +1,6 @@
 <template>
   <div ref="containerRef" class="canvas-container" @contextmenu.prevent @dblclick.prevent="onCanvasDblClick"
-    @mousedown="onMouseDown" @wheel="onWheel" @click="menu.close">
+    @mousedown="onMouseDown" @wheel="onWheel">
 
     <div ref="contentRef" class="canvas-content" :style="contentStyle">
       <SelectionBorder :selecting="selecting" :x="x" :y="y" :width="width" :height="height" />
@@ -19,7 +19,7 @@ import { useClearSelection } from '@/composables/useClearSelection';
 import { useCanvasTransform } from '@/composables/useCanvasTransform';
 import { useContextMenuStore } from "@/stores/context-menu";
 
-import ActivatorTree from '@/components/graph/ActivatorTree.vue'
+import ActivatorTree from '@/components/graph/NodeBrowser/ActivatorTree.vue'
 import GraphRenderer from '@/components/graph/GraphRenderer.vue'
 import SelectionBorder from '@/components/graph/SelectionBorder.vue'
 import { useGraphNodeActivatorCollection } from '@/stores/graph-node-activator-store';
@@ -52,6 +52,9 @@ function onMouseDown(event: MouseEvent) {
   onPanMouseDown(event);
   onSelMouseDown(event);
   clearSelection.onClickClearSelection(event);
+
+  if (event.target !== containerRef.value) return;
+  menu.close();
 }
 
 function onCanvasDblClick(evt: MouseEvent) {

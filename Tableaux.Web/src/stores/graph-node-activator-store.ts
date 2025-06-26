@@ -68,6 +68,26 @@ export const useGraphNodeActivatorCollection = defineStore('graph-node-activator
     return paths
   }
 
+  // Recursively filter groups/activators by search string
+  function filterTree(group: ActivatorGroup, term: string): ActivatorGroup | null {
+    const match = (name: string) => name.toLowerCase().includes(term.toLowerCase())
+
+    const matchedActivators = group.activators.filter((a) => match(a.name))
+    const matchedChildren = group.children
+      .map((child) => filterTree(child, term))
+      .filter(Boolean) as ActivatorGroup[]
+
+    // if this group name matches, or it has any matching children/activators → keep it
+    if (match(group.name) || matchedActivators.length || matchedChildren.length) {
+      const newGroup = new ActivatorGroup(group.name)
+      newGroup.activators = matchedActivators
+      newGroup.children = matchedChildren
+      return newGroup
+    }
+
+    return null
+  }
+
   const registerDefault = () => {
     register(['Emitters', 'Number'], (id, path) => new NumberEmitter(id, path))
     register(['Emitters', 'Text'], (id, path) => new TextEmitter(id, path))
@@ -85,7 +105,7 @@ export const useGraphNodeActivatorCollection = defineStore('graph-node-activator
     register(['Geometry', 'XY'], (id, path) => new XY(id, path))
   }
 
-  return { activatorTree, getFromPath, getAll, register, registerDefault }
+  return { activatorTree, getFromPath, getAll, register, registerDefault, filterTree }
 })
 
 export class Activator {

@@ -1,25 +1,13 @@
 <template>
-  <div
-    ref="resizableRef"
-    class="resizable"
-    :style="{ width: width + 'px', height: height + 'px' }"
-  >
+  <div ref="resizableRef" class="resizable" :style="{ width: width + 'px', height: height + 'px' }">
     <!-- Input Ports rendered via our renderer component -->
     <div class="inputs" v-if="graphNode.inputs && graphNode.inputs.length">
-      <GraphNodeInputRenderer
-        v-for="(input, index) in graphNode.inputs"
-        :key="'input-' + index"
-        :input="input"
-      />
+      <GraphNodeInputRenderer v-for="(input, index) in graphNode.inputs" :key="'input-' + index" :input="input" />
     </div>
 
     <!-- Output Ports rendered via our renderer component -->
     <div class="outputs" v-if="graphNode.outputs && graphNode.outputs.length">
-      <GraphNodeOutputRenderer
-        v-for="(output, index) in graphNode.outputs"
-        :key="'output-' + index"
-        :output="output"
-      />
+      <GraphNodeOutputRenderer v-for="(output, index) in graphNode.outputs" :key="'output-' + index" :output="output" />
     </div>
 
     <!-- Main Content Panel -->
@@ -33,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { onUnmounted, computed, type Component } from "vue";
+import { computed, type Component } from "vue";
 import NumberEmitterPanel from "./Nodes/NumberEmitter.vue";
 import TextEmitterPanel from "./Nodes/TextEmitter.vue";
 import GraphNodePanel from "./Nodes/GraphNodePanel.vue";

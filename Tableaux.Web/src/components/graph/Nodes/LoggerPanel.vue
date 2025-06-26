@@ -47,7 +47,8 @@ onMounted(() => {
 
   /* Center text, and if desired, limit content width */
   text-align: center;
-  max-width: 600px; /* Optional: adjust as needed */
+  max-width: 600px;
+  /* Optional: adjust as needed */
 }
 
 /* (Optional) Custom scrollbar styling for WebKit browsers */

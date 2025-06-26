@@ -6,7 +6,7 @@
 
     <!-- Temporary (drag) edge -->
     <GraphEdgePathRenderer v-if="tempEdge" class="temp-edge-svg" :x1="startX" :y1="startY" :x2="tempEdge.currentX"
-      :y2="tempEdge.currentY" :stroke="'grey'" :stroke-width="1"/>
+      :y2="tempEdge.currentY" :stroke="'grey'" :stroke-width="1" />
   </div>
 </template>
 
