@@ -85,17 +85,17 @@ export const useGraphNodeActivatorCollection = defineStore('graph-node-activator
     register(['Geometry', 'XY'], (id, path) => new XY(id, path))
   }
 
-  return { getFromPath, getAll, register, registerDefault }
+  return { activatorTree, getFromPath, getAll, register, registerDefault }
 })
 
-class Activator {
+export class Activator {
   constructor(
     public name: string,
     public activate: (id: string) => GraphNode,
   ) {}
 }
 
-class ActivatorGroup {
+export class ActivatorGroup {
   public children: ActivatorGroup[] = []
   public activators: Activator[] = []
 

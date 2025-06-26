@@ -34,6 +34,16 @@ export const useGraph = defineStore('graph', () => {
       return
     }
 
+    const leftConnections = [...graphEdges.value.filter((e) => e.rightGraphNodeId == id)]
+    leftConnections.forEach((conn) => {
+      removeEdge(conn.rightGraphNodeId, conn.inputIndex)
+    })
+
+    const rightConnections = [...graphEdges.value.filter((e) => e.leftGraphNodeId == id)]
+    rightConnections.forEach((conn) => {
+      removeEdge(conn.rightGraphNodeId, conn.inputIndex)
+    })
+
     graphNodes.value.splice(existing, 1)
   }
 

@@ -1,21 +1,20 @@
-import type { XY } from "@/models/geometry/xy"
+import type { XY } from '@/models/geometry/xy'
 
 export const useTransformToCanvas = () => {
-/**
- * Find the closest parent or child with class "canvas-content".
- * This holds the transform.
- */
-function getCanvasContent(el: EventTarget | null): HTMLElement | null {
-  if (!(el instanceof HTMLElement)) return null;
+  /**
+   * Find the closest parent or child with class "canvas-content".
+   * This holds the transform.
+   */
+  function getCanvasContent(el: EventTarget | null): HTMLElement | null {
+    if (!(el instanceof HTMLElement)) return null
 
-  // First check up the DOM tree using closest
-  const upwardMatch = el.closest('.canvas-content');
-  if (upwardMatch) return upwardMatch as HTMLElement;
+    // First check up the DOM tree using closest
+    const upwardMatch = el.closest('.canvas-content')
+    if (upwardMatch) return upwardMatch as HTMLElement
 
-  // If no match above, search downward recursively
-  return el.querySelector('.canvas-content') as HTMLElement | null;
-}
-
+    // If no match above, search downward recursively
+    return el.querySelector('.canvas-content') as HTMLElement | null
+  }
 
   /**
    * Convert the mouse event’s coordinates into the canvas-content’s logical space.
