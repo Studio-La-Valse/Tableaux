@@ -7,11 +7,9 @@ export function useClearSelection() {
 
   // Global click handler using capture phase.
   function onClickClearSelection(event: MouseEvent) {
-    const target = event.target as HTMLElement
-    // Clear selection if the click is not inside a node.
-    if (!target.closest('.graph-node')) {
-      selectionStore.clearSelection()
-    }
+    if (event.button !== 0) return
+
+    selectionStore.clearSelection()
   }
 
   // Global keydown handler.

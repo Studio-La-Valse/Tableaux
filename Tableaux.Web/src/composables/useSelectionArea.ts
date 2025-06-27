@@ -1,88 +1,40 @@
-import { useGraph } from '@/stores/graph-store'
-import { useSelectionStore } from '@/stores/selection-store'
-import { ref, onUnmounted, type Ref } from 'vue'
+import { onUnmounted } from 'vue'
+import { useSelectionAreaStore } from '@/stores/selection-area-store'
 import { useTransformToCanvas } from './useTransformToCanvas'
+import { useSelectionStore } from '@/stores/selection-store'
+import { useGraph } from '@/stores/graph-store'
 
 export function useSelectionArea() {
-  const graphStore = useGraph()
-  const { clearSelection, selectNode } = useSelectionStore()
+  const store = useSelectionAreaStore()
+  const selectionStore = useSelectionStore();
+  const graphStore = useGraph();
+
   const { getCanvasContent, getLocalMousePos } = useTransformToCanvas()
+  let canvasEl: HTMLElement | null = null
 
-  // Indicates whether a selection drag is in progress.
-  const selecting = ref(false)
-  const threshold = 5
-
-  // Coordinates
-  const startX = ref(0)
-  const startY = ref(0)
-  const x = ref(0)
-  const y = ref(0)
-  const width = ref(0)
-  const height = ref(0)
-
-  const hasMoved = ref(false)
-  const canvasRef: Ref<HTMLElement | null> = ref(null)
-
-  const onMouseDown = (e: MouseEvent) => {
+  function onMouseDown(e: MouseEvent) {
     if (e.button !== 0) return
-
-    canvasRef.value = getCanvasContent(e.currentTarget)
-    if (!canvasRef.value) return
-
-    const localPos = getLocalMousePos(e, canvasRef.value)
-
-    startX.value = localPos.x
-    startY.value = localPos.y
-
-    x.value = localPos.x
-    y.value = localPos.y
-    width.value = 0
-    height.value = 0
-
-    hasMoved.value = false
-    selecting.value = false
-
+    canvasEl = getCanvasContent(e.currentTarget)
+    if (!canvasEl) return
+    const { x, y } = getLocalMousePos(e, canvasEl)
+    store.begin(x, y)
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
   }
 
-  const onMouseMove = (e: MouseEvent) => {
-    if (!canvasRef.value) return
-
-    const localPos = getLocalMousePos(e, canvasRef.value)
-    const dx = localPos.x - startX.value
-    const dy = localPos.y - startY.value
-
-    if (!hasMoved.value && Math.hypot(dx, dy) > threshold) {
-      hasMoved.value = true
-      selecting.value = true
-    }
-
-    if (selecting.value) {
-      x.value = Math.min(startX.value, localPos.x)
-      y.value = Math.min(startY.value, localPos.y)
-      width.value = Math.abs(dx)
-      height.value = Math.abs(dy)
-      e.preventDefault()
-      e.stopPropagation()
-    }
+  function onMouseMove(e: MouseEvent) {
+    if (!canvasEl) return
+    e.preventDefault()
+    const { x, y } = getLocalMousePos(e, canvasEl)
+    store.update(x, y)
   }
 
-  const onMouseUp = (e: MouseEvent) => {
+  function onMouseUp(e: MouseEvent) {
     if (e.button !== 0) return
-
-    if (selecting.value) {
-      // If a draggight happened (i.e. a nonzero rectangle), update selection.
-      if (width.value > 0 && height.value > 0) {
-        applySelection()
-      }
-
-      e.preventDefault()
-      e.stopPropagation()
-
-      selecting.value = false
+    const finalRect = store.end()
+    if (finalRect.width > 0 && finalRect.height > 0) {
+      applySelection(finalRect);
     }
-
     document.removeEventListener('mousemove', onMouseMove)
     document.removeEventListener('mouseup', onMouseUp)
   }
@@ -91,11 +43,11 @@ export function useSelectionArea() {
    * Given the final selection rectangle, iterate over the provided graph nodes
    * and select those that lie entirely within the rectangle.
    */
-  const applySelection = () => {
+  const applySelection = (rect: {x: number, y: number, width: number, height: number}) => {
     // Clear any prior selection.
-    clearSelection()
-    const min = { clientX: x.value, clientY: y.value }
-    const max = { clientX: x.value + width.value, clientY: y.value + height.value }
+    selectionStore.clearSelection()
+    const min = { clientX: rect.x, clientY: rect.y }
+    const max = { clientX: rect.x + rect.width, clientY: rect.y + rect.height }
 
     // For every node provided, check whether its rectangle is completely within the selection.
     graphStore.nodes.forEach((node) => {
@@ -107,7 +59,7 @@ export function useSelectionArea() {
         node.x + node.width <= max.clientX &&
         node.y + node.height <= max.clientY
       ) {
-        selectNode(node.id)
+        selectionStore.selectNode(node.id)
       }
     })
   }
@@ -117,5 +69,5 @@ export function useSelectionArea() {
     document.removeEventListener('mouseup', onMouseUp)
   })
 
-  return { selecting, x, y, width, height, onMouseDown }
+  return { onMouseDown }
 }

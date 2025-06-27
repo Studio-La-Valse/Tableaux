@@ -14,9 +14,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import ActivatorNode from '@/components/graph/NodeBrowser/ActivatorNode.vue'
-import { useGraphNodeActivatorCollection, type ActivatorGroup } from '@/stores/graph-node-activator-store';
+import { useGraphNodeActivatorCollection } from '@/stores/graph-node-activator-store';
 import { useContextMenuStore } from '@/stores/context-menu';
 
 const menu = useContextMenuStore()
@@ -33,9 +33,16 @@ const filteredGroup = computed(() => {
     : rootGroup
 })
 
-// Focus when tree mounts
 onMounted(() => {
-  inputRef.value?.focus()
+  watch(() => menu.visible, (newValue: boolean) => {
+    if (newValue) {
+      nextTick(() => {
+        inputRef.value?.focus()
+      })
+    } else {
+      search.value = '';
+    }
+  })
 })
 </script>
 

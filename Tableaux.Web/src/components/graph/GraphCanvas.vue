@@ -3,8 +3,9 @@
     @mousedown="onMouseDown" @wheel="onWheel">
 
     <div ref="contentRef" class="canvas-content" :style="contentStyle">
-      <SelectionBorder />
       <GraphRenderer />
+
+      <SelectionBorder />
     </div>
 
     <ActivatorTree />
@@ -23,8 +24,10 @@ import GraphRenderer from '@/components/graph/GraphRenderer.vue'
 import SelectionBorder from '@/components/graph/SelectionBorder.vue'
 import { useGraph } from '@/stores/graph-store';
 import { useSelectionStore } from '@/stores/selection-store';
+import { useSelectionAreaStore } from '@/stores/selection-area-store';
 
-const selectionBorder = useSelectionArea();
+const selectionArea = useSelectionArea();
+const selectionAreaStore = useSelectionAreaStore();
 const clearSelection = useClearSelection();
 const menu = useContextMenuStore()
 const selection = useSelectionStore();
@@ -42,16 +45,16 @@ const {
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({
   ...zoomStyle.value,
-  pointerEvents: selectionBorder.selecting.value ? 'none' : 'all'
+  pointerEvents: selectionAreaStore.selecting ? 'none' : 'all'
 }));
 
 function onMouseDown(event: MouseEvent) {
-  console.log(event)
+  if (event.target !== containerRef.value) return;
+
   onPanMouseDown(event);
-  selectionBorder.onMouseDown(event);
+  selectionArea.onMouseDown(event);
   clearSelection.onClickClearSelection(event);
 
-  if (event.target !== containerRef.value) return;
   menu.close();
 }
 
@@ -62,9 +65,7 @@ function onCanvasDblClick(evt: MouseEvent) {
 }
 
 function deleteSelectedNodes(evt: KeyboardEvent) {
-  if (evt.key != 'Delete') {
-    return;
-  }
+  if (evt.key != 'Delete') return;
 
   selection.selectedNodes.forEach((n) => graph.removeNode(n))
   selection.clearSelection();
@@ -83,5 +84,9 @@ onUnmounted(() => {
 .canvas-container {
   overflow: hidden;
   position: relative;
+}
+
+.canvas-content {
+  
 }
 </style>
