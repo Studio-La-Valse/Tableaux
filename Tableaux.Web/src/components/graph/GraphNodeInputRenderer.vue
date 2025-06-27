@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import HandleRenderer from './HandleRenderer.vue';
+import HandleRenderer from '@/components/graph/HandleRenderer.vue';
 import type { GraphNodeInput } from '@/models/graph/core/graph-node-input';
 import { useEdgeDrag } from '@/composables/useEdgeDrag';
 import { useGraph } from '@/stores/graph-store';

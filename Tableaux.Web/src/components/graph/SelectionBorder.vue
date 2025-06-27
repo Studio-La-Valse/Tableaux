@@ -6,24 +6,17 @@
 </template>
 
 <script setup lang="ts">
+import { useSelectionArea } from '@/composables/useSelectionArea';
 import { computed, type StyleValue } from 'vue';
 
-const props = defineProps({
-  x: { type: Number, required: true },
-  y: { type: Number, required: true },
-  width: { type: Number, required: true },
-  height: { type: Number, required: true },
-  // Allow the selection border to be hidden when not actively selecting.
-  visible: { type: Boolean, default: true },
-  selecting: { type: Boolean, default: false }
-});
+const { onMouseDown: onSelMouseDown, selecting, x, y, width, height } = useSelectionArea();
 
 const borderStyle = computed<StyleValue>(() => ({
   position: 'absolute',
-  left: `${props.x}px`,
-  top: `${props.y}px`,
-  width: `${props.width}px`,
-  height: `${props.height}px`,
+  left: `${x}px`,
+  top: `${y}px`,
+  width: `${width}px`,
+  height: `${height}px`,
   border: '2px dashed #2196F3',
   backgroundColor: 'rgba(33, 150, 243, 0.1)',
   pointerEvents: 'none', // Ensures underlying elements can still receive mouse events.

@@ -3,12 +3,11 @@
     @mousedown="onMouseDown" @wheel="onWheel">
 
     <div ref="contentRef" class="canvas-content" :style="contentStyle">
-      <SelectionBorder :selecting="selecting" :x="x" :y="y" :width="width" :height="height" />
+      <SelectionBorder />
       <GraphRenderer />
     </div>
 
-    <ActivatorTree v-if="menu.visible" :rootGroup="activatorTree" @activate="menu.onActivate" @close="menu.close"
-      class="context-panel" :style="{ top: menu.y + 'px', left: menu.x + 'px' }" />
+    <ActivatorTree />
   </div>
 </template>
 
@@ -22,14 +21,12 @@ import { useContextMenuStore } from "@/stores/context-menu";
 import ActivatorTree from '@/components/graph/NodeBrowser/ActivatorTree.vue'
 import GraphRenderer from '@/components/graph/GraphRenderer.vue'
 import SelectionBorder from '@/components/graph/SelectionBorder.vue'
-import { useGraphNodeActivatorCollection } from '@/stores/graph-node-activator-store';
 import { useGraph } from '@/stores/graph-store';
 import { useSelectionStore } from '@/stores/selection-store';
 
-const { onMouseDown: onSelMouseDown, selecting, x, y, width, height } = useSelectionArea();
+const selectionBorder = useSelectionArea();
 const clearSelection = useClearSelection();
 const menu = useContextMenuStore()
-const { activatorTree } = useGraphNodeActivatorCollection();
 const selection = useSelectionStore();
 const graph = useGraph();
 
@@ -45,12 +42,13 @@ const {
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({
   ...zoomStyle.value,
-  pointerEvents: selecting.value ? 'none' : 'all'
+  pointerEvents: selectionBorder.selecting.value ? 'none' : 'all'
 }));
 
 function onMouseDown(event: MouseEvent) {
+  console.log(event)
   onPanMouseDown(event);
-  onSelMouseDown(event);
+  selectionBorder.onMouseDown(event);
   clearSelection.onClickClearSelection(event);
 
   if (event.target !== containerRef.value) return;
@@ -85,13 +83,5 @@ onUnmounted(() => {
 .canvas-container {
   overflow: hidden;
   position: relative;
-}
-
-.context-panel {
-  position: absolute;
-  z-index: 1000;
-  top: 0;
-  left: 0;
-  background-color: rgb(63, 63, 63);
 }
 </style>

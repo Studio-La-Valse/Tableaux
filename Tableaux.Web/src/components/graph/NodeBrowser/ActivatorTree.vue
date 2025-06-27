@@ -1,10 +1,10 @@
 <template>
-  <div class="tree-container">
+  <div v-if="menu.visible" class="tree-container" :style="{ top: menu.y + 'px', left: menu.x + 'px' }">
     <input ref="inputRef" v-model="search" class="tree-filter" type="text" placeholder="Filter nodes…" />
 
     <ul class="tree-root" v-if="filteredGroup">
       <ActivatorNode v-for="child in filteredGroup.children" :key="child.name" :group="child" :parentPath="[]"
-        :forceExpand="search !== ''" @activate="$emit('activate', $event)" />
+        :forceExpand="search !== ''" />
     </ul>
 
     <div class="no-results" v-else>
@@ -17,19 +17,20 @@
 import { ref, computed, onMounted } from 'vue'
 import ActivatorNode from '@/components/graph/NodeBrowser/ActivatorNode.vue'
 import { useGraphNodeActivatorCollection, type ActivatorGroup } from '@/stores/graph-node-activator-store';
+import { useContextMenuStore } from '@/stores/context-menu';
 
+const menu = useContextMenuStore()
 const { filterTree } = useGraphNodeActivatorCollection();
 
-const props = defineProps<{ rootGroup: ActivatorGroup }>()
-defineEmits<{ (e: 'activate', path: string[]): void }>()
+const rootGroup = useGraphNodeActivatorCollection().activatorTree;
 
 const search = ref('')
 const inputRef = ref<HTMLInputElement | null>(null)
 
 const filteredGroup = computed(() => {
   return search.value.trim()
-    ? filterTree(props.rootGroup, search.value.trim())
-    : props.rootGroup
+    ? filterTree(rootGroup, search.value.trim())
+    : rootGroup
 })
 
 // Focus when tree mounts
@@ -47,6 +48,11 @@ onMounted(() => {
   overflow-y: auto;
   padding: 4px;
   user-select: none;
+  position: absolute;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  background-color: rgb(63, 63, 63);
 }
 
 .tree-root {

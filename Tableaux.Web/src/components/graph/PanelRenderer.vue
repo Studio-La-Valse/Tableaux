@@ -24,10 +24,10 @@
 import { computed, type Component } from "vue";
 import NumberEmitterPanel from "./Nodes/NumberEmitter.vue";
 import TextEmitterPanel from "./Nodes/TextEmitter.vue";
-import GraphNodePanel from "./Nodes/GraphNodePanel.vue";
+import GraphNodePanel from "./GraphNodePanel.vue";
 import LoggerPanel from "./Nodes/LoggerPanel.vue";
-import GraphNodeInputRenderer from "./Nodes/GraphNodeInputRenderer.vue";
-import GraphNodeOutputRenderer from "./Nodes/GraphNodeOutputRenderer.vue";
+import GraphNodeInputRenderer from "./GraphNodeInputRenderer.vue";
+import GraphNodeOutputRenderer from "./GraphNodeOutputRenderer.vue";
 import type { GraphNode } from "@/models/graph/core/graph-node";
 import { useGraph } from "@/stores/graph-store";
 import { useResizable } from "@/composables/useResizable";

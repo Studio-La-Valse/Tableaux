@@ -7,12 +7,10 @@
 
     <ul v-if="expanded" class="node-children">
       <!-- recurse, passing down the path so far -->
-      <ActivatorNode v-for="child in group.children" :key="child.name" :group="child" :parentPath="currentPath"
-        @activate="$emit('activate', $event)" />
+      <ActivatorNode v-for="child in group.children" :key="child.name" :group="child" :parentPath="currentPath" />
 
       <!-- leaf items emit the full path -->
-      <li v-for="act in group.activators" :key="act.name" class="leaf"
-        @click.stop="$emit('activate', [...currentPath, act.name])">
+      <li v-for="act in group.activators" :key="act.name" class="leaf"  @click.stop="(evt) => clickNode(evt, act.name)">
         {{ act.name }}
       </li>
     </ul>
@@ -23,15 +21,14 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { defineProps, defineEmits } from 'vue'
 import type { ActivatorGroup } from '@/stores/graph-node-activator-store'
+import { useContextMenuStore } from '@/stores/context-menu';
+
+const menu = useContextMenuStore();
 
 const props = defineProps<{
   group: ActivatorGroup
   parentPath: string[]
   forceExpand?: boolean
-}>()
-
-defineEmits<{
-  (e: 'activate', path: string[]): void
 }>()
 
 const expanded = ref(props.forceExpand ?? false)
@@ -41,6 +38,10 @@ const currentPath = computed(() => [...props.parentPath, props.group.name])
 
 function toggle() {
   expanded.value = !expanded.value
+}
+
+const clickNode = (evt: MouseEvent, nodeName: string) => {
+  menu.onActivate([...currentPath.value, nodeName])
 }
 
 onMounted(() => {
