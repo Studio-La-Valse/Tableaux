@@ -59,6 +59,47 @@ export const useGraph = defineStore('graph', () => {
 
   const nodes = computed(() => graphNodes.value)
 
+  const duplicate = (nodeIds: string[]): GraphNode[] => {
+    // 1) grab originals & snapshot the current edges
+    const originals = nodeIds.map(getNode)
+    const allEdges = [...graphEdges.value] // snapshot so we don't iterate newly created edges
+
+    // 2) clone each node & build origId→clone map
+    const idMap: Record<string, GraphNode> = {}
+    const clones = originals.map((orig) => {
+      const newId = crypto.randomUUID()
+      const copy = addNode(orig.path, { x: orig.x + 10, y: orig.y + 10 }, newId)
+      idMap[orig.id] = copy
+      return copy
+    })
+
+    // 3) Re-create edges BETWEEN selected originals
+    allEdges.forEach((edge) => {
+      const Lclone = idMap[edge.leftGraphNodeId]
+      const Rclone = idMap[edge.rightGraphNodeId]
+
+      if (Lclone && Rclone) {
+        // internal→internal
+        connect(Lclone.id, edge.outputIndex, Rclone.id, edge.inputIndex)
+      }
+    })
+
+    // 4) Mirror incoming edges: external→selected
+    allEdges.forEach((edge) => {
+      const Lorig = edge.leftGraphNodeId
+      const Rorig = edge.rightGraphNodeId
+      const Rclone = idMap[Rorig]
+
+      // if the ORIGINAL right‐node was selected, but its left‐node was NOT,
+      // we want to wire that same left→clone connection
+      if (!idMap[Lorig] && Rclone) {
+        connect(Lorig, edge.outputIndex, Rclone.id, edge.inputIndex)
+      }
+    })
+
+    return clones
+  }
+
   const connect = (
     leftNodeId: string,
     outputIndex: number,
@@ -113,6 +154,7 @@ export const useGraph = defineStore('graph', () => {
     getNode,
     addNode,
     removeNode,
+    duplicate,
     nodes,
     connect,
     removeEdge,

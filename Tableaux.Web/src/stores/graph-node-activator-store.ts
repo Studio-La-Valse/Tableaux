@@ -7,6 +7,7 @@ import { RepeatShortest } from '@/models/graph/graph-nodes/generic/repeat-shorte
 import { RepeatUntil } from '@/models/graph/graph-nodes/generic/repeat-until'
 import { TrimLongest } from '@/models/graph/graph-nodes/generic/trim-longest'
 import { WrapShortest } from '@/models/graph/graph-nodes/generic/wrap-shortest'
+import { Range } from '@/models/graph/graph-nodes/math/range'
 import { XY } from '@/models/graph/graph-nodes/geometry/xy'
 import { Add } from '@/models/graph/graph-nodes/math/add'
 import { Square } from '@/models/graph/graph-nodes/math/square'
@@ -101,6 +102,7 @@ export const useGraphNodeActivatorCollection = defineStore('graph-node-activator
 
     register(['Math', 'Add'], (id, path) => new Add(id, path))
     register(['Math', 'Square'], (id, path) => new Square(id, path))
+    register(['Math', 'Range'], (id, path) => new Range(id, path))
 
     register(['Geometry', 'XY'], (id, path) => new XY(id, path))
   }

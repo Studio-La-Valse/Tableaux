@@ -19,7 +19,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import { defineProps } from 'vue'
 import type { ActivatorGroup } from '@/stores/graph-node-activator-store'
 import { useContextMenuStore } from '@/stores/context-menu';
 

@@ -13,10 +13,11 @@ import { useGroupDraggable } from "@/composables/useGroupDraggable";
 import { XY } from "@/models/geometry/xy";
 import { useGraph } from "@/stores/graph-store";
 
+const groupDrag = useGroupDraggable();
+const selectionStore = useSelectionStore();
+
 const props = defineProps<{ graphNodeId: string }>();
 const graphNode = useGraph().getNode(props.graphNodeId);
-
-const selectionStore = useSelectionStore();
 
 // Node position is kept in sync with the graph node.
 const localPos = computed<XY>({
@@ -29,9 +30,10 @@ const localPos = computed<XY>({
 
 // Determines visual styling based on whether the node is selected.
 const isSelected = computed(() => selectionStore.isSelected(props.graphNodeId));
+const onMouseDown = (evt: MouseEvent) => {
+  groupDrag.onMouseDown(evt, props.graphNodeId)
+}
 
-// Use the updated group draggable composable; it now handles modifier-based selection on mousedown.
-const { onMouseDown } = useGroupDraggable(props.graphNodeId);
 </script>
 
 <style scoped>
