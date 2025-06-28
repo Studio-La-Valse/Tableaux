@@ -14,14 +14,15 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, type StyleValue } from 'vue';
-import { useSelectionArea } from '@/composables/useSelectionArea';
-import { useClearSelection } from '@/composables/useClearSelection';
-import { useCanvasTransform } from '@/composables/useCanvasTransform';
-import { useContextMenuStore } from "@/stores/context-menu";
-
 import ActivatorTree from '@/components/graph/NodeBrowser/ActivatorTree.vue'
 import GraphRenderer from '@/components/graph/GraphRenderer.vue'
 import SelectionBorder from '@/components/graph/SelectionBorder.vue'
+
+import { useSelectionArea } from '@/composables/useSelectionArea';
+import { useClearSelection } from '@/composables/useClearSelection';
+import { useCanvasTransform } from '@/composables/useCanvasTransform';
+
+import { useContextMenuStore } from "@/stores/context-menu";
 import { useGraph } from '@/stores/graph-store';
 import { useSelectionStore } from '@/stores/selection-store';
 import { useSelectionAreaStore } from '@/stores/selection-area-store';
@@ -86,7 +87,5 @@ onUnmounted(() => {
   position: relative;
 }
 
-.canvas-content {
-  
-}
+.canvas-content {}
 </style>

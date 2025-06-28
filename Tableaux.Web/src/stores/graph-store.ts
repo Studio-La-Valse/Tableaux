@@ -25,6 +25,10 @@ export const useGraph = defineStore('graph', () => {
     graphNode.onInitialize()
     graphNodes.value.push(graphNode)
 
+    if (graphNode.inputs.length == 0) {
+      graphNode.complete();
+    }
+
     return graphNode
   }
 
@@ -48,12 +52,17 @@ export const useGraph = defineStore('graph', () => {
   }
 
   const getNode = (nodeId: string) => {
-    const node = graphNodes.value.find((e) => e.id == nodeId)
+    const node = findNode(nodeId)
     if (!node) {
       const msg = `Node with id ${nodeId} not found!`
       throw new Error(msg)
     }
 
+    return node
+  }
+
+  const findNode = (nodeId: string) => {
+    const node = graphNodes.value.find((e) => e.id == nodeId)
     return node
   }
 
@@ -151,14 +160,15 @@ export const useGraph = defineStore('graph', () => {
 
   return {
     clear,
+    nodes,
+    findNode,
     getNode,
     addNode,
     removeNode,
     duplicate,
-    nodes,
     connect,
-    removeEdge,
     edges,
+    removeEdge,
     tick,
   }
 })

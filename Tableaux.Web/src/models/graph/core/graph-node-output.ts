@@ -99,6 +99,10 @@ export class GraphNodeOutputBoolean extends GraphNodeOutputType<boolean> {
       graphNodeInput.onNext(value)
     })
 
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
+
     return subscription
   }
 
@@ -111,7 +115,9 @@ export class GraphNodeOutputBoolean extends GraphNodeOutputType<boolean> {
       graphNodeInput.onNext(value ? 1 : 0)
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -125,7 +131,9 @@ export class GraphNodeOutputBoolean extends GraphNodeOutputType<boolean> {
       graphNodeInput.onNext(value.toString())
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -139,7 +147,9 @@ export class GraphNodeOutputBoolean extends GraphNodeOutputType<boolean> {
       graphNodeInput.onNext(value)
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -205,7 +215,9 @@ export class GraphNodeOutputNumber extends GraphNodeOutputType<number> {
       graphNodeInput.onNext(value)
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -219,7 +231,9 @@ export class GraphNodeOutputNumber extends GraphNodeOutputType<number> {
       graphNodeInput.onNext(value.toString())
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -233,7 +247,9 @@ export class GraphNodeOutputNumber extends GraphNodeOutputType<number> {
       graphNodeInput.onNext(value)
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -286,7 +302,9 @@ export class GraphNodeOutputString extends GraphNodeOutputType<string> {
       graphNodeInput.onNext(value.toString())
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -300,7 +318,9 @@ export class GraphNodeOutputString extends GraphNodeOutputType<string> {
       graphNodeInput.onNext(value)
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -325,10 +345,7 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
   private unknownInputs: Set<GraphNodeInputUnkown> = new Set<GraphNodeInputUnkown>()
 
   public get targetInputs(): Set<GraphNodeInput> {
-    return new Set<GraphNodeInput>([
-      ...this.stringInputs,
-      ...this.unknownInputs,
-    ])
+    return new Set<GraphNodeInput>([...this.stringInputs, ...this.unknownInputs])
   }
 
   public onSubscribe(graphNodeInput: GraphNodeInput): Unsubscriber {
@@ -352,7 +369,9 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
       graphNodeInput.onNext(JSON.stringify(value))
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -366,7 +385,9 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
       graphNodeInput.onNext(value)
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -385,7 +406,6 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
     super.complete()
   }
 }
-
 
 export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
   private numberInputs: Set<GraphNodeInputNumber> = new Set<GraphNodeInputNumber>()
@@ -431,7 +451,9 @@ export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
       graphNodeInput.onNext(value as boolean)
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -444,7 +466,9 @@ export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
       graphNodeInput.onNext(value as number)
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -458,7 +482,9 @@ export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
       graphNodeInput.onNext(this.unkownToString(value))
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
@@ -472,14 +498,16 @@ export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
       graphNodeInput.onNext(value)
     })
 
-    graphNodeInput.onCompleted();
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
 
     return subscription
   }
 
   private unkownToString(value: unknown): string {
-    const res = value instanceof Object ? JSON.stringify(value) : value as string
-    return res;
+    const res = value instanceof Object ? JSON.stringify(value) : (value as string)
+    return res
   }
 
   public complete(): void {

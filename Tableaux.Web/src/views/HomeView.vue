@@ -18,7 +18,7 @@ onMounted(() => {
     direction: "horizontal",
     sizes: [50, 50],
     minSize: [150, 150],
-    gutterSize: 6,
+    gutterSize: 2
   });
 });
 </script>

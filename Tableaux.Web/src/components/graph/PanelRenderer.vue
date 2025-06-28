@@ -1,5 +1,5 @@
 <template>
-  <div ref="resizableRef" class="resizable" :style="{ width: width + 'px', height: height + 'px' }">
+  <div ref="resizableRef" class="resizable" :style="style">
     <!-- Input Ports rendered via our renderer component -->
     <div class="inputs" v-if="graphNode.inputs && graphNode.inputs.length">
       <GraphNodeInputRenderer v-for="(input, index) in graphNode.inputs" :key="'input-' + index" :input="input" />
@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type Component } from "vue";
+import { computed, type StyleValue, type Component } from "vue";
 import NumberEmitterPanel from "./Nodes/NumberEmitter.vue";
 import TextEmitterPanel from "./Nodes/TextEmitter.vue";
 import GraphNodePanel from "./GraphNodePanel.vue";
@@ -39,6 +39,27 @@ const props = defineProps({
     required: true,
   },
 });
+
+const borderColor = computed(() => {
+  switch (props.graphNode.componentState) {
+    case "armed":
+      return "#a86232"
+    case "error":
+      return "#9c1313"
+    case "complete":
+      return "#289c13"
+    case "calculating":
+      return "#ede500"
+    default:
+      return "#ccc"
+  }
+})
+
+const style = computed<StyleValue>(() => ({
+  width: width.value + 'px',
+  height: height.value + 'px',
+  border: "2px solid" + borderColor.value
+}))
 
 // Get the reactive graph node instance.
 const graphNode = getNode(props.graphNode.id);
@@ -80,7 +101,6 @@ const { initResize } = useResizable(width, height);
 <style scoped>
 .resizable {
   position: relative;
-  border: 2px solid #ccc;
   box-sizing: border-box;
   overflow: visible;
   background: #989494;

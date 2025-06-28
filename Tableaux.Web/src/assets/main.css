@@ -1,13 +1,15 @@
 @import './base.css';
 
 .gutter {
-  background: #dac7c7;
-  cursor: default;
-  transition: background 0.2s ease;
+  position: relative;
+  overflow: visible;
+  z-index: 1;              /* so it sits above the panes */
+  background: #ccc;
+  cursor: col-resize;
 }
 
 .gutter:hover {
-  background: #aa1515;
+  background: #ff0000;
 }
 
 .gutter-horizontal:hover {
@@ -16,4 +18,15 @@
 
 .gutter-vertical:hover {
   cursor: row-resize;
+}
+
+/* invisibly expand its clickable region */
+.gutter::before {
+  content: "";
+  position: absolute;
+  top: 0;                  /* anchor to the very top */
+  bottom: 0;               /* anchor to the very bottom */
+  left: -8px;              /* 8px to the left */
+  right: -8px;             /* 8px to the right */
+  pointer-events: auto;    /* make sure it catches the mouse */
 }
