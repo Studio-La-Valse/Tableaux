@@ -21,11 +21,11 @@
           <option value="fit">Fit</option>
         </optgroup>
         <optgroup label="Scale">
-          <option value="50">50 %</option>
-          <option value="75">75 %</option>
-          <option value="100">100 %</option>
-          <option value="150">150 %</option>
-          <option value="200">200 %</option>
+          <option value="50">50 %</option>
+          <option value="75">75 %</option>
+          <option value="100">100 %</option>
+          <option value="150">150 %</option>
+          <option value="200">200 %</option>
         </optgroup>
       </select>
     </div>
@@ -33,19 +33,38 @@
     <!-- Width input -->
     <div class="field-group">
       <label for="canvas-width">Width</label>
-      <input id="canvas-width" type="number" min="1" v-model.number="innerWidth" />
+      <input id="canvas-width" type="number" required min="1" step="1" pattern="\d+" :value="innerWidth"
+        @input="onWidthInput(($event.target as HTMLInputElement).value)" />
+    </div>
+
+    <!-- Lock ratio toggle + display -->
+    <div class="field-group lock-group">
+      <label>Lock Ratio</label>
+      <div class="lock-header">
+        <button type="button" :class="{ locked: aspectLocked }" :aria-pressed="aspectLocked" @click="toggleLock" :title="aspectLocked
+          ? `Locked at ${displayRatio}`
+          : 'Unlock ratio control'">
+          {{ aspectLocked ? '🔒' : '🔓' }}
+        </button>
+        <span class="ratio-display">{{ displayRatio }}</span>
+      </div>
     </div>
 
     <!-- Height input -->
     <div class="field-group">
       <label for="canvas-height">Height</label>
-      <input id="canvas-height" type="number" min="1" v-model.number="innerHeight" />
+      <input id="canvas-height" type="number" required min="1" step="1" pattern="\d+" :value="innerHeight"
+        @input="onHeightInput(($event.target as HTMLInputElement).value)" />
     </div>
 
-    <!-- Full-screen button -->
-    <div class="field-group button-group">
-      <button type="button" @click="onFullScreen">
-        Full Screen
+    <!-- Flip & Full-screen buttons -->
+    <div class="button-group">
+      <button type="button" class="btn-flip" @click="onFlip" title="Swap Width ↔ Height">
+        🔄
+      </button>
+
+      <button type="button" class="btn-fullscreen" @click="onFullScreen" title="Toggle Full Screen">
+        ⛶
       </button>
     </div>
   </div>
@@ -54,16 +73,16 @@
 <script setup lang="ts">
 import { ref, toRefs, watch, computed } from 'vue'
 
-type optionItem = { label: string, w: number, h: number }
-type option = { label: string, items: optionItem[] }
+type optionItem = { label: string; w: number; h: number }
+type option = { label: string; items: optionItem[] }
 type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200'
 
+// Props & Emits
 const props = defineProps<{
   width: number
   height: number
   zoomMode: ZoomMode
 }>()
-
 const emit = defineEmits<{
   (e: 'update:width', v: number): void
   (e: 'update:height', v: number): void
@@ -71,7 +90,7 @@ const emit = defineEmits<{
   (e: 'fullScreen'): void
 }>()
 
-// same preset-groups from before
+// Preset data
 const presetGroups: option[] = [
   {
     label: '4:3',
@@ -121,60 +140,97 @@ const presetGroups: option[] = [
     ]
   }
 ] as const
-
-// flatten for lookup
 const allPresets = computed(() =>
   presetGroups.flatMap(g => g.items)
 )
 
+// Reactive state
 const { width, height, zoomMode } = toRefs(props)
-
 const innerWidth = ref(width.value)
 const innerHeight = ref(height.value)
 const mode = ref<ZoomMode>(zoomMode.value)
-const selectedPreset = ref<string>('custom')
+const selectedPreset = ref('custom')
 
+// Aspect-ratio lock
+const aspectLocked = ref(false)
+const ratio = ref(innerWidth.value / innerHeight.value)
+const displayRatio = computed(() => {
+  const w = innerWidth.value
+  const h = innerHeight.value
+  const gcd = (a: number, b: number): number =>
+    b === 0 ? a : gcd(b, a % b)
+  const g = gcd(w, h)
+  return `${w / g}:${h / g}`
+})
+
+
+// Toggle lock and capture current ratio
+function toggleLock() {
+  aspectLocked.value = !aspectLocked.value
+  if (aspectLocked.value) {
+    ratio.value = innerWidth.value / innerHeight.value
+  }
+}
+
+// Input handlers that clamp to >=1 integer
+function onWidthInput(val: string) {
+  let n = Math.round(Number(val))
+  if (isNaN(n) || n < 1) n = 1
+  innerWidth.value = n
+  if (aspectLocked.value) {
+    innerHeight.value = Math.max(1, Math.round(n / ratio.value))
+  }
+}
+function onHeightInput(val: string) {
+  let n = Math.round(Number(val))
+  if (isNaN(n) || n < 1) n = 1
+  innerHeight.value = n
+  if (aspectLocked.value) {
+    innerWidth.value = Math.max(1, Math.round(n * ratio.value))
+  }
+}
+
+// Flip and Full-Screen
+function onFlip() {
+  ;[innerWidth.value, innerHeight.value] = [
+    innerHeight.value,
+    innerWidth.value
+  ]
+  if (aspectLocked.value) {
+    ratio.value = innerWidth.value / innerHeight.value
+  }
+}
 function onFullScreen() {
   emit('fullScreen')
 }
 
-// apply preset
+// Preset watcher (also re-compute ratio if locked)
 watch(selectedPreset, label => {
   if (label === 'custom') return
-  const p = allPresets.value.find(p => p.label === label)
+  const p = allPresets.value.find(x => x.label === label)
   if (!p) return
   innerWidth.value = p.w
   innerHeight.value = p.h
+  if (aspectLocked.value) {
+    ratio.value = p.w / p.h
+  }
 })
 
-// emit changes
+// Emit updates outward
 watch(innerWidth, v => emit('update:width', v))
 watch(innerHeight, v => emit('update:height', v))
 watch(mode, v => emit('update:zoomMode', v))
 
-// keep in sync if parent changes
-watch(width, v => {
-  if (v !== innerWidth.value) {
-    innerWidth.value = v
-    selectedPreset.value = 'custom'
-  }
-})
-watch(height, v => {
-  if (v !== innerHeight.value) {
-    innerHeight.value = v
-    selectedPreset.value = 'custom'
-  }
-})
+// Sync if parent prop changes
+watch(width, v => { innerWidth.value = v; selectedPreset.value = 'custom' })
+watch(height, v => { innerHeight.value = v; selectedPreset.value = 'custom' })
 watch(zoomMode, v => (mode.value = v))
 
-// detect manual match
-watch(
-  [innerWidth, innerHeight],
-  ([w, h]) => {
-    const match = allPresets.value.find(p => p.w === w && p.h === h)
-    selectedPreset.value = match ? match.label : 'custom'
-  }
-)
+// Detect manual “custom” dims
+watch([innerWidth, innerHeight], ([w, h]) => {
+  const m = allPresets.value.find(x => x.w === w && x.h === h)
+  selectedPreset.value = m ? m.label : 'custom'
+})
 </script>
 
 <style scoped>
@@ -185,12 +241,16 @@ watch(
   padding: 0.5rem 1rem;
   background: #2b2b2b;
   border-bottom: 1px solid #444;
+
+  /* temp width hack */
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .field-group {
   display: flex;
   flex-direction: column;
-  width: 150px
+  width: 150px;
 }
 
 .field-group label {
@@ -207,35 +267,85 @@ watch(
   color: #eee;
   border: 1px solid #555;
   border-radius: 4px;
-  box-sizing: border-box;
 }
 
-/* focus styles */
-.field-group select:focus,
-.field-group input:focus {
-  outline: none;
-  border-color: #6094f0;
-  box-shadow: 0 0 0 2px rgba(96, 148, 240, 0.3);
+/* lock-ratio area */
+.lock-group {
+  align-items: flex-start;
+  width: auto;
 }
 
-/* optgroup labels use browser default coloring */
-/* push the button to the far right */
+.lock-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lock-header button {
+  font-size: 1.2rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.lock-header button.locked {
+  color: #4caf50;
+}
+
+.lock-header button:not(.locked) {
+  color: #aaa;
+}
+
+.ratio-display {
+  font-size: 0.9rem;
+  color: #ddd;
+  min-width: 3em;
+  text-align: right;
+}
+
+/* flip & fullscreen */
 .button-group {
   margin-left: auto;
+  display: flex;
+  align-items: center; /* centers buttons vertically */
+  gap: 0.5rem;
 }
 
-/* button style matches dark inputs */
+/* full control of size and alignment */
 .button-group button {
+  width: 50px;       /* set to whatever you prefer */
+  height: 50px;      /* or any other height */
   font-size: 0.9rem;
-  padding: 6px 12px;
   background: #444;
   color: #eee;
   border: 1px solid #555;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+/* optional hover/click effect */
 .button-group button:hover {
   background: #555;
+}
+.button-group button:active {
+  transform: scale(0.97);
+}
+
+.button-group button:hover {
+  background: #555;
+}
+
+/* focus ring */
+.field-group select:focus,
+.field-group input:focus {
+  outline: none;
+  border-color: #6094f0;
+  box-shadow: 0 0 0 2px rgba(96, 148, 240, 0.3);
 }
 </style>
