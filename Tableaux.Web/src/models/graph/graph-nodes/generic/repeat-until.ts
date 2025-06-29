@@ -1,4 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
+import { inputIterators } from '../../core/input-iterators'
 
 export class RepeatUntil extends GraphNode {
   private input1
@@ -16,10 +17,7 @@ export class RepeatUntil extends GraphNode {
   protected solve(): void {
     const signalLength = this.input1.payloadLength
 
-    if (this.input2.payloadLength != 1) {
-      throw new Error('Expected payload for input 2 to have one value.')
-    }
-    const targetLength = this.input2.payload[0]
+    const [targetLength] = inputIterators.singletonOnly(this.input2)
 
     for (let index = 0; index < targetLength; index++) {
       const element = this.input1.payload[index % signalLength]

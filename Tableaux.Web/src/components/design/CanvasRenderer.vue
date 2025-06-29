@@ -39,7 +39,7 @@ watch(() => props.dimensions, async () => {
 })
 
 
-watch(elementStore.elements, redraw);
+watch(() => elementStore.elements, redraw);
 </script>
 
 <style>

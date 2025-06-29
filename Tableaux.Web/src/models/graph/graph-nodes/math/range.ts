@@ -1,4 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
+import { inputIterators } from '../../core/input-iterators'
 
 export class Range extends GraphNode {
   private input1
@@ -16,7 +17,7 @@ export class Range extends GraphNode {
   }
 
   protected solve(): void {
-    const [start, stop, step] = this.cycleInputsSingleton(this.input1, this.input2, this.input3)
+    const [start, stop, step] = inputIterators.singletonOnly(this.input1, this.input2, this.input3)
 
     if (step <= 0) {
       const msg = `Invalid input, stepsize smaller or equal to 0`

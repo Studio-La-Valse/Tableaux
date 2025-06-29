@@ -28,6 +28,7 @@ import { CanvasProps } from '@/models/graph/graph-nodes/canvas/canvas-props';
 import { Rectangle } from '@/models/graph/graph-nodes/canvas/rectangle';
 import { Divide } from '@/models/graph/graph-nodes/math/divide';
 import { SimpleRange } from '@/models/graph/graph-nodes/math/simple-range';
+import { CarthesianProduct } from '@/models/graph/graph-nodes/generic/carthesian-product';
 
 const { clear } = useGraph();
 const { register } = useGraphNodeActivatorCollection();
@@ -41,6 +42,7 @@ register(['Generic', 'Repeat Shortest'], (id, path) => new RepeatShortest(id, pa
 register(['Generic', 'Trim Longest'], (id, path) => new TrimLongest(id, path))
 register(['Generic', 'Wrap Shortest'], (id, path) => new WrapShortest(id, path))
 register(['Generic', 'Repeat Until'], (id, path) => new RepeatUntil(id, path))
+register(['Generic', 'Carthesian'], (id, path) => new CarthesianProduct(id, path))
 
 register(['Math', 'Add'], (id, path) => new Add(id, path))
 register(['Math', 'Sum'], (id, path) => new Sum(id, path))

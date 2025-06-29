@@ -1,5 +1,6 @@
 import { DrawableRectangle } from '@/models/drawable-elements/drawable-rectangle'
 import { GraphNode } from '../../core/graph-node'
+import { inputIterators } from '../../core/input-iterators'
 
 export class Rectangle extends GraphNode {
   private _x1
@@ -21,7 +22,7 @@ export class Rectangle extends GraphNode {
   }
 
   protected solve(): void {
-    this.cycleInputsMultiples(this._x1, this._y1, this.__width, this.__height, this.color).forEach(
+    inputIterators.cycleMultiples(this._x1, this._y1, this.__width, this.__height, this.color).forEach(
       ([x, y, w, h, c]) => {
         this.output.next(new DrawableRectangle(x, y, w, h, c))
       },

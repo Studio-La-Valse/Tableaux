@@ -1,4 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
+import { inputIterators } from '../../core/input-iterators'
 
 export class WrapShortest extends GraphNode {
   private input1
@@ -17,10 +18,9 @@ export class WrapShortest extends GraphNode {
   }
 
   protected solve(): void {
-    const longestLength = Math.max(this.input1.payloadLength, this.input2.payloadLength)
-    for (let index = 0; index < longestLength; index++) {
-      this.output1.next(this.input1.payload[index % this.input1.payloadLength])
-      this.output2.next(this.input2.payload[index % this.input2.payloadLength])
-    }
+    inputIterators.cycleMultiples(this.input1, this.input2).forEach(([x, y]) => {
+      this.output1.next(x)
+      this.output2.next(y)
+    })
   }
 }

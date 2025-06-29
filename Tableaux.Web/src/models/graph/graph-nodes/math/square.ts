@@ -1,4 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
+import { inputIterators } from '../../core/input-iterators'
 
 export class Multiply extends GraphNode {
   private input1
@@ -14,6 +15,6 @@ export class Multiply extends GraphNode {
   }
 
   protected solve(): void {
-    this.cycleInputsValues(this.input1, this.input2).map(([left, right]) => left * right).forEach(v => this.output.next(v))
+    inputIterators.cycleMultiples(this.input1, this.input2).map(([left, right]) => left * right).forEach(v => this.output.next(v))
   }
 }

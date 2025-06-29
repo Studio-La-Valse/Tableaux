@@ -1,4 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
+import { inputIterators } from '../../core/input-iterators'
 
 export class SimpleRange extends GraphNode {
   private input
@@ -12,7 +13,7 @@ export class SimpleRange extends GraphNode {
   }
 
   protected solve(): void {
-    const [stop] = this.cycleInputsSingleton(this.input)
+    const [stop] = inputIterators.singletonOnly(this.input)
     for (let index = 0; index < stop; index++) {
       this.output.next(index);
     }

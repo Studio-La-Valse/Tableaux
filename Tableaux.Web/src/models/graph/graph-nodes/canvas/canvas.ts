@@ -4,7 +4,7 @@ import type { DrawableElement } from '@/models/drawable-elements/drawable-elemen
 
 export class Canvas extends GraphNode {
   private input
-  private elementStore: { elements: DrawableElement[] } | null
+  private elementStore: { setElements: (e: DrawableElement[]) => void } | null
 
   constructor(id: string, path: string[]) {
     super(id, path)
@@ -21,13 +21,13 @@ export class Canvas extends GraphNode {
 
   public arm(): void {
     if (this.elementStore !== null) {
-      this.elementStore.elements.length = 0
+      this.elementStore.setElements([])
     }
 
     super.arm()
   }
 
   protected solve(): void {
-    this.input.payload.forEach((p) => this.elementStore?.elements.push(p))
+    this.elementStore?.setElements(this.input.payload)
   }
 }

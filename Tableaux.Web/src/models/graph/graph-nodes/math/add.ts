@@ -1,6 +1,7 @@
 import { GraphNode } from '../../core/graph-node'
 import type { GraphNodeInputNumber } from '../../core/graph-node-input'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
+import { inputIterators } from '../../core/input-iterators'
 
 export class Add extends GraphNode {
   public path: string[] = ['Math', 'Add']
@@ -18,7 +19,7 @@ export class Add extends GraphNode {
   }
 
   protected solve(): void {
-    this.cycleInputsMultiples(this.input1, this.input2)
+    inputIterators.cycleMultiples(this.input1, this.input2)
       .map(([first, second]) => first + second)
       .forEach((v) => this.output.next(v))
   }

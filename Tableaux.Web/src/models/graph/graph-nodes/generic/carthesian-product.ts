@@ -1,7 +1,7 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 
-export class TrimLongest extends GraphNode {
+export class CarthesianProduct extends GraphNode {
   private input1
   private input2
   private output1
@@ -18,7 +18,7 @@ export class TrimLongest extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.zipToShortest(this.input1, this.input2).forEach(([x, y]) => {
+    inputIterators.cartesianProduct(this.input1, this.input2).forEach(([x, y]) => {
       this.output1.next(x)
       this.output2.next(y)
     })
