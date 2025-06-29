@@ -258,6 +258,103 @@ export abstract class GraphNode {
     return result
   }
 
+  public cycleInputsMultiples<Inputs extends GraphNodeInputType<any>[]>(
+    ...inputs: Inputs
+  ): Array<{ [K in keyof Inputs]: InputOf<Inputs[K]> }> {
+    const lengths = inputs.map(i => i.payload.length)
+    const maxLen = Math.max(...lengths)
+
+    // guard: no empty payloads, and every length must divide maxLen
+    if (lengths.some(len => len === 0 || maxLen % len !== 0)) {
+      throw new Error(
+        `cycleInputsMultiples: found payload lengths=[${lengths.join(',')}]; ` +
+        `all must be >0 and divide the maximum (${maxLen})`
+      )
+    }
+
+    const result: Array<{ [K in keyof Inputs]: InputOf<Inputs[K]> }> = []
+    for (let i = 0; i < maxLen; i++) {
+      // pick the i-th element for each payload, cycling shorter ones
+      const row = inputs.map(node =>
+        node.payload[i % node.payload.length]
+      ) as { [K in keyof Inputs]: InputOf<Inputs[K]> }
+
+      result.push(row)
+    }
+
+    return result
+  }
+
+  public cycleInputsFillLast<Inputs extends GraphNodeInputType<any>[]>(
+    ...inputs: Inputs
+  ): Array<{ [K in keyof Inputs]: InputOf<Inputs[K]> }> {
+    const lengths = inputs.map(i => i.payload.length)
+    const maxLen = Math.max(...lengths)
+
+    // guard: no empty payloads
+    if (lengths.some(len => len === 0)) {
+      throw new Error(
+        `cycleInputsFillLast: all payloads must be non-empty; got lengths=[${lengths.join(',')}]`
+      )
+    }
+
+    const result: Array<{ [K in keyof Inputs]: InputOf<Inputs[K]> }> = []
+    for (let i = 0; i < maxLen; i++) {
+      const row = inputs.map(node => {
+        const len = node.payload.length
+        // if we're within bounds, take it; else repeat the last item
+        return i < len
+          ? node.payload[i]
+          : node.payload[len - 1]
+      }) as { [K in keyof Inputs]: InputOf<Inputs[K]> }
+
+      result.push(row)
+    }
+
+    return result
+  }
+
+  public zipInputsToShortest<Inputs extends GraphNodeInputType<any>[]>(
+    ...inputs: Inputs
+  ): Array<{ [K in keyof Inputs]: InputOf<Inputs[K]> }> {
+    // find the shortest payload length
+    const lengths = inputs.map(i => i.payload.length)
+    const minLen = Math.min(...lengths)
+
+    // build up the result, trimming to minLen
+    const result: Array<{ [K in keyof Inputs]: InputOf<Inputs[K]> }> = []
+    for (let i = 0; i < minLen; i++) {
+      const row = inputs.map(node => node.payload[i]) as {
+        [K in keyof Inputs]: InputOf<Inputs[K]>
+      }
+      result.push(row)
+    }
+
+    return result
+  }
+
+  public productInputs<Inputs extends GraphNodeInputType<any>[]>(
+    ...inputs: Inputs
+  ): Array<{ [K in keyof Inputs]: InputOf<Inputs[K]> }> {
+    // guard: bail out if any input has no values
+    if (inputs.some(i => i.payload.length === 0)) {
+      return []
+    }
+
+    // start with a single “empty” tuple
+    let combos: any[][] = [[]]
+
+    // for each input, extend existing tuples by every possible payload item
+    for (const node of inputs) {
+      combos = combos.flatMap(tuple =>
+        node.payload.map(item => [...tuple, item])
+      )
+    }
+
+    // assert our precise return type
+    return combos as Array<{ [K in keyof Inputs]: InputOf<Inputs[K]> }>
+  }
+
   protected abstract solve(): void
 
   public inputAt(index: number): GraphNodeInput {
