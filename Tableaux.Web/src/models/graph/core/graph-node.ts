@@ -21,18 +21,18 @@ import {
 export class SignalLengthsNotEqualError extends Error {}
 
 export const componentStates = {
-  armed: "armed",
-  calculating: "calculating",
-  error: "error",
-  complete: "complete"
-} as const;
+  armed: 'armed',
+  calculating: 'calculating',
+  error: 'error',
+  complete: 'complete',
+} as const
 
 export type ComponentState = (typeof componentStates)[keyof typeof componentStates]
 
 export abstract class GraphNode {
   private initialized: boolean = false
 
-  public componentState: ComponentState;
+  public componentState: ComponentState
 
   private _height = 50
   private _width = 150
@@ -83,7 +83,7 @@ export abstract class GraphNode {
     public id: string,
     public path: string[],
   ) {
-    this.componentState = "armed"
+    this.componentState = 'armed'
   }
 
   public registerBooleanInput(): GraphNodeInputType<boolean> {
@@ -198,7 +198,7 @@ export abstract class GraphNode {
   }
 
   public arm(): void {
-    this.componentState = "armed"
+    this.componentState = 'armed'
     this.outputs.forEach((e) => e.arm())
   }
 
@@ -210,7 +210,7 @@ export abstract class GraphNode {
         }
       }
 
-      this.componentState = "calculating"
+      this.componentState = 'calculating'
 
       this.outputs.forEach((e) => {
         e.arm()
@@ -218,14 +218,14 @@ export abstract class GraphNode {
 
       this.solve()
 
-      this.componentState = "complete"
+      this.componentState = 'complete'
 
       this.outputs.forEach((output) => {
         output.complete()
       })
     } catch (err) {
       console.error(err)
-      this.componentState = "error"
+      this.componentState = 'error'
     } finally {
     }
   }
@@ -244,6 +244,19 @@ export abstract class GraphNode {
     })
 
     return length
+  }
+
+  public getLongest(): number {
+    let length = 0
+    if (!this.numberOfInputs) {
+      return length
+    }
+
+    this.inputs.forEach((e) => {
+      length = Math.max(length, e.payloadLength)
+    })
+
+    return length;
   }
 
   protected abstract solve(): void

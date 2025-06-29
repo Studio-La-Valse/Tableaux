@@ -48,7 +48,7 @@ onMounted(() => {
 
 <style scoped>
 .tree-container {
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   max-height: 400px;
   width: 240px;
@@ -59,7 +59,7 @@ onMounted(() => {
   z-index: 1000;
   top: 0;
   left: 0;
-  background-color: rgb(63, 63, 63);
+  background-color: var(--color-background-soft);
 }
 
 .tree-root {
@@ -72,13 +72,15 @@ onMounted(() => {
   margin-bottom: 6px;
   width: 100%;
   padding: 4px 8px;
-  border: 1px solid #ccc;
+  background: var(--color-background-mute);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-hover);
   font-size: 14px;
 }
 
 .no-results {
   padding: 8px;
-  color: #777;
+  color: var(--color-heading);
   font-style: italic;
 }
 </style>

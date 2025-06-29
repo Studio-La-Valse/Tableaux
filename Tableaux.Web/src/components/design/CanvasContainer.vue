@@ -1,7 +1,9 @@
 <template>
   <div ref="wrapper" class="canvas-container">
     <div :style="stripeStyle" class="stripe">
-      <canvas ref="canvas" :style="canvasStyle"></canvas>
+      <div :style="canvasStyle">
+        <CanvasRenderer :width="canvasProps.dimensions.x" :height="canvasProps.dimensions.y" />
+      </div>
     </div>
   </div>
 </template>
@@ -12,22 +14,21 @@ import {
   onMounted,
   onBeforeUnmount,
   computed,
-  watch,
   defineProps,
-  nextTick,
   type StyleValue
 } from 'vue'
+import CanvasRenderer from './CanvasRenderer.vue';
+import { useCanvasProps } from '@/stores/canvas-props-store';
 
 type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200'
 
+const canvasProps = useCanvasProps();
+
 const props = defineProps<{
-  width: number
-  height: number
   zoomMode: ZoomMode
 }>()
 
 const wrapper = ref<HTMLElement | null>(null)
-const canvas = ref<HTMLCanvasElement | null>(null)
 const parentW = ref(0)
 const parentH = ref(0)
 let ro: ResizeObserver
@@ -46,16 +47,16 @@ onBeforeUnmount(() => ro.disconnect())
 // compute scale
 const scale = computed(() => {
   if (props.zoomMode === 'fit') {
-    return Math.min(parentW.value / props.width,
-      parentH.value / props.height)
+    return Math.min(parentW.value / canvasProps.dimensions.x,
+      parentH.value / canvasProps.dimensions.y)
   }
   // numeric zoom factor
   return parseFloat(props.zoomMode) / 100
 })
 
 // displayed size
-const scaledW = computed(() => props.width * scale.value)
-const scaledH = computed(() => props.height * scale.value)
+const scaledW = computed(() => canvasProps.dimensions.x * scale.value)
+const scaledH = computed(() => canvasProps.dimensions.y * scale.value)
 
 // centering margins (≥0)
 const marginX = computed(() => Math.max((parentW.value - scaledW.value) / 2, 0))
@@ -72,31 +73,9 @@ const stripeStyle = computed<StyleValue>(() => ({
 const canvasStyle = computed<StyleValue>(() => ({
   width: `${scaledW.value}px`,
   height: `${scaledH.value}px`,
-  display: 'block',
   marginLeft: `${marginX.value}px`,
-  boxSizing: 'border-box',
-  backgroundColor: 'black'
 }))
 
-function redraw() {
-  if (!canvas.value) return
-  canvas.value.width = props.width
-  canvas.value.height = props.height
-  const ctx = canvas.value.getContext('2d')!
-  ctx.imageSmoothingEnabled = false
-
-  ctx.clearRect(0, 0, props.width, props.height)
-  ctx.fillStyle = 'red'
-  ctx.beginPath()
-  ctx.arc(props.width / 2, props.height / 2, 50, 0, Math.PI * 2)
-  ctx.fill()
-}
-
-onMounted(redraw)
-watch([() => props.width, () => props.height], async () => {
-  await nextTick()
-  redraw()
-})
 </script>
 
 <style scoped>
@@ -108,6 +87,6 @@ watch([() => props.width, () => props.height], async () => {
 }
 
 .stripe {
-  background-color: rgb(17, 17, 17);
+  background-color: var(--color-background-mute);
 }
 </style>

@@ -6,6 +6,6 @@ export class DrawableRectangle implements DrawableElement {
     public y: number,
     public width: number,
     public height: number,
-    public color: string = 'red'
+    public color: string
   ) {}
 }

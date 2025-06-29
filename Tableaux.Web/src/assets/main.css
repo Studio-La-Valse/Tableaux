@@ -4,12 +4,12 @@
   position: relative;
   overflow: visible;
   z-index: 1;              /* so it sits above the panes */
-  background: #ccc;
+  background: var(--color-background-mute);
   cursor: col-resize;
 }
 
 .gutter:hover {
-  background: #ff0000;
+  background: var(--color-accent);
 }
 
 .gutter-horizontal:hover {

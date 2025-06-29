@@ -22,6 +22,12 @@ import { Square } from '@/models/graph/graph-nodes/math/square';
 import { Sum } from '@/models/graph/graph-nodes/math/sum';
 import { Range } from '@/models/graph/graph-nodes/math/range'
 import { XY } from '@/models/graph/graph-nodes/geometry/xy'
+import { Canvas } from '@/models/graph/graph-nodes/canvas/canvas';
+import { Circle } from '@/models/graph/graph-nodes/canvas/circle';
+import { CanvasProps } from '@/models/graph/graph-nodes/canvas/canvas-props';
+import { Rectangle } from '@/models/graph/graph-nodes/canvas/rectangle';
+import { Divide } from '@/models/graph/graph-nodes/math/divide';
+import { SimpleRange } from '@/models/graph/graph-nodes/math/simple-range';
 
 const { clear } = useGraph();
 const { register } = useGraphNodeActivatorCollection();
@@ -39,9 +45,16 @@ register(['Generic', 'Repeat Until'], (id, path) => new RepeatUntil(id, path))
 register(['Math', 'Add'], (id, path) => new Add(id, path))
 register(['Math', 'Sum'], (id, path) => new Sum(id, path))
 register(['Math', 'Square'], (id, path) => new Square(id, path))
+register(['Math', 'Divide'], (id, path) => new Divide(id, path))
 register(['Math', 'Range'], (id, path) => new Range(id, path))
+register(['Math', 'Range (Simple)'], (id, path) => new SimpleRange(id, path))
 
 register(['Geometry', 'XY'], (id, path) => new XY(id, path))
+
+register(['Canvas', 'Canvas'], (id, path) => new Canvas(id, path))
+register(['Canvas', 'Props'], (id, path) => new CanvasProps(id, path))
+register(['Canvas', 'Circle'], (id, path) => new Circle(id, path))
+register(['Canvas', 'Rectangle'], (id, path) => new Rectangle(id, path))
 
 clear();
 

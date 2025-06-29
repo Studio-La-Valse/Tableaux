@@ -1,7 +1,8 @@
 <template>
   <div class="outer">
     <div class="inner">
-      <p v-for="(value, index) in unwrappedValues" :key="index">
+      <!-- directly loop over the reactive array -->
+      <p v-for="(value, i) in graphNode.__values" :key="i">
         {{ value }}
       </p>
     </div>
@@ -9,23 +10,14 @@
 </template>
 
 <script setup lang="ts">
-import type { Logger } from '@/models/graph/graph-nodes/generic/logger';
-import { computed, onMounted } from 'vue';
+import type { Logger } from '@/models/graph/graph-nodes/generic/logger'
 
-const props = defineProps({
-  graphNode: {
-    type: Object as () => Logger,
-    required: true,
-  },
-});
-
-// Unwrap the ref<string[]> for easier use in the template.
-const unwrappedValues = computed(() => props.graphNode.values);
-
-onMounted(() => {
-  props.graphNode.onInitialize();
-});
+// `defineProps` gives you a typed `graphNode` in your template
+defineProps<{
+  graphNode: Logger
+}>()
 </script>
+
 
 <style scoped>
 .outer {

@@ -1,10 +1,10 @@
 <template>
   <div class="page">
-    <CanvasControls v-model:width="canvasWidth" v-model:height="canvasHeight" v-model:zoomMode="zoomMode"
+    <CanvasControls v-model:zoomMode="zoomMode"
       @fullScreen="handleFullScreen" />
 
     <div ref="canvasContainer" class="canvas-container">
-      <DesignCanvas :width="canvasWidth" :height="canvasHeight" :zoomMode="zoomMode" />
+      <DesignCanvas :zoomMode="zoomMode" />
     </div>
   </div>
 </template>
@@ -12,16 +12,14 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import CanvasControls from './CanvasControls.vue'
-import DesignCanvas from './DesignCanvas.vue'
+import DesignCanvas from './CanvasContainer.vue'
 
 type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200'
 
-const canvasWidth = ref(1920)
-const canvasHeight = ref(1080)
 const zoomMode = ref<ZoomMode>('fit')
 
 // keep track of what the zoom was before we forced Fit
-let previousZoom: ZoomMode = 'fit'
+let previousZoom: ZoomMode = zoomMode.value;
 
 // DOM ref for the element we fullscreen
 const canvasContainer = ref<HTMLElement | null>(null)
@@ -31,6 +29,7 @@ function handleFullScreen() {
 
   // stash current zoom
   previousZoom = zoomMode.value
+
   // force Fit mode
   zoomMode.value = 'fit'
 

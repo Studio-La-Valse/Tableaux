@@ -9,8 +9,8 @@
 <script setup lang="ts">
 import Split from "split.js";
 import { onMounted } from "vue";
-import GraphCanvas from "@/components/graph/GraphCanvas.vue";
-import DesignCanvasPainter from "@/components/design/DesignCanvasPainter.vue";
+import GraphCanvas from "@/components/graph/GraphComponent.vue";
+import DesignCanvasPainter from "@/components/design/CanvasComponent.vue";
 
 
 onMounted(() => {

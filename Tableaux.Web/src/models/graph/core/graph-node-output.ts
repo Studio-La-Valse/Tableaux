@@ -4,6 +4,7 @@ import type { GraphNode } from './graph-node'
 import {
   GraphNodeInputBoolean,
   GraphNodeInputNumber,
+  GraphNodeInputObject,
   GraphNodeInputString,
   GraphNodeInputUnkown,
   type GraphNodeInput,
@@ -342,15 +343,20 @@ export class GraphNodeOutputString extends GraphNodeOutputType<string> {
 
 export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
   private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
+  private objectInputs: Set<GraphNodeInputObject> = new Set<GraphNodeInputObject>()
   private unknownInputs: Set<GraphNodeInputUnkown> = new Set<GraphNodeInputUnkown>()
 
   public get targetInputs(): Set<GraphNodeInput> {
-    return new Set<GraphNodeInput>([...this.stringInputs, ...this.unknownInputs])
+    return new Set<GraphNodeInput>([...this.stringInputs, ...this.objectInputs, ...this.unknownInputs])
   }
 
   public onSubscribe(graphNodeInput: GraphNodeInput): Unsubscriber {
     if (graphNodeInput instanceof GraphNodeInputString) {
       return this.onSubscribeString(graphNodeInput)
+    }
+
+    if (graphNodeInput instanceof GraphNodeInputObject) {
+      return this.onSubscribeObject(graphNodeInput)
     }
 
     if (graphNodeInput instanceof GraphNodeInputUnkown) {
@@ -367,6 +373,23 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
 
     this.payload.forEach((value) => {
       graphNodeInput.onNext(JSON.stringify(value))
+    })
+
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
+
+    return subscription
+  }
+
+
+  public onSubscribeObject(graphNodeInput: GraphNodeInputObject): Unsubscriber {
+    const subscription = Subscription.subscribeOrThrow(this.objectInputs, graphNodeInput)
+
+    graphNodeInput.onArm()
+
+    this.payload.forEach((value) => {
+      graphNodeInput.onNext(value)
     })
 
     if (this.graphNode.componentState == 'complete') {
@@ -396,6 +419,10 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
     for (const value of this.payload) {
       this.stringInputs.forEach((e) => {
         e.onNext(JSON.stringify(value))
+      })
+
+      this.objectInputs.forEach((e) => {
+        e.onNext(value)
       })
 
       this.unknownInputs.forEach((e) => {

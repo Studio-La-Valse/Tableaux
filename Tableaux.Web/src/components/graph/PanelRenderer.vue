@@ -103,7 +103,7 @@ const { initResize } = useResizable(width, height);
   position: relative;
   box-sizing: border-box;
   overflow: visible;
-  background: #989494;
+  background: var(--color-background-mute);
 }
 
 /* Place the input ports inside the node on the left side */
@@ -152,7 +152,7 @@ const { initResize } = useResizable(width, height);
   right: 0;
   width: 16px;
   height: 16px;
-  background-color: #aaa;
+  background-color: var(--color-border);
   cursor: se-resize;
 }
 </style>

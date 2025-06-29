@@ -18,7 +18,7 @@ export class Add extends GraphNode {
   }
 
   protected solve(): void {
-    const length = this.getEqualLength()
+    const length = this.getLongest()
 
     for (let index = 0; index < length; index++) {
       const sum = this.input1.payload[index] + this.input2.payload[index]

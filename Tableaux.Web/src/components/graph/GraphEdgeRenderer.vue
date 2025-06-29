@@ -1,9 +1,9 @@
 <template>
-  <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y" :stroke="isSelected ? 'blue' : 'white'"
-    :stroke-width="1" />
+  <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y" :stroke="isSelected ? 'var(--color-accent)' : 'var(--color-text)'"
+    :stroke-width="isSelected ? 3 : 1" />
 
   <!-- Interactive overlay: invisible (but painted) so that only hits on the line register, all pointer events registered -->
-  <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y" :stroke="'black'" :stroke-opacity="0"
+  <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y" :stroke="'var(--color-text)'" :stroke-opacity="0"
     :stroke-width="10" :callback="toggleSelection" :pointer-events="'all'" />
 </template>
 
@@ -90,9 +90,3 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown);
 });
 </script>
-
-<style scoped>
-.edge-svg {
-  color: inherit;
-}
-</style>

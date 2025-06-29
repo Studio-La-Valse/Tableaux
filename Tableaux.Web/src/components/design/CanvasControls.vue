@@ -33,7 +33,7 @@
     <!-- Width input -->
     <div class="field-group">
       <label for="canvas-width">Width</label>
-      <input id="canvas-width" type="number" required min="1" step="1" pattern="\d+" :value="innerWidth"
+      <input id="canvas-width" type="number" required min="1" step="1" pattern="\d+" :value="canvasProps.dimensions.x"
         @input="onWidthInput(($event.target as HTMLInputElement).value)" />
     </div>
 
@@ -53,7 +53,7 @@
     <!-- Height input -->
     <div class="field-group">
       <label for="canvas-height">Height</label>
-      <input id="canvas-height" type="number" required min="1" step="1" pattern="\d+" :value="innerHeight"
+      <input id="canvas-height" type="number" required min="1" step="1" pattern="\d+" :value="canvasProps.dimensions.y"
         @input="onHeightInput(($event.target as HTMLInputElement).value)" />
     </div>
 
@@ -71,7 +71,10 @@
 </template>
 
 <script setup lang="ts">
+import { useCanvasProps } from '@/stores/canvas-props-store';
 import { ref, toRefs, watch, computed } from 'vue'
+
+const canvasProps = useCanvasProps();
 
 type optionItem = { label: string; w: number; h: number }
 type option = { label: string; items: optionItem[] }
@@ -79,13 +82,9 @@ type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200'
 
 // Props & Emits
 const props = defineProps<{
-  width: number
-  height: number
   zoomMode: ZoomMode
 }>()
 const emit = defineEmits<{
-  (e: 'update:width', v: number): void
-  (e: 'update:height', v: number): void
   (e: 'update:zoomMode', v: ZoomMode): void
   (e: 'fullScreen'): void
 }>()
@@ -145,18 +144,16 @@ const allPresets = computed(() =>
 )
 
 // Reactive state
-const { width, height, zoomMode } = toRefs(props)
-const innerWidth = ref(width.value)
-const innerHeight = ref(height.value)
+const { zoomMode } = toRefs(props)
 const mode = ref<ZoomMode>(zoomMode.value)
 const selectedPreset = ref('custom')
 
 // Aspect-ratio lock
 const aspectLocked = ref(false)
-const ratio = ref(innerWidth.value / innerHeight.value)
+const ratio = ref(canvasProps.dimensions.x / canvasProps.dimensions.y)
 const displayRatio = computed(() => {
-  const w = innerWidth.value
-  const h = innerHeight.value
+  const w = canvasProps.dimensions.x
+  const h = canvasProps.dimensions.y
   const gcd = (a: number, b: number): number =>
     b === 0 ? a : gcd(b, a % b)
   const g = gcd(w, h)
@@ -168,7 +165,7 @@ const displayRatio = computed(() => {
 function toggleLock() {
   aspectLocked.value = !aspectLocked.value
   if (aspectLocked.value) {
-    ratio.value = innerWidth.value / innerHeight.value
+    ratio.value = canvasProps.dimensions.x / canvasProps.dimensions.y
   }
 }
 
@@ -176,28 +173,29 @@ function toggleLock() {
 function onWidthInput(val: string) {
   let n = Math.round(Number(val))
   if (isNaN(n) || n < 1) n = 1
-  innerWidth.value = n
+  canvasProps.dimensions = { x: n, y: canvasProps.dimensions.y }
   if (aspectLocked.value) {
-    innerHeight.value = Math.max(1, Math.round(n / ratio.value))
+    const newY = Math.max(1, Math.round(n / ratio.value))
+    canvasProps.dimensions = { x: canvasProps.dimensions.x, y: newY }
   }
 }
 function onHeightInput(val: string) {
   let n = Math.round(Number(val))
   if (isNaN(n) || n < 1) n = 1
-  innerHeight.value = n
+  canvasProps.dimensions = { x: canvasProps.dimensions.x, y: n }
   if (aspectLocked.value) {
-    innerWidth.value = Math.max(1, Math.round(n * ratio.value))
+    const newX = Math.max(1, Math.round(n * ratio.value))
+    canvasProps.dimensions = { x: newX, y: canvasProps.dimensions.y }
   }
 }
 
 // Flip and Full-Screen
 function onFlip() {
-  ;[innerWidth.value, innerHeight.value] = [
-    innerHeight.value,
-    innerWidth.value
-  ]
+  const oldX = canvasProps.dimensions.x
+  const oldY = canvasProps.dimensions.y
+  canvasProps.dimensions = { x: oldY, y: oldX }
   if (aspectLocked.value) {
-    ratio.value = innerWidth.value / innerHeight.value
+    ratio.value = canvasProps.dimensions.x / canvasProps.dimensions.y
   }
 }
 function onFullScreen() {
@@ -207,30 +205,64 @@ function onFullScreen() {
 // Preset watcher (also re-compute ratio if locked)
 watch(selectedPreset, label => {
   if (label === 'custom') return
+
   const p = allPresets.value.find(x => x.label === label)
   if (!p) return
-  innerWidth.value = p.w
-  innerHeight.value = p.h
+
+  canvasProps.dimensions = { x: p.w, y: p.h }
   if (aspectLocked.value) {
     ratio.value = p.w / p.h
   }
 })
 
 // Emit updates outward
-watch(innerWidth, v => emit('update:width', v))
-watch(innerHeight, v => emit('update:height', v))
 watch(mode, v => emit('update:zoomMode', v))
 
 // Sync if parent prop changes
-watch(width, v => { innerWidth.value = v; selectedPreset.value = 'custom' })
-watch(height, v => { innerHeight.value = v; selectedPreset.value = 'custom' })
 watch(zoomMode, v => (mode.value = v))
 
-// Detect manual “custom” dims
-watch([innerWidth, innerHeight], ([w, h]) => {
-  const m = allPresets.value.find(x => x.w === w && x.h === h)
-  selectedPreset.value = m ? m.label : 'custom'
+let applyingPreset = false
+let presetTimeout: number | undefined;
+
+// 1) When selectedPreset changes, ONLY write dims if they really differ:
+watch(selectedPreset, label => {
+  if (label === 'custom') return
+
+  const p = allPresets.value.find(x => x.label === label)
+  if (!p) return
+
+  // if dims already match, do nothing
+  if (canvasProps.dimensions.x === p.w && canvasProps.dimensions.y === p.h)
+    return
+
+  // otherwise, we’re “applying” a preset,
+  // so set the guard so our dims-watcher can ignore the next assignment
+  applyingPreset = true
+  canvasProps.dimensions = { x: p.w, y: p.h }
+  if (aspectLocked.value) {
+    ratio.value = p.w / p.h
+  }
+  applyingPreset = false
 })
+
+// 2) In your dims-watcher, bail immediately if we're in the middle of applying a preset:
+watch(
+  () => ({ ...canvasProps.dimensions }),
+  dim => {
+    if (applyingPreset) return
+
+    if (presetTimeout) clearTimeout(presetTimeout)
+    presetTimeout = window.setTimeout(() => {
+      const match = allPresets.value.find(p => p.w === dim.x && p.h === dim.y)
+      const newLabel = match ? match.label : 'custom'
+      if (newLabel !== selectedPreset.value) {
+        selectedPreset.value = newLabel
+      }
+    }, 200)
+  },
+  { deep: true }
+)
+
 </script>
 
 <style scoped>
@@ -239,8 +271,8 @@ watch([innerWidth, innerHeight], ([w, h]) => {
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 1rem;
-  background: #2b2b2b;
-  border-bottom: 1px solid #444;
+  background: var(--color-background-soft);
+  border-bottom: 1px solid var(--color-border);
 
   /* temp width hack */
   overflow-x: auto;
@@ -251,11 +283,12 @@ watch([innerWidth, innerHeight], ([w, h]) => {
   display: flex;
   flex-direction: column;
   width: 150px;
+  color: var(--color-text);
 }
 
 .field-group label {
   font-size: 0.75rem;
-  color: #ddd;
+  color: var(--color-text);
   margin-bottom: 4px;
 }
 
@@ -263,9 +296,9 @@ watch([innerWidth, innerHeight], ([w, h]) => {
 .field-group input {
   font-size: 0.9rem;
   padding: 6px 8px;
-  background: #3a3a3a;
-  color: #eee;
-  border: 1px solid #555;
+  background: var(--color-background-mute);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-hover);
   border-radius: 4px;
 }
 
@@ -287,20 +320,17 @@ watch([innerWidth, innerHeight], ([w, h]) => {
   border: none;
   cursor: pointer;
   padding: 4px;
-  transition: color 0.2s;
+  border-radius: 4px;
 }
 
-.lock-header button.locked {
-  color: #4caf50;
-}
-
-.lock-header button:not(.locked) {
-  color: #aaa;
+.lock-header button:hover {
+  background: var(--color-border);
+  transition: background 0.5s;
 }
 
 .ratio-display {
   font-size: 0.9rem;
-  color: #ddd;
+  color: var(--color-text);
   min-width: 3em;
   text-align: right;
 }
@@ -309,18 +339,21 @@ watch([innerWidth, innerHeight], ([w, h]) => {
 .button-group {
   margin-left: auto;
   display: flex;
-  align-items: center; /* centers buttons vertically */
+  align-items: center;
+  /* centers buttons vertically */
   gap: 0.5rem;
 }
 
 /* full control of size and alignment */
 .button-group button {
-  width: 50px;       /* set to whatever you prefer */
-  height: 50px;      /* or any other height */
+  width: 50px;
+  /* set to whatever you prefer */
+  height: 50px;
+  /* or any other height */
   font-size: 0.9rem;
-  background: #444;
-  color: #eee;
-  border: 1px solid #555;
+  background: var(--color-background-mute);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-hover);
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
@@ -331,14 +364,11 @@ watch([innerWidth, innerHeight], ([w, h]) => {
 
 /* optional hover/click effect */
 .button-group button:hover {
-  background: #555;
-}
-.button-group button:active {
-  transform: scale(0.97);
+  background: var(--color-background-soft);
 }
 
-.button-group button:hover {
-  background: #555;
+.button-group button:active {
+  transform: scale(0.97);
 }
 
 /* focus ring */

@@ -12,8 +12,8 @@
   /* wider for pill shape */
   height: 12px;
   /* flatter shape */
-  background-color: #555;
-  border: 2px solid #e3dfdf;
+  background-color: var(--color-background-mute);
+  border: 2px solid var(--color-text);
   border-radius: 999px;
   /* ensures fully rounded ends */
   display: flex;
@@ -24,6 +24,6 @@
 }
 
 .handle:hover {
-  background-color: #d12a2a;
+  background-color: var(--color-accent);
 }
 </style>

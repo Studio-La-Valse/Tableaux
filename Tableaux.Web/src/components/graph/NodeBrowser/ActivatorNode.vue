@@ -59,7 +59,7 @@ onMounted(() => {
 }
 
 .node-header:hover {
-  background: #636363;
+  background: var(--color-background-soft)
 }
 
 .toggle-icon {
@@ -83,6 +83,6 @@ onMounted(() => {
 }
 
 .leaf:hover {
-  background: rgb(136, 136, 136);
+  background: var(--color-background-mute)
 }
 </style>
