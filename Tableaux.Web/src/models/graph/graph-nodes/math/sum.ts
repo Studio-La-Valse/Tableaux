@@ -14,12 +14,7 @@ export class Sum extends GraphNode {
   }
 
   protected solve(): void {
-    let sum = 0;
-
-    for (let index = 0; index < this.input.payloadLength; index++) {
-      sum += this.input.payload[index]
-    }
-
+    const sum = this.input.payload.reduce((p, n) => p + n, 0)
     this.output.next(sum);
   }
 }

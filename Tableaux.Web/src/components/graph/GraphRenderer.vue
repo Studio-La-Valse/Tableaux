@@ -18,7 +18,7 @@ import { RepeatUntil } from '@/models/graph/graph-nodes/generic/repeat-until';
 import { TrimLongest } from '@/models/graph/graph-nodes/generic/trim-longest';
 import { WrapShortest } from '@/models/graph/graph-nodes/generic/wrap-shortest';
 import { Add } from '@/models/graph/graph-nodes/math/add';
-import { Square } from '@/models/graph/graph-nodes/math/square';
+import { Multiply } from '@/models/graph/graph-nodes/math/square';
 import { Sum } from '@/models/graph/graph-nodes/math/sum';
 import { Range } from '@/models/graph/graph-nodes/math/range'
 import { XY } from '@/models/graph/graph-nodes/geometry/xy'
@@ -44,7 +44,7 @@ register(['Generic', 'Repeat Until'], (id, path) => new RepeatUntil(id, path))
 
 register(['Math', 'Add'], (id, path) => new Add(id, path))
 register(['Math', 'Sum'], (id, path) => new Sum(id, path))
-register(['Math', 'Square'], (id, path) => new Square(id, path))
+register(['Math', 'Square'], (id, path) => new Multiply(id, path))
 register(['Math', 'Divide'], (id, path) => new Divide(id, path))
 register(['Math', 'Range'], (id, path) => new Range(id, path))
 register(['Math', 'Range (Simple)'], (id, path) => new SimpleRange(id, path))

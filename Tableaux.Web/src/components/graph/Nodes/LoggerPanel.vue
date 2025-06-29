@@ -2,7 +2,7 @@
   <div class="outer">
     <div class="inner">
       <!-- directly loop over the reactive array -->
-      <p v-for="(value, i) in graphNode.__values" :key="i">
+      <p v-for="(value, i) in graphNode.values" :key="i">
         {{ value }}
       </p>
     </div>

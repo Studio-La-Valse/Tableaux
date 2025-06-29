@@ -14,13 +14,6 @@ export class XY extends GraphNode {
   }
 
   protected solve(): void {
-    const length = this.getEqualLength()
-
-    for (let index = 0; index < length; index++) {
-      const x = this.input1.payload[index]
-      const y = this.input2.payload[index]
-      const element = { x, y }
-      this.output.next(element)
-    }
+    this.cycleInputsValues(this.input1, this.input2).map(([x, y]) => ({ x, y })).forEach(this.output.next)
   }
 }

@@ -1,6 +1,6 @@
 import { GraphNode } from '../../core/graph-node'
 
-export class Square extends GraphNode {
+export class Multiply extends GraphNode {
   private input1
   private input2
   private output
@@ -14,10 +14,6 @@ export class Square extends GraphNode {
   }
 
   protected solve(): void {
-    const length = this.getEqualLength()
-    for (let index = 0; index < length; index++) {
-      const element = this.input1.payload[index] * this.input2.payload[index]
-      this.output.next(element)
-    }
+    this.cycleInputsValues(this.input1, this.input2).map(([left, right]) => left * right).forEach(this.output.next)
   }
 }

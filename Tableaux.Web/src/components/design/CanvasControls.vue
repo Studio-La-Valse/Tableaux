@@ -342,6 +342,7 @@ watch(
   align-items: center;
   /* centers buttons vertically */
   gap: 0.5rem;
+  font-size: inherit;
 }
 
 /* full control of size and alignment */
@@ -350,7 +351,7 @@ watch(
   /* set to whatever you prefer */
   height: 50px;
   /* or any other height */
-  font-size: 0.9rem;
+  font-size: 1.2rem;
   background: var(--color-background-mute);
   color: var(--color-text);
   border: 1px solid var(--color-border-hover);

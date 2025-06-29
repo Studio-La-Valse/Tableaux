@@ -18,7 +18,7 @@ import {
   GraphNodeOutputUnkown,
 } from './graph-node-output'
 
-export class SignalLengthsNotEqualError extends Error {}
+export class SignalLengthsNotEqualError extends Error { }
 
 export const componentStates = {
   armed: 'armed',
@@ -28,6 +28,12 @@ export const componentStates = {
 } as const
 
 export type ComponentState = (typeof componentStates)[keyof typeof componentStates]
+
+// Helper to extract the element‐type `T` from a GraphNodeInputsType<T>
+type InputOf<O> =
+  O extends GraphNodeInputType<infer U>
+  ? U
+  : never
 
 export abstract class GraphNode {
   private initialized: boolean = false
@@ -230,33 +236,26 @@ export abstract class GraphNode {
     }
   }
 
-  public getEqualLength(): number {
-    let length = 0
-    if (!this.numberOfInputs) {
-      return length
+  public cycleInputsValues<Inputs extends GraphNodeInputType<any>[]>(
+    ...inputs: Inputs
+  ): Array<{ [K in keyof Inputs]: InputOf<Inputs[K]> }> {
+
+    // if any payload is empty, we can’t form a full tuple → return []
+    if (inputs.some(i => i.payload.length === 0)) {
+      return []
     }
 
-    length = this.inputs[0].payloadLength
-    this.inputs.forEach((input) => {
-      if (input.payloadLength != length) {
-        throw new SignalLengthsNotEqualError()
-      }
-    })
+    const maxLen = Math.max(...inputs.map(i => i.payload.length))
+    const result: Array<{ [K in keyof Inputs]: InputOf<Inputs[K]> }> = []
 
-    return length
-  }
-
-  public getLongest(): number {
-    let length = 0
-    if (!this.numberOfInputs) {
-      return length
+    for (let i = 0; i < maxLen; i++) {
+      const row = inputs.map(node =>
+        node.payload[i % node.payload.length]
+      ) as { [K in keyof Inputs]: InputOf<Inputs[K]> }
+      result.push(row)
     }
 
-    this.inputs.forEach((e) => {
-      length = Math.max(length, e.payloadLength)
-    })
-
-    return length;
+    return result
   }
 
   protected abstract solve(): void

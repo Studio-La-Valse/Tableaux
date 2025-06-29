@@ -14,11 +14,6 @@ export class Divide extends GraphNode {
   }
 
   protected solve(): void {
-    const length = this.getEqualLength()
-    for (let index = 0; index < length; index++) {
-      const right = this.input2.payload[index]
-      const element = right == 0 ? 0 : this.input1.payload[index] / right
-      this.output.next(element)
-    }
+    this.cycleInputsValues(this.input1, this.input2).map(([first, second]) => first / second).forEach(this.output.next)
   }
 }
