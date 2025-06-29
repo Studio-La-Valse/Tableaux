@@ -16,9 +16,8 @@ export class Range extends GraphNode {
   }
 
   protected solve(): void {
-    const start = this.input1.payload[0]
-    const stop = this.input2.payload[0]
-    const step = this.input3.payload[0]
+    const [start, stop, step] = this.cycleInputsSingleton(this.input1, this.input2, this.input3)
+
     if (step <= 0) {
       const msg = `Invalid input, stepsize smaller or equal to 0`
       throw new Error(msg)

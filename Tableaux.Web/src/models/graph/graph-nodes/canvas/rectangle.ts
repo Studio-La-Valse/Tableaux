@@ -21,18 +21,10 @@ export class Rectangle extends GraphNode {
   }
 
   protected solve(): void {
-    const length = this.getEqualLength()
-
-    for (let index = 0; index < length; index++) {
-      const element = new DrawableRectangle(
-        this._x1.payload[index],
-        this._y1.payload[index],
-        this.__width.payload[index],
-        this.__height.payload[index],
-        this.color.payload[index],
-      )
-
-      this.output.next(element)
-    }
+    this.cycleInputsMultiples(this._x1, this._y1, this.__width, this.__height, this.color).forEach(
+      ([x, y, w, h, c]) => {
+        this.output.next(new DrawableRectangle(x, y, w, h, c))
+      },
+    )
   }
 }

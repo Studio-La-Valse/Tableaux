@@ -14,6 +14,8 @@ export class Divide extends GraphNode {
   }
 
   protected solve(): void {
-    this.cycleInputsValues(this.input1, this.input2).map(([first, second]) => first / second).forEach(this.output.next)
+    this.cycleInputsValues(this.input1, this.input2)
+      .map(([first, second]) => first / second)
+      .forEach((v) => this.output.next(v))
   }
 }

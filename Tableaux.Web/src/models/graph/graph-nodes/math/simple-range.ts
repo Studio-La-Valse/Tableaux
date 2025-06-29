@@ -1,4 +1,4 @@
-import { GraphNode } from "../../core/graph-node"
+import { GraphNode } from '../../core/graph-node'
 
 export class SimpleRange extends GraphNode {
   private input
@@ -12,10 +12,9 @@ export class SimpleRange extends GraphNode {
   }
 
   protected solve(): void {
-    const count = this.input.payload[0]
-
-    for (let index = 0; index < count; index += 1) {
-      this.output.next(index)
+    const [stop] = this.cycleInputsSingleton(this.input)
+    for (let index = 0; index < stop; index++) {
+      this.output.next(index);
     }
   }
 }

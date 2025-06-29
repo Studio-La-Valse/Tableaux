@@ -14,6 +14,6 @@ export class Multiply extends GraphNode {
   }
 
   protected solve(): void {
-    this.cycleInputsValues(this.input1, this.input2).map(([left, right]) => left * right).forEach(this.output.next)
+    this.cycleInputsValues(this.input1, this.input2).map(([left, right]) => left * right).forEach(v => this.output.next(v))
   }
 }

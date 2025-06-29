@@ -14,6 +14,6 @@ export class XY extends GraphNode {
   }
 
   protected solve(): void {
-    this.cycleInputsValues(this.input1, this.input2).map(([x, y]) => ({ x, y })).forEach(this.output.next)
+    this.cycleInputsValues(this.input1, this.input2).map(([x, y]) => ({ x, y })).forEach(v => this.output.next(v))
   }
 }

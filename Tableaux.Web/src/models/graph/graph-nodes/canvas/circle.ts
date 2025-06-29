@@ -19,17 +19,8 @@ export class Circle extends GraphNode {
   }
 
   protected solve(): void {
-    const length = this.getEqualLength()
-
-    for (let index = 0; index < length; index++) {
-      const element = new DrawableCircle(
-        this._x.payload[index],
-        this._y.payload[index],
-        this.radius.payload[index],
-        this.color.payload[index],
-      );
-
-      this.output.next(element)
-    }
+    this.cycleInputsMultiples(this._x, this._y, this.radius, this.color).forEach(([x, y, r, c]) => {
+      this.output.next(new DrawableCircle(x, y, r, c))
+    });
   }
 }

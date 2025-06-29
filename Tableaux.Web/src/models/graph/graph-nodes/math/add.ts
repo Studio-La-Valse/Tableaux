@@ -18,11 +18,8 @@ export class Add extends GraphNode {
   }
 
   protected solve(): void {
-
-    this.cycleInputsValues(this.input1, this.input2).forEach(([first, second]) => {
-      const sum = first + second
-      this.output.next(sum)
-    })
+    this.cycleInputsMultiples(this.input1, this.input2)
+      .map(([first, second]) => first + second)
+      .forEach((v) => this.output.next(v))
   }
-
 }
