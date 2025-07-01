@@ -1,266 +1,181 @@
 import { GraphNodeAlreadyInitializedError } from './errors/graph-node-already-initialized-error'
+import { GraphNodeCore } from './graph-node-core'
 import {
-  GraphNodeInput,
-  GraphNodeInputBoolean,
-  GraphNodeInputObject,
-  GraphNodeInputString,
-  GraphNodeInputType,
-  GraphNodeInputUnkown,
+    GraphNodeInputBoolean,
+    GraphNodeInputNumber,
+    GraphNodeInputObject,
+    GraphNodeInputString,
+    GraphNodeInputUnkown,
+    GraphNodeInputType,
 } from './graph-node-input'
-import { GraphNodeInputNumber } from './graph-node-input'
 import {
-  GraphNodeOutput,
-  GraphNodeOutputBoolean,
-  GraphNodeOutputNumber,
-  GraphNodeOutputObject,
-  GraphNodeOutputString,
-  GraphNodeOutputType,
-  GraphNodeOutputUnkown,
+    GraphNodeOutputBoolean,
+    GraphNodeOutputNumber,
+    GraphNodeOutputObject,
+    GraphNodeOutputString,
+    GraphNodeOutputUnkown,
+    GraphNodeOutputType,
 } from './graph-node-output'
 
-export class SignalLengthsNotEqualError extends Error {}
-
 export const componentStates = {
-  armed: 'armed',
-  calculating: 'calculating',
-  error: 'error',
-  complete: 'complete',
+    armed: 'armed',
+    calculating: 'calculating',
+    error: 'error',
+    complete: 'complete',
 } as const
 
-export type ComponentState = (typeof componentStates)[keyof typeof componentStates]
+export type ComponentState = typeof componentStates[keyof typeof componentStates]
 
-export abstract class GraphNode {
-  private initialized: boolean = false
+/**
+ * GraphNode is the public-facing interface for individual nodes in a graph.
+ * Handles visual layout and input/output registration.
+ */
+export abstract class GraphNode extends GraphNodeCore {
+    private _height = 50
+    private _width = 150
 
-  public componentState: ComponentState
+    public x: number = 0
+    public y: number = 0
 
-  private _height = 50
-  private _width = 150
-  public get height() {
-    return Math.max(this._height, this.minHeight)
-  }
-  public set height(val: number) {
-    const value = Math.max(val, this.minHeight)
-    this._height = value
-  }
-  public get width() {
-    return Math.max(this._width, this.minWidth)
-  }
-  public set width(val: number) {
-    const value = Math.max(val, this.minWidth)
-    this._width = value
-  }
-
-  public x: number = 0
-  public y: number = 0
-
-  public get minHeight() {
-    return Math.max(this.numberOfInputs, this.numberOfOutputs, 1) * 50
-  }
-  public get minWidth() {
-    return 150
-  }
-
-  private _inputs: GraphNodeInput[] = []
-  public get inputs(): GraphNodeInput[] {
-    return [...this._inputs]
-  }
-
-  public get numberOfInputs(): number {
-    return this.inputs.length
-  }
-
-  private _outputs: GraphNodeOutput[] = []
-  public get outputs(): GraphNodeOutput[] {
-    return [...this._outputs]
-  }
-
-  public get numberOfOutputs(): number {
-    return this.outputs.length
-  }
-
-  constructor(
-    public id: string,
-    public path: string[],
-  ) {
-    this.componentState = 'armed'
-  }
-
-  public registerBooleanInput(): GraphNodeInputType<boolean> {
-    if (this.initialized) {
-      throw new GraphNodeAlreadyInitializedError()
-    }
-    const input = new GraphNodeInputBoolean(this, this.numberOfInputs)
-    this._inputs.push(input)
-    return input
-  }
-
-  public registerNumberInput(): GraphNodeInputType<number> {
-    if (this.initialized) {
-      throw new GraphNodeAlreadyInitializedError()
-    }
-    const input = new GraphNodeInputNumber(this, this.numberOfInputs)
-    this._inputs.push(input)
-    return input
-  }
-
-  public registerStringInput(): GraphNodeInputType<string> {
-    if (this.initialized) {
-      throw new GraphNodeAlreadyInitializedError()
-    }
-    const input = new GraphNodeInputString(this, this.numberOfInputs)
-    this._inputs.push(input)
-    return input
-  }
-
-  public registerObjectInput(): GraphNodeInputType<object> {
-    if (this.initialized) {
-      throw new GraphNodeAlreadyInitializedError()
-    }
-    const input = new GraphNodeInputObject(this, this.numberOfInputs)
-    this._inputs.push(input)
-    return input
-  }
-
-  public registerUnkownInput(): GraphNodeInputType<unknown> {
-    if (this.initialized) {
-      throw new GraphNodeAlreadyInitializedError()
-    }
-    const input = new GraphNodeInputUnkown(this, this.numberOfInputs)
-    this._inputs.push(input)
-    return input
-  }
-
-  public registerBooleanOutput(): GraphNodeOutputType<boolean> {
-    if (this.initialized) {
-      throw new GraphNodeAlreadyInitializedError()
-    }
-    const output = new GraphNodeOutputBoolean(this, this.numberOfOutputs)
-    this._outputs.push(output)
-    return output
-  }
-
-  public registerNumberOutput(): GraphNodeOutputType<number> {
-    if (this.initialized) {
-      throw new GraphNodeAlreadyInitializedError()
-    }
-    const output = new GraphNodeOutputNumber(this, this.numberOfOutputs)
-    this._outputs.push(output)
-    return output
-  }
-
-  public registerTextOutput(): GraphNodeOutputType<string> {
-    if (this.initialized) {
-      throw new GraphNodeAlreadyInitializedError()
-    }
-    const output = new GraphNodeOutputString(this, this.numberOfOutputs)
-    this._outputs.push(output)
-    return output
-  }
-
-  public registerObjectOutput(): GraphNodeOutputType<object> {
-    if (this.initialized) {
-      throw new GraphNodeAlreadyInitializedError()
-    }
-    const output = new GraphNodeOutputObject(this, this.numberOfOutputs)
-    this._outputs.push(output)
-    return output
-  }
-
-  public registerUnkownOutput(): GraphNodeOutputType<unknown> {
-    if (this.initialized) {
-      throw new GraphNodeAlreadyInitializedError()
-    }
-    const output = new GraphNodeOutputUnkown(this, this.numberOfOutputs)
-    this._outputs.push(output)
-    return output
-  }
-
-  public onInitialize(): void {
-    this.initialized = true
-  }
-
-  public trySubscribeSelf(): void {
-    this.outputs.forEach((output) => {
-      output.trySubscribe(this.id)
-    })
-  }
-
-  public trySubscribeParent(graphNodeId: string) {
-    if (graphNodeId == this.id) {
-      const msg = `Circular subscription detected for graph node ${graphNodeId}.`
-      throw new Error(msg)
+    public get height(): number {
+        return Math.max(this._height, this.minHeight)
     }
 
-    this.outputs.forEach((output) => {
-      output.trySubscribe(graphNodeId)
-    })
-  }
+    public set height(val: number) {
+        this._height = Math.max(val, this.minHeight)
+    }
 
-  public arm(): void {
-    this.componentState = 'armed'
-    this.outputs.forEach((e) => e.arm())
-  }
+    public get width(): number {
+        return Math.max(this._width, this.minWidth)
+    }
 
-  public complete(): void {
-    try {
-      for (const input of this.inputs) {
-        if (input.armed) {
-          return
+    public set width(val: number) {
+        this._width = Math.max(val, this.minWidth)
+    }
+
+    public get minHeight(): number {
+        return Math.max(this.numberOfInputs, this.numberOfOutputs, 1) * 50
+    }
+
+    public get minWidth(): number {
+        return 150
+    }
+
+    constructor(
+        public readonly id: string,
+        public readonly path: string[],
+    ) {
+        super(id, path)
+    }
+
+    // --- Input Registration ---
+
+    public registerBooleanInput(): GraphNodeInputType<boolean> {
+        this.assertNotInitialized()
+        const input = new GraphNodeInputBoolean(this, this.numberOfInputs)
+        this._inputs.push(input)
+        return input
+    }
+
+    public registerNumberInput(): GraphNodeInputType<number> {
+        this.assertNotInitialized()
+        const input = new GraphNodeInputNumber(this, this.numberOfInputs)
+        this._inputs.push(input)
+        return input
+    }
+
+    public registerStringInput(): GraphNodeInputType<string> {
+        this.assertNotInitialized()
+        const input = new GraphNodeInputString(this, this.numberOfInputs)
+        this._inputs.push(input)
+        return input
+    }
+
+    public registerObjectInput(): GraphNodeInputType<object> {
+        this.assertNotInitialized()
+        const input = new GraphNodeInputObject(this, this.numberOfInputs)
+        this._inputs.push(input)
+        return input
+    }
+
+    public registerUnkownInput(): GraphNodeInputType<unknown> {
+        this.assertNotInitialized()
+        const input = new GraphNodeInputUnkown(this, this.numberOfInputs)
+        this._inputs.push(input)
+        return input
+    }
+
+    // --- Output Registration ---
+
+    public registerBooleanOutput(): GraphNodeOutputType<boolean> {
+        this.assertNotInitialized()
+        const output = new GraphNodeOutputBoolean(this, this.numberOfOutputs)
+        this._outputs.push(output)
+        return output
+    }
+
+    public registerNumberOutput(): GraphNodeOutputType<number> {
+        this.assertNotInitialized()
+        const output = new GraphNodeOutputNumber(this, this.numberOfOutputs)
+        this._outputs.push(output)
+        return output
+    }
+
+    public registerTextOutput(): GraphNodeOutputType<string> {
+        this.assertNotInitialized()
+        const output = new GraphNodeOutputString(this, this.numberOfOutputs)
+        this._outputs.push(output)
+        return output
+    }
+
+    public registerObjectOutput(): GraphNodeOutputType<object> {
+        this.assertNotInitialized()
+        const output = new GraphNodeOutputObject(this, this.numberOfOutputs)
+        this._outputs.push(output)
+        return output
+    }
+
+    public registerUnkownOutput(): GraphNodeOutputType<unknown> {
+        this.assertNotInitialized()
+        const output = new GraphNodeOutputUnkown(this, this.numberOfOutputs)
+        this._outputs.push(output)
+        return output
+    }
+
+    /**
+     * Computes relative position factor of a connector handle.
+     */
+    public calculateHandleFactor(index: number, of: number): number {
+        if (index > of) {
+            throw new RangeError(`The index ${index} cannot be greater than 'of' value ${of}.`)
         }
-      }
 
-      this.componentState = 'calculating'
-
-      this.outputs.forEach((e) => {
-        e.arm()
-      })
-
-      this.solve()
-
-      this.componentState = 'complete'
-
-      this.outputs.forEach((output) => {
-        output.complete()
-      })
-    } catch (err) {
-      console.error(err)
-      this.componentState = 'error'
-    } finally {
-    }
-  }
-
-  protected abstract solve(): void
-
-  public inputAt(index: number): GraphNodeInput {
-    return this.inputs[index]
-  }
-
-  public outputAt(index: number): GraphNodeOutput {
-    return this.outputs[index]
-  }
-
-  public calculateHandleFactor(index: number, of: number) {
-    if (index > of) {
-      const msg = `The index ${index} cannot be great than of ${of}`
-      throw new Error(msg)
+        const parts = of + 1
+        return (1 / parts) * (index + 1)
     }
 
-    const parts = of + 1
-    const slices = 1 / parts
-    const factor = slices * (index + 1)
-    return factor
-  }
+    /**
+     * Calculates vertical position of a handle within the node.
+     */
+    public calculateHandleHeight(index: number, of: number): number {
+        const factor = this.calculateHandleFactor(index, of)
+        return factor * this.height
+    }
 
-  public calculateHandleHeight(index: number, of: number) {
-    const factor = this.calculateHandleFactor(index, of)
-    const height = factor * this.height
-    return height
-  }
+    /**
+     * Returns absolute Y-coordinate for a connector handle.
+     */
+    public calculateHandleCoordinate(index: number, of: number): number {
+        const height = this.calculateHandleHeight(index, of)
+        return this.y + height
+    }
 
-  public calculateHandleCoordinate(index: number, of: number) {
-    const height = this.calculateHandleHeight(index, of)
-    const coordinate = this.y + height
-    return coordinate
-  }
+    /**
+     * Throws if the node has already been initialized.
+     */
+    private assertNotInitialized(): void {
+        if (this._initialized) {
+            throw new GraphNodeAlreadyInitializedError()
+        }
+    }
 }

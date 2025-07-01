@@ -30,4 +30,10 @@ export class Canvas extends GraphNode {
   protected solve(): void {
     this.elementStore?.setElements(this.input.payload)
   }
+
+  public onDestroy(): void {
+    super.onDestroy();
+
+    this.elementStore?.setElements([])
+  }
 }

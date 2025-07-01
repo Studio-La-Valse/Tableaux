@@ -49,6 +49,9 @@ export const useGraph = defineStore('graph', () => {
     })
 
     graphNodes.value.splice(existing, 1)
+
+    const node = graphNodes.value[existing]
+    node.onDestroy()
   }
 
   const getNode = (nodeId: string) => {
@@ -123,7 +126,7 @@ export const useGraph = defineStore('graph', () => {
     const leftNode = getNode(leftNodeId)
     const rightNode = getNode(rightNodeId)
 
-    const edge = leftNode.outputAt(outputIndex).connectTo(rightNode.inputAt(inputIndex))
+    const edge = leftNode.outputs[outputIndex].connectTo(rightNode.inputs[inputIndex])
     graphEdges.value.push(edge)
 
     // seems like the subscription was succesful, so remove the existing edge.
@@ -144,7 +147,7 @@ export const useGraph = defineStore('graph', () => {
     }
 
     const rightNode = getNode(rightNodeId)
-    const input = rightNode.inputAt(inputIndex)
+    const input = rightNode.inputs[inputIndex]
     input.replaceConnection(undefined)
     rightNode.arm()
     graphEdges.value.splice(existingEdge, 1)
