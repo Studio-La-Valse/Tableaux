@@ -7,7 +7,7 @@
 
     <ul v-if="expanded" class="node-children">
       <!-- recurse, passing down the path so far -->
-      <ActivatorNode v-for="child in group.children" :key="child.name" :group="child" :parentPath="currentPath" />
+      <ActivatorNode v-for="child in group.children" :key="child.name" :group="child" :parentPath="currentPath" :forceExpand="forceExpand" />
 
       <!-- leaf items emit the full path -->
       <li v-for="act in group.activators" :key="act.name" class="leaf"  @click.stop="(evt) => clickNode(evt, act.name)">

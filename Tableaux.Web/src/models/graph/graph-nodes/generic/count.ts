@@ -9,10 +9,10 @@ export class Count extends GraphNode {
     super(id, path)
 
     this.input = this.registerUnkownInput()
-    this.output = this.registerNumberInput()
+    this.output = this.registerNumberOutput()
   }
 
   protected solve(): void {
-    this.output.onNext(this.input.payloadLength);
+    this.output.next(this.input.payloadLength);
   }
 }
