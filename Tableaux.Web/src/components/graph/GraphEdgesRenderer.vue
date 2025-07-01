@@ -21,7 +21,8 @@ import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
 const { edges, getNode } = useGraph();
 
 // Get the reactive temporary edge state
-const { tempEdge } = useEdgeDrag();
+const edgeDrag = useEdgeDrag();
+const tempEdge = edgeDrag.tempEdge;
 
 // Compute the starting point from the source node
 const startX = computed(() => {
@@ -39,7 +40,7 @@ const startY = computed(() => {
   if (tempEdge.value) {
     const node = getNode(tempEdge.value.fromNodeId);
     if (node) {
-      return node.calculateHandleCoordinate(tempEdge.value.fromOutputIndex, node.numberOfOutputs);
+      return node.calculateHandleCoordinate(tempEdge.value.fromOutputIndex, node.outputs.length);
     }
   }
   return 0;

@@ -12,7 +12,7 @@
 
     <!-- Main Content Panel -->
     <div class="content">
-      <component :is="getGraphNodePanel(graphNode)" :graphNode="graphNode" />
+      <component :is="getGraphNodePanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
     </div>
 
     <!-- Resizer for the bottom right corner -->
@@ -29,19 +29,19 @@ import LoggerPanel from "./Nodes/LoggerPanel.vue";
 import GraphNodeInputRenderer from "./GraphNodeInputRenderer.vue";
 import GraphNodeOutputRenderer from "./GraphNodeOutputRenderer.vue";
 import type { GraphNode } from "@/models/graph/core/graph-node";
-import { useGraph } from "@/stores/graph-store";
+import { GraphNodeWrapper, useGraph } from "@/stores/graph-store";
 import { useResizable } from "@/composables/useResizable";
 
 const { getNode } = useGraph();
 const props = defineProps({
   graphNode: {
-    type: Object as () => GraphNode,
+    type: Object as () => GraphNodeWrapper,
     required: true,
   },
 });
 
 const borderColor = computed(() => {
-  switch (props.graphNode.componentState) {
+  switch (props.graphNode.innerNode.componentState) {
     case "armed":
       return "#a86232"
     case "error":
@@ -62,7 +62,7 @@ const style = computed<StyleValue>(() => ({
 }))
 
 // Get the reactive graph node instance.
-const graphNode = getNode(props.graphNode.id).innerNode;
+const graphNode = getNode(props.graphNode.id);
 
 // Registry to resolve the proper node panel based on the graph node type.
 const registry: Record<string, Component> = {

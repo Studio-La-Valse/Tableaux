@@ -1,5 +1,5 @@
 <template>
-  <div v-if="menu.visible" class="tree-container" :style="{ top: menu.y + 'px', left: menu.x + 'px' }">
+  <div v-if="menu.visible" class="tree-container" @wheel.capture="onWheel" :style="{ top: menu.y + 'px', left: menu.x + 'px' }">
     <input ref="inputRef" v-model="search" class="tree-filter" type="text" placeholder="Filter nodes…" />
 
     <ul class="tree-root" v-if="filteredGroup">
@@ -33,6 +33,10 @@ const filteredGroup = computed(() => {
     : rootGroup
 })
 
+const onWheel = (evt: WheelEvent) => {
+  evt.stopPropagation();
+}
+
 onMounted(() => {
   watch(() => menu.visible, (newValue: boolean) => {
     if (newValue) {
@@ -60,6 +64,7 @@ onMounted(() => {
   top: 0;
   left: 0;
   background-color: var(--color-background-soft);
+  pointer-events: all;
 }
 
 .tree-root {

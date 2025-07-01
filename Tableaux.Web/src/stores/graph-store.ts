@@ -1,11 +1,11 @@
 import type { XY } from '@/models/geometry/xy'
 import { defineStore } from 'pinia'
-import { computed, ref, warn, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { useGraphNodeActivatorCollection } from './graph-node-activator-store'
 import { GraphNode } from '@/models/graph/core/graph-node'
 import type { GraphEdge } from '@/models/graph/core/graph-edge'
 
-class GraphNodeWrapper {
+export class GraphNodeWrapper {
   private _height = 50
   private _width = 150
 
@@ -44,7 +44,7 @@ class GraphNodeWrapper {
 
   public get outputs() { return this.innerNode.outputs }
 
-  constructor(private innerNode: GraphNode) {
+  constructor(public readonly innerNode: GraphNode) {
 
   }
 
@@ -114,7 +114,7 @@ export const useGraph = defineStore('graph', () => {
       graphNode.complete();
     }
 
-    return graphNode
+    return wrapper
   }
 
   const removeNode = (id: string) => {
@@ -133,10 +133,10 @@ export const useGraph = defineStore('graph', () => {
       removeEdge(conn.rightGraphNodeId, conn.inputIndex)
     })
 
-    graphNodes.value.splice(existing, 1)
-
     const node = graphNodes.value[existing]
     node.onDestroy()
+
+    graphNodes.value.splice(existing, 1)
   }
 
   const getNode = (nodeId: string) => {
@@ -156,13 +156,13 @@ export const useGraph = defineStore('graph', () => {
 
   const nodes = computed(() => graphNodes.value)
 
-  const duplicate = (nodeIds: string[]): GraphNode[] => {
+  const duplicate = (nodeIds: string[]): GraphNodeWrapper[] => {
     // 1) grab originals & snapshot the current edges
     const originals = nodeIds.map(getNode)
     const allEdges = [...graphEdges.value] // snapshot so we don't iterate newly created edges
 
     // 2) clone each node & build origId→clone map
-    const idMap: Record<string, GraphNode> = {}
+    const idMap: Record<string, GraphNodeWrapper> = {}
     const clones = originals.map((orig) => {
       const newId = crypto.randomUUID()
       const copy = addNode(orig.path, { x: orig.x + 10, y: orig.y + 10 }, newId)

@@ -40,7 +40,7 @@ const start = computed(() => {
   const x = leftNode.value.x + leftNodeWidth.value;
   const y = leftNode.value.calculateHandleCoordinate(
     props.edge.outputIndex,
-    leftNode.value.numberOfOutputs
+    leftNode.value.outputs.length
   );
   return { x, y };
 });
@@ -51,7 +51,7 @@ const end = computed(() => {
   const x = rightNode.value.x;
   const y = rightNode.value.calculateHandleCoordinate(
     props.edge.inputIndex,
-    rightNode.value.numberOfInputs
+    rightNode.value.inputs.length
   );
   return { x, y };
 });

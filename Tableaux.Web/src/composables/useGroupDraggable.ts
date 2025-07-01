@@ -26,7 +26,6 @@ export function useGroupDraggable() {
 
   function onMouseDown(event: MouseEvent, nodeId: string) {
     if (event.button !== 0) return
-    event.stopPropagation()
 
     // ——— selection logic ———
     if (event.shiftKey) {
@@ -73,11 +72,13 @@ export function useGroupDraggable() {
     window.addEventListener('mouseup', onMouseUp)
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
+
+    event.preventDefault()
+    event.stopPropagation()
   }
 
   function onMouseMove(event: MouseEvent) {
     if (!dragging.value || !containerEl) return
-    event.stopPropagation()
 
     const cur = getLocalMousePos(event, containerEl)
     const dx = cur.x - startPointerPos.x
@@ -94,6 +95,9 @@ export function useGroupDraggable() {
       n.x = cur.x - offs.x
       n.y = cur.y - offs.y
     })
+
+    event.preventDefault()
+    event.stopPropagation()
   }
 
   function onMouseUp() {

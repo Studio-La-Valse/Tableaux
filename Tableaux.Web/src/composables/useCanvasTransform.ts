@@ -59,11 +59,15 @@ export function useCanvasTransform(options: Options = {}) {
   function onMouseDown(event: MouseEvent) {
     // Only right-button pans
     if (event.button !== 2) return
+
     isDragging.value = true
     startPosition.value = { x: event.clientX, y: event.clientY }
+
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
+
     event.preventDefault()
+    event.stopPropagation()
   }
 
   function onMouseMove(event: MouseEvent) {
@@ -74,6 +78,9 @@ export function useCanvasTransform(options: Options = {}) {
     position.value.x += dx
     position.value.y += dy
     startPosition.value = { x: event.clientX, y: event.clientY }
+
+    event.preventDefault()
+    event.stopPropagation()
   }
 
   function onMouseUp(event: MouseEvent) {
@@ -82,11 +89,11 @@ export function useCanvasTransform(options: Options = {}) {
     document.removeEventListener('mousemove', onMouseMove)
     document.removeEventListener('mouseup', onMouseUp)
     event.preventDefault()
+    event.stopPropagation()
   }
 
   // Wheel zoom
   function onWheel(event: WheelEvent) {
-    event.preventDefault()
     if (!containerRef.value) return
 
     const delta = event.deltaY < 0 ? +zoomIntensity : -zoomIntensity
@@ -103,6 +110,9 @@ export function useCanvasTransform(options: Options = {}) {
     position.value.x -= delta * (localMouse.x - position.value.x)
     position.value.y -= delta * (localMouse.y - position.value.y)
     scale.value = newScale
+
+    event.preventDefault()
+    event.stopPropagation()
   }
 
   return {
