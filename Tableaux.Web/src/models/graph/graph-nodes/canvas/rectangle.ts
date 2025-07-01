@@ -22,7 +22,7 @@ export class Rectangle extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleMultiples(this._x1, this._y1, this.__width, this.__height, this.color).forEach(
+    inputIterators.cycleValues(this._x1, this._y1, this.__width, this.__height, this.color).forEach(
       ([x, y, w, h, c]) => {
         this.output.next(new DrawableRectangle(x, y, w, h, c))
       },

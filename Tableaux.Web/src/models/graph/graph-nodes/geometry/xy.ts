@@ -15,6 +15,6 @@ export class XY extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleMultiples(this.input1, this.input2).map(([x, y]) => ({ x, y })).forEach(v => this.output.next(v))
+    inputIterators.cycleValues(this.input1, this.input2).map(([x, y]) => ({ x, y })).forEach(v => this.output.next(v))
   }
 }

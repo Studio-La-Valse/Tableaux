@@ -31,35 +31,7 @@ export type ComponentState = typeof componentStates[keyof typeof componentStates
  * Handles visual layout and input/output registration.
  */
 export abstract class GraphNode extends GraphNodeCore {
-    private _height = 50
-    private _width = 150
-
-    public x: number = 0
-    public y: number = 0
-
-    public get height(): number {
-        return Math.max(this._height, this.minHeight)
-    }
-
-    public set height(val: number) {
-        this._height = Math.max(val, this.minHeight)
-    }
-
-    public get width(): number {
-        return Math.max(this._width, this.minWidth)
-    }
-
-    public set width(val: number) {
-        this._width = Math.max(val, this.minWidth)
-    }
-
-    public get minHeight(): number {
-        return Math.max(this.numberOfInputs, this.numberOfOutputs, 1) * 50
-    }
-
-    public get minWidth(): number {
-        return 150
-    }
+ 
 
     constructor(
         public readonly id: string,
@@ -140,34 +112,6 @@ export abstract class GraphNode extends GraphNodeCore {
         const output = new GraphNodeOutputUnkown(this, this.numberOfOutputs)
         this._outputs.push(output)
         return output
-    }
-
-    /**
-     * Computes relative position factor of a connector handle.
-     */
-    public calculateHandleFactor(index: number, of: number): number {
-        if (index > of) {
-            throw new RangeError(`The index ${index} cannot be greater than 'of' value ${of}.`)
-        }
-
-        const parts = of + 1
-        return (1 / parts) * (index + 1)
-    }
-
-    /**
-     * Calculates vertical position of a handle within the node.
-     */
-    public calculateHandleHeight(index: number, of: number): number {
-        const factor = this.calculateHandleFactor(index, of)
-        return factor * this.height
-    }
-
-    /**
-     * Returns absolute Y-coordinate for a connector handle.
-     */
-    public calculateHandleCoordinate(index: number, of: number): number {
-        const height = this.calculateHandleHeight(index, of)
-        return this.y + height
     }
 
     /**

@@ -1,4 +1,3 @@
-<!-- src/components/GraphNodeOutputRenderer.vue -->
 <template>
   <div class="node-port output-port" @mousedown.stop="handleMouseDown">
     <div class="label">

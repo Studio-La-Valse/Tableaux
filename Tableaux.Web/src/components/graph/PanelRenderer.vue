@@ -62,7 +62,7 @@ const style = computed<StyleValue>(() => ({
 }))
 
 // Get the reactive graph node instance.
-const graphNode = getNode(props.graphNode.id);
+const graphNode = getNode(props.graphNode.id).innerNode;
 
 // Registry to resolve the proper node panel based on the graph node type.
 const registry: Record<string, Component> = {

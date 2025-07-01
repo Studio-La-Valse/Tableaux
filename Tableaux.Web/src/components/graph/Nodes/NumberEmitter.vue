@@ -5,7 +5,6 @@
 
 <script setup lang="ts">
 import type { NumberEmitter } from '@/models/graph/graph-nodes/emitters/number-emitter';
-import { onMounted } from 'vue';
 
 const props = defineProps({
   graphNode: {
@@ -18,10 +17,6 @@ const handleInput = (event: Event) => {
   const target = event.target as HTMLInputElement;
   props.graphNode.onChange(Number(target.value));
 }
-
-onMounted(() => {
-
-})
 </script>
 
 <style>

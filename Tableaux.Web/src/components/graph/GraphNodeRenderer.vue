@@ -1,7 +1,7 @@
 <template>
   <div class="node graph-node" :class="{ selected: isSelected }" @mousedown="onMouseDown"
     :style="{ transform: `translate(${localPos.x}px, ${localPos.y}px)` }">
-    <PanelRenderer :graphNode="graphNode" />
+    <PanelRenderer :graphNode="graphNode.innerNode" />
   </div>
 </template>
 

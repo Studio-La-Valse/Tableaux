@@ -20,7 +20,7 @@ export class Circle extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleMultiples(this._x, this._y, this.radius, this.color).forEach(([x, y, r, c]) => {
+    inputIterators.cycleValues(this._x, this._y, this.radius, this.color).forEach(([x, y, r, c]) => {
       this.output.next(new DrawableCircle(x, y, r, c))
     });
   }

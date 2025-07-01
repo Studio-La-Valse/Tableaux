@@ -18,7 +18,7 @@ export class WrapShortest extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleMultiples(this.input1, this.input2).forEach(([x, y]) => {
+    inputIterators.cycleValues(this.input1, this.input2).forEach(([x, y]) => {
       this.output1.next(x)
       this.output2.next(y)
     })

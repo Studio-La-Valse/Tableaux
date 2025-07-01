@@ -1,12 +1,96 @@
 import type { XY } from '@/models/geometry/xy'
 import { defineStore } from 'pinia'
-import { computed, ref, type Ref } from 'vue'
+import { computed, ref, warn, type Ref } from 'vue'
 import { useGraphNodeActivatorCollection } from './graph-node-activator-store'
-import type { GraphNode } from '@/models/graph/core/graph-node'
+import { GraphNode } from '@/models/graph/core/graph-node'
 import type { GraphEdge } from '@/models/graph/core/graph-edge'
 
+class GraphNodeWrapper {
+  private _height = 50
+  private _width = 150
+
+  public x: number = 0
+  public y: number = 0
+
+  public get height(): number {
+    return Math.max(this._height, this.minHeight)
+  }
+
+  public set height(val: number) {
+    this._height = Math.max(val, this.minHeight)
+  }
+
+  public get width(): number {
+    return Math.max(this._width, this.minWidth)
+  }
+
+  public set width(val: number) {
+    this._width = Math.max(val, this.minWidth)
+  }
+
+  public get minHeight(): number {
+    return Math.max(this.innerNode.numberOfInputs, this.innerNode.numberOfOutputs, 1) * 50
+  }
+
+  public get minWidth(): number {
+    return 150
+  }
+
+  public get id() { return this.innerNode.id }
+
+  public get path() { return this.innerNode.path }
+
+  public get inputs() { return this.innerNode.inputs }
+
+  public get outputs() { return this.innerNode.outputs }
+
+  constructor(private innerNode: GraphNode) {
+
+  }
+
+  /**
+  * Computes relative position factor of a connector handle.
+  */
+  public calculateHandleFactor(index: number, of: number): number {
+    if (index > of) {
+      throw new RangeError(`The index ${index} cannot be greater than 'of' value ${of}.`)
+    }
+
+    const parts = of + 1
+    return (1 / parts) * (index + 1)
+  }
+
+  /**
+   * Calculates vertical position of a handle within the node.
+   */
+  public calculateHandleHeight(index: number, of: number): number {
+    const factor = this.calculateHandleFactor(index, of)
+    return factor * this.height
+  }
+
+  /**
+   * Returns absolute Y-coordinate for a connector handle.
+   */
+  public calculateHandleCoordinate(index: number, of: number): number {
+    const height = this.calculateHandleHeight(index, of)
+    return this.y + height
+  }
+
+  public arm() {
+    return this.innerNode.arm()
+  }
+
+  public complete() {
+    return this.innerNode.complete()
+  }
+
+  public onDestroy() {
+    return this.innerNode.onDestroy()
+  }
+}
+
 export const useGraph = defineStore('graph', () => {
-  const graphNodes: Ref<GraphNode[]> = ref([])
+  const graphNodes: Ref<GraphNodeWrapper[]> = ref([])
   const graphEdges: Ref<GraphEdge[]> = ref([])
 
   const activators = useGraphNodeActivatorCollection()
@@ -20,10 +104,11 @@ export const useGraph = defineStore('graph', () => {
     }
 
     const graphNode = activator.activate(id)
-    graphNode.x = position.x
-    graphNode.y = position.y
+    const wrapper = new GraphNodeWrapper(graphNode)
+    wrapper.x = position.x
+    wrapper.y = position.y
     graphNode.onInitialize()
-    graphNodes.value.push(graphNode)
+    graphNodes.value.push(wrapper)
 
     if (graphNode.inputs.length == 0) {
       graphNode.complete();
@@ -157,7 +242,7 @@ export const useGraph = defineStore('graph', () => {
 
   const tick = () => {
     nodes.value
-      .filter((n) => n.numberOfInputs == 0 && n.numberOfOutputs >= 1)
+      .filter((n) => n.inputs.length == 0 && n.outputs.length >= 1)
       .forEach((n) => n.complete())
   }
 
