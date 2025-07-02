@@ -22,5 +22,11 @@ const handleInput = (event: Event) => {
 <style>
 .number-input {
   width: 100%;
+  height: 30px;
+  margin-right: 10px;
+  background: var(--color-background-mute);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-hover);
+  border-radius: 5px;
 }
 </style>

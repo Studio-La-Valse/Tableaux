@@ -23,6 +23,6 @@ export class TextEmitter extends GraphNode {
   }
 
   protected solve(): void {
-    this.output.next(this.value)
+    this.value.split('\n').forEach((v) => this.output.next(v))
   }
 }

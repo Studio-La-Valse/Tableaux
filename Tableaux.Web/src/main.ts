@@ -35,6 +35,10 @@ import { SmallerThanOrEqual } from './models/graph/graph-nodes/math/smaller-than
 import { Equals } from './models/graph/graph-nodes/math/equals'
 import { Not } from './models/graph/graph-nodes/math/not'
 import { Or } from './models/graph/graph-nodes/math/or'
+import { Xor } from './models/graph/graph-nodes/math/xor'
+import { And } from './models/graph/graph-nodes/math/and'
+import { Any } from './models/graph/graph-nodes/math/any'
+import { All } from './models/graph/graph-nodes/math/all'
 
 const app = createApp(App)
 
@@ -71,6 +75,10 @@ register(['Math', 'Smaller Than (or equal)'], (id, path) => new SmallerThanOrEqu
 register(['Math', 'Equals'], (id, path) => new Equals(id, path))
 register(['Math', 'Not'], (id, path) => new Not(id, path))
 register(['Math', 'Or'], (id, path) => new Or(id, path))
+register(['Math', 'Xor'], (id, path) => new Xor(id, path))
+register(['Math', 'And'], (id, path) => new And(id, path))
+register(['Math', 'Any'], (id, path) => new Any(id, path))
+register(['Math', 'And'], (id, path) => new All(id, path))
 
 register(['Geometry', 'XY'], (id, path) => new XY(id, path))
 

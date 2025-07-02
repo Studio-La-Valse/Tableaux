@@ -6,35 +6,42 @@ import { useGraph } from '@/stores/graph-store'
 
 export function useSelectionArea() {
   const store = useSelectionAreaStore()
-  const selectionStore = useSelectionStore();
-  const graphStore = useGraph();
+  const selectionStore = useSelectionStore()
+  const graphStore = useGraph()
 
   const { getCanvasContent, getLocalMousePos } = useTransformToCanvas()
   let canvasEl: HTMLElement | null = null
 
   function onMouseDown(e: MouseEvent) {
     if (e.button !== 0) return
+
     canvasEl = getCanvasContent(e.currentTarget)
     if (!canvasEl) return
+
     const { x, y } = getLocalMousePos(e, canvasEl)
     store.begin(x, y)
+
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
   }
 
   function onMouseMove(e: MouseEvent) {
     if (!canvasEl) return
-    e.preventDefault()
+
     const { x, y } = getLocalMousePos(e, canvasEl)
     store.update(x, y)
+
+    e.preventDefault()
+    e.stopPropagation()
   }
 
   function onMouseUp(e: MouseEvent) {
     if (e.button !== 0) return
     const finalRect = store.end()
     if (finalRect.width > 0 && finalRect.height > 0) {
-      applySelection(finalRect);
+      applySelection(finalRect)
     }
+
     document.removeEventListener('mousemove', onMouseMove)
     document.removeEventListener('mouseup', onMouseUp)
   }
@@ -43,7 +50,7 @@ export function useSelectionArea() {
    * Given the final selection rectangle, iterate over the provided graph nodes
    * and select those that lie entirely within the rectangle.
    */
-  const applySelection = (rect: {x: number, y: number, width: number, height: number}) => {
+  const applySelection = (rect: { x: number; y: number; width: number; height: number }) => {
     // Clear any prior selection.
     selectionStore.clearSelection()
     const min = { clientX: rect.x, clientY: rect.y }

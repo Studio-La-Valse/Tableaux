@@ -43,6 +43,9 @@ const onMouseDown = (evt: MouseEvent) => {
 }
 
 .selected {
-  outline: 2px solid var(--color-accent);
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 2px var(--color-accent),
+    0 0 12px 4px var(--color-accent)
 }
 </style>

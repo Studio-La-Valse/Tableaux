@@ -1,5 +1,11 @@
 <template>
   <div ref="resizableRef" class="resizable" :style="style">
+
+    <!-- Main Content Panel -->
+    <div class="content">
+      <component :is="getGraphNodePanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
+    </div>
+
     <!-- Input Ports rendered via our renderer component -->
     <div class="inputs" v-if="graphNode.inputs && graphNode.inputs.length">
       <GraphNodeInputRenderer v-for="(input, index) in graphNode.inputs" :key="'input-' + index" :input="input" />
@@ -8,11 +14,6 @@
     <!-- Output Ports rendered via our renderer component -->
     <div class="outputs" v-if="graphNode.outputs && graphNode.outputs.length">
       <GraphNodeOutputRenderer v-for="(output, index) in graphNode.outputs" :key="'output-' + index" :output="output" />
-    </div>
-
-    <!-- Main Content Panel -->
-    <div class="content">
-      <component :is="getGraphNodePanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
     </div>
 
     <!-- Resizer for the bottom right corner -->
@@ -43,13 +44,13 @@ const props = defineProps({
 const borderColor = computed(() => {
   switch (props.graphNode.innerNode.componentState) {
     case "armed":
-      return "#a86232"
+      return "linear-gradient(90deg, #fc8803, #ecfc03)"
     case "error":
-      return "#9c1313"
+      return "linear-gradient(90deg, #fc2003, #fc8403)"
     case "complete":
-      return "#289c13"
+      return "linear-gradient(90deg, #a9fc03, #03fc90)"
     case "calculating":
-      return "#ede500"
+      return "linear-gradient(90deg, #03fcc6, #03fcc6)"
     default:
       return "#ccc"
   }
@@ -58,7 +59,7 @@ const borderColor = computed(() => {
 const style = computed<StyleValue>(() => ({
   width: width.value + 'px',
   height: height.value + 'px',
-  border: "2px solid" + borderColor.value
+  background: borderColor.value
 }))
 
 // Get the reactive graph node instance.
@@ -104,45 +105,50 @@ const { initResize } = useResizable(width, height);
   box-sizing: border-box;
   overflow: visible;
   background: var(--color-background-mute);
+  padding-top: 2px;
+  padding-bottom: 2px;
+  border-radius: 10px;
 }
 
 /* Place the input ports inside the node on the left side */
 .inputs {
   position: absolute;
-  left: -15px;
+  left: -12px;
   top: 0;
   width: 30px;
   height: 100%;
+  padding: 4px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  padding: 4px 0;
 }
 
 /* Place the output ports inside the node on the right side */
 .outputs {
   position: absolute;
-  right: -15px;
+  right: -12px;
   top: 0;
   width: 30px;
   height: 100%;
+  padding: 4px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  padding: 4px 0;
 }
 
 /* Adjust the main content to account for the port panels */
 .content {
   position: relative;
-  margin: 0 30px;
-  width: calc(100% - 60px);
+  margin: 0 2px;
+  width: calc(100% - 4x);
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 10px;
   overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--color-background-mute);
 }
 
 /* Resizer styling remains unchanged */
@@ -152,7 +158,8 @@ const { initResize } = useResizable(width, height);
   right: 0;
   width: 16px;
   height: 16px;
-  background-color: var(--color-border);
+  background-color: 'transparant';
   cursor: se-resize;
+  border-radius: 6px;
 }
 </style>
