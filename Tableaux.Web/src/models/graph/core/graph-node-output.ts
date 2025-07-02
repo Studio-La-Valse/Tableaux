@@ -18,7 +18,7 @@ export abstract class GraphNodeOutput {
   constructor(
     public graphNode: GraphNode,
     public outputIndex: number,
-  ) {}
+  ) { }
 
   public connectTo(graphNodeInput: GraphNodeInput): GraphEdge {
     return graphNodeInput.connectTo(this)
@@ -438,6 +438,7 @@ export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
   private numberInputs: Set<GraphNodeInputNumber> = new Set<GraphNodeInputNumber>()
   private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
   private unknownInputs: Set<GraphNodeInputUnkown> = new Set<GraphNodeInputUnkown>()
+  private objectInputs: Set<GraphNodeInputObject> = new Set<GraphNodeInputObject>()
   private booleanInputs: Set<GraphNodeInputBoolean> = new Set<GraphNodeInputBoolean>()
 
   public get targetInputs(): Set<GraphNodeInput> {
@@ -446,6 +447,7 @@ export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
       ...this.stringInputs,
       ...this.unknownInputs,
       ...this.booleanInputs,
+      ...this.objectInputs,
     ])
   }
 
@@ -464,6 +466,10 @@ export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
 
     if (graphNodeInput instanceof GraphNodeInputBoolean) {
       return this.onSubscribeBoolean(graphNodeInput)
+    }
+
+    if (graphNodeInput instanceof GraphNodeInputObject) {
+      return this.onSubscribeObject(graphNodeInput)
     }
 
     throw new InvalidObserverTypeError()
@@ -507,6 +513,22 @@ export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
 
     this.payload.forEach((value) => {
       graphNodeInput.onNext(this.unkownToString(value))
+    })
+
+    if (this.graphNode.componentState == 'complete') {
+      graphNodeInput.onCompleted()
+    }
+
+    return subscription
+  }
+
+  public onSubscribeObject(graphNodeInput: GraphNodeInputObject): Unsubscriber {
+    const subscription = Subscription.subscribeOrThrow(this.objectInputs, graphNodeInput)
+
+    graphNodeInput.onArm()
+
+    this.payload.forEach((value) => {
+      graphNodeInput.onNext(value as Object)
     })
 
     if (this.graphNode.componentState == 'complete') {
