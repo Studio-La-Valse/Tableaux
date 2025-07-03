@@ -1,7 +1,6 @@
 <template>
-  <div class="page">
-    <CanvasControls v-model:zoomMode="zoomMode"
-      @fullScreen="handleFullScreen" />
+  <div class="page" :style="style">
+    <CanvasControls v-model:zoomMode="zoomMode" @fullScreen="handleFullScreen" />
 
     <div ref="canvasContainer" class="canvas-container">
       <DesignCanvas :zoomMode="zoomMode" />
@@ -10,9 +9,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed, type StyleValue } from 'vue'
 import CanvasControls from './CanvasControls.vue'
 import DesignCanvas from './CanvasContainer.vue'
+import { useGroupDraggable } from '@/composables/useGroupDraggable'
+import { useCanvasTransform } from '@/composables/useCanvasTransform'
+
+const groupDrag = useGroupDraggable()
+const canvasPan = useCanvasTransform()
+
+const style = computed<StyleValue>(() => ({
+  pointerEvents: (groupDrag.dragging.value || canvasPan.isDragging.value) ? 'none' : 'all'
+}))
 
 type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200'
 

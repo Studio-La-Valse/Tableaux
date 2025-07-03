@@ -65,10 +65,7 @@ export function useGroupDraggable() {
     dragging.value = true
     altKeyDown = false
 
-    if (containerEl) {
-      window.addEventListener('mousemove', onMouseMove)
-    }
-
+    window.addEventListener('mousemove', onMouseMove, { capture: true })
     window.addEventListener('mouseup', onMouseUp)
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)

@@ -23,6 +23,9 @@ export function useSelectionArea() {
 
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
+
+    e.preventDefault()
+    e.stopPropagation()
   }
 
   function onMouseMove(e: MouseEvent) {
@@ -44,6 +47,9 @@ export function useSelectionArea() {
 
     document.removeEventListener('mousemove', onMouseMove)
     document.removeEventListener('mouseup', onMouseUp)
+
+    e.preventDefault()
+    e.stopPropagation()
   }
 
   /**

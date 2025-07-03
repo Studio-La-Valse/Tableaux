@@ -124,6 +124,7 @@ export function useCanvasTransform(options: Options = {}) {
     position,
     scale,
     style,
+    isDragging,
 
     // event handlers
     onMouseDown,

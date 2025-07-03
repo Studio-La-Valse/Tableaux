@@ -2,7 +2,7 @@
   <div id="split-horizontal">
     <GraphCanvas class="graph" />
 
-    <DesignCanvasPainter class="design" :elements="[]" />
+    <CanvasComponent class="design" :elements="[]" />
   </div>
 </template>
 
@@ -10,7 +10,7 @@
 import Split from "split.js";
 import { onMounted } from "vue";
 import GraphCanvas from "@/components/graph/GraphComponent.vue";
-import DesignCanvasPainter from "@/components/design/CanvasComponent.vue";
+import CanvasComponent from "@/components/design/CanvasComponent.vue";
 
 
 onMounted(() => {
