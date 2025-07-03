@@ -9,7 +9,7 @@ export class NumberEmitter extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.output = this.registerNumberOutput();
+    this.output = this.registerNumberOutput("Number");
   }
 
   override onInitialize(): void {

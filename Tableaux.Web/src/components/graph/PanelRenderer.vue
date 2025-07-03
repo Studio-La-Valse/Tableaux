@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type StyleValue, type Component } from "vue";
+import { computed, type StyleValue, type Component, h } from "vue";
 import NumberEmitterPanel from "./Nodes/NumberEmitter.vue";
 import TextEmitterPanel from "./Nodes/TextEmitter.vue";
 import GraphNodePanel from "./GraphNodePanel.vue";
@@ -32,6 +32,8 @@ import GraphNodeInputRenderer from "./GraphNodeInputRenderer.vue";
 import GraphNodeOutputRenderer from "./GraphNodeOutputRenderer.vue";
 import type { GraphNode } from "@/models/graph/core/graph-node";
 import { GraphNodeWrapper, useGraph } from "@/stores/graph-store";
+import type { GraphNodeInput } from "@/models/graph/core/graph-node-input";
+import type { GraphNodeOutput } from "@/models/graph/core/graph-node-output";
 
 const { getNode } = useGraph();
 const props = defineProps({
@@ -84,6 +86,13 @@ const getGraphNodePanel = (emitter: GraphNode) => {
   return registry[type] || GraphNodePanel;
 };
 
+const getInputHandleHeight = (handle: GraphNodeInput): number => {
+  return graphNode.calculateHandleCoordinate(handle.index, graphNode.inputs.length)
+}
+
+const getOutputHandleHeight = (handle: GraphNodeOutput): number => {
+  return graphNode.calculateHandleCoordinate(handle.index, graphNode.outputs.length)
+}
 </script>
 
 <style scoped>

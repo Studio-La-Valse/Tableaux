@@ -9,9 +9,9 @@ export class SmallerThanOrEqual extends GraphNode {
     constructor(id: string, path: string[]) {
       super(id, path)
 
-      this.input1 = this.registerNumberInput()
-      this.input2 = this.registerNumberInput()
-      this.output = this.registerBooleanOutput()
+      this.input1 = this.registerNumberInput("First")
+      this.input2 = this.registerNumberInput("Second")
+      this.output = this.registerBooleanOutput("Values")
     }
 
     protected solve(): void {

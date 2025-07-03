@@ -9,9 +9,9 @@ export class At extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerUnkownInput()
-    this.input2 = this.registerNumberInput()
-    this.output = this.registerUnkownOutput()
+    this.input = this.registerUnkownInput("Input")
+    this.input2 = this.registerNumberInput("Index")
+    this.output = this.registerUnkownOutput("Value")
   }
 
   protected solve(): void {

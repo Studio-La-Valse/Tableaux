@@ -7,8 +7,8 @@ export class Stringify extends GraphNode {
     constructor(id: string, path: string[]) {
         super(id, path)
 
-        this.input = this.registerObjectInput()
-        this.output = this.registerTextOutput()
+        this.input = this.registerObjectInput("JSON")
+        this.output = this.registerTextOutput("String")
     }
 
     protected solve(): void {

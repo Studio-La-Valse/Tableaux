@@ -9,7 +9,7 @@ export class Canvas extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerObjectInput()
+    this.input = this.registerObjectInput("Drawable Elements")
     this.elementStore = null
   }
 

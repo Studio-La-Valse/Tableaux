@@ -11,8 +11,8 @@ export class CanvasProps extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.output1 = this.registerNumberOutput()
-    this.output2 = this.registerNumberOutput()
+    this.output1 = this.registerNumberOutput("Width")
+    this.output2 = this.registerNumberOutput("Height")
   }
 
   public onInitialize(): void {

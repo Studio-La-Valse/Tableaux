@@ -11,7 +11,7 @@ export class Logger extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerStringInput()
+    this.input = this.registerStringInput("Values")
   }
 
   public arm(): void {

@@ -1,9 +1,9 @@
 <!-- src/components/GraphNodeInputRenderer.vue -->
 <template>
   <div class="node-port input-port" @mousedown.stop @mouseup="handleMouseUp">
-    <HandleRenderer />
+    <HandleRenderer :description="input.description"/>
     <div class="label">
-      <span>{{ input.inputIndex }}</span>
+      <span>{{ input.description[0] }}</span>
     </div>
   </div>
 </template>
@@ -21,7 +21,7 @@ const props = defineProps<{
 const { finishEdgeDrag } = useEdgeDrag();
 const { connect } = useGraph();
 const handleMouseUp = () => {
-  const prototype = finishEdgeDrag(props.input.graphNode.id, props.input.inputIndex)
+  const prototype = finishEdgeDrag(props.input.graphNode.id, props.input.index)
   if (prototype) {
     connect(
       prototype.fromNodeId,
@@ -49,6 +49,7 @@ const handleMouseUp = () => {
 
 .label {
   font-size: 10px;
-  color: #333;
+  padding-left: 3px;
+  color: var(--color-text);
 }
 </style>

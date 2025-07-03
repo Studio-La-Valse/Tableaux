@@ -9,9 +9,9 @@ export class XY extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerNumberInput()
-    this.input2 = this.registerNumberInput()
-    this.output = this.registerObjectOutput()
+    this.input1 = this.registerNumberInput("X")
+    this.input2 = this.registerNumberInput("Y")
+    this.output = this.registerObjectOutput("XY")
   }
 
   protected solve(): void {

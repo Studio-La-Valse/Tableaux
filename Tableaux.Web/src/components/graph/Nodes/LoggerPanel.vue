@@ -1,5 +1,5 @@
 <template>
-  <ResizablePanel :graph-node-id="props.graphNode.id">
+  <ResizablePanel :graph-node-id="props.graphNode.id" :initial-height="80" :initial-width="80">
     <div class="inner">
       <!-- directly loop over the reactive array -->
       <p v-for="(value, i) in props.graphNode.values" :key="i">
@@ -23,6 +23,8 @@ const props = defineProps<{
 
 <style scoped>
 .inner {
+  padding: 10px;
+
   /* When content is small, auto margins center the inner container vertically.
      When content is larger than available space, the auto margins collapse
      so that content starts at the top and scrolling works naturally. */

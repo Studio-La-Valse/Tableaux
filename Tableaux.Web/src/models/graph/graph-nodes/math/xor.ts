@@ -9,9 +9,9 @@ export class Xor extends GraphNode {
     constructor(id: string, path: string[]) {
       super(id, path)
 
-      this.input1 = this.registerBooleanInput()
-      this.input2 = this.registerBooleanInput()
-      this.output = this.registerBooleanOutput()
+      this.input1 = this.registerBooleanInput("First")
+      this.input2 = this.registerBooleanInput("Second")
+      this.output = this.registerBooleanOutput("Result")
     }
 
     protected solve(): void {

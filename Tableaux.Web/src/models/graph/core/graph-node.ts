@@ -42,74 +42,72 @@ export abstract class GraphNode extends GraphNodeCore {
 
     // --- Input Registration ---
 
-    public registerBooleanInput(): GraphNodeInputType<boolean> {
+    public registerBooleanInput(description: string): GraphNodeInputType<boolean> {
         this.assertNotInitialized()
-        const input = new GraphNodeInputBoolean(this, this.numberOfInputs)
+        const input = new GraphNodeInputBoolean(this, this.numberOfInputs, description)
         this._inputs.push(input)
         return input
     }
 
-    public registerNumberInput(): GraphNodeInputType<number> {
+    public registerNumberInput(description: string): GraphNodeInputType<number> {
         this.assertNotInitialized()
-        const input = new GraphNodeInputNumber(this, this.numberOfInputs)
+        const input = new GraphNodeInputNumber(this, this.numberOfInputs, description)
         this._inputs.push(input)
         return input
     }
 
-    public registerStringInput(): GraphNodeInputType<string> {
+    public registerStringInput(description: string): GraphNodeInputType<string> {
         this.assertNotInitialized()
-        const input = new GraphNodeInputString(this, this.numberOfInputs)
+        const input = new GraphNodeInputString(this, this.numberOfInputs, description)
         this._inputs.push(input)
         return input
     }
 
-    public registerObjectInput(): GraphNodeInputType<object> {
+    public registerObjectInput(description: string): GraphNodeInputType<object> {
         this.assertNotInitialized()
-        const input = new GraphNodeInputObject(this, this.numberOfInputs)
+        const input = new GraphNodeInputObject(this, this.numberOfInputs, description)
         this._inputs.push(input)
         return input
     }
 
-    public registerUnkownInput(): GraphNodeInputType<unknown> {
+    public registerUnkownInput(description: string): GraphNodeInputType<unknown> {
         this.assertNotInitialized()
-        const input = new GraphNodeInputUnkown(this, this.numberOfInputs)
+        const input = new GraphNodeInputUnkown(this, this.numberOfInputs, description)
         this._inputs.push(input)
         return input
     }
 
-    // --- Output Registration ---
-
-    public registerBooleanOutput(): GraphNodeOutputType<boolean> {
+    public registerBooleanOutput(description: string): GraphNodeOutputType<boolean> {
         this.assertNotInitialized()
-        const output = new GraphNodeOutputBoolean(this, this.numberOfOutputs)
+        const output = new GraphNodeOutputBoolean(this, this.numberOfOutputs, description)
         this._outputs.push(output)
         return output
     }
 
-    public registerNumberOutput(): GraphNodeOutputType<number> {
+    public registerNumberOutput(description: string): GraphNodeOutputType<number> {
         this.assertNotInitialized()
-        const output = new GraphNodeOutputNumber(this, this.numberOfOutputs)
+        const output = new GraphNodeOutputNumber(this, this.numberOfOutputs, description)
         this._outputs.push(output)
         return output
     }
 
-    public registerTextOutput(): GraphNodeOutputType<string> {
+    public registerTextOutput(description: string): GraphNodeOutputType<string> {
         this.assertNotInitialized()
-        const output = new GraphNodeOutputString(this, this.numberOfOutputs)
+        const output = new GraphNodeOutputString(this, this.numberOfOutputs, description)
         this._outputs.push(output)
         return output
     }
 
-    public registerObjectOutput(): GraphNodeOutputType<object> {
+    public registerObjectOutput(description: string): GraphNodeOutputType<object> {
         this.assertNotInitialized()
-        const output = new GraphNodeOutputObject(this, this.numberOfOutputs)
+        const output = new GraphNodeOutputObject(this, this.numberOfOutputs, description)
         this._outputs.push(output)
         return output
     }
 
-    public registerUnkownOutput(): GraphNodeOutputType<unknown> {
+    public registerUnkownOutput(description: string): GraphNodeOutputType<unknown> {
         this.assertNotInitialized()
-        const output = new GraphNodeOutputUnkown(this, this.numberOfOutputs)
+        const output = new GraphNodeOutputUnkown(this, this.numberOfOutputs, description)
         this._outputs.push(output)
         return output
     }

@@ -8,6 +8,7 @@ import type { GraphEdge } from '@/models/graph/core/graph-edge'
 export class GraphNodeWrapper {
   private _height = 50
   private _width = 100
+  private _handlePad = 30;
 
   public x: number = 0
   public y: number = 0
@@ -29,7 +30,7 @@ export class GraphNodeWrapper {
   }
 
   public get minHeight(): number {
-    return Math.max(this.innerNode.numberOfInputs, this.innerNode.numberOfOutputs, 1) * 50
+    return Math.max(this.innerNode.numberOfInputs, this.innerNode.numberOfOutputs, 1) * this._handlePad
   }
 
   public get minWidth(): number {

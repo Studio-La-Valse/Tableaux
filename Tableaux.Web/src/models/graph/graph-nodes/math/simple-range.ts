@@ -8,8 +8,8 @@ export class SimpleRange extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerNumberInput()
-    this.output = this.registerNumberOutput()
+    this.input = this.registerNumberInput("Length")
+    this.output = this.registerNumberOutput("Values")
   }
 
   protected solve(): void {

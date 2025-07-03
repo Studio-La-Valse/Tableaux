@@ -10,10 +10,10 @@ export class Range extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerNumberInput()
-    this.input2 = this.registerNumberInput()
-    this.input3 = this.registerNumberInput()
-    this.output = this.registerNumberOutput()
+    this.input1 = this.registerNumberInput("Start")
+    this.input2 = this.registerNumberInput("Stop")
+    this.input3 = this.registerNumberInput("Step")
+    this.output = this.registerNumberOutput("Values")
   }
 
   protected solve(): void {

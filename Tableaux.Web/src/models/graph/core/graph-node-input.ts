@@ -15,8 +15,9 @@ export abstract class GraphNodeInput {
 
   constructor(
     public graphNode: GraphNode,
-    public inputIndex: number,
-  ) {}
+    public index: number,
+    public description: string
+  ) { }
 
   public connectTo(graphNodeOutput: GraphNodeOutput): GraphEdge {
     // will throw an error when cyclical subscription is detected.
@@ -28,9 +29,9 @@ export abstract class GraphNodeInput {
     // create a description of the new connection
     const edge = new GraphEdge(
       graphNodeOutput.graphNode.id,
-      graphNodeOutput.outputIndex,
+      graphNodeOutput.index,
       this.graphNode.id,
-      this.inputIndex,
+      this.index,
     )
     return edge
   }
@@ -63,8 +64,9 @@ export abstract class GraphNodeInputType<T> extends GraphNodeInput {
     return this.payload.length
   }
 
-  constructor(graphNode: GraphNode, inputIndex: number) {
-    super(graphNode, inputIndex)
+  constructor(graphNode: GraphNode, inputIndex: number,
+    public description: string) {
+    super(graphNode, inputIndex, description)
   }
 
   public override onArm(): void {
@@ -79,31 +81,21 @@ export abstract class GraphNodeInputType<T> extends GraphNodeInput {
 }
 
 export class GraphNodeInputBoolean extends GraphNodeInputType<boolean> {
-  constructor(graphNode: GraphNode, inputIndex: number) {
-    super(graphNode, inputIndex)
-  }
+
 }
 
 export class GraphNodeInputNumber extends GraphNodeInputType<number> {
-  constructor(graphNode: GraphNode, inputIndex: number) {
-    super(graphNode, inputIndex)
-  }
+
 }
 
 export class GraphNodeInputString extends GraphNodeInputType<string> {
-  constructor(graphNode: GraphNode, inputIndex: number) {
-    super(graphNode, inputIndex)
-  }
+
 }
 
 export class GraphNodeInputObject extends GraphNodeInputType<object> {
-  constructor(graphNode: GraphNode, inputIndex: number) {
-    super(graphNode, inputIndex)
-  }
+
 }
 
 export class GraphNodeInputUnkown extends GraphNodeInputType<unknown> {
-  constructor(graphNode: GraphNode, inputIndex: number) {
-    super(graphNode, inputIndex)
-  }
+
 }

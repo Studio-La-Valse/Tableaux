@@ -12,11 +12,11 @@ export class Circle extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this._x = this.registerNumberInput()
-    this._y = this.registerNumberInput()
-    this.radius = this.registerNumberInput()
-    this.color = this.registerStringInput()
-    this.output = this.registerObjectOutput()
+    this._x = this.registerNumberInput("X")
+    this._y = this.registerNumberInput("Y")
+    this.radius = this.registerNumberInput("Radius")
+    this.color = this.registerStringInput("Color")
+    this.output = this.registerObjectOutput("Output")
   }
 
   protected solve(): void {

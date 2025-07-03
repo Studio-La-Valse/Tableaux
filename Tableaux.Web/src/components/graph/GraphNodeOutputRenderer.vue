@@ -1,9 +1,9 @@
 <template>
   <div class="node-port output-port" @mousedown.stop="handleMouseDown">
     <div class="label">
-      <span>{{ output.outputIndex }}</span>
+      <span>{{ output.description[0] }}</span>
     </div>
-    <HandleRenderer />
+    <HandleRenderer :description="output.description"/>
   </div>
 </template>
 
@@ -20,7 +20,7 @@ const { startEdgeDrag } = useEdgeDrag();
 
 function handleMouseDown(e: MouseEvent) {
   // Start the drag using the node's id and the output index.
-  startEdgeDrag(props.output.graphNode.id, props.output.outputIndex, e);
+  startEdgeDrag(props.output.graphNode.id, props.output.index, e);
 }
 </script>
 
@@ -39,6 +39,7 @@ function handleMouseDown(e: MouseEvent) {
 
 .label {
   font-size: 10px;
-  color: #333;
+  padding-right: 3px;
+  color: var(--color-text);
 }
 </style>

@@ -7,8 +7,8 @@ export class Parse extends GraphNode {
     constructor(id: string, path: string[]) {
         super(id, path)
 
-        this.input = this.registerStringInput()
-        this.output = this.registerObjectOutput()
+        this.input = this.registerStringInput("String")
+        this.output = this.registerObjectOutput("JSON")
     }
 
     protected solve(): void {

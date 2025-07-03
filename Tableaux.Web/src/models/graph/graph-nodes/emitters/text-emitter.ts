@@ -9,7 +9,7 @@ export class TextEmitter extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.output = this.registerTextOutput();
+    this.output = this.registerTextOutput("Text");
   }
 
   override onInitialize(): void {

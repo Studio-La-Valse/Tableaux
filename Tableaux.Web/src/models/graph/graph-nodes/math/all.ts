@@ -7,8 +7,8 @@ export class All extends GraphNode {
     constructor(id: string, path: string[]) {
       super(id, path)
 
-      this.input1 = this.registerBooleanInput()
-      this.output = this.registerBooleanOutput()
+      this.input1 = this.registerBooleanInput("Values")
+      this.output = this.registerBooleanOutput("All")
     }
 
     protected solve(): void {

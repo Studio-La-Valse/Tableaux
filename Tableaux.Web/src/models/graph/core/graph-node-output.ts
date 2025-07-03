@@ -17,7 +17,8 @@ export abstract class GraphNodeOutput {
 
   constructor(
     public graphNode: GraphNode,
-    public outputIndex: number,
+    public index: number,
+    public description: string,
   ) { }
 
   public connectTo(graphNodeInput: GraphNodeInput): GraphEdge {

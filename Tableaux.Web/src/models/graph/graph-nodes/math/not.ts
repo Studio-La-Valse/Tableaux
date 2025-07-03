@@ -7,8 +7,8 @@ export class Not extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerNumberInput()
-    this.output = this.registerBooleanOutput()
+    this.input = this.registerNumberInput("Values")
+    this.output = this.registerBooleanOutput("Inverted")
   }
 
   protected solve(): void {

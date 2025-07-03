@@ -9,9 +9,9 @@ export class RepeatUntil extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerUnkownInput()
-    this.input2 = this.registerNumberInput()
-    this.output = this.registerUnkownOutput()
+    this.input1 = this.registerUnkownInput("Values")
+    this.input2 = this.registerNumberInput("Count")
+    this.output = this.registerUnkownOutput("Values")
   }
 
   protected solve(): void {

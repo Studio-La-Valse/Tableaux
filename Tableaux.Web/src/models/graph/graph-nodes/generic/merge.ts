@@ -10,9 +10,9 @@ export class Merge extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerUnkownInput();
-    this.input2 = this.registerUnkownInput();
-    this.output = this.registerUnkownOutput();
+    this.input1 = this.registerUnkownInput("Left");
+    this.input2 = this.registerUnkownInput("Right");
+    this.output = this.registerUnkownOutput("Values");
   }
 
   protected solve(): void {

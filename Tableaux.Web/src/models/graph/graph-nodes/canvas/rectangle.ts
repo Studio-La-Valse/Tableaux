@@ -13,12 +13,12 @@ export class Rectangle extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this._x1 = this.registerNumberInput()
-    this._y1 = this.registerNumberInput()
-    this.__width = this.registerNumberInput()
-    this.__height = this.registerNumberInput()
-    this.color = this.registerStringInput()
-    this.output = this.registerObjectOutput()
+    this._x1 = this.registerNumberInput("X")
+    this._y1 = this.registerNumberInput("Y")
+    this.__width = this.registerNumberInput("Width")
+    this.__height = this.registerNumberInput("Height")
+    this.color = this.registerStringInput("Color")
+    this.output = this.registerObjectOutput("Rectangle")
   }
 
   protected solve(): void {

@@ -10,11 +10,11 @@ export class RepeatShortest extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerUnkownInput()
-    this.input2 = this.registerUnkownInput()
+    this.input1 = this.registerUnkownInput("Left")
+    this.input2 = this.registerUnkownInput("Right")
 
-    this.output1 = this.registerUnkownOutput()
-    this.output2 = this.registerUnkownOutput()
+    this.output1 = this.registerUnkownOutput("Left")
+    this.output2 = this.registerUnkownOutput("Right")
   }
 
   protected solve(): void {

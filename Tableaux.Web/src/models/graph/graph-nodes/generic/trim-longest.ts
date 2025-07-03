@@ -10,11 +10,11 @@ export class TrimLongest extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerUnkownInput()
-    this.input2 = this.registerUnkownInput()
+    this.input1 = this.registerUnkownInput("First")
+    this.input2 = this.registerUnkownInput("Second")
 
-    this.output1 = this.registerUnkownOutput()
-    this.output2 = this.registerUnkownOutput()
+    this.output1 = this.registerUnkownOutput("First")
+    this.output2 = this.registerUnkownOutput("Second")
   }
 
   protected solve(): void {

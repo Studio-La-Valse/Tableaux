@@ -1,10 +1,16 @@
 <template>
-  <div class="handle"></div>
+  <div class="handle" @mouseenter="showTip = true" @mouseleave="showTip = false">
+      <div v-show="showTip" class="tooltip">{{ description }}</div>
+  </div>
 </template>
 
 <script setup lang="ts">
-// HandleRenderer is kept simple. Expand functionality later if needed.
+import { ref } from 'vue';
+
+defineProps<{ description: string }>();
+const showTip = ref(false);
 </script>
+
 
 <style scoped>
 .handle {
@@ -25,5 +31,19 @@
 
 .handle:hover {
   background-color: var(--color-accent);
+}
+
+.tooltip {
+  position: absolute;
+  left: 75%;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-size: 10px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  z-index: 99;
 }
 </style>
