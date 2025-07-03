@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{ graphNode.path[graphNode.path.length - 1] }}
+    x
   </div>
 </template>
 

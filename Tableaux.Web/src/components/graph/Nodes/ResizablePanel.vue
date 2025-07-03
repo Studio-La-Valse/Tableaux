@@ -15,9 +15,13 @@ import { useGraph } from '@/stores/graph-store';
 // `defineProps` gives you a typed `graphNode` in your template
 const props = defineProps<{
   graphNodeId: string
+  initialWidth?: number,
+  initialHeight?: number
 }>()
 
 const graphNode = useGraph().getNode(props.graphNodeId)
+graphNode.width = props.initialWidth ?? 10
+graphNode.height = props.initialHeight ?? 10
 
 // Create computed reactive dimensions that read/write the graph node's properties.
 const width = computed({

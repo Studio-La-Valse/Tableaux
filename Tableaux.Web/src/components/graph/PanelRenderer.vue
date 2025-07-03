@@ -1,5 +1,9 @@
 <template>
   <div class="background" :style="borderStyle">
+    <!-- Title -->
+    <div class="title">
+      <p>{{ graphNode.path[graphNode.path.length - 1] }}</p>
+    </div>
 
     <!-- Main Content Panel -->
     <div class="content" :style="contentStyle">
@@ -40,13 +44,13 @@ const props = defineProps({
 const borderColor = computed(() => {
   switch (props.graphNode.innerNode.componentState) {
     case "armed":
-      return "linear-gradient(90deg, #fc8803, #ecfc03)"
+      return "linear-gradient(90deg, var(--vt-armed-1), var(--vt-armed-2))"
     case "error":
-      return "linear-gradient(90deg, #fc2003, #fc8403)"
+      return "linear-gradient(90deg, var(--vt-error-1), var(--vt-error-2))"
     case "complete":
-      return "linear-gradient(90deg, #a9fc03, #03fc90)"
+      return "linear-gradient(90deg, var(--vt-complete-1), var(--vt-complete-2))"
     case "calculating":
-      return "linear-gradient(90deg, #03fcc6, #03fcc6)"
+      return "linear-gradient(90deg, var(--vt-calculating-1), var(--vt-calculating-2))"
     default:
       return "#ccc"
   }
@@ -83,6 +87,12 @@ const getGraphNodePanel = (emitter: GraphNode) => {
 </script>
 
 <style scoped>
+.title {
+  position: absolute;
+  top: -25px;
+  left: 25px
+}
+
 .background {
   position: relative;
   box-sizing: border-box;
@@ -129,5 +139,4 @@ const getGraphNodePanel = (emitter: GraphNode) => {
   border-radius: 8px;
   background-color: var(--color-background-mute);
 }
-
 </style>

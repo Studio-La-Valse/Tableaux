@@ -20,7 +20,15 @@
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 
-  --vt-accent: rgba(223, 18, 72, 1)
+  --vt-accent: rgba(223, 18, 72, 1);
+  --vt-armed-1: #fc8803;
+  --vt-armed-2: #ecfc03;
+  --vt-error-1: #fc2003;
+  --vt-error-2: #fc03b1;
+  --vt-complete-1: #a9fc03;
+  --vt-complete-2: #03fc90;
+  --vt-calculating-1: #03fcc6;
+  --vt-calculating-2: #03fcc6;
 }
 
 /* semantic color variables for this project */

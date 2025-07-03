@@ -7,7 +7,7 @@ import type { GraphEdge } from '@/models/graph/core/graph-edge'
 
 export class GraphNodeWrapper {
   private _height = 50
-  private _width = 150
+  private _width = 100
 
   public x: number = 0
   public y: number = 0
@@ -33,7 +33,7 @@ export class GraphNodeWrapper {
   }
 
   public get minWidth(): number {
-    return 150
+    return 100
   }
 
   public get id() { return this.innerNode.id }
