@@ -1,8 +1,8 @@
 <template>
-  <div ref="resizableRef" class="resizable" :style="style">
+  <div class="background" :style="borderStyle">
 
     <!-- Main Content Panel -->
-    <div class="content">
+    <div class="content" :style="contentStyle">
       <component :is="getGraphNodePanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
     </div>
 
@@ -15,9 +15,6 @@
     <div class="outputs" v-if="graphNode.outputs && graphNode.outputs.length">
       <GraphNodeOutputRenderer v-for="(output, index) in graphNode.outputs" :key="'output-' + index" :output="output" />
     </div>
-
-    <!-- Resizer for the bottom right corner -->
-    <div class="resizer" @pointerdown="initResize"></div>
   </div>
 </template>
 
@@ -31,7 +28,6 @@ import GraphNodeInputRenderer from "./GraphNodeInputRenderer.vue";
 import GraphNodeOutputRenderer from "./GraphNodeOutputRenderer.vue";
 import type { GraphNode } from "@/models/graph/core/graph-node";
 import { GraphNodeWrapper, useGraph } from "@/stores/graph-store";
-import { useResizable } from "@/composables/useResizable";
 
 const { getNode } = useGraph();
 const props = defineProps({
@@ -56,10 +52,15 @@ const borderColor = computed(() => {
   }
 })
 
-const style = computed<StyleValue>(() => ({
-  width: width.value + 'px',
-  height: height.value + 'px',
-  background: borderColor.value
+const borderStyle = computed<StyleValue>(() => ({
+  background: borderColor.value,
+}))
+
+const contentStyle = computed<StyleValue>(() => ({
+  minWidth: graphNode.minWidth + 'px',
+  minHeight: graphNode.minHeight + 'px',
+  width: graphNode.width + 'px',
+  height: graphNode.height + 'px'
 }))
 
 // Get the reactive graph node instance.
@@ -79,28 +80,10 @@ const getGraphNodePanel = (emitter: GraphNode) => {
   return registry[type] || GraphNodePanel;
 };
 
-// Create computed reactive dimensions that read/write the graph node's properties.
-const width = computed({
-  get: () => graphNode.width,
-  set: (val) => {
-    graphNode.width = val;
-  },
-});
-const height = computed({
-  get: () => graphNode.height,
-  set: (val) => {
-    graphNode.height = val;
-  },
-});
-
-// Integrate the resizable composable.
-const { initResize } = useResizable(width, height);
-
-// (The onUnmounted cleanup in the composable will handle any lingering event listeners.)
 </script>
 
 <style scoped>
-.resizable {
+.background {
   position: relative;
   box-sizing: border-box;
   overflow: visible;
@@ -117,7 +100,6 @@ const { initResize } = useResizable(width, height);
   top: 0;
   width: 30px;
   height: 100%;
-  padding: 4px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -130,7 +112,6 @@ const { initResize } = useResizable(width, height);
   top: 0;
   width: 30px;
   height: 100%;
-  padding: 4px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -140,26 +121,13 @@ const { initResize } = useResizable(width, height);
 .content {
   position: relative;
   margin: 0 2px;
-  width: calc(100% - 4x);
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 10px;
-  overflow: hidden;
+  overflow: visible;
   border-radius: 8px;
   background-color: var(--color-background-mute);
 }
 
-/* Resizer styling remains unchanged */
-.resizer {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 16px;
-  height: 16px;
-  background-color: 'transparant';
-  cursor: se-resize;
-  border-radius: 6px;
-}
 </style>

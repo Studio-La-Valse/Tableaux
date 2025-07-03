@@ -1,37 +1,43 @@
 <template>
-  <textarea class="text-input" type="text" :value="graphNode.value" @input="handleInput" @mousedown.stop @mousemove.stop
-    @mouseup.stop @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop></textarea>
+  <ResizablePanel :graph-node-id="graphNode.id">
+    <div class="text-input-wrapper">
+      <textarea class="text-input" :value="graphNode.value" @input="handleInput" @mousedown.stop @mousemove.stop
+        @mouseup.stop @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop></textarea>
+    </div>
+
+  </ResizablePanel>
+
 </template>
 
 <script setup lang="ts">
 import type { TextEmitter } from '@/models/graph/graph-nodes/emitters/text-emitter';
+import ResizablePanel from './ResizablePanel.vue';
 
-const props = defineProps(
-  {
-    graphNode: {
-      type: Object as () => TextEmitter,
-      required: true,
-    }
-  }
-)
+const props = defineProps<{
+  graphNode: TextEmitter
+}>()
 
 const handleInput = (event: Event) => {
-  const target = event.target as HTMLInputElement;
+  const target = event.target as HTMLTextAreaElement;
   props.graphNode.onChange(target.value);
 }
 
 </script>
 
-<style lang="css" scoped>
+<style scoped>
+.text-input-wrapper {
+  padding: 8px;
+  height: 100%;
+}
+
 .text-input {
-  flex: 1;
   width: 100%;
   height: 100%;
-  margin-right: 10px;
+  resize: none;
   background: var(--color-background-mute);
   color: var(--color-text);
   border: 1px solid var(--color-border-hover);
-  resize: none;
   border-radius: 5px;
+  box-sizing: border-box;
 }
 </style>

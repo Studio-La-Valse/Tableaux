@@ -1,36 +1,27 @@
 <template>
-  <div class="outer">
+  <ResizablePanel :graph-node-id="props.graphNode.id">
     <div class="inner">
       <!-- directly loop over the reactive array -->
-      <p v-for="(value, i) in graphNode.values" :key="i">
+      <p v-for="(value, i) in props.graphNode.values" :key="i">
         {{ value }}
       </p>
     </div>
-  </div>
+  </ResizablePanel>
 </template>
 
 <script setup lang="ts">
 import type { Logger } from '@/models/graph/graph-nodes/generic/logger'
+import ResizablePanel from "./ResizablePanel.vue"
 
 // `defineProps` gives you a typed `graphNode` in your template
-defineProps<{
+const props = defineProps<{
   graphNode: Logger
 }>()
+
 </script>
 
 
 <style scoped>
-.outer {
-  /* Fill available space in the parent */
-  height: 100%;
-  width: 100%;
-  overflow-y: auto;
-
-  /* Flex layout helps with centering */
-  display: flex;
-  flex-direction: column;
-}
-
 .inner {
   /* When content is small, auto margins center the inner container vertically.
      When content is larger than available space, the auto margins collapse
@@ -40,7 +31,6 @@ defineProps<{
   /* Center text, and if desired, limit content width */
   text-align: center;
   max-width: 600px;
-  /* Optional: adjust as needed */
 }
 
 /* (Optional) Custom scrollbar styling for WebKit browsers */

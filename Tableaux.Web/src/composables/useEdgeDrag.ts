@@ -51,8 +51,6 @@ function mouseUpHandler() {
 export function useEdgeDrag() {
   function startEdgeDrag(fromNodeId: string, fromOutputIndex: number, e: MouseEvent) {
     if (e.button !== 0) return
-    // Prevent the canvas from panning.
-    e.stopPropagation()
 
     const container = getCanvasContent(e.currentTarget)
     if (!container) return
@@ -68,6 +66,8 @@ export function useEdgeDrag() {
 
     window.addEventListener('mousemove', mouseMoveHandler)
     window.addEventListener('mouseup', mouseUpHandler)
+
+    e.stopPropagation();
   }
 
   function finishEdgeDrag(
