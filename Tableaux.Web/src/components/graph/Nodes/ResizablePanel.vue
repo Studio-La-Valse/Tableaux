@@ -16,7 +16,7 @@ import { useGraph } from '@/stores/graph-store';
 const props = defineProps<{
   graphNodeId: string
   initialWidth?: number,
-  initialHeight?: number
+  initialHeight?: number,
 }>()
 
 const graphNode = useGraph().getNode(props.graphNodeId)

@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type StyleValue, type Component, h } from "vue";
+import { computed, type StyleValue, type Component } from "vue";
 import NumberEmitterPanel from "./Nodes/NumberEmitter.vue";
 import TextEmitterPanel from "./Nodes/TextEmitter.vue";
 import GraphNodePanel from "./GraphNodePanel.vue";
@@ -32,10 +32,11 @@ import GraphNodeInputRenderer from "./GraphNodeInputRenderer.vue";
 import GraphNodeOutputRenderer from "./GraphNodeOutputRenderer.vue";
 import type { GraphNode } from "@/models/graph/core/graph-node";
 import { GraphNodeWrapper, useGraph } from "@/stores/graph-store";
-import type { GraphNodeInput } from "@/models/graph/core/graph-node-input";
-import type { GraphNodeOutput } from "@/models/graph/core/graph-node-output";
+import { useSelectionStore } from "@/stores/selection-store";
 
 const { getNode } = useGraph();
+const { isSelected } = useSelectionStore()
+
 const props = defineProps({
   graphNode: {
     type: Object as () => GraphNodeWrapper,
@@ -54,12 +55,32 @@ const borderColor = computed(() => {
     case "calculating":
       return "linear-gradient(90deg, var(--vt-calculating-1), var(--vt-calculating-2))"
     default:
+      return "linear-gradient(90deg, var(--vt-error-1), var(--vt-error-2))"
+  }
+})
+
+const shadowColor = computed(() => {
+  switch (graphNode.innerNode.componentState) {
+    case "armed":
+      return "--vt-armed-1"
+    case "error":
+      return "--vt-error-1"
+    case "complete":
+      return "--vt-complete-1"
+    case "calculating":
+      return "--vt-calculating-1"
+    default:
       return "#ccc"
   }
 })
 
-const borderStyle = computed<StyleValue>(() => ({
-  background: borderColor.value,
+// Determines visual styling based on whether the node is selected.
+const _isSelected = computed(() => isSelected(props.graphNode.id));
+
+const borderStyle = computed(() => ({
+  '--gradient-border': borderColor.value,
+    boxShadow: _isSelected.value ? `0 0 12px 4px var(${shadowColor.value})` : ''
+
 }))
 
 const contentStyle = computed<StyleValue>(() => ({
@@ -85,14 +106,6 @@ const getGraphNodePanel = (emitter: GraphNode) => {
   const type = emitter.constructor.name;
   return registry[type] || GraphNodePanel;
 };
-
-const getInputHandleHeight = (handle: GraphNodeInput): number => {
-  return graphNode.calculateHandleCoordinate(handle.index, graphNode.inputs.length)
-}
-
-const getOutputHandleHeight = (handle: GraphNodeOutput): number => {
-  return graphNode.calculateHandleCoordinate(handle.index, graphNode.outputs.length)
-}
 </script>
 
 <style scoped>
@@ -106,44 +119,46 @@ const getOutputHandleHeight = (handle: GraphNodeOutput): number => {
   position: relative;
   box-sizing: border-box;
   overflow: visible;
-  background: var(--color-background-mute);
-  padding-top: 2px;
-  padding-bottom: 2px;
   border-radius: 10px;
 }
 
-/* Place the input ports inside the node on the left side */
-.inputs {
+.background::before {
+  content: "";
   position: absolute;
-  left: -12px;
+  inset: -2px; /* expands the area OUTSIDE by 2px */
+  border-radius: 10px; /* should be slightly more than the .background's radius */
+  background: var(--gradient-border);
+}
+
+/* Place the input ports inside the node on the left side */
+.inputs, .outputs {
+  position: absolute;
   top: 0;
   width: 30px;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.inputs {
+  left: -12px;
 }
 
 /* Place the output ports inside the node on the right side */
 .outputs {
-  position: absolute;
   right: -12px;
-  top: 0;
-  width: 30px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
 }
 
 /* Adjust the main content to account for the port panels */
 .content {
   position: relative;
-  margin: 0 2px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px;
+  padding: 12px;
   overflow: visible;
   border-radius: 8px;
   background-color: var(--color-background-mute);

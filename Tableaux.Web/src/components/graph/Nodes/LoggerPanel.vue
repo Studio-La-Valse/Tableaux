@@ -1,10 +1,8 @@
 <template>
   <ResizablePanel :graph-node-id="props.graphNode.id" :initial-height="80" :initial-width="80">
-    <div class="inner">
-      <!-- directly loop over the reactive array -->
-      <p v-for="(value, i) in props.graphNode.values" :key="i">
-        {{ value }}
-      </p>
+    <div class="text-input-wrapper">
+      <textarea readonly class="text-input" :value="graphNode.values.join('\n')" @mousedown.stop @mousemove.stop
+        @mouseup.stop @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop></textarea>
     </div>
   </ResizablePanel>
 </template>
@@ -22,32 +20,38 @@ const props = defineProps<{
 
 
 <style scoped>
-.inner {
-  padding: 10px;
+.text-input-wrapper {
+  padding: 8px;
+  height: 100%;
+}
 
-  /* When content is small, auto margins center the inner container vertically.
-     When content is larger than available space, the auto margins collapse
-     so that content starts at the top and scrolling works naturally. */
-  margin: auto;
-
-  /* Center text, and if desired, limit content width */
+.text-input {
   text-align: center;
-  max-width: 600px;
+  white-space: pre-wrap;
+  width: 100%;
+  height: 100%;
+  resize: none;
+  background: var(--color-background-soft);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-hover);
+  border-radius: 5px;
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 /* (Optional) Custom scrollbar styling for WebKit browsers */
-.outer::-webkit-scrollbar {
+.text-input::-webkit-scrollbar {
   width: 8px;
   height: 8px;
   cursor: grab;
 }
 
-.outer::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.3);
+.text-input::-webkit-scrollbar-thumb {
+  background-color: var(--color-text);
   border-radius: 4px;
 }
 
-.outer::-webkit-scrollbar-thumb:active {
+.text-input::-webkit-scrollbar-thumb:active {
   cursor: grabbing;
 }
 </style>

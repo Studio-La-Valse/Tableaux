@@ -6,9 +6,9 @@ import { GraphNode } from '@/models/graph/core/graph-node'
 import type { GraphEdge } from '@/models/graph/core/graph-edge'
 
 export class GraphNodeWrapper {
-  private _height = 50
+  private _height = 30
   private _width = 100
-  private _handlePad = 30;
+  private _handlePad = 45;
 
   public x: number = 0
   public y: number = 0

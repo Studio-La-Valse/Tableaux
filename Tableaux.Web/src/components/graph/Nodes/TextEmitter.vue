@@ -40,4 +40,20 @@ const handleInput = (event: Event) => {
   border-radius: 5px;
   box-sizing: border-box;
 }
+
+/* (Optional) Custom scrollbar styling for WebKit browsers */
+.text-input::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  cursor: grab;
+}
+
+.text-input::-webkit-scrollbar-thumb {
+  background-color: var(--color-text);
+  border-radius: 4px;
+}
+
+.text-input::-webkit-scrollbar-thumb:active {
+  cursor: grabbing;
+}
 </style>
