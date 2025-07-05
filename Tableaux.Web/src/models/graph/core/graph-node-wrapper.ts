@@ -1,11 +1,11 @@
 import type { GraphNode } from './graph-node'
 import type { GraphNodeModel } from './models/graph-node-model'
-import type { JsonObject } from './models/json-object'
 
 export class GraphNodeWrapper {
   private _height = 30
   private _width = 100
   private _handlePad = 45
+  public version
 
   public x: number = 0
   public y: number = 0
@@ -40,10 +40,6 @@ export class GraphNodeWrapper {
     return this.innerNode.data
   }
 
-  public set data(val: JsonObject) {
-    this.innerNode.data = val
-  }
-
   public get id() {
     return this.innerNode.id
   }
@@ -60,7 +56,9 @@ export class GraphNodeWrapper {
     return this.innerNode.outputs
   }
 
-  constructor(public readonly innerNode: GraphNode) {}
+  constructor(public readonly innerNode: GraphNode) {
+    this.version = crypto.randomUUID()
+  }
 
   public toModel(): GraphNodeModel {
     const result = {

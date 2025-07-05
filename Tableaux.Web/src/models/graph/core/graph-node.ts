@@ -17,7 +17,6 @@ import {
     GraphNodeOutputType,
 } from './graph-node-output'
 import type { JsonObject } from './models/json-object'
-import type { JsonValue } from './models/json-value'
 
 export const componentStates = {
     armed: 'armed',
@@ -38,8 +37,9 @@ export abstract class GraphNode extends GraphNodeCore {
     constructor(
         public readonly id: string,
         public readonly path: string[],
+        data: JsonObject
     ) {
-        super(id, path)
+        super(id, path, data)
     }
 
     // --- Input Registration ---
@@ -122,20 +122,4 @@ export abstract class GraphNode extends GraphNodeCore {
             throw new GraphNodeAlreadyInitializedError()
         }
     }
-}
-
-export abstract class GraphNodeData extends GraphNode {
-
-    /**
-     * Allows serializable data to be stored to the graph node
-     */
-    public data: JsonObject;
-
-    constructor(id: string, path: string[]) {
-      super(id, path)
-
-      this.data = {}
-    }
-
-    public abstract onChange(value: JsonValue): void;
 }

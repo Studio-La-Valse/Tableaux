@@ -14,6 +14,9 @@
 import type { TextEmitter } from '@/models/graph/graph-nodes/emitters/text-emitter';
 import ResizablePanel from './ResizablePanel.vue';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useGraph } from '@/stores/graph-store';
+
+const graph = useGraph()
 
 const props = defineProps<{
   graphNode: TextEmitter
@@ -21,9 +24,21 @@ const props = defineProps<{
 
 const textInputRef = ref<HTMLTextAreaElement | null>(null);
 
+let debounceTimer: number | undefined
+const debounceDelay = 2
+
 const handleInput = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement;
-  props.graphNode.onChange(target.value);
+  const target = event.target as HTMLTextAreaElement
+  const value = target.value
+
+  // Clear previous timer
+  if (debounceTimer) clearTimeout(debounceTimer)
+
+  // Set a new one
+  debounceTimer = window.setTimeout(() => {
+    props.graphNode.onChange(value)
+    graph.commit()
+  }, debounceDelay)
 }
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -47,8 +62,9 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
+  if (debounceTimer) clearTimeout(debounceTimer)
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style scoped>

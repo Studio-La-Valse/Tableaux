@@ -529,7 +529,7 @@ export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
     graphNodeInput.onArm()
 
     this.payload.forEach((value) => {
-      graphNodeInput.onNext(value as Object)
+      graphNodeInput.onNext(value as object)
     })
 
     if (this.graphNode.componentState == 'complete') {

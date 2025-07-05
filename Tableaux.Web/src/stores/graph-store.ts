@@ -1,22 +1,23 @@
 import type { XY } from '@/models/geometry/xy'
 import { defineStore } from 'pinia'
-import { nextTick, ref, type Ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { useGraphNodeActivatorCollection } from './graph-node-activator-store'
 import type { GraphEdge } from '@/models/graph/core/graph-edge'
 import type { GraphNodeModel } from '@/models/graph/core/models/graph-node-model'
 import type { GraphModel } from '@/models/graph/core/models/graph-model'
 import type { GraphEdgeModel } from '@/models/graph/core/models/graph-edge-model'
 import { GraphNodeWrapper } from '@/models/graph/core/graph-node-wrapper'
+import { useHistory } from './graph-history-store'
 
-export const useGraph = defineStore('graph', () => {
+export const useGraphInternal = defineStore('graph', () => {
   const nodes: Ref<GraphNodeWrapper[]> = ref([])
   const edges: Ref<GraphEdge[]> = ref([])
 
   const activators = useGraphNodeActivatorCollection()
 
   const clear = () => {
-    nodes.value = []
-    edges.value = []
+    nodes.value.splice(0)
+    edges.value.splice(0)
   }
 
   const addNode = (nodePath: string[], position: XY, id: string) => {
@@ -25,7 +26,7 @@ export const useGraph = defineStore('graph', () => {
       throw new Error()
     }
 
-    const graphNode = activator.activate(id)
+    const graphNode = activator.activate(id, {})
     const wrapper = new GraphNodeWrapper(graphNode)
     wrapper.x = position.x
     wrapper.y = position.y
@@ -117,6 +118,51 @@ export const useGraph = defineStore('graph', () => {
     edges.value.splice(existingEdge, 1)
   }
 
+  const duplicate = (nodeIds: string[], pasteEvents: number): GraphNodeWrapper[] => {
+    // 1) grab originals & snapshot the current edges
+    const originals = nodeIds.map(getNode)
+    const allEdges = [...edges.value] // snapshot so we don't iterate newly created edges
+
+    // 2) clone each node & build origId→clone map
+    const idMap: Record<string, GraphNodeWrapper> = {}
+    const clones = originals.map((orig) => {
+      const newId = crypto.randomUUID()
+      const model = orig.toModel()
+      model.id = newId
+      model.x += 10 * pasteEvents
+      model.y += 10 * pasteEvents
+      const copy = addNodeModel(model)
+      idMap[orig.id] = copy
+      return copy
+    })
+
+    // 3) Re-create edges BETWEEN selected originals
+    allEdges.forEach((edge) => {
+      const Lclone = idMap[edge.leftGraphNodeId]
+      const Rclone = idMap[edge.rightGraphNodeId]
+
+      if (Lclone && Rclone) {
+        // internal→internal
+        connect(Lclone.id, edge.outputIndex, Rclone.id, edge.inputIndex)
+      }
+    })
+
+    // 4) Mirror incoming edges: external→selected
+    allEdges.forEach((edge) => {
+      const Lorig = edge.leftGraphNodeId
+      const Rorig = edge.rightGraphNodeId
+      const Rclone = idMap[Rorig]
+
+      // if the ORIGINAL right‐node was selected, but its left‐node was NOT,
+      // we want to wire that same left→clone connection
+      if (!idMap[Lorig] && Rclone) {
+        connect(Lorig, edge.outputIndex, Rclone.id, edge.inputIndex)
+      }
+    })
+
+    return clones
+  }
+
   const toModel: () => GraphModel = () => {
     const nodeModels = nodes.value.map((v) => v.toModel())
     const edgeModels = edges.value.map((v) => v.toModel())
@@ -129,11 +175,8 @@ export const useGraph = defineStore('graph', () => {
 
   const fromModel: (model: GraphModel) => void = (model: GraphModel) => {
     clear()
-
-    nextTick(() => {
-      model.nodes.forEach((v) => addNodeModel(v))
-      model.edges.forEach((v) => addEdgeModel(v))
-    })
+    model.nodes.forEach((n) => addNodeModel(n))
+    model.edges.forEach((e) => addEdgeModel(e))
   }
 
   const addNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (model: GraphNodeModel) => {
@@ -142,13 +185,13 @@ export const useGraph = defineStore('graph', () => {
       throw new Error()
     }
 
-    const graphNode = activator.activate(model.id)
+    const data = model.data == undefined ? {} : JSON.parse(JSON.stringify(model.data))
+    const graphNode = activator.activate(model.id, data)
     const wrapper = new GraphNodeWrapper(graphNode)
     wrapper.x = model.x
     wrapper.y = model.y
     if (model.width) wrapper.width = model.width
     if (model.height) wrapper.height = model.height
-    if (model.data) wrapper.data = JSON.parse(JSON.stringify(model.data))
 
     graphNode.onInitialize()
     nodes.value.push(wrapper)
@@ -160,7 +203,7 @@ export const useGraph = defineStore('graph', () => {
     return wrapper
   }
 
-  const addEdgeModel: (model: GraphEdgeModel) => GraphEdgeModel = (model: GraphEdgeModel) => {
+  const addEdgeModel: (model: GraphEdgeModel) => GraphEdge = (model: GraphEdgeModel) => {
     return connect(
       model.leftGraphNodeId,
       model.outputIndex,
@@ -171,17 +214,162 @@ export const useGraph = defineStore('graph', () => {
 
   return {
     clear,
+
     nodes,
-    edges,
     findNode,
     getNode,
     addNode,
     removeNode,
+
+    edges,
     connect,
     removeEdge,
+
+    duplicate,
+
     toModel,
     fromModel,
     addNodeModel,
     addEdgeModel,
+  }
+})
+
+export const useGraph = defineStore('graph-with-history', () => {
+  const internalGraph = useGraphInternal()
+  const history = useHistory()
+  history.init(internalGraph.toModel())
+
+  const clear = () => {
+    const state = internalGraph.toModel()
+    try {
+      internalGraph.clear()
+      history.commit(internalGraph.toModel())
+    } catch {
+      internalGraph.fromModel(state)
+    }
+  }
+
+  const addNode = (nodePath: string[], position: XY, id: string) => {
+    const state = internalGraph.toModel()
+    try {
+      internalGraph.addNode(nodePath, position, id)
+      history.commit(internalGraph.toModel())
+    } catch {
+      internalGraph.fromModel(state)
+    }
+  }
+
+  const removeNodes = (ids: string[]) => {
+    const state = internalGraph.toModel()
+    try {
+      ids.forEach((id) => internalGraph.removeNode(id))
+      history.commit(internalGraph.toModel())
+    } catch {
+      internalGraph.fromModel(state)
+    }
+  }
+
+  const connect = (
+    leftNodeId: string,
+    outputIndex: number,
+    rightNodeId: string,
+    inputIndex: number,
+  ) => {
+    const state = internalGraph.toModel()
+    try {
+      internalGraph.connect(leftNodeId, outputIndex, rightNodeId, inputIndex)
+      history.commit(internalGraph.toModel())
+    } catch {
+      internalGraph.fromModel(state)
+    }
+  }
+
+  const removeEdge = (rightNodeId: string, inputIndex: number) => {
+    const state = internalGraph.toModel()
+    try {
+      internalGraph.removeEdge(rightNodeId, inputIndex)
+      history.commit(internalGraph.toModel())
+    } catch {
+      internalGraph.fromModel(state)
+    }
+  }
+
+  const addNodeModels = (models: GraphNodeModel[]) => {
+    const state = internalGraph.toModel()
+    try {
+      models.forEach((model) => internalGraph.addNodeModel(model))
+      history.commit(internalGraph.toModel())
+    } catch (e) {
+      internalGraph.fromModel(state)
+      throw e
+    }
+  }
+
+  const addEdgeModels = (models: GraphEdgeModel[]) => {
+    const state = internalGraph.toModel()
+    try {
+      models.forEach((m) => internalGraph.addEdgeModel(m))
+      history.commit(internalGraph.toModel())
+    } catch (e) {
+      internalGraph.fromModel(state)
+      throw e
+    }
+  }
+
+  const duplicate = (nodeIds: string[], pasteEvents: number) => {
+    const state = internalGraph.toModel()
+    try {
+      const result = internalGraph.duplicate(nodeIds, pasteEvents)
+      history.commit(internalGraph.toModel())
+      return result
+    } catch (e) {
+      internalGraph.fromModel(state)
+      throw e
+    }
+  }
+
+  const fromModel = (model: GraphModel) => {
+    internalGraph.fromModel(model)
+    history.init(model)
+  }
+
+  const commit = () => {
+    return history.commit(internalGraph.toModel())
+  }
+
+  const undo = () => {
+    const model = history.undo()
+    if (model) internalGraph.fromModel(model)
+  }
+
+  const redo = () => {
+    const model = history.redo()
+    if (model) internalGraph.fromModel(model)
+  }
+
+  return {
+    clear,
+
+    addNode,
+    removeNodes,
+
+    connect,
+    removeEdge,
+
+    duplicate,
+
+    fromModel,
+    addNodeModels,
+    addEdgeModels,
+
+    toModel: internalGraph.toModel,
+    getNode: internalGraph.getNode,
+    nodes: internalGraph.nodes,
+    edges: internalGraph.edges,
+
+    getPresent: history.getPresent,
+    commit,
+    undo,
+    redo,
   }
 })

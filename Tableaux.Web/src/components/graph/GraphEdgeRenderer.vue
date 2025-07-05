@@ -1,10 +1,10 @@
 <template>
-  <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y" :stroke="isSelected ? 'var(--color-accent)' : 'var(--color-text)'"
-    :stroke-width="isSelected ? 3 : 1" />
+  <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y"
+    :stroke="isSelected ? 'var(--color-accent)' : 'var(--color-text)'" :stroke-width="isSelected ? 3 : 1" />
 
   <!-- Interactive overlay: invisible (but painted) so that only hits on the line register, all pointer events registered -->
-  <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y" :stroke="'var(--color-text)'" :stroke-opacity="0"
-    :stroke-width="10" :callback="toggleSelection" :pointer-events="'all'" />
+  <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y" :stroke="'var(--color-text)'"
+    :stroke-opacity="0" :stroke-width="10" :callback="toggleSelection" :pointer-events="'all'" />
 </template>
 
 <script setup lang="ts">
@@ -13,7 +13,8 @@ import type { GraphEdge } from '@/models/graph/core/graph-edge';
 import { useGraph } from '@/stores/graph-store';
 import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
 
-const { removeEdge, getNode } = useGraph();
+const { removeEdge } = useGraph();
+const { getNode } = useGraph();
 
 const props = defineProps<{
   edge: GraphEdge;

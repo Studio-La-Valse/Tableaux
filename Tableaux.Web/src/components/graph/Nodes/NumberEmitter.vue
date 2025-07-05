@@ -1,8 +1,9 @@
 <template>
   <ResizablePanel :graph-node-id="graphNode.id">
     <div class="number-input-wrapper">
-      <input ref="inputRef" class="number-input" type="number" :value="graphNode.data.value" @keydown="handleKeyDown" @input="handleInput" @mousedown.stop
-        @mousemove.stop @mouseup.stop @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop />
+      <input ref="inputRef" class="number-input" type="number" :value="props.graphNode.data.value"
+        @keydown="handleKeyDown" @input="handleInput" @mousedown.stop @mousemove.stop @mouseup.stop @wheel.stop
+        @touchstart.stop @touchmove.stop @touchend.stop />
     </div>
 
   </ResizablePanel>
@@ -12,6 +13,9 @@
 import type { NumberEmitter } from '@/models/graph/graph-nodes/emitters/number-emitter'
 import ResizablePanel from './ResizablePanel.vue';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useGraph } from '@/stores/graph-store';
+
+const graph = useGraph();
 
 const props = defineProps<{
   graphNode: NumberEmitter
@@ -19,11 +23,22 @@ const props = defineProps<{
 
 const inputRef = ref<HTMLTextAreaElement | null>(null);
 
-const handleInput = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  props.graphNode.onChange(Number(target.value))
-}
+let debounceTimer: number | undefined
+const debounceDelay = 2
 
+const handleInput = (e: Event) => {
+  const target = e.target as HTMLInputElement
+  const numValue = Number(target.value)
+  if (isNaN(numValue)) return
+
+  if (debounceTimer) clearTimeout(debounceTimer)
+  debounceTimer = window.setTimeout(() => {
+
+    props.graphNode.onChange(numValue)
+    graph.commit()
+
+  }, debounceDelay)
+}
 
 const handleClickOutside = (event: MouseEvent) => {
   if (
@@ -46,9 +61,8 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
-
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style scoped>

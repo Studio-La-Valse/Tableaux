@@ -7,7 +7,7 @@ import { useCanvasRefStore } from '@/stores/canvas-ref-store'
 export function useGroupDraggable() {
   const selectionStore = useSelectionStore()
   const { clientToCanvas } = useCanvasRefStore()
-  const graphStore = useGraph()
+  const graph = useGraph()
 
   const dragging = ref(false)
   const wasDragged = ref(false)
@@ -43,7 +43,7 @@ export function useGroupDraggable() {
     dragOffsetMap = {}
 
     selectionStore.selectedNodes.forEach((id) => {
-      const n = graphStore.getNode(id)
+      const n = graph.getNode(id)
       dragOffsetMap[id] = {
         x: startPointerPos.x - n.x,
         y: startPointerPos.y - n.y,
@@ -73,7 +73,7 @@ export function useGroupDraggable() {
 
     // move whatever is selected
     selectionStore.selectedNodes.forEach((id) => {
-      const n = graphStore.getNode(id)
+      const n = graph.getNode(id)
       const offs = dragOffsetMap[id] || { x: 0, y: 0 }
       n.x = cur.x - offs.x
       n.y = cur.y - offs.y
@@ -91,8 +91,12 @@ export function useGroupDraggable() {
     window.removeEventListener('mousemove', onMouseMove)
     window.removeEventListener('mouseup', onMouseUp)
 
-    // reset drag-flag for next cycle
-    setTimeout(() => (wasDragged.value = false), 0)
+    if (wasDragged.value) {
+      graph.commit()
+
+      // reset drag-flag for next cycle
+      setTimeout(() => (wasDragged.value = false), 0)
+    }
   }
 
   return {

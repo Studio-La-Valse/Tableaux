@@ -1,4 +1,5 @@
 import { useCanvasRefStore } from '@/stores/canvas-ref-store'
+import { useGraph } from '@/stores/graph-store'
 import { onUnmounted, type Ref } from 'vue'
 
 // Define a simple XY interface.
@@ -16,6 +17,7 @@ interface XY {
  */
 export function useResizable(width: Ref<number>, height: Ref<number>) {
   const { clientToCanvas } = useCanvasRefStore()
+  const graph = useGraph();
 
   // State variables to track the resize start.
   let startLocal: XY = { x: 0, y: 0 }
@@ -72,6 +74,8 @@ export function useResizable(width: Ref<number>, height: Ref<number>) {
       resizerEl.removeEventListener('pointermove', onPointerMove)
       resizerEl.removeEventListener('pointerup', onPointerUp)
       resizerEl.removeEventListener('pointercancel', onPointerUp)
+
+      graph.commit()
     }
   }
 

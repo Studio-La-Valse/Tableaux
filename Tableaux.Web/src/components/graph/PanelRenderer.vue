@@ -80,7 +80,7 @@ const _isSelected = computed(() => isSelected(props.graphNode.id));
 
 const borderStyle = computed(() => ({
   '--gradient-border': borderColor.value,
-    boxShadow: _isSelected.value ? `0 0 12px 4px var(${shadowColor.value})` : ''
+  boxShadow: _isSelected.value ? `0 0 12px 4px var(${shadowColor.value})` : ''
 
 }))
 
@@ -126,13 +126,16 @@ const getGraphNodePanel = (emitter: GraphNode) => {
 .background::before {
   content: "";
   position: absolute;
-  inset: -2px; /* expands the area OUTSIDE by 2px */
-  border-radius: 10px; /* should be slightly more than the .background's radius */
+  inset: -2px;
+  /* expands the area OUTSIDE by 2px */
+  border-radius: 10px;
+  /* should be slightly more than the .background's radius */
   background: var(--gradient-border);
 }
 
 /* Place the input ports inside the node on the left side */
-.inputs, .outputs {
+.inputs,
+.outputs {
   position: absolute;
   top: 0;
   width: 30px;

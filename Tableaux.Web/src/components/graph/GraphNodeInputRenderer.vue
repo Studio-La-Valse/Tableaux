@@ -1,7 +1,7 @@
 <!-- src/components/GraphNodeInputRenderer.vue -->
 <template>
   <div class="node-port input-port" @mousedown.stop @mouseup="handleMouseUp">
-    <HandleRenderer :description="input.description"/>
+    <HandleRenderer :description="input.description" />
     <div class="label">
       <span>{{ input.description[0] }}</span>
     </div>

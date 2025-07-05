@@ -50,8 +50,8 @@ app.use(createPinia())
 
 const { register } = useGraphNodeActivatorCollection()
 
-register(['Emitters', 'Number'], (id, path) => new NumberEmitter(id, path))
-register(['Emitters', 'Text'], (id, path) => new TextEmitter(id, path))
+register(['Emitters', 'Number'], (id, path, data) => new NumberEmitter(id, path, data))
+register(['Emitters', 'Text'], (id, path, data) => new TextEmitter(id, path, data))
 
 register(['Generic', 'Logger'], (id, path) => new Logger(id, path))
 register(['Generic', 'Signals', 'Merge'], (id, path) => new Merge(id, path))

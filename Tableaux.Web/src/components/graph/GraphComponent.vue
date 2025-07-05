@@ -20,20 +20,21 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, type StyleValue } from 'vue';
+
 import ActivatorTree from '@/components/graph/NodeBrowser/ActivatorTree.vue'
 import GraphRenderer from '@/components/graph/GraphRenderer.vue'
 import SelectionBorder from '@/components/graph/SelectionBorder.vue'
+import GraphControls from '@/components/graph/GraphControls/GraphControls.vue';
 
 import { useSelectionArea } from '@/composables/useSelectionArea';
 import { useClearSelection } from '@/composables/useClearSelection';
 import { useCanvasTransform } from '@/composables/useCanvasTransform';
 
 import { useContextMenuStore } from "@/stores/context-menu";
-import { useGraph } from '@/stores/graph-store';
 import { useSelectionStore } from '@/stores/selection-store';
 import { useSelectionAreaStore } from '@/stores/selection-area-store';
-import GraphControls from './GraphControls/GraphControls.vue';
 import { useCanvasRefStore } from '@/stores/canvas-ref-store';
+import { useGraph } from '@/stores/graph-store';
 
 const selectionArea = useSelectionArea();
 const selectionAreaStore = useSelectionAreaStore();
@@ -72,7 +73,7 @@ function onCanvasDblClick(evt: MouseEvent) {
 function deleteSelectedNodes(evt: KeyboardEvent) {
   if (evt.key != 'Delete') return;
 
-  selection.selectedNodes.forEach((n) => graph.removeNode(n))
+  graph.removeNodes([...selection.selectedNodes])
   selection.clearSelection();
 }
 

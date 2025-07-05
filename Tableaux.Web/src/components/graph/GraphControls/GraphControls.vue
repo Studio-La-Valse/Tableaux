@@ -1,10 +1,16 @@
 <template>
   <div class="canvas-toolbar">
     <div class="button-group">
-      <button type="button" class="btn-flip" @click="save" title="Swap Width ↔ Height">
+      <button type="button" @click="undo" title="Undo">
+        ⏮️
+      </button>
+      <button type="button" @click="redo" title="Redo">
+        ⏭️
+      </button>
+      <button type="button" @click="save" title="Save">
         💾
       </button>
-      <button type="button" class="btn-flip" @click="load" title="Swap Width ↔ Height">
+      <button type="button" @click="load" title="Load">
         📂
       </button>
     </div>
@@ -14,7 +20,7 @@
 <script setup lang="ts">
 import { useGraph } from '@/stores/graph-store';
 
-const { toModel, fromModel } = useGraph()
+const { toModel, fromModel, undo, redo } = useGraph()
 
 const save = async () => {
   const model = toModel()
@@ -186,6 +192,13 @@ const loadFromFile = async () => {
 
 .button-group button:active {
   transform: scale(0.97);
+}
+
+.button-group button:disabled {
+  background-color: #888c91;
+  color: #d0d0d0;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 /* focus ring */

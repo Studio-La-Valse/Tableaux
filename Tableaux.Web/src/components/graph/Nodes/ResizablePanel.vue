@@ -1,5 +1,5 @@
 <template>
-    <div class="outer" :style="style">
+  <div class="outer" :style="style">
     <slot></slot>
 
     <!-- Resizer for the bottom right corner -->
