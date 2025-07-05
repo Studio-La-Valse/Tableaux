@@ -4,12 +4,13 @@ import type { GraphNodeOutputType } from '../../core/graph-node-output';
 export class NumberEmitter extends GraphNode {
   private readonly output: GraphNodeOutputType<number>;
 
-  public value: number = 0
-
   constructor(id: string, path: string[]) {
     super(id, path)
 
     this.output = this.registerNumberOutput("Number");
+    this.data = {
+      value: 0
+    }
   }
 
   override onInitialize(): void {
@@ -18,12 +19,12 @@ export class NumberEmitter extends GraphNode {
 
   public onChange(newValue: number): void {
     this.arm()
-    this.value = newValue
+    this.data.value = newValue
     this.complete()
   }
 
   protected solve(): void {
-    this.output.next(this.value)
+    this.output.next(this.data.value as number)
   }
 }
 

@@ -1,6 +1,7 @@
 import type { ComponentState } from "./graph-node"
 import type { GraphNodeInput } from "./graph-node-input"
 import type { GraphNodeOutput } from "./graph-node-output"
+import type { JsonObject } from "./models/json-object"
 
 /**
  * Abstract base class representing the core logic of a graph node.
@@ -48,6 +49,12 @@ export abstract class GraphNodeCore {
     }
 
     /**
+     * Allows serializable data to be stored to the graph node
+     */
+    public data: JsonObject;
+
+
+    /**
      * Constructs a new GraphNodeCore instance.
      * @param id Unique identifier for this node
      * @param path Hierarchical path for locating the node
@@ -57,6 +64,7 @@ export abstract class GraphNodeCore {
         public path: string[],
     ) {
         this.componentState = 'armed'
+        this.data = { }
     }
 
     /**

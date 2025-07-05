@@ -1,8 +1,9 @@
 <template>
-  <ResizablePanel :graph-node-id="graphNode.id" :initial-width="150" :initial-height="80">
+  <ResizablePanel :graph-node-id="graphNode.id">
     <div class="text-input-wrapper">
-      <textarea class="text-input" :value="graphNode.value" @input="handleInput" @mousedown.stop @mousemove.stop
-        @mouseup.stop @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop></textarea>
+      <textarea ref="textInputRef" class="text-input" :value="(graphNode.data.value as string)" @input="handleInput"
+        @keydown="handleKeyDown" @mousedown.stop @mousemove.stop @mouseup.stop @wheel.stop @touchstart.stop
+        @touchmove.stop @touchend.stop></textarea>
     </div>
 
   </ResizablePanel>
@@ -12,16 +13,42 @@
 <script setup lang="ts">
 import type { TextEmitter } from '@/models/graph/graph-nodes/emitters/text-emitter';
 import ResizablePanel from './ResizablePanel.vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 const props = defineProps<{
   graphNode: TextEmitter
 }>()
+
+const textInputRef = ref<HTMLTextAreaElement | null>(null);
 
 const handleInput = (event: Event) => {
   const target = event.target as HTMLTextAreaElement;
   props.graphNode.onChange(target.value);
 }
 
+const handleClickOutside = (event: MouseEvent) => {
+  if (
+    textInputRef.value &&
+    !textInputRef.value.contains(event.target as Node)
+  ) {
+    textInputRef.value.blur();
+  }
+}
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') {
+    const textarea = event.target as HTMLTextAreaElement;
+    textarea.blur();
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <style scoped>

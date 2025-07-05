@@ -1,3 +1,7 @@
+<template>
+  <div>x</div>
+</template>
+
 <script setup lang="ts">
 import type { GraphNode } from '@/models/graph/core/graph-node';
 

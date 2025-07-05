@@ -4,12 +4,11 @@ import type { GraphNodeOutputType } from "../../core/graph-node-output";
 export class TextEmitter extends GraphNode {
   private output: GraphNodeOutputType<string>;
 
-  public value: string = "Hello, world!";
-
   constructor(id: string, path: string[]) {
     super(id, path)
 
     this.output = this.registerTextOutput("Text");
+    this.data.value = "Hello, world!"
   }
 
   override onInitialize(): void {
@@ -18,11 +17,11 @@ export class TextEmitter extends GraphNode {
 
   public onChange(newValue: string): void {
     this.arm()
-    this.value = newValue
+    this.data.value = newValue
     this.complete()
   }
 
   protected solve(): void {
-    this.value.split('\n').forEach((v) => this.output.next(v))
+    (this.data.value as string).split('\n').forEach((v) => this.output.next(v))
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <ResizablePanel :graph-node-id="props.graphNode.id" :initial-height="80" :initial-width="80">
+  <ResizablePanel :graph-node-id="props.graphNode.id">
     <div class="text-input-wrapper">
       <textarea readonly class="text-input" :value="graphNode.values.join('\n')" @mousedown.stop @mousemove.stop
         @mouseup.stop @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop></textarea>

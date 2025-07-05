@@ -16,13 +16,8 @@ export function useGroupDraggable() {
   let containerEl: HTMLElement | null = null
   let startPointerPos: XY = { x: 0, y: 0 }
 
-  // maps nodeId → position at start of THIS drag‐or‐duplication cycle
-  let startPositions: Record<string, XY> = {}
   // maps nodeId → offset from pointer to node at start
   let dragOffsetMap: Record<string, XY> = {}
-
-  // guard so holding Alt doesn’t retrigger keydown floods
-  let altKeyDown = false
 
   function onMouseDown(event: MouseEvent, nodeId: string) {
     if (event.button !== 0) return
@@ -49,12 +44,10 @@ export function useGroupDraggable() {
 
     // record anchor point & initial node positions
     startPointerPos = getLocalMousePos(event, containerEl)
-    startPositions = {}
     dragOffsetMap = {}
 
     selectionStore.selectedNodes.forEach((id) => {
       const n = graphStore.getNode(id)
-      startPositions[id] = { x: n.x, y: n.y }
       dragOffsetMap[id] = {
         x: startPointerPos.x - n.x,
         y: startPointerPos.y - n.y,
@@ -63,12 +56,9 @@ export function useGroupDraggable() {
 
     wasDragged.value = false
     dragging.value = true
-    altKeyDown = false
 
     window.addEventListener('mousemove', onMouseMove, { capture: true })
     window.addEventListener('mouseup', onMouseUp)
-    window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('keyup', onKeyUp)
 
     event.preventDefault()
     event.stopPropagation()
@@ -105,56 +95,9 @@ export function useGroupDraggable() {
 
     window.removeEventListener('mousemove', onMouseMove)
     window.removeEventListener('mouseup', onMouseUp)
-    window.removeEventListener('keydown', onKeyDown)
-    window.removeEventListener('keyup', onKeyUp)
 
     // reset drag-flag for next cycle
     setTimeout(() => (wasDragged.value = false), 0)
-  }
-
-  function onKeyDown(e: KeyboardEvent) {
-    // only trigger once per physical press
-    if (e.key === 'Alt' && dragging.value && !altKeyDown) {
-      altKeyDown = true
-      duplicateSelection()
-    }
-  }
-
-  function onKeyUp(e: KeyboardEvent) {
-    if (e.key === 'Alt') altKeyDown = false
-  }
-
-  function duplicateSelection() {
-    // 1) which nodes are we duplicating right now?
-    const origIds = [...selectionStore.selectedNodes]
-
-    // 2) matter‐of‐factly snap them back to their start-of-cycle pos
-    origIds.forEach((id) => {
-      const saved = startPositions[id]
-      if (saved) {
-        const n = graphStore.getNode(id)
-        n.x = saved.x
-        n.y = saved.y
-      }
-    })
-
-    // 3) ask the graph store to clone that subgraph (nodes + their inter‐edges)
-    const clones = graphStore.duplicate(origIds)
-
-    // 4) re-select the clones
-    selectionStore.clearSelection()
-    clones.forEach((n) => selectionStore.selectNode(n.id))
-
-    // 5) re-anchor drag: record new start positions & offsets for these clones
-    startPositions = {}
-    dragOffsetMap = {}
-    clones.forEach((n) => {
-      startPositions[n.id] = { x: n.x, y: n.y }
-      dragOffsetMap[n.id] = {
-        x: startPointerPos.x - n.x,
-        y: startPointerPos.y - n.y,
-      }
-    })
   }
 
   return {
