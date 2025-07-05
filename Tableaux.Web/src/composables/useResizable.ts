@@ -1,5 +1,5 @@
+import { useCanvasRefStore } from '@/stores/canvas-ref-store'
 import { onUnmounted, type Ref } from 'vue'
-import { useTransformToCanvas } from '@/composables/useTransformToCanvas'
 
 // Define a simple XY interface.
 interface XY {
@@ -15,13 +15,12 @@ interface XY {
  * @returns An object exposing the initResize function, which must be bound to the pointerdown event of the resizer element.
  */
 export function useResizable(width: Ref<number>, height: Ref<number>) {
-  const { getCanvasContent, getLocalMousePos } = useTransformToCanvas()
+  const { clientToCanvas } = useCanvasRefStore()
 
   // State variables to track the resize start.
   let startLocal: XY = { x: 0, y: 0 }
   let startWidth = width.value
   let startHeight = height.value
-  let containerEl: HTMLElement | null = null
   let resizerEl: HTMLElement | null = null
 
   /**
@@ -32,12 +31,8 @@ export function useResizable(width: Ref<number>, height: Ref<number>) {
     e.preventDefault()
     e.stopPropagation()
 
-    // Find the container in which the canvas transform is applied.
-    containerEl = getCanvasContent(e.currentTarget)
-    if (!containerEl) return
-
     // Record the initial pointer position in logical coordinates.
-    startLocal = getLocalMousePos(e, containerEl)
+    startLocal = clientToCanvas(e)
     startWidth = width.value
     startHeight = height.value
 
@@ -55,10 +50,9 @@ export function useResizable(width: Ref<number>, height: Ref<number>) {
   const onPointerMove = (e: PointerEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    if (!containerEl) return
 
     // Get the current pointer position.
-    const localPos = getLocalMousePos(e, containerEl)
+    const localPos = clientToCanvas(e)
     const deltaX = localPos.x - startLocal.x
     const deltaY = localPos.y - startLocal.y
 

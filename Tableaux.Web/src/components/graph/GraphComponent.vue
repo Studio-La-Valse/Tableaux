@@ -1,19 +1,25 @@
 <template>
-  <div ref="containerRef" class="canvas-container" @contextmenu.prevent @dblclick.prevent="onCanvasDblClick"
-    @mousedown="onMouseDown" @wheel="onWheel">
+  <div class="page">
 
-    <div ref="contentRef" class="canvas-content" :style="contentStyle">
-      <GraphRenderer />
+    <GraphControls />
 
-      <SelectionBorder />
+    <div ref="viewportRef" class="canvas-container" @contextmenu.prevent @dblclick.prevent="onCanvasDblClick"
+      @mousedown="onMouseDown" @wheel="canvasTransform.onWheel">
+
+      <div ref="canvasRef" class="canvas-content" :style="contentStyle">
+        <GraphRenderer />
+
+        <SelectionBorder />
+      </div>
+
+      <ActivatorTree />
     </div>
-
-    <ActivatorTree />
   </div>
+
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, type StyleValue } from 'vue';
+import { computed, onMounted, onUnmounted, ref, type StyleValue } from 'vue';
 import ActivatorTree from '@/components/graph/NodeBrowser/ActivatorTree.vue'
 import GraphRenderer from '@/components/graph/GraphRenderer.vue'
 import SelectionBorder from '@/components/graph/SelectionBorder.vue'
@@ -26,6 +32,8 @@ import { useContextMenuStore } from "@/stores/context-menu";
 import { useGraph } from '@/stores/graph-store';
 import { useSelectionStore } from '@/stores/selection-store';
 import { useSelectionAreaStore } from '@/stores/selection-area-store';
+import GraphControls from './GraphControls/GraphControls.vue';
+import { useCanvasRefStore } from '@/stores/canvas-ref-store';
 
 const selectionArea = useSelectionArea();
 const selectionAreaStore = useSelectionAreaStore();
@@ -33,26 +41,22 @@ const clearSelection = useClearSelection();
 const menu = useContextMenuStore()
 const selection = useSelectionStore();
 const graph = useGraph();
+const canvasTransform = useCanvasTransform();
+const canvasStore = useCanvasRefStore()
 
-// pull in all pan/zoom refs & handlers
-const {
-  containerRef,
-  contentRef,
-  style: zoomStyle,
-  onMouseDown: onPanMouseDown,
-  onWheel
-} = useCanvasTransform();
+const viewportRef = ref<HTMLElement | null>(null);
+const canvasRef = ref<HTMLElement | null>(null);
 
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({
-  ...zoomStyle.value,
+  ...canvasTransform.style.value,
   pointerEvents: selectionAreaStore.selecting ? 'none' : 'all'
 }));
 
 function onMouseDown(event: MouseEvent) {
-  if (event.target !== containerRef.value) return;
+  if (event.target !== viewportRef.value) return;
 
-  onPanMouseDown(event);
+  canvasTransform.onMouseDown(event);
   selectionArea.onMouseDown(event);
   clearSelection.onClickClearSelection(event);
 
@@ -60,7 +64,7 @@ function onMouseDown(event: MouseEvent) {
 }
 
 function onCanvasDblClick(evt: MouseEvent) {
-  if (evt.target !== containerRef.value) return;
+  if (evt.target !== viewportRef.value) return;
 
   menu.open(evt);
 }
@@ -73,6 +77,12 @@ function deleteSelectedNodes(evt: KeyboardEvent) {
 }
 
 onMounted(() => {
+  if (!viewportRef.value || !canvasRef.value) {
+    throw new Error()
+  }
+
+  canvasStore.setRefs(viewportRef.value, canvasRef.value)
+
   window.addEventListener('keydown', deleteSelectedNodes)
 })
 
@@ -82,10 +92,17 @@ onUnmounted(() => {
 </script>
 
 <style lang="css" scoped>
-.canvas-container {
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
   overflow: hidden;
-  position: relative;
 }
 
-.canvas-content {}
+.canvas-container {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
 </style>

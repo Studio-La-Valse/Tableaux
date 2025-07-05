@@ -1,4 +1,5 @@
 // src/composables/usePanZoom.ts
+import { useCanvasRefStore } from '@/stores/canvas-ref-store'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 
 interface Position {
@@ -18,26 +19,24 @@ interface Options {
 export function useCanvasTransform(options: Options = {}) {
   const { minScale = 0.2, maxScale = 5, zoomIntensity = 0.1 } = options
 
-  // Refs for container and—optionally—the content
-  const containerRef = ref<HTMLElement | null>(null)
-  const contentRef = ref<HTMLElement | null>(null)
+  const { viewportRef } = useCanvasRefStore()
 
   // Track container’s pixel size (for correct zoom centering)
   const canvasSize = ref<Size>({ width: 300, height: 300 })
   function updateCanvasSize() {
-    if (!containerRef.value) return
+    if (!viewportRef.value) return
     canvasSize.value = {
-      width: containerRef.value.clientWidth,
-      height: containerRef.value.clientHeight,
+      width: viewportRef.value.clientWidth,
+      height: viewportRef.value.clientHeight,
     }
   }
 
   let resizeObserver: ResizeObserver | null = null
   onMounted(() => {
     nextTick(updateCanvasSize)
-    if (containerRef.value) {
+    if (viewportRef.value) {
       resizeObserver = new ResizeObserver(updateCanvasSize)
-      resizeObserver.observe(containerRef.value)
+      resizeObserver.observe(viewportRef.value)
     }
   })
   onUnmounted(() => {
@@ -94,13 +93,13 @@ export function useCanvasTransform(options: Options = {}) {
 
   // Wheel zoom
   function onWheel(event: WheelEvent) {
-    if (!containerRef.value) return
+    if (!viewportRef.value) return
 
     const delta = event.deltaY < 0 ? +zoomIntensity : -zoomIntensity
     const newScale = scale.value * (1 + delta)
     if (newScale < minScale || newScale > maxScale) return
 
-    const rect = containerRef.value.getBoundingClientRect()
+    const rect = viewportRef.value.getBoundingClientRect()
     const localMouse = {
       x: ((event.clientX - rect.left) * canvasSize.value.width) / rect.width,
       y: ((event.clientY - rect.top) * canvasSize.value.height) / rect.height,
@@ -116,10 +115,6 @@ export function useCanvasTransform(options: Options = {}) {
   }
 
   return {
-    // mount‐point refs
-    containerRef,
-    contentRef,
-
     // reactive state + style
     position,
     scale,

@@ -59,11 +59,11 @@
 
     <!-- Flip & Full-screen buttons -->
     <div class="button-group">
-      <button type="button" class="btn-flip" @click="onFlip" title="Swap Width ↔ Height">
+      <button type="button" @click="onFlip" title="Swap Width ↔ Height">
         🔄
       </button>
 
-      <button type="button" class="btn-fullscreen" @click="onFullScreen" title="Toggle Full Screen">
+      <button type="button" @click="onFullScreen" title="Toggle Full Screen">
         ⛶
       </button>
     </div>

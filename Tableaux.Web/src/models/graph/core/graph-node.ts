@@ -16,6 +16,8 @@ import {
     GraphNodeOutputUnkown,
     GraphNodeOutputType,
 } from './graph-node-output'
+import type { JsonObject } from './models/json-object'
+import type { JsonValue } from './models/json-value'
 
 export const componentStates = {
     armed: 'armed',
@@ -31,7 +33,7 @@ export type ComponentState = typeof componentStates[keyof typeof componentStates
  * Handles visual layout and input/output registration.
  */
 export abstract class GraphNode extends GraphNodeCore {
- 
+
 
     constructor(
         public readonly id: string,
@@ -120,4 +122,20 @@ export abstract class GraphNode extends GraphNodeCore {
             throw new GraphNodeAlreadyInitializedError()
         }
     }
+}
+
+export abstract class GraphNodeData extends GraphNode {
+
+    /**
+     * Allows serializable data to be stored to the graph node
+     */
+    public data: JsonObject;
+
+    constructor(id: string, path: string[]) {
+      super(id, path)
+
+      this.data = {}
+    }
+
+    public abstract onChange(value: JsonValue): void;
 }

@@ -1,24 +1,19 @@
 import { onUnmounted } from 'vue'
 import { useSelectionAreaStore } from '@/stores/selection-area-store'
-import { useTransformToCanvas } from './useTransformToCanvas'
 import { useSelectionStore } from '@/stores/selection-store'
 import { useGraph } from '@/stores/graph-store'
+import { useCanvasRefStore } from '@/stores/canvas-ref-store'
 
 export function useSelectionArea() {
   const store = useSelectionAreaStore()
   const selectionStore = useSelectionStore()
+  const graphCanvasStroe = useCanvasRefStore()
   const graphStore = useGraph()
-
-  const { getCanvasContent, getLocalMousePos } = useTransformToCanvas()
-  let canvasEl: HTMLElement | null = null
 
   function onMouseDown(e: MouseEvent) {
     if (e.button !== 0) return
 
-    canvasEl = getCanvasContent(e.currentTarget)
-    if (!canvasEl) return
-
-    const { x, y } = getLocalMousePos(e, canvasEl)
+    const { x, y } = graphCanvasStroe.clientToCanvas(e)
     store.begin(x, y)
 
     document.addEventListener('mousemove', onMouseMove)
@@ -29,9 +24,7 @@ export function useSelectionArea() {
   }
 
   function onMouseMove(e: MouseEvent) {
-    if (!canvasEl) return
-
-    const { x, y } = getLocalMousePos(e, canvasEl)
+    const { x, y } = graphCanvasStroe.clientToCanvas(e)
     store.update(x, y)
 
     e.preventDefault()

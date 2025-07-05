@@ -1,19 +1,18 @@
 import { ref } from 'vue'
-import { useTransformToCanvas } from '@/composables/useTransformToCanvas'
 import { useSelectionStore } from '@/stores/selection-store'
 import { useGraph } from '@/stores/graph-store'
 import type { XY } from '@/models/geometry/xy'
+import { useCanvasRefStore } from '@/stores/canvas-ref-store'
 
 export function useGroupDraggable() {
-  const { getLocalMousePos, getCanvasContent } = useTransformToCanvas()
   const selectionStore = useSelectionStore()
+  const { clientToCanvas } = useCanvasRefStore()
   const graphStore = useGraph()
 
   const dragging = ref(false)
   const wasDragged = ref(false)
   const threshold = 5
 
-  let containerEl: HTMLElement | null = null
   let startPointerPos: XY = { x: 0, y: 0 }
 
   // maps nodeId → offset from pointer to node at start
@@ -39,11 +38,8 @@ export function useGroupDraggable() {
     }
     // ————————————————
 
-    containerEl = getCanvasContent(event.currentTarget)
-    if (!containerEl) return
-
     // record anchor point & initial node positions
-    startPointerPos = getLocalMousePos(event, containerEl)
+    startPointerPos = clientToCanvas(event)
     dragOffsetMap = {}
 
     selectionStore.selectedNodes.forEach((id) => {
@@ -65,9 +61,9 @@ export function useGroupDraggable() {
   }
 
   function onMouseMove(event: MouseEvent) {
-    if (!dragging.value || !containerEl) return
+    if (!dragging.value) return
 
-    const cur = getLocalMousePos(event, containerEl)
+    const cur = clientToCanvas(event)
     const dx = cur.x - startPointerPos.x
     const dy = cur.y - startPointerPos.y
 
@@ -91,7 +87,6 @@ export function useGroupDraggable() {
     if (!dragging.value) return
 
     dragging.value = false
-    containerEl = null
 
     window.removeEventListener('mousemove', onMouseMove)
     window.removeEventListener('mouseup', onMouseUp)

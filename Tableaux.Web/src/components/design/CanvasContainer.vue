@@ -14,7 +14,6 @@ import {
   onMounted,
   onBeforeUnmount,
   computed,
-  defineProps,
   type StyleValue
 } from 'vue'
 import CanvasRenderer from './CanvasRenderer.vue';

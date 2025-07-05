@@ -2,31 +2,32 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useGraph } from './graph-store'
-import { useTransformToCanvas } from '@/composables/useTransformToCanvas'
+import { useCanvasRefStore } from './canvas-ref-store'
 
 export const useContextMenuStore = defineStore('contextMenu', () => {
   const graph = useGraph()
-
-  const { getLocalMousePos, getCanvasContent } = useTransformToCanvas()
+  const canvasTransform = useCanvasRefStore()
 
   // state
   const visible = ref(false)
-  const x = ref(0)
-  const y = ref(0)
+  const xViewPort = ref(0)
+  const yViewport = ref(0)
   const xCanvas = ref(0)
   const yCanvas = ref(0)
 
   // actions
   function open(event: MouseEvent) {
     event.preventDefault()
-    visible.value = true
-    x.value = event.clientX
-    y.value = event.clientY
 
-    const canvas = getCanvasContent(event.currentTarget);
-    const canvasPos = getLocalMousePos(event, canvas!);
-    xCanvas.value = canvasPos.x;
-    yCanvas.value = canvasPos.y;
+    visible.value = true
+
+    const viewPortCoords = canvasTransform.clientToViewport(event)
+    xViewPort.value = viewPortCoords.x
+    yViewport.value = viewPortCoords.y
+
+    const canvasCoords = canvasTransform.clientToCanvas(event)
+    xCanvas.value = canvasCoords.x
+    yCanvas.value = canvasCoords.y
   }
 
   function close() {
@@ -38,5 +39,5 @@ export const useContextMenuStore = defineStore('contextMenu', () => {
     close()
   }
 
-  return { visible, x, y, open, close, onActivate }
+  return { visible, x: xViewPort, y: yViewport, open, close, onActivate }
 })

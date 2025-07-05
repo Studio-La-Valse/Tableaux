@@ -2,7 +2,7 @@
 <template>
   <div class="edges-container">
     <!-- Permanent edges -->
-    <GraphEdgeRenderer v-for="edge in edges" :key="edge.createKey()" :edge="edge" />
+    <GraphEdgeRenderer v-for="edge in graph.edges" :key="edge.createKey()" :edge="edge" />
 
     <!-- Temporary (drag) edge -->
     <GraphEdgePathRenderer v-if="tempEdge" class="temp-edge-svg" :x1="startX" :y1="startY" :x2="tempEdge.currentX"
@@ -18,7 +18,7 @@ import { useEdgeDrag } from '@/composables/useEdgeDrag';
 import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
 
 // Get your permanent edges from the graph store.
-const { edges, getNode } = useGraph();
+const graph = useGraph();
 
 // Get the reactive temporary edge state
 const edgeDrag = useEdgeDrag();
@@ -27,7 +27,7 @@ const tempEdge = edgeDrag.tempEdge;
 // Compute the starting point from the source node
 const startX = computed(() => {
   if (tempEdge.value) {
-    const node = getNode(tempEdge.value.fromNodeId);
+    const node = graph.getNode(tempEdge.value.fromNodeId);
     if (node) {
       // Assume the output handle is at the right edge with an extra offset.
       return node.x + (node.width ?? 150);
@@ -38,7 +38,7 @@ const startX = computed(() => {
 
 const startY = computed(() => {
   if (tempEdge.value) {
-    const node = getNode(tempEdge.value.fromNodeId);
+    const node = graph.getNode(tempEdge.value.fromNodeId);
     if (node) {
       return node.calculateHandleCoordinate(tempEdge.value.fromOutputIndex, node.outputs.length);
     }

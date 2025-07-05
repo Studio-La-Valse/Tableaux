@@ -1,6 +1,6 @@
 import type { XY } from '@/models/geometry/xy'
 import { defineStore } from 'pinia'
-import { computed, ref, type Ref } from 'vue'
+import { nextTick, ref, type Ref } from 'vue'
 import { useGraphNodeActivatorCollection } from './graph-node-activator-store'
 import type { GraphEdge } from '@/models/graph/core/graph-edge'
 import type { GraphNodeModel } from '@/models/graph/core/models/graph-node-model'
@@ -9,12 +9,15 @@ import type { GraphEdgeModel } from '@/models/graph/core/models/graph-edge-model
 import { GraphNodeWrapper } from '@/models/graph/core/graph-node-wrapper'
 
 export const useGraph = defineStore('graph', () => {
-  const graphNodes: Ref<GraphNodeWrapper[]> = ref([])
-  const graphEdges: Ref<GraphEdge[]> = ref([])
+  const nodes: Ref<GraphNodeWrapper[]> = ref([])
+  const edges: Ref<GraphEdge[]> = ref([])
 
   const activators = useGraphNodeActivatorCollection()
 
-  const clear = () => (graphNodes.value = [])
+  const clear = () => {
+    nodes.value = []
+    edges.value = []
+  }
 
   const addNode = (nodePath: string[], position: XY, id: string) => {
     const activator = activators.getFromPath(nodePath)
@@ -27,35 +30,35 @@ export const useGraph = defineStore('graph', () => {
     wrapper.x = position.x
     wrapper.y = position.y
     graphNode.onInitialize()
-    graphNodes.value.push(wrapper)
+    nodes.value.push(wrapper)
 
     if (graphNode.inputs.length == 0) {
-      graphNode.complete();
+      graphNode.complete()
     }
 
     return wrapper
   }
 
   const removeNode = (id: string) => {
-    const existing = graphNodes.value.findIndex((e) => e.id == id)
+    const existing = nodes.value.findIndex((e) => e.id == id)
     if (existing == -1) {
       return
     }
 
-    const leftConnections = [...graphEdges.value.filter((e) => e.rightGraphNodeId == id)]
+    const leftConnections = [...edges.value.filter((e) => e.rightGraphNodeId == id)]
     leftConnections.forEach((conn) => {
       removeEdge(conn.rightGraphNodeId, conn.inputIndex)
     })
 
-    const rightConnections = [...graphEdges.value.filter((e) => e.leftGraphNodeId == id)]
+    const rightConnections = [...edges.value.filter((e) => e.leftGraphNodeId == id)]
     rightConnections.forEach((conn) => {
       removeEdge(conn.rightGraphNodeId, conn.inputIndex)
     })
 
-    const node = graphNodes.value[existing]
+    const node = nodes.value[existing]
     node.onDestroy()
 
-    graphNodes.value.splice(existing, 1)
+    nodes.value.splice(existing, 1)
   }
 
   const getNode = (nodeId: string) => {
@@ -69,11 +72,9 @@ export const useGraph = defineStore('graph', () => {
   }
 
   const findNode = (nodeId: string) => {
-    const node = graphNodes.value.find((e) => e.id == nodeId)
+    const node = nodes.value.find((e) => e.id == nodeId)
     return node
   }
-
-  const nodes = computed(() => graphNodes.value)
 
   const connect = (
     leftNodeId: string,
@@ -82,7 +83,7 @@ export const useGraph = defineStore('graph', () => {
     inputIndex: number,
   ) => {
     // we need to remove the existing edge after succesfull subscription, but dont call removeEdge because it will close the connection
-    const existingEdge = graphEdges.value.findIndex(
+    const existingEdge = edges.value.findIndex(
       (e) => e.rightGraphNodeId == rightNodeId && e.inputIndex == inputIndex,
     )
 
@@ -90,19 +91,19 @@ export const useGraph = defineStore('graph', () => {
     const rightNode = getNode(rightNodeId)
 
     const edge = leftNode.outputs[outputIndex].connectTo(rightNode.inputs[inputIndex])
-    graphEdges.value.push(edge)
+    edges.value.push(edge)
 
     // seems like the subscription was succesful, so remove the existing edge.
     // we can do this by index because the new edge was pushed to the end of the array.
     if (existingEdge != -1) {
-      graphEdges.value.splice(existingEdge, 1)
+      edges.value.splice(existingEdge, 1)
     }
 
     return edge
   }
 
   const removeEdge = (rightNodeId: string, inputIndex: number) => {
-    const existingEdge = graphEdges.value.findIndex(
+    const existingEdge = edges.value.findIndex(
       (e) => e.rightGraphNodeId == rightNodeId && e.inputIndex == inputIndex,
     )
     if (existingEdge == -1) {
@@ -113,15 +114,7 @@ export const useGraph = defineStore('graph', () => {
     const input = rightNode.inputs[inputIndex]
     input.replaceConnection(undefined)
     rightNode.arm()
-    graphEdges.value.splice(existingEdge, 1)
-  }
-
-  const edges = computed(() => graphEdges.value)
-
-  const tick = () => {
-    nodes.value
-      .filter((n) => n.inputs.length == 0 && n.outputs.length >= 1)
-      .forEach((n) => n.complete())
+    edges.value.splice(existingEdge, 1)
   }
 
   const toModel: () => GraphModel = () => {
@@ -130,15 +123,17 @@ export const useGraph = defineStore('graph', () => {
 
     return {
       nodes: nodeModels,
-      edges: edgeModels
+      edges: edgeModels,
     }
   }
 
   const fromModel: (model: GraphModel) => void = (model: GraphModel) => {
-    clear();
+    clear()
 
-    model.nodes.forEach((v) => addNodeModel(v))
-    model.edges.forEach((v) => addEdgeModel(v))
+    nextTick(() => {
+      model.nodes.forEach((v) => addNodeModel(v))
+      model.edges.forEach((v) => addEdgeModel(v))
+    })
   }
 
   const addNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (model: GraphNodeModel) => {
@@ -151,38 +146,42 @@ export const useGraph = defineStore('graph', () => {
     const wrapper = new GraphNodeWrapper(graphNode)
     wrapper.x = model.x
     wrapper.y = model.y
-    wrapper.width = model.width
-    wrapper.height = model.height
+    if (model.width) wrapper.width = model.width
+    if (model.height) wrapper.height = model.height
     if (model.data) wrapper.data = JSON.parse(JSON.stringify(model.data))
 
     graphNode.onInitialize()
-    graphNodes.value.push(wrapper)
+    nodes.value.push(wrapper)
 
     if (graphNode.inputs.length == 0) {
-      graphNode.complete();
+      graphNode.complete()
     }
 
     return wrapper
   }
 
   const addEdgeModel: (model: GraphEdgeModel) => GraphEdgeModel = (model: GraphEdgeModel) => {
-    return connect(model.leftGraphNodeId, model.outputIndex, model.rightGraphNodeId, model.inputIndex)
+    return connect(
+      model.leftGraphNodeId,
+      model.outputIndex,
+      model.rightGraphNodeId,
+      model.inputIndex,
+    )
   }
 
   return {
     clear,
     nodes,
+    edges,
     findNode,
     getNode,
     addNode,
     removeNode,
     connect,
-    edges,
     removeEdge,
-    tick,
     toModel,
     fromModel,
     addNodeModel,
-    addEdgeModel
+    addEdgeModel,
   }
 })

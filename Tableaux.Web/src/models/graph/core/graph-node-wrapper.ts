@@ -63,15 +63,16 @@ export class GraphNodeWrapper {
   constructor(public readonly innerNode: GraphNode) {}
 
   public toModel(): GraphNodeModel {
-    return {
+    const result = {
       id: this.id,
       path: this.path,
-      data: this.data,
       x: this.x,
       y: this.y,
-      width: this.width,
-      height: this.height,
+      ...(Object.keys(this.data).length > 0 && { data: this.data }),
+      ...(this.width !== this.minWidth && { width: this.width }),
+      ...(this.height !== this.minHeight && { height: this.height }),
     }
+    return result
   }
 
   /**
