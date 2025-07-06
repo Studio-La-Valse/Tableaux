@@ -96,18 +96,16 @@ const contentStyle = computed<StyleValue>(() => ({
 // Get the reactive graph node instance.
 const graphNode = getNode(props.graphNode.id);
 
-// Registry to resolve the proper node panel based on the graph node type.
-const registry: Record<string, Component> = {
-  NumberEmitter: NumberEmitterPanel,
-  TextEmitter: TextEmitterPanel,
-  Logger: LoggerPanel,
-  // Other emitter types can be added here.
+const componentMap: Record<string, Component> = {
+  "emitters/number": NumberEmitterPanel,
+  "emitters/text": TextEmitterPanel,
+  "generic/logger": LoggerPanel,
+  // Add other path keys as needed
 };
 
-const getGraphNodePanel = (emitter: GraphNode) => {
-  // Identifying the type via the constructor name.
-  const type = emitter.constructor.name;
-  return registry[type] || GraphNodePanel;
+const getGraphNodePanel = (node: GraphNode) => {
+  const key = node.path.join('/').toLowerCase();
+  return componentMap[key] || GraphNodePanel;
 };
 </script>
 
@@ -187,5 +185,4 @@ const getGraphNodePanel = (emitter: GraphNode) => {
   font-weight: bold;
   outline: none;
 }
-
 </style>
