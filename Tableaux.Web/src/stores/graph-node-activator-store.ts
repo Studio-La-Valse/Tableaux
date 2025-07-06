@@ -66,8 +66,8 @@ export const useGraphNodeActivatorCollection = defineStore('graph-node-activator
       .map((child) => filterTree(child, term))
       .filter(Boolean) as ActivatorGroup[]
 
-    // if this group name matches, or it has any matching children/activators → keep it
-    if (match(group.name) || matchedActivators.length || matchedChildren.length) {
+    // Only keep this group if it has matching activators or matching children (no group name match)
+    if (matchedActivators.length || matchedChildren.length) {
       const newGroup = new ActivatorGroup(group.name)
       newGroup.activators = matchedActivators
       newGroup.children = matchedChildren

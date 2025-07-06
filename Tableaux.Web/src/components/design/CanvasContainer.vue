@@ -86,6 +86,6 @@ const canvasStyle = computed<StyleValue>(() => ({
 }
 
 .stripe {
-  background-color: var(--color-background-mute);
+  background-color: var(--color-background-soft);
 }
 </style>

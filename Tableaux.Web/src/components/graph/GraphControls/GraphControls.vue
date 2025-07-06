@@ -93,7 +93,7 @@ const loadFromFile = async () => {
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 1rem;
-  background: var(--color-background-soft);
+  background: var(--color-background-mute);
   border-bottom: 1px solid var(--color-border);
 
   /* temp width hack */
@@ -120,7 +120,7 @@ const loadFromFile = async () => {
 .field-group input {
   font-size: 0.9rem;
   padding: 6px 8px;
-  background: var(--color-background-mute);
+  background: var(--color-background-soft);
   color: var(--color-text);
   border: 1px solid var(--color-border-hover);
   border-radius: 4px;
@@ -176,7 +176,7 @@ const loadFromFile = async () => {
   height: 50px;
   /* or any other height */
   font-size: 1.2rem;
-  background: var(--color-background-mute);
+  background: var(--color-background-soft);
   color: var(--color-text);
   border: 1px solid var(--color-border-hover);
   border-radius: 4px;

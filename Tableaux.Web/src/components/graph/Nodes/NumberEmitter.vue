@@ -75,7 +75,7 @@ onBeforeUnmount(() => {
   width: 100%;
   height: 100%;
   resize: none;
-  background: var(--color-background-mute);
+  background: var(--color-background-soft);
   color: var(--color-text);
   border: 1px solid var(--color-border-hover);
   border-radius: 5px;

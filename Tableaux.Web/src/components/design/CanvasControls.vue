@@ -271,7 +271,7 @@ watch(
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 1rem;
-  background: var(--color-background-soft);
+  background: var(--color-background-mute);
   border-bottom: 1px solid var(--color-border);
 
   /* temp width hack */
@@ -298,7 +298,7 @@ watch(
 .field-group input {
   font-size: 0.9rem;
   padding: 6px 8px;
-  background: var(--color-background-mute);
+  background: var(--color-background-soft);
   color: var(--color-text);
   border: 1px solid var(--color-border-hover);
   border-radius: 4px;
@@ -354,7 +354,7 @@ watch(
   height: 50px;
   /* or any other height */
   font-size: 1.2rem;
-  background: var(--color-background-mute);
+  background: var(--color-background-soft);
   color: var(--color-text);
   border: 1px solid var(--color-border-hover);
   border-radius: 4px;
@@ -379,6 +379,6 @@ watch(
 .field-group input:focus {
   outline: none;
   border-color: #6094f0;
-  box-shadow: 0 0 0 2px rgba(96, 148, 240, 0.3);
+  box-shadow: 0 0 0 2px var(--color-text);
 }
 </style>

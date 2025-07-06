@@ -19,7 +19,7 @@ interface Options {
 export function useCanvasTransform(options: Options = {}) {
   const { minScale = 0.2, maxScale = 5, zoomIntensity = 0.1 } = options
 
-  const { viewportRef } = useCanvasRefStore()
+  const { viewportRef, clientToViewport } = useCanvasRefStore()
 
   // Track container’s pixel size (for correct zoom centering)
   const canvasSize = ref<Size>({ width: 300, height: 300 })
@@ -99,11 +99,7 @@ export function useCanvasTransform(options: Options = {}) {
     const newScale = scale.value * (1 + delta)
     if (newScale < minScale || newScale > maxScale) return
 
-    const rect = viewportRef.value.getBoundingClientRect()
-    const localMouse = {
-      x: ((event.clientX - rect.left) * canvasSize.value.width) / rect.width,
-      y: ((event.clientY - rect.top) * canvasSize.value.height) / rect.height,
-    }
+    const localMouse = clientToViewport(event)
 
     // adjust origin so zoom centers on cursor
     position.value.x -= delta * (localMouse.x - position.value.x)

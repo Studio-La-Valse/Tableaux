@@ -18,7 +18,7 @@ const showTip = ref(false);
   /* wider for pill shape */
   height: 12px;
   /* flatter shape */
-  background-color: var(--color-background-mute);
+  background-color: var(--color-background-soft);
   border: 2px solid var(--color-text);
   border-radius: 999px;
   /* ensures fully rounded ends */
