@@ -46,9 +46,8 @@ import { NewLine } from './models/graph/graph-nodes/text/new-line'
 
 import { logError } from '@/stores/error-log-store'
 
-
-
 const app = createApp(App)
+
 // catches runtime Vue errors
 app.config.errorHandler = (err, vm, info) => {
   const _err = err as Error
@@ -64,7 +63,6 @@ window.addEventListener('unhandledrejection', (event) => {
 window.addEventListener('error', (event) => {
   logError(`[JS Error] ${event.message} @ ${event.filename}:${event.lineno}`)
 })
-
 
 app.use(router)
 
