@@ -48,7 +48,10 @@ export abstract class GraphNodeCore {
     return this._outputs.length
   }
 
-  public get data() { return this._data }
+  /**
+   * Field that contains data for the graphnode.
+   */
+  public readonly data: JsonObject = {}
 
   /**
    * Constructs a new GraphNodeCore instance.
@@ -58,7 +61,6 @@ export abstract class GraphNodeCore {
   constructor(
     public id: string,
     public path: string[],
-    private readonly _data: JsonObject
   ) {
     this.componentState = 'armed'
   }

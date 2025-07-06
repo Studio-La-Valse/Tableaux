@@ -9,7 +9,7 @@ import type { GraphEdgeModel } from '@/models/graph/core/models/graph-edge-model
 import { GraphNodeWrapper } from '@/models/graph/core/graph-node-wrapper'
 import { useHistory } from './graph-history-store'
 
-export const useGraphInternal = defineStore('graph', () => {
+const useGraphInternal = defineStore('graph', () => {
   const nodes: Ref<GraphNodeWrapper[]> = ref([])
   const edges: Ref<GraphEdge[]> = ref([])
 
@@ -26,7 +26,7 @@ export const useGraphInternal = defineStore('graph', () => {
       throw new Error()
     }
 
-    const graphNode = activator.activate(id, {})
+    const graphNode = activator.activate(id)
     const wrapper = new GraphNodeWrapper(graphNode)
     wrapper.x = position.x
     wrapper.y = position.y
@@ -185,13 +185,13 @@ export const useGraphInternal = defineStore('graph', () => {
       throw new Error()
     }
 
-    const data = model.data == undefined ? {} : JSON.parse(JSON.stringify(model.data))
-    const graphNode = activator.activate(model.id, data)
+    const graphNode = activator.activate(model.id)
     const wrapper = new GraphNodeWrapper(graphNode)
     wrapper.x = model.x
     wrapper.y = model.y
     if (model.width) wrapper.width = model.width
     if (model.height) wrapper.height = model.height
+    if (model.data) Object.assign(wrapper.data, JSON.parse(JSON.stringify(model.data)))
 
     graphNode.onInitialize()
     nodes.value.push(wrapper)
@@ -204,12 +204,7 @@ export const useGraphInternal = defineStore('graph', () => {
   }
 
   const addEdgeModel: (model: GraphEdgeModel) => GraphEdge = (model: GraphEdgeModel) => {
-    return connect(
-      model.leftGraphNodeId,
-      model.outputIndex,
-      model.rightGraphNodeId,
-      model.inputIndex,
-    )
+    return connect(model.leftId, model.output, model.rightId, model.input)
   }
 
   return {

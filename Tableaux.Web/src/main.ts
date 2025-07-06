@@ -41,6 +41,8 @@ import { Any } from './models/graph/graph-nodes/math/any'
 import { All } from './models/graph/graph-nodes/math/all'
 import { Parse } from './models/graph/graph-nodes/json/parse'
 import { Stringify } from './models/graph/graph-nodes/json/stringify'
+import { Split } from './models/graph/graph-nodes/text/split'
+import { NewLine } from './models/graph/graph-nodes/text/new-line'
 
 const app = createApp(App)
 
@@ -50,8 +52,8 @@ app.use(createPinia())
 
 const { register } = useGraphNodeActivatorCollection()
 
-register(['Emitters', 'Number'], (id, path, data) => new NumberEmitter(id, path, data))
-register(['Emitters', 'Text'], (id, path, data) => new TextEmitter(id, path, data))
+register(['Emitters', 'Number'], (id, path) => new NumberEmitter(id, path))
+register(['Emitters', 'Text'], (id, path) => new TextEmitter(id, path))
 
 register(['Generic', 'Logger'], (id, path) => new Logger(id, path))
 register(['Generic', 'Signals', 'Merge'], (id, path) => new Merge(id, path))
@@ -82,8 +84,11 @@ register(['Math', 'And'], (id, path) => new And(id, path))
 register(['Math', 'Any'], (id, path) => new Any(id, path))
 register(['Math', 'And'], (id, path) => new All(id, path))
 
-register(["JSON", "Parse"], (id, path) => new Parse(id, path))
-register(["JSON", "Stringify"], (id, path) => new Stringify(id, path))
+register(['Text', 'Split'], (id, path) => new Split(id, path))
+register(['Text', 'Newline'], (id, path) => new NewLine(id, path))
+
+register(['JSON', 'Parse'], (id, path) => new Parse(id, path))
+register(['JSON', 'Stringify'], (id, path) => new Stringify(id, path))
 
 register(['Geometry', 'XY'], (id, path) => new XY(id, path))
 

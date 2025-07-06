@@ -1,19 +1,18 @@
 import { GraphNode } from '../../core/graph-node'
-import type { GraphNodeOutputType } from '../../core/graph-node-output';
-import type { JsonObject } from '../../core/models/json-object';
+import type { GraphNodeOutputType } from '../../core/graph-node-output'
 
 export class NumberEmitter extends GraphNode {
-  private readonly output: GraphNodeOutputType<number>;
+  private readonly output: GraphNodeOutputType<number>
 
-  constructor(id: string, path: string[], data: JsonObject) {
-    super(id, path, data)
+  constructor(id: string, path: string[]) {
+    super(id, path)
 
-    this.output = this.registerNumberOutput("Number");
-    if (!data.value) data.value = 0
+    this.output = this.registerNumberOutput('Number')
   }
 
   override onInitialize(): void {
-    this.solve();
+    if (!this.data.value) this.data.value = 0
+    this.solve()
   }
 
   public onChange(newValue: number): void {
@@ -26,4 +25,3 @@ export class NumberEmitter extends GraphNode {
     this.output.next(this.data.value as number)
   }
 }
-

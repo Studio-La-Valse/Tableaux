@@ -1,7 +1,7 @@
 <template>
   <ResizablePanel :graph-node-id="props.graphNode.id">
     <div class="text-input-wrapper">
-      <textarea readonly class="text-input" :value="graphNode.values.join('\n')" @mousedown.stop @mousemove.stop
+      <textarea readonly class="text-input" :value="graphNode.values.map((t, i) => `${i}: ${t}` ).join('\n')" @mousedown.stop @mousemove.stop
         @mouseup.stop @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop></textarea>
     </div>
   </ResizablePanel>
@@ -15,7 +15,6 @@ import ResizablePanel from "./ResizablePanel.vue"
 const props = defineProps<{
   graphNode: Logger
 }>()
-
 </script>
 
 

@@ -1,6 +1,6 @@
 export type GraphEdgeModel = {
-    leftGraphNodeId: string,
-    outputIndex: number,
-    rightGraphNodeId: string,
-    inputIndex: number,
+  leftId: string
+  output: number
+  rightId: string
+  input: number
 }

@@ -1,4 +1,4 @@
-import type { GraphEdgeModel } from "./models/graph-edge-model"
+import type { GraphEdgeModel } from './models/graph-edge-model'
 
 export class GraphEdge {
   constructor(
@@ -15,10 +15,10 @@ export class GraphEdge {
 
   public toModel(): GraphEdgeModel {
     return {
-      leftGraphNodeId: this.leftGraphNodeId,
-      outputIndex: this.outputIndex,
-      rightGraphNodeId: this.rightGraphNodeId,
-      inputIndex: this.inputIndex
+      leftId: this.leftGraphNodeId,
+      output: this.outputIndex,
+      rightId: this.rightGraphNodeId,
+      input: this.inputIndex,
     }
   }
 }

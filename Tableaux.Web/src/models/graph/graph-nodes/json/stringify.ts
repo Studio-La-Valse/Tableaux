@@ -1,17 +1,17 @@
-import { GraphNode } from "../../core/graph-node";
+import { GraphNode } from '../../core/graph-node'
 
 export class Stringify extends GraphNode {
-    private input
-    private output
+  private input
+  private output
 
-    constructor(id: string, path: string[]) {
-        super(id, path)
+  constructor(id: string, path: string[]) {
+    super(id, path)
 
-        this.input = this.registerObjectInput("JSON")
-        this.output = this.registerTextOutput("String")
-    }
+    this.input = this.registerObjectInput('JSON')
+    this.output = this.registerStringOutput('String')
+  }
 
-    protected solve(): void {
-        this.input.payload.forEach((v) => this.output.next(JSON.stringify(v)))
-    }
+  protected solve(): void {
+    this.input.payload.forEach((v) => this.output.next(JSON.stringify(v)))
+  }
 }

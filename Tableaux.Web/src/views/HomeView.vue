@@ -2,7 +2,7 @@
   <div id="split-horizontal">
     <GraphCanvas class="graph" />
 
-    <CanvasComponent class="design" :elements="[]" />
+    <CanvasComponent class="design" />
   </div>
 </template>
 

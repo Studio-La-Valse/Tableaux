@@ -1,11 +1,10 @@
 import type { GraphNode } from '@/models/graph/core/graph-node'
-import type { JsonObject } from '@/models/graph/core/models/json-object'
 import { defineStore } from 'pinia'
 
 export const useGraphNodeActivatorCollection = defineStore('graph-node-activator-store', () => {
   const activatorTree = new ActivatorGroup('root')
 
-  function register(path: string[], activate: (id: string, path: string[], data: JsonObject) => GraphNode) {
+  function register(path: string[], activate: (id: string, path: string[]) => GraphNode) {
     let tree = activatorTree
 
     path.slice(0, -1).forEach((segment) => {
@@ -20,7 +19,7 @@ export const useGraphNodeActivatorCollection = defineStore('graph-node-activator
     })
 
     if (!tree.findActivator(path[path.length - 1])) {
-      tree.activators.push(new Activator(path[path.length - 1], (id, data) => activate(id, path, data)))
+      tree.activators.push(new Activator(path[path.length - 1], (id) => activate(id, path)))
     }
   }
 
@@ -84,7 +83,7 @@ export const useGraphNodeActivatorCollection = defineStore('graph-node-activator
 export class Activator {
   constructor(
     public name: string,
-    public activate: (id: string, data: JsonObject) => GraphNode,
+    public activate: (id: string) => GraphNode,
   ) {}
 }
 
