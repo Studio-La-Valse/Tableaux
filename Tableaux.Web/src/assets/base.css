@@ -17,7 +17,7 @@
   --vt-c-text-light: var(--vt-c-black-mute);
   --vt-c-text-dark: var(--vt-c-white-mute);
 
-  --vt-accent: rgba(223, 18, 72, 1);
+  --vt-accent: rgb(18, 141, 223);
   --vt-armed-1: #fc8803;
   --vt-armed-2: #fcdb03;
   --vt-error-1: #fc2003;

@@ -44,7 +44,27 @@ import { Stringify } from './models/graph/graph-nodes/json/stringify'
 import { Split } from './models/graph/graph-nodes/text/split'
 import { NewLine } from './models/graph/graph-nodes/text/new-line'
 
+import { logError } from '@/stores/error-log-store'
+
+
+
 const app = createApp(App)
+// catches runtime Vue errors
+app.config.errorHandler = (err, vm, info) => {
+  const _err = err as Error
+  logError(`[Vue Error] ${_err.message} — ${info}`)
+}
+
+// catches unhandled promise rejections
+window.addEventListener('unhandledrejection', (event) => {
+  logError(`[Unhandled Promise] ${event.reason}`)
+})
+
+// catches uncaught runtime JS errors
+window.addEventListener('error', (event) => {
+  logError(`[JS Error] ${event.message} @ ${event.filename}:${event.lineno}`)
+})
+
 
 app.use(router)
 

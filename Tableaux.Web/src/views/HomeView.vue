@@ -17,6 +17,13 @@
       <GraphCanvas class="graph" />
       <CanvasComponent class="design" />
     </div>
+
+    <!-- Footer -->
+    <div class="fixed-footer">
+      {{ lastError || '✅ All clear' }}
+    </div>
+
+
   </div>
 </template>
 
@@ -27,6 +34,8 @@ import { ref, onMounted, watch } from 'vue'
 import Split from 'split.js'
 import GraphCanvas from '@/components/graph/GraphComponent.vue'
 import CanvasComponent from '@/components/design/CanvasComponent.vue'
+
+import { lastError } from '@/stores/error-log-store'
 
 // derive the instance type from the default export:
 type SplitInstance = ReturnType<typeof Split>
@@ -66,7 +75,9 @@ function toggleDirection() {
     direction.value === 'horizontal' ? 'vertical' : 'horizontal'
 }
 
-onMounted(createSplit)
+onMounted(() => {
+  createSplit()
+})
 
 // whenever `direction` changes, rebuild the split
 watch(direction, createSplit)
@@ -115,7 +126,22 @@ watch(direction, createSplit)
 .split-container {
   display: flex;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 30px);
+}
+
+.fixed-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  background-color: var(--color-accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  font-size: 14px;
 }
 
 /* 1) Base orientation */
@@ -158,7 +184,7 @@ watch(direction, createSplit)
 }
 
 .gutter:hover {
-  background: var(--color-border-hover);
+  background: var(--color-accent);
 }
 
 .horizontal .gutter {
