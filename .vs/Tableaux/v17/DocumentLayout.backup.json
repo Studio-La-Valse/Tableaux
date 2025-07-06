@@ -1,0 +1,210 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|c:\\projects\\studio la valse repository\\tableaux\\tableaux\\app.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|solutionrelative:tableaux\\app.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|c:\\projects\\studio la valse repository\\tableaux\\tableaux\\views\\midiconfigurationview.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|solutionrelative:tableaux\\views\\midiconfigurationview.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|c:\\projects\\studio la valse repository\\tableaux\\tableaux\\viewmodels\\midiconfigurationviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|solutionrelative:tableaux\\viewmodels\\midiconfigurationviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|c:\\projects\\studio la valse repository\\tableaux\\tableaux\\models\\streams\\midireaderfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|solutionrelative:tableaux\\models\\streams\\midireaderfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|c:\\projects\\studio la valse repository\\tableaux\\tableaux\\models\\streams\\midilistener.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|solutionrelative:tableaux\\models\\streams\\midilistener.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|c:\\projects\\studio la valse repository\\tableaux\\tableaux\\views\\mainview.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}",
+      "RelativeMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|solutionrelative:tableaux\\views\\mainview.axaml||{6D5344A2-2FCD-49DE-A09D-6A14FD1B1224}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|c:\\projects\\studio la valse repository\\tableaux\\tableaux\\viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|solutionrelative:tableaux\\viewmodels\\mainviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|c:\\projects\\studio la valse repository\\tableaux\\tableaux\\viewmodels\\scenecanvasviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|solutionrelative:tableaux\\viewmodels\\scenecanvasviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|c:\\projects\\studio la valse repository\\tableaux\\tableaux\\views\\midiconfigurationview.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DDFBED98-838D-4678-B1AF-8C5AE9D9A3D4}|Tableaux\\Tableaux.csproj|solutionrelative:tableaux\\views\\midiconfigurationview.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{40C18D95-10E1-4F13-A53B-0DDED62242D5}|Tableaux.API.Native\\Tableaux.API.Native.csproj|c:\\projects\\studio la valse repository\\tableaux\\tableaux.api.native\\tableaux.api.native.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{40C18D95-10E1-4F13-A53B-0DDED62242D5}|Tableaux.API.Native\\Tableaux.API.Native.csproj|solutionrelative:tableaux.api.native\\tableaux.api.native.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 122,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2088629290:0:{bf84ea66-d821-4dba-b1b1-2777d8574775}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MidiListener.cs",
+              "DocumentMoniker": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\Models\\Streams\\MidiListener.cs",
+              "RelativeDocumentMoniker": "Tableaux\\Models\\Streams\\MidiListener.cs",
+              "ToolTip": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\Models\\Streams\\MidiListener.cs",
+              "RelativeToolTip": "Tableaux\\Models\\Streams\\MidiListener.cs",
+              "ViewState": "AgIAAEEAAAAAAAAAAAAAwBgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-25T15:22:30.802Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MidiReaderFactory.cs",
+              "DocumentMoniker": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\Models\\Streams\\MidiReaderFactory.cs",
+              "RelativeDocumentMoniker": "Tableaux\\Models\\Streams\\MidiReaderFactory.cs",
+              "ToolTip": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\Models\\Streams\\MidiReaderFactory.cs",
+              "RelativeToolTip": "Tableaux\\Models\\Streams\\MidiReaderFactory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwCMAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-25T15:21:37.49Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "App.axaml.cs",
+              "DocumentMoniker": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\App.axaml.cs",
+              "RelativeDocumentMoniker": "Tableaux\\App.axaml.cs",
+              "ToolTip": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\App.axaml.cs*",
+              "RelativeToolTip": "Tableaux\\App.axaml.cs*",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAowDMAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-25T15:20:41.591Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "MainViewModel.cs",
+              "DocumentMoniker": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\ViewModels\\MainViewModel.cs",
+              "RelativeDocumentMoniker": "Tableaux\\ViewModels\\MainViewModel.cs",
+              "ToolTip": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\ViewModels\\MainViewModel.cs",
+              "RelativeToolTip": "Tableaux\\ViewModels\\MainViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAADaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-25T15:20:29.762Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MidiConfigurationViewModel.cs",
+              "DocumentMoniker": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\ViewModels\\MidiConfigurationViewModel.cs",
+              "RelativeDocumentMoniker": "Tableaux\\ViewModels\\MidiConfigurationViewModel.cs",
+              "ToolTip": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\ViewModels\\MidiConfigurationViewModel.cs",
+              "RelativeToolTip": "Tableaux\\ViewModels\\MidiConfigurationViewModel.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAACIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-25T15:17:45.712Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "SceneCanvasViewModel.cs",
+              "DocumentMoniker": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\ViewModels\\SceneCanvasViewModel.cs",
+              "RelativeDocumentMoniker": "Tableaux\\ViewModels\\SceneCanvasViewModel.cs",
+              "ToolTip": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\ViewModels\\SceneCanvasViewModel.cs",
+              "RelativeToolTip": "Tableaux\\ViewModels\\SceneCanvasViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-25T15:17:45.108Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "MidiConfigurationView.axaml.cs",
+              "DocumentMoniker": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\Views\\MidiConfigurationView.axaml.cs",
+              "RelativeDocumentMoniker": "Tableaux\\Views\\MidiConfigurationView.axaml.cs",
+              "ToolTip": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\Views\\MidiConfigurationView.axaml.cs",
+              "RelativeToolTip": "Tableaux\\Views\\MidiConfigurationView.axaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-05-25T15:15:25.985Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "MainView.axaml",
+              "DocumentMoniker": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\Views\\MainView.axaml",
+              "RelativeDocumentMoniker": "Tableaux\\Views\\MainView.axaml",
+              "ToolTip": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\Views\\MainView.axaml",
+              "RelativeToolTip": "Tableaux\\Views\\MainView.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-05-25T15:13:42.687Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Tableaux.API.Native",
+              "DocumentMoniker": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux.API.Native\\Tableaux.API.Native.csproj",
+              "RelativeDocumentMoniker": "Tableaux.API.Native\\Tableaux.API.Native.csproj",
+              "ToolTip": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux.API.Native\\Tableaux.API.Native.csproj",
+              "RelativeToolTip": "Tableaux.API.Native\\Tableaux.API.Native.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAABGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-05-25T13:47:48.697Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
+        {
+          "DockedWidth": 122,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MidiConfigurationView.axaml",
+              "DocumentMoniker": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\Views\\MidiConfigurationView.axaml",
+              "RelativeDocumentMoniker": "Tableaux\\Views\\MidiConfigurationView.axaml",
+              "ToolTip": "C:\\Projects\\Studio La Valse Repository\\Tableaux\\Tableaux\\Views\\MidiConfigurationView.axaml",
+              "RelativeToolTip": "Tableaux\\Views\\MidiConfigurationView.axaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-05-25T15:14:06.645Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
