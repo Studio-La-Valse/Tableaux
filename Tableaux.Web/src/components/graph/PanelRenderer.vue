@@ -1,5 +1,5 @@
 <template>
-  <div class="background" :style="borderStyle">
+  <div class="background" :style="[borderStyle, panelStyle]" :title="graphNode.innerNode.errorMessage || ''">
     <!-- Title -->
     <div class="title">
       <p>{{ graphNode.path[graphNode.path.length - 1] }}</p>
@@ -8,18 +8,26 @@
     <!-- Main Content Panel -->
     <div class="content" :style="contentStyle">
       <component :is="getGraphNodePanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
+
+
+      <!-- Input Ports rendered via our renderer component -->
+      <div class="inputs" v-if="graphNode.inputs && graphNode.inputs.length">
+        <GraphNodeInputRenderer v-for="(input, index) in graphNode.inputs" :key="'input-' + index" :input="input" />
+      </div>
+
+      <!-- Output Ports rendered via our renderer component -->
+      <div class="outputs" v-if="graphNode.outputs && graphNode.outputs.length">
+        <GraphNodeOutputRenderer v-for="(output, index) in graphNode.outputs" :key="'output-' + index"
+          :output="output" />
+      </div>
     </div>
 
-    <!-- Input Ports rendered via our renderer component -->
-    <div class="inputs" v-if="graphNode.inputs && graphNode.inputs.length">
-      <GraphNodeInputRenderer v-for="(input, index) in graphNode.inputs" :key="'input-' + index" :input="input" />
-    </div>
 
-    <!-- Output Ports rendered via our renderer component -->
-    <div class="outputs" v-if="graphNode.outputs && graphNode.outputs.length">
-      <GraphNodeOutputRenderer v-for="(output, index) in graphNode.outputs" :key="'output-' + index" :output="output" />
-    </div>
   </div>
+  <details v-if="graphNode.innerNode.errorMessage" class="error-details" @mousedown.stop>
+    <summary>⚠️ Error</summary>
+    <p>{{ graphNode.innerNode.errorMessage }}</p>
+  </details>
 </template>
 
 <script setup lang="ts">
@@ -38,12 +46,10 @@ import type { GraphNodeWrapper } from "@/models/graph/core/graph-node-wrapper";
 const { getNode } = useGraph();
 const { isSelected } = useSelectionStore()
 
-const props = defineProps({
-  graphNode: {
-    type: Object as () => GraphNodeWrapper,
-    required: true,
-  },
-});
+const props = defineProps<{
+  graphNode: GraphNodeWrapper,
+  panelStyle: StyleValue
+}>();
 
 const borderColor = computed(() => {
   switch (props.graphNode.innerNode.componentState) {
@@ -53,8 +59,6 @@ const borderColor = computed(() => {
       return "linear-gradient(90deg, var(--vt-error-1), var(--vt-error-2))"
     case "complete":
       return "linear-gradient(90deg, var(--vt-complete-1), var(--vt-complete-2))"
-    case "calculating":
-      return "linear-gradient(90deg, var(--vt-calculating-1), var(--vt-calculating-2))"
     default:
       return "linear-gradient(90deg, var(--vt-error-1), var(--vt-error-2))"
   }
@@ -68,8 +72,6 @@ const shadowColor = computed(() => {
       return "--vt-error-1"
     case "complete":
       return "--vt-complete-1"
-    case "calculating":
-      return "--vt-calculating-1"
     default:
       return "#ccc"
   }
@@ -167,4 +169,23 @@ const getGraphNodePanel = (emitter: GraphNode) => {
   border-radius: 8px;
   background-color: var(--color-background-mute);
 }
+
+.error-details {
+  max-width: 100%;
+  width: 100%;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  color: var(--color-text);
+  font-size: 14px;
+  margin-top: 8px;
+  border: 1px solid var(--color-border-hover);
+  border-radius: 4px;
+}
+
+.error-details summary {
+  cursor: pointer;
+  font-weight: bold;
+  outline: none;
+}
+
 </style>

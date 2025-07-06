@@ -1,6 +1,7 @@
 <template>
   <div class="node" @mousedown="onMouseDown" :style="style">
-    <PanelRenderer :graphNode="graphNode" />
+    <PanelRenderer :graphNode="graphNode"
+      :panel-style="panelStyle" />
   </div>
 </template>
 
@@ -29,6 +30,11 @@ const style = computed<StyleValue>(() => ({
   transform: `translate(${localPos.value.x}px, ${localPos.value.y}px)`,
   borderRadius: '10px',
 }))
+
+const panelStyle = computed<StyleValue>(() => ({
+  width:  graphNode.width  + "px",
+  height: graphNode.height + "px",
+}));
 
 // Determines visual styling based on whether the node is selected.
 const onMouseDown = (evt: MouseEvent) => {

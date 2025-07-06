@@ -11,6 +11,9 @@ export abstract class GraphNodeCore {
   // Indicates whether the node has been initialized
   protected _initialized: boolean = false
 
+  // A globally accassible error message.
+  public errorMessage: string = ''
+
   // Current component state of the node
   public componentState: ComponentState
 
@@ -90,6 +93,7 @@ export abstract class GraphNodeCore {
    * Marks the node as initialized.
    */
   public onInitialize(): void {
+    this.errorMessage = ''
     this._initialized = true
   }
 
@@ -97,6 +101,7 @@ export abstract class GraphNodeCore {
    * Arms the node and propagates arming to all outputs.
    */
   public arm(): void {
+    this.errorMessage = ''
     this.componentState = 'armed'
     this.outputs.forEach((output) => output.arm())
   }
@@ -106,24 +111,31 @@ export abstract class GraphNodeCore {
    * Manages state transitions and calls `solve()`.
    */
   public complete(): void {
+    // Clear any previous error
+    this.errorMessage = ''
+
+    // Abort if any input is still armed
+    if (this.inputs.some((input) => input.armed)) return
+
     try {
-      // Abort if any input is still armed
-      if (this.inputs.some((input) => input.armed)) return
-
-      this.componentState = 'calculating'
-
       // Arm all outputs before solving
-      this.outputs.forEach((output) => output.arm())
+      for (const output of this.outputs) {
+        output.arm()
+      }
 
       this.solve()
 
       this.componentState = 'complete'
+
+      for (const output of this.outputs) {
+        output.complete()
+      }
     } catch (error) {
-      console.error(error)
+      const _error = error instanceof Error ? error : new Error(String(error))
+      console.error(_error)
+
       this.componentState = 'error'
-    } finally {
-      // Notify all outputs of completion
-      this.outputs.forEach((output) => output.complete())
+      this.errorMessage = _error.message
     }
   }
 

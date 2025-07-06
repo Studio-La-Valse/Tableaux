@@ -275,8 +275,10 @@ watch(
   border-bottom: 1px solid var(--color-border);
 
   /* temp width hack */
-  overflow-x: auto;
+  overflow-x: hidden;
   white-space: nowrap;
+
+  height: 80px;
 }
 
 .field-group {

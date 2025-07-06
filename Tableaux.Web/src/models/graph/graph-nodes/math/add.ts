@@ -13,13 +13,14 @@ export class Add extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerNumberInput("First")
-    this.input2 = this.registerNumberInput("Second")
-    this.output = this.registerNumberOutput("Result")
+    this.input1 = this.registerNumberInput('First')
+    this.input2 = this.registerNumberInput('Second')
+    this.output = this.registerNumberOutput('Result')
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.input1, this.input2)
+    inputIterators
+      .cycleValues(this.input1, this.input2)
       .map(([first, second]) => first + second)
       .forEach((v) => this.output.next(v))
   }

@@ -39,6 +39,7 @@ export abstract class GraphNodeInput {
   public replaceConnection(subscription: Unsubscriber | undefined) {
     this.subscription?.unsubscribe()
     this.subscription = subscription
+    if (!this.subscription) this.onArm()
   }
 
   public onTrySubscribeSelf(): void {

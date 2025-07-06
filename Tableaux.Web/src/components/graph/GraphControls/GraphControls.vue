@@ -99,6 +99,8 @@ const loadFromFile = async () => {
   /* temp width hack */
   overflow-x: auto;
   white-space: nowrap;
+
+  height: 80px;
 }
 
 .field-group {

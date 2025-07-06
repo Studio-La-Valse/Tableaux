@@ -19,9 +19,8 @@ import {
 
 export const componentStates = {
   armed: 'armed',
-  calculating: 'calculating',
-  error: 'error',
   complete: 'complete',
+  error: 'error',
 } as const
 
 export type ComponentState = (typeof componentStates)[keyof typeof componentStates]
