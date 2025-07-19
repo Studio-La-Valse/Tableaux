@@ -41,37 +41,17 @@ export class GraphNodeWrapper {
     return 100
   }
 
-  public get data() {
-    return this.innerNode.data
-  }
-
-  public get id() {
-    return this.innerNode.id
-  }
-
-  public get path() {
-    return this.innerNode.path
-  }
-
-  public get inputs() {
-    return this.innerNode.inputs
-  }
-
-  public get outputs() {
-    return this.innerNode.outputs
-  }
-
   constructor(public readonly innerNode: GraphNode) {
     this.version = crypto.randomUUID()
   }
 
   public toModel(): GraphNodeModel {
     const result = {
-      id: this.id,
-      path: this.path,
+      id: this.innerNode.id,
+      path: this.innerNode.path,
       x: this.x,
       y: this.y,
-      ...(Object.keys(this.data).length > 0 && { data: this.data }),
+      ...(Object.keys(this.innerNode.data).length > 0 && { data: this.innerNode.data }),
       ...(this.width !== this.minWidth && { width: this.width }),
       ...(this.height !== this.minHeight && { height: this.height }),
     }
@@ -98,17 +78,5 @@ export class GraphNodeWrapper {
   public calculateHandleCoordinate(index: number, of: number): number {
     const height = this.calculateHandleHeight(index, of)
     return this.y + height
-  }
-
-  public arm() {
-    return this.innerNode.arm()
-  }
-
-  public complete() {
-    return this.innerNode.complete()
-  }
-
-  public onDestroy() {
-    return this.innerNode.onDestroy()
   }
 }

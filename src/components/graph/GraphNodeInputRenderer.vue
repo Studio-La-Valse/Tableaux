@@ -1,14 +1,18 @@
 <!-- src/components/GraphNodeInputRenderer.vue -->
 <template>
   <div class="node-port input-port" :style="{ top: positionY + 'px' }" @mousedown.stop @mouseup="handleMouseUp">
+    <button v-if="graphNode.paramsInputOrigin?.index == input.index && graphNode.canInsertInput(input.index)"
+      class="prepender fade-toggle" :class="{ show: scale >= 3 }" @click.stop="prependerClick">+</button>
+
     <HandleRenderer :description="input.description" />
     <div class="label">
       <span>{{ input.description[0] }}</span>
     </div>
-    <button class="remover fade-toggle" :class="{ show: scale >= 3 }" @click.stop="removerClick">-</button>
+    <button v-if="graphNode.canRemoveInput(input.index)" class="remover fade-toggle" :class="{ show: scale >= 3 }"
+      @click.stop="removerClick">-</button>
 
-    <button class="extender fade-toggle" :class="{ show: scale >= 3 }" @click.stop="adderClick">+</button>
-
+    <button v-if="graphNode.canInsertInput(input.index + 1)" class="extender fade-toggle" :class="{ show: scale >= 3 }"
+      @click.stop="adderClick">+</button>
   </div>
 </template>
 
@@ -19,8 +23,10 @@ import { useEdgeDrag } from '@/composables/useEdgeDrag';
 import { useGraph } from '@/stores/graph-store';
 import { useCanvasTransform } from '@/composables/useCanvasTransform';
 import { computed } from 'vue';
+import type { GraphNode } from '@/models/graph/core/graph-node';
 
 const props = defineProps<{
+  graphNode: GraphNode;
   input: GraphNodeInput;
   positionY: number;
 }>();
@@ -44,11 +50,15 @@ const handleMouseUp = () => {
 }
 
 const removerClick = () => {
-  alert("Works.")
+  graph.removeInput(props.graphNode.id, props.input.index)
 }
 
 const adderClick = () => {
-  alert("Works.")
+  graph.insertInput(props.graphNode.id, props.input.index + 1)
+}
+
+const prependerClick = () => {
+  graph.insertInput(props.graphNode.id, props.input.index)
 }
 </script>
 
@@ -85,6 +95,7 @@ const adderClick = () => {
   pointer-events: auto;
 }
 
+.prepender,
 .extender,
 .remover {
   position: absolute;
@@ -103,6 +114,7 @@ const adderClick = () => {
   /* makes it feel clickable */
 }
 
+.prepender:hover,
 .extender:hover,
 .remover:hover {
   transform: scale(1.2);
@@ -124,6 +136,14 @@ const adderClick = () => {
 .extender {
   left: 5px;
   top: 18px;
+  background-color: var(--color-text);
+  border: 1px solid var(--color-background-soft);
+  color: var(--color-border);
+}
+
+.prepender {
+  left: 5px;
+  top: -12px;
   background-color: var(--color-text);
   border: 1px solid var(--color-background-soft);
   color: var(--color-border);

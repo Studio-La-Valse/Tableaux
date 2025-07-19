@@ -40,7 +40,7 @@ const startY = computed(() => {
   if (tempEdge.value) {
     const node = graph.getNode(tempEdge.value.fromNodeId);
     if (node) {
-      return node.calculateHandleCoordinate(tempEdge.value.fromOutputIndex, node.outputs.length);
+      return node.calculateHandleCoordinate(tempEdge.value.fromOutputIndex, node.innerNode.outputs.length);
     }
   }
   return 0;

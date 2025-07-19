@@ -2,7 +2,7 @@
   <div class="background" :style="[borderStyle, panelStyle]" :title="graphNode.innerNode.errorMessage || ''">
     <!-- Title -->
     <div class="title">
-      <p>{{ graphNode.path[graphNode.path.length - 1] }}</p>
+      <p>{{ graphNode.innerNode.path[graphNode.innerNode.path.length - 1] }}</p>
     </div>
 
     <!-- Main Content Panel -->
@@ -11,13 +11,13 @@
 
 
       <div class="inputs">
-        <GraphNodeInputRenderer v-for="(input, index) in graphNode.inputs" :key="'input-' + index" :input="input"
-          :positionY="getRelativePosition(input).y" />
+        <GraphNodeInputRenderer v-for="(input, index) in graphNode.innerNode.inputs" :key="'input-' + index"
+          :input="input" :positionY="getRelativePosition(input).y" :graphNode="graphNode.innerNode" />
       </div>
 
       <div class="outputs">
-        <GraphNodeOutputRenderer v-for="(output, index) in graphNode.outputs" :key="'output-' + index" :output="output"
-          :positionY="getRelativePosition(output).y" />
+        <GraphNodeOutputRenderer v-for="(output, index) in graphNode.innerNode.outputs" :key="'output-' + index"
+          :output="output" :positionY="getRelativePosition(output).y" />
       </div>
     </div>
 
@@ -79,7 +79,7 @@ const shadowColor = computed(() => {
 })
 
 // Determines visual styling based on whether the node is selected.
-const _isSelected = computed(() => isSelected(props.graphNode.id));
+const _isSelected = computed(() => isSelected(props.graphNode.innerNode.id));
 
 const borderStyle = computed(() => ({
   '--gradient-border': borderColor.value,
@@ -95,7 +95,7 @@ const contentStyle = computed<StyleValue>(() => ({
 }))
 
 // Get the reactive graph node instance.
-const graphNode = getNode(props.graphNode.id);
+const graphNode = getNode(props.graphNode.innerNode.id);
 
 const componentMap: Record<string, Component> = {
   "emitters/number": NumberEmitterPanel,
@@ -111,7 +111,7 @@ const getGraphNodePanel = (node: GraphNode) => {
 
 const getRelativePosition = (handle: GraphNodeInput | GraphNodeOutput) => {
   const x = handle instanceof GraphNodeInput ? graphNode.x : graphNode.x + graphNode.width;
-  const number = handle instanceof GraphNodeInput ? graphNode.inputs.length : graphNode.outputs.length;
+  const number = handle instanceof GraphNodeInput ? graphNode.innerNode.inputs.length : graphNode.innerNode.outputs.length;
   const y = graphNode.calculateHandleHeight(handle.index, number);
   return { x, y }
 }

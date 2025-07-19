@@ -4,7 +4,11 @@ import type { GraphNodeOutput } from './graph-node-output'
 import { type Unsubscriber } from './unsubscriber'
 
 export abstract class GraphNodeInput {
-  protected subscription: Unsubscriber | undefined
+  private _subscription: Unsubscriber | undefined
+  public get subscription() {
+    return this._subscription
+  }
+  private id: string
 
   protected _armed: boolean = true
   public get armed() {
@@ -13,11 +17,19 @@ export abstract class GraphNodeInput {
 
   public abstract get payloadLength(): number
 
+  public get index() {
+    return this.graphNode.inputs.findIndex((v) => v.id == this.id)
+  }
+
   constructor(
     public graphNode: GraphNode,
-    public index: number,
-    public description: string
-  ) { }
+    public description: string,
+  ) {
+    this.id = crypto.randomUUID()
+  }
+
+  // used for params type input.
+  public abstract repeat(): GraphNodeInput
 
   public connectTo(graphNodeOutput: GraphNodeOutput): GraphEdge {
     // will throw an error when cyclical subscription is detected.
@@ -36,9 +48,9 @@ export abstract class GraphNodeInput {
     return edge
   }
 
-  public replaceConnection(subscription: Unsubscriber | undefined) {
-    this.subscription?.unsubscribe()
-    this.subscription = subscription
+  public replaceConnection(subscription?: Unsubscriber | undefined) {
+    this._subscription?.unsubscribe()
+    this._subscription = subscription
     if (!this.subscription) this.onArm()
   }
 
@@ -65,9 +77,8 @@ export abstract class GraphNodeInputType<T> extends GraphNodeInput {
     return this.payload.length
   }
 
-  constructor(graphNode: GraphNode, inputIndex: number,
-    public description: string) {
-    super(graphNode, inputIndex, description)
+  constructor(graphNode: GraphNode, description: string) {
+    super(graphNode, description)
   }
 
   public override onArm(): void {
@@ -82,21 +93,31 @@ export abstract class GraphNodeInputType<T> extends GraphNodeInput {
 }
 
 export class GraphNodeInputBoolean extends GraphNodeInputType<boolean> {
-
+  public repeat(): GraphNodeInputType<boolean> {
+    return new GraphNodeInputBoolean(this.graphNode, this.description)
+  }
 }
 
 export class GraphNodeInputNumber extends GraphNodeInputType<number> {
-
+  public repeat(): GraphNodeInputType<number> {
+    return new GraphNodeInputNumber(this.graphNode, this.description)
+  }
 }
 
 export class GraphNodeInputString extends GraphNodeInputType<string> {
-
+  public repeat(): GraphNodeInputType<string> {
+    return new GraphNodeInputString(this.graphNode, this.description)
+  }
 }
 
 export class GraphNodeInputObject extends GraphNodeInputType<object> {
-
+  public repeat(): GraphNodeInputType<object> {
+    return new GraphNodeInputObject(this.graphNode, this.description)
+  }
 }
 
-export class GraphNodeInputUnkown extends GraphNodeInputType<unknown> {
-
+export class GraphNodeInputUnknown extends GraphNodeInputType<unknown> {
+  public repeat(): GraphNodeInputType<unknown> {
+    return new GraphNodeInputUnknown(this.graphNode, this.description)
+  }
 }

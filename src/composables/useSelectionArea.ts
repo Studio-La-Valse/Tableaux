@@ -65,7 +65,7 @@ export function useSelectionArea() {
         node.x + node.width <= max.clientX &&
         node.y + node.height <= max.clientY
       ) {
-        selectionStore.selectNode(node.id)
+        selectionStore.selectNode(node.innerNode.id)
       }
     })
   }
