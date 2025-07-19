@@ -1,4 +1,4 @@
-import type { ComponentState } from './graph-node'
+import type { ComponentState } from './component-state'
 import type { GraphNodeInput } from './graph-node-input'
 import type { GraphNodeOutput } from './graph-node-output'
 import type { JsonObject } from './models/json-object'

@@ -13,7 +13,7 @@ import { RepeatUntil } from '@/models/graph/graph-nodes/generic/repeat-until'
 import { TrimLongest } from '@/models/graph/graph-nodes/generic/trim-longest'
 import { WrapShortest } from '@/models/graph/graph-nodes/generic/wrap-shortest'
 import { Add } from '@/models/graph/graph-nodes/math/add'
-import { Multiply } from '@/models/graph/graph-nodes/math/square'
+import { Multiply } from '@/models/graph/graph-nodes/math/multiply'
 import { Sum } from '@/models/graph/graph-nodes/math/sum'
 import { Range } from '@/models/graph/graph-nodes/math/range'
 import { XY } from '@/models/graph/graph-nodes/geometry/xy'
@@ -45,6 +45,8 @@ import { Split } from './models/graph/graph-nodes/text/split'
 import { NewLine } from './models/graph/graph-nodes/text/new-line'
 
 import { logError } from '@/stores/error-log-store'
+import { Dispatch } from './models/graph/graph-nodes/generic/dispatch'
+import { Switch } from './models/graph/graph-nodes/generic/switch'
 
 const app = createApp(App)
 
@@ -83,10 +85,12 @@ register(['Generic', 'Signals', 'Carthesian'], (id, path) => new CarthesianProdu
 register(['Generic', 'Signals', 'Count'], (id, path) => new Count(id, path))
 register(['Generic', 'Signals', 'At'], (id, path) => new At(id, path))
 register(['Generic', 'Signals', 'Filter'], (id, path) => new Filter(id, path))
+register(['Generic', 'Signals', 'Dispatch'], (id, path) => new Dispatch(id, path))
+register(['Generic', 'Signals', 'Switch'], (id, path) => new Switch(id, path))
 
 register(['Math', 'Add'], (id, path) => new Add(id, path))
 register(['Math', 'Sum'], (id, path) => new Sum(id, path))
-register(['Math', 'Square'], (id, path) => new Multiply(id, path))
+register(['Math', 'Multiply'], (id, path) => new Multiply(id, path))
 register(['Math', 'Divide'], (id, path) => new Divide(id, path))
 register(['Math', 'Range'], (id, path) => new Range(id, path))
 register(['Math', 'Range (Simple)'], (id, path) => new SimpleRange(id, path))

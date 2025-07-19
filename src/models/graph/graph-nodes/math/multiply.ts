@@ -3,7 +3,7 @@ import type { GraphNodeInputType } from '../../core/graph-node-input'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
 import { inputIterators } from '../../core/input-iterators'
 
-export class Add extends GraphNode {
+export class Multiply extends GraphNode {
   private params: GraphNodeInputType<number>[]
   private output: GraphNodeOutputType<number>
 
@@ -17,7 +17,7 @@ export class Add extends GraphNode {
   protected solve(): void {
     inputIterators
       .cycleValues(...this.params)
-      .map((values) => values.reduce((p, c) => p + c))
+      .map((values) => values.reduce((p, c) => p * c))
       .forEach((v) => this.output.next(v))
   }
 }

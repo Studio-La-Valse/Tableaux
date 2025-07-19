@@ -3,25 +3,21 @@ import type { GraphNodeInputType } from '../../core/graph-node-input'
 import type { GraphNodeOutputType } from '../../core/graph-node-output';
 
 export class Merge extends GraphNode {
-  private input1: GraphNodeInputType<unknown>;
-  private input2: GraphNodeInputType<unknown>;
+  private params: GraphNodeInputType<unknown>[];
   private output: GraphNodeOutputType<unknown>;
 
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerUnkownInput("Left");
-    this.input2 = this.registerUnkownInput("Right");
+    this.params = this.registerUnkownInputParams("Values");
     this.output = this.registerUnkownOutput("Values");
   }
 
   protected solve(): void {
-    this.input1.payload.forEach((value) => {
-      this.output.next(value)
-    })
-
-    this.input2.payload.forEach((value) => {
-      this.output.next(value);
+    this.params.forEach((i) => {
+      i.payload.forEach((v) => {
+        this.output.next(v);
+      })
     })
   }
 }

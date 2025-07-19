@@ -16,6 +16,8 @@ interface Options {
   zoomIntensity?: number
 }
 
+const scale = ref<number>(1)
+
 export function useCanvasTransform(options: Options = {}) {
   const { minScale = 0.2, maxScale = 5, zoomIntensity = 0.1 } = options
 
@@ -45,7 +47,7 @@ export function useCanvasTransform(options: Options = {}) {
 
   // Pan & zoom state
   const position = ref<Position>({ x: 0, y: 0 })
-  const scale = ref<number>(1)
+
   const style = computed(() => ({
     transform: `translate(${position.value.x}px, ${position.value.y}px) scale(${scale.value})`,
     transformOrigin: 'top left',

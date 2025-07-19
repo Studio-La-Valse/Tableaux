@@ -1,33 +1,29 @@
+import { CannotRemoveLastParamError } from './errors/cannot-remove-last-param-error'
+import { CannotRemoveSubscribedParamError } from './errors/cannot-remove-subscribed-param-error'
 import { GraphNodeAlreadyInitializedError } from './errors/graph-node-already-initialized-error'
+import { InvalidRemovalIndexError } from './errors/invalid-removal-index-error'
+import { ParamsAlreadySetError } from './errors/params-already-set-error'
+import { ParamsNotSetError } from './errors/params-not-set-error'
 import { GraphNodeCore } from './graph-node-core'
 import {
   GraphNodeInputBoolean,
   GraphNodeInputNumber,
   GraphNodeInputObject,
   GraphNodeInputString,
-  GraphNodeInputUnkown,
-  GraphNodeInputType,
+  GraphNodeInputUnknown,
+  GraphNodeInput,
 } from './graph-node-input'
 import {
   GraphNodeOutputBoolean,
   GraphNodeOutputNumber,
   GraphNodeOutputObject,
   GraphNodeOutputString,
-  GraphNodeOutputUnkown,
-  GraphNodeOutputType,
+  GraphNodeOutputUnknown,
 } from './graph-node-output'
-
-export const componentStates = {
-  armed: 'armed',
-  complete: 'complete',
-  error: 'error',
-} as const
-
-export type ComponentState = (typeof componentStates)[keyof typeof componentStates]
 
 /**
  * GraphNode is the public-facing interface for individual nodes in a graph.
- * Handles visual layout and input/output registration.
+ * Handles input/output registration.
  */
 export abstract class GraphNode extends GraphNodeCore {
   constructor(
@@ -37,84 +33,311 @@ export abstract class GraphNode extends GraphNodeCore {
     super(id, path)
   }
 
+  // --- Define params type input ---
+
+  public get paramsInputOrigin(): GraphNodeInput | undefined {
+    return this._params[0]
+  }
+
+  private get _params(): GraphNodeInput[] {
+    return (
+      this._booleanParams ||
+      this._numberParams ||
+      this._stringParams ||
+      this._objectParams ||
+      this._unknownParams ||
+      []
+    )
+  }
+
+  private _booleanParams: GraphNodeInputBoolean[] | undefined
+  public registerBooleanInputParams(description: string) {
+    this.assertNotInitialized()
+    this.assertParamsHasNotBeenSet()
+
+    const input1 = new GraphNodeInputBoolean(this, description)
+    const input2 = new GraphNodeInputBoolean(this, description)
+    this._booleanParams = []
+    this._booleanParams.push(input1)
+    this._booleanParams.push(input2)
+    this._inputs.push(input1)
+    this._inputs.push(input2)
+    this.data.params_length = 2
+
+    return this._booleanParams
+  }
+
+  private _numberParams: GraphNodeInputNumber[] | undefined
+  public registerNumberInputParams(description: string) {
+    this.assertNotInitialized()
+    this.assertParamsHasNotBeenSet()
+
+    const input1 = new GraphNodeInputNumber(this, description)
+    const input2 = new GraphNodeInputNumber(this, description)
+    this._numberParams = []
+    this._numberParams.push(input1)
+    this._numberParams.push(input2)
+    this._inputs.push(input1)
+    this._inputs.push(input2)
+    this.data.params_length = 2
+
+    return this._numberParams
+  }
+
+  private _stringParams: GraphNodeInputString[] | undefined
+  public registerStringInputParams(description: string) {
+    this.assertNotInitialized()
+    this.assertParamsHasNotBeenSet()
+
+    const input1 = new GraphNodeInputString(this, description)
+    const input2 = new GraphNodeInputString(this, description)
+    this._stringParams = []
+    this._stringParams.push(input1)
+    this._stringParams.push(input2)
+    this._inputs.push(input1)
+    this._inputs.push(input2)
+    this.data.params_length = 2
+
+    return this._stringParams
+  }
+
+  private _objectParams: GraphNodeInputObject[] | undefined
+  public registerObjectInputParams(description: string) {
+    this.assertNotInitialized()
+    this.assertParamsHasNotBeenSet()
+
+    const input1 = new GraphNodeInputObject(this, description)
+    const input2 = new GraphNodeInputObject(this, description)
+    this._objectParams = []
+    this._objectParams.push(input1)
+    this._objectParams.push(input2)
+    this._inputs.push(input1)
+    this._inputs.push(input2)
+    this.data.params_length = 2
+
+    return this._objectParams
+  }
+
+  private _unknownParams: GraphNodeInputUnknown[] | undefined
+  public registerUnkownInputParams(description: string) {
+    this.assertNotInitialized()
+    this.assertParamsHasNotBeenSet()
+
+    const input1 = new GraphNodeInputUnknown(this, description)
+    const input2 = new GraphNodeInputUnknown(this, description)
+    this._unknownParams = []
+    this._unknownParams.push(input1)
+    this._unknownParams.push(input2)
+    this._inputs.push(input1)
+    this._inputs.push(input2)
+    this.data.params_length = 2
+
+    return this._unknownParams
+  }
+
+  public canInsertInput(index: number) {
+    if (!this.paramsInputOrigin) {
+      return false
+    }
+    const originIndex = this.paramsInputOrigin.index
+    if (index < originIndex) {
+      return false
+    }
+    return true
+  }
+
+  public canRemoveInput(index: number) {
+    if (!this.paramsInputOrigin) {
+      return false
+    }
+    const originIndex = this.paramsInputOrigin.index
+    if (index < originIndex) {
+      return false
+    }
+    const numberOfParams = this._params.length
+    if (numberOfParams <= 2) {
+      return false
+    }
+    const toRemove = this.inputs[index]
+    if (toRemove.subscription) {
+      return false
+    }
+
+    return true
+  }
+
+  public insertInput(index: number) {
+    const origin = this.assertParamsHasBeenSet()
+
+    const originIndex = origin.index
+    if (index < originIndex) {
+      throw new InvalidRemovalIndexError()
+    }
+
+    const indexInParams = index - originIndex
+
+    const newInput = origin.repeat()
+    newInput.onArm()
+
+    this._params.splice(indexInParams, 0, newInput)
+    this._inputs.splice(index, 0, newInput)
+    this.data.params_length = this._params.length
+  }
+
+  public removeInput(index: number) {
+    const origin = this.assertParamsHasBeenSet()
+
+    const originIndex = origin.index
+    if (index < originIndex) {
+      throw new InvalidRemovalIndexError()
+    }
+
+    if (this._params.length <= 2) {
+      throw new CannotRemoveLastParamError()
+    }
+
+    const toRemove = this._params[index]
+    if (toRemove.subscription) {
+      throw new CannotRemoveSubscribedParamError(index)
+    }
+
+    const indexInParams = index - originIndex
+    this._params.splice(indexInParams, 1)
+    this._inputs.splice(index, 1)
+    this.data.params_length = this._params.length
+
+    this.complete()
+  }
+
+  public setParamsLength(length: number) {
+    if (length < 1) {
+      throw new Error('Params must have at least one input.')
+    }
+
+    const origin = this.assertParamsHasBeenSet()
+    const originIndex = origin.index
+
+    // Remove excess inputs
+    while (this._params.length > length) {
+      const indexToRemove = originIndex + this._params.length - 1
+      this.removeInput(indexToRemove)
+    }
+
+    // Insert additional inputs
+    while (this._params.length < length) {
+      const indexToInsert = originIndex + this._params.length - 1
+      this.insertInput(indexToInsert)
+    }
+  }
+
   // --- Input Registration ---
 
-  public registerBooleanInput(description: string): GraphNodeInputType<boolean> {
+  public registerBooleanInput(description: string): GraphNodeInputBoolean {
     this.assertNotInitialized()
-    const input = new GraphNodeInputBoolean(this, this.numberOfInputs, description)
+    this.assertParamsHasNotBeenSet()
+
+    const input = new GraphNodeInputBoolean(this, description)
     this._inputs.push(input)
     return input
   }
 
-  public registerNumberInput(description: string): GraphNodeInputType<number> {
+  public registerNumberInput(description: string): GraphNodeInputNumber {
     this.assertNotInitialized()
-    const input = new GraphNodeInputNumber(this, this.numberOfInputs, description)
+    this.assertParamsHasNotBeenSet()
+
+    const input = new GraphNodeInputNumber(this, description)
     this._inputs.push(input)
     return input
   }
 
-  public registerStringInput(description: string): GraphNodeInputType<string> {
+  public registerStringInput(description: string): GraphNodeInputString {
     this.assertNotInitialized()
-    const input = new GraphNodeInputString(this, this.numberOfInputs, description)
+    this.assertParamsHasNotBeenSet()
+
+    const input = new GraphNodeInputString(this, description)
     this._inputs.push(input)
     return input
   }
 
-  public registerObjectInput(description: string): GraphNodeInputType<object> {
+  public registerObjectInput(description: string): GraphNodeInputObject {
     this.assertNotInitialized()
-    const input = new GraphNodeInputObject(this, this.numberOfInputs, description)
+    this.assertParamsHasNotBeenSet()
+
+    const input = new GraphNodeInputObject(this, description)
     this._inputs.push(input)
     return input
   }
 
-  public registerUnkownInput(description: string): GraphNodeInputType<unknown> {
+  public registerUnkownInput(description: string): GraphNodeInputUnknown {
     this.assertNotInitialized()
-    const input = new GraphNodeInputUnkown(this, this.numberOfInputs, description)
+    this.assertParamsHasNotBeenSet()
+
+    const input = new GraphNodeInputUnknown(this, description)
     this._inputs.push(input)
     return input
   }
 
-  public registerBooleanOutput(description: string): GraphNodeOutputType<boolean> {
+  // --- Output Registration ---
+
+  public registerBooleanOutput(description: string): GraphNodeOutputBoolean {
     this.assertNotInitialized()
+
     const output = new GraphNodeOutputBoolean(this, this.numberOfOutputs, description)
     this._outputs.push(output)
     return output
   }
 
-  public registerNumberOutput(description: string): GraphNodeOutputType<number> {
+  public registerNumberOutput(description: string): GraphNodeOutputNumber {
     this.assertNotInitialized()
+
     const output = new GraphNodeOutputNumber(this, this.numberOfOutputs, description)
     this._outputs.push(output)
     return output
   }
 
-  public registerStringOutput(description: string): GraphNodeOutputType<string> {
+  public registerStringOutput(description: string): GraphNodeOutputString {
     this.assertNotInitialized()
+
     const output = new GraphNodeOutputString(this, this.numberOfOutputs, description)
     this._outputs.push(output)
     return output
   }
 
-  public registerObjectOutput(description: string): GraphNodeOutputType<object> {
+  public registerObjectOutput(description: string): GraphNodeOutputObject {
     this.assertNotInitialized()
+
     const output = new GraphNodeOutputObject(this, this.numberOfOutputs, description)
     this._outputs.push(output)
     return output
   }
 
-  public registerUnkownOutput(description: string): GraphNodeOutputType<unknown> {
+  public registerUnkownOutput(description: string): GraphNodeOutputUnknown {
     this.assertNotInitialized()
-    const output = new GraphNodeOutputUnkown(this, this.numberOfOutputs, description)
+
+    const output = new GraphNodeOutputUnknown(this, this.numberOfOutputs, description)
     this._outputs.push(output)
     return output
   }
 
-  /**
-   * Throws if the node has already been initialized.
-   */
-  private assertNotInitialized(): void {
+  // --- assertions ---
+
+  public assertNotInitialized() {
     if (this._initialized) {
       throw new GraphNodeAlreadyInitializedError()
     }
+  }
+
+  public assertParamsHasNotBeenSet() {
+    if (this.paramsInputOrigin) {
+      throw new ParamsAlreadySetError()
+    }
+  }
+
+  public assertParamsHasBeenSet(): GraphNodeInput {
+    if (!this.paramsInputOrigin) {
+      throw new ParamsNotSetError()
+    }
+
+    return this.paramsInputOrigin
   }
 }

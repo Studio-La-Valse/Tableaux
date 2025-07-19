@@ -41,7 +41,7 @@ const useGraphInternal = defineStore('graph', () => {
   }
 
   const removeNode = (id: string) => {
-    const existing = nodes.value.findIndex((e) => e.id == id)
+    const existing = nodes.value.findIndex((e) => e.innerNode.id == id)
     if (existing == -1) {
       return
     }
@@ -57,7 +57,7 @@ const useGraphInternal = defineStore('graph', () => {
     })
 
     const node = nodes.value[existing]
-    node.onDestroy()
+    node.innerNode.onDestroy()
 
     nodes.value.splice(existing, 1)
   }
@@ -73,7 +73,7 @@ const useGraphInternal = defineStore('graph', () => {
   }
 
   const findNode = (nodeId: string) => {
-    const node = nodes.value.find((e) => e.id == nodeId)
+    const node = nodes.value.find((e) => e.innerNode.id == nodeId)
     return node
   }
 
@@ -91,7 +91,7 @@ const useGraphInternal = defineStore('graph', () => {
     const leftNode = getNode(leftNodeId)
     const rightNode = getNode(rightNodeId)
 
-    const edge = leftNode.outputs[outputIndex].connectTo(rightNode.inputs[inputIndex])
+    const edge = leftNode.innerNode.outputs[outputIndex].connectTo(rightNode.innerNode.inputs[inputIndex])
     edges.value.push(edge)
 
     // seems like the subscription was succesful, so remove the existing edge.
@@ -112,10 +112,38 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     const rightNode = getNode(rightNodeId)
-    const input = rightNode.inputs[inputIndex]
+    const input = rightNode.innerNode.inputs[inputIndex]
     input.replaceConnection(undefined)
-    rightNode.arm()
+    rightNode.innerNode.arm()
     edges.value.splice(existingEdge, 1)
+  }
+
+  const insertInput = (graphNodeId: string, index: number) => {
+    const node = getNode(graphNodeId).innerNode
+    node.insertInput(index)
+
+    // adding input succesful, but maybe edges need to be moved.
+    const allEdges = [...edges.value] // snapshot so we don't iterate newly created edges
+    allEdges
+      .filter((v) => v.rightGraphNodeId == graphNodeId)
+      .filter((v) => v.inputIndex >= index)
+      .forEach((v) => {
+        v.inputIndex++
+      })
+  }
+
+  const removeInput = (graphNodeId: string, index: number) => {
+    const node = getNode(graphNodeId).innerNode
+    node.removeInput(index)
+
+    // removing input succesful, but maybe edges need to be moved.
+    const allEdges = [...edges.value] // snapshot so we don't iterate newly created edges
+    allEdges
+      .filter((v) => v.rightGraphNodeId == graphNodeId)
+      .filter((v) => v.inputIndex > index)
+      .forEach((v) => {
+        v.inputIndex--
+      })
   }
 
   const duplicate = (nodeIds: string[], pasteEvents: number): GraphNodeWrapper[] => {
@@ -132,7 +160,7 @@ const useGraphInternal = defineStore('graph', () => {
       model.x += 10 * pasteEvents
       model.y += 10 * pasteEvents
       const copy = addNodeModel(model)
-      idMap[orig.id] = copy
+      idMap[orig.innerNode.id] = copy
       return copy
     })
 
@@ -143,7 +171,7 @@ const useGraphInternal = defineStore('graph', () => {
 
       if (Lclone && Rclone) {
         // internal→internal
-        connect(Lclone.id, edge.outputIndex, Rclone.id, edge.inputIndex)
+        connect(Lclone.innerNode.id, edge.outputIndex, Rclone.innerNode.id, edge.inputIndex)
       }
     })
 
@@ -156,7 +184,7 @@ const useGraphInternal = defineStore('graph', () => {
       // if the ORIGINAL right‐node was selected, but its left‐node was NOT,
       // we want to wire that same left→clone connection
       if (!idMap[Lorig] && Rclone) {
-        connect(Lorig, edge.outputIndex, Rclone.id, edge.inputIndex)
+        connect(Lorig, edge.outputIndex, Rclone.innerNode.id, edge.inputIndex)
       }
     })
 
@@ -191,7 +219,12 @@ const useGraphInternal = defineStore('graph', () => {
     wrapper.y = model.y
     if (model.width) wrapper.width = model.width
     if (model.height) wrapper.height = model.height
-    if (model.data) Object.assign(wrapper.data, JSON.parse(JSON.stringify(model.data)))
+    if (model.data) Object.assign(graphNode.data, JSON.parse(JSON.stringify(model.data)))
+
+    const numberOfParams = graphNode.data?.params_length as number
+    if (numberOfParams) {
+      graphNode.setParamsLength(numberOfParams)
+    }
 
     graphNode.onInitialize()
     nodes.value.push(wrapper)
@@ -219,6 +252,9 @@ const useGraphInternal = defineStore('graph', () => {
     edges,
     connect,
     removeEdge,
+
+    insertInput,
+    removeInput,
 
     duplicate,
 
@@ -289,6 +325,26 @@ export const useGraph = defineStore('graph-with-history', () => {
     }
   }
 
+  const insertInput = (graphNodeId: string, index: number) => {
+    const state = internalGraph.toModel()
+    try {
+      internalGraph.insertInput(graphNodeId, index)
+      history.commit(internalGraph.toModel())
+    } catch {
+      internalGraph.fromModel(state)
+    }
+  }
+
+  const removeInput = (graphNodeId: string, index: number) => {
+    const state = internalGraph.toModel()
+    try {
+      internalGraph.removeInput(graphNodeId, index)
+      history.commit(internalGraph.toModel())
+    } catch {
+      internalGraph.fromModel(state)
+    }
+  }
+
   const addNodeModels = (models: GraphNodeModel[]) => {
     const state = internalGraph.toModel()
     try {
@@ -350,6 +406,9 @@ export const useGraph = defineStore('graph-with-history', () => {
 
     connect,
     removeEdge,
+
+    insertInput,
+    removeInput,
 
     duplicate,
 

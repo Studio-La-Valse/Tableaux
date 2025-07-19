@@ -6,7 +6,7 @@ import {
   GraphNodeInputNumber,
   GraphNodeInputObject,
   GraphNodeInputString,
-  GraphNodeInputUnkown,
+  GraphNodeInputUnknown,
   type GraphNodeInput,
 } from './graph-node-input'
 import { Subscription } from './subscription'
@@ -19,7 +19,7 @@ export abstract class GraphNodeOutput {
     public graphNode: GraphNode,
     public index: number,
     public description: string,
-  ) { }
+  ) {}
 
   public connectTo(graphNodeInput: GraphNodeInput): GraphEdge {
     return graphNodeInput.connectTo(this)
@@ -60,7 +60,7 @@ export abstract class GraphNodeOutputType<T> extends GraphNodeOutput {
 export class GraphNodeOutputBoolean extends GraphNodeOutputType<boolean> {
   private numberInputs: Set<GraphNodeInputNumber> = new Set<GraphNodeInputNumber>()
   private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
-  private unknownInputs: Set<GraphNodeInputUnkown> = new Set<GraphNodeInputUnkown>()
+  private unknownInputs: Set<GraphNodeInputUnknown> = new Set<GraphNodeInputUnknown>()
   private booleanInputs: Set<GraphNodeInputBoolean> = new Set<GraphNodeInputBoolean>()
 
   public get targetInputs(): Set<GraphNodeInput> {
@@ -81,7 +81,7 @@ export class GraphNodeOutputBoolean extends GraphNodeOutputType<boolean> {
       return this.onSubscribeString(graphNodeInput)
     }
 
-    if (graphNodeInput instanceof GraphNodeInputUnkown) {
+    if (graphNodeInput instanceof GraphNodeInputUnknown) {
       return this.onSubscribeUnknown(graphNodeInput)
     }
 
@@ -140,7 +140,7 @@ export class GraphNodeOutputBoolean extends GraphNodeOutputType<boolean> {
     return subscription
   }
 
-  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnkown): Unsubscriber {
+  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnknown): Unsubscriber {
     const subscription = Subscription.subscribeOrThrow(this.unknownInputs, graphNodeInput)
 
     graphNodeInput.onArm()
@@ -182,7 +182,7 @@ export class GraphNodeOutputBoolean extends GraphNodeOutputType<boolean> {
 export class GraphNodeOutputNumber extends GraphNodeOutputType<number> {
   private numberInputs: Set<GraphNodeInputNumber> = new Set<GraphNodeInputNumber>()
   private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
-  private unknownInputs: Set<GraphNodeInputUnkown> = new Set<GraphNodeInputUnkown>()
+  private unknownInputs: Set<GraphNodeInputUnknown> = new Set<GraphNodeInputUnknown>()
 
   public get targetInputs(): Set<GraphNodeInput> {
     return new Set<GraphNodeInput>([
@@ -201,7 +201,7 @@ export class GraphNodeOutputNumber extends GraphNodeOutputType<number> {
       return this.onSubscribeString(graphNodeInput)
     }
 
-    if (graphNodeInput instanceof GraphNodeInputUnkown) {
+    if (graphNodeInput instanceof GraphNodeInputUnknown) {
       return this.onSubscribeUnknown(graphNodeInput)
     }
 
@@ -240,7 +240,7 @@ export class GraphNodeOutputNumber extends GraphNodeOutputType<number> {
     return subscription
   }
 
-  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnkown): Unsubscriber {
+  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnknown): Unsubscriber {
     const subscription = Subscription.subscribeOrThrow(this.unknownInputs, graphNodeInput)
 
     graphNodeInput.onArm()
@@ -277,7 +277,7 @@ export class GraphNodeOutputNumber extends GraphNodeOutputType<number> {
 
 export class GraphNodeOutputString extends GraphNodeOutputType<string> {
   private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
-  private unknownInputs: Set<GraphNodeInputUnkown> = new Set<GraphNodeInputUnkown>()
+  private unknownInputs: Set<GraphNodeInputUnknown> = new Set<GraphNodeInputUnknown>()
 
   public get targetInputs(): Set<GraphNodeInput> {
     return new Set<GraphNodeInput>([...this.stringInputs, ...this.unknownInputs])
@@ -288,7 +288,7 @@ export class GraphNodeOutputString extends GraphNodeOutputType<string> {
       return this.onSubscribeString(graphNodeInput)
     }
 
-    if (graphNodeInput instanceof GraphNodeInputUnkown) {
+    if (graphNodeInput instanceof GraphNodeInputUnknown) {
       return this.onSubscribeUnknown(graphNodeInput)
     }
 
@@ -311,7 +311,7 @@ export class GraphNodeOutputString extends GraphNodeOutputType<string> {
     return subscription
   }
 
-  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnkown): Unsubscriber {
+  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnknown): Unsubscriber {
     const subscription = Subscription.subscribeOrThrow(this.unknownInputs, graphNodeInput)
 
     graphNodeInput.onArm()
@@ -345,10 +345,14 @@ export class GraphNodeOutputString extends GraphNodeOutputType<string> {
 export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
   private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
   private objectInputs: Set<GraphNodeInputObject> = new Set<GraphNodeInputObject>()
-  private unknownInputs: Set<GraphNodeInputUnkown> = new Set<GraphNodeInputUnkown>()
+  private unknownInputs: Set<GraphNodeInputUnknown> = new Set<GraphNodeInputUnknown>()
 
   public get targetInputs(): Set<GraphNodeInput> {
-    return new Set<GraphNodeInput>([...this.stringInputs, ...this.objectInputs, ...this.unknownInputs])
+    return new Set<GraphNodeInput>([
+      ...this.stringInputs,
+      ...this.objectInputs,
+      ...this.unknownInputs,
+    ])
   }
 
   public onSubscribe(graphNodeInput: GraphNodeInput): Unsubscriber {
@@ -360,7 +364,7 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
       return this.onSubscribeObject(graphNodeInput)
     }
 
-    if (graphNodeInput instanceof GraphNodeInputUnkown) {
+    if (graphNodeInput instanceof GraphNodeInputUnknown) {
       return this.onSubscribeUnknown(graphNodeInput)
     }
 
@@ -383,7 +387,6 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
     return subscription
   }
 
-
   public onSubscribeObject(graphNodeInput: GraphNodeInputObject): Unsubscriber {
     const subscription = Subscription.subscribeOrThrow(this.objectInputs, graphNodeInput)
 
@@ -400,7 +403,7 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
     return subscription
   }
 
-  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnkown): Unsubscriber {
+  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnknown): Unsubscriber {
     const subscription = Subscription.subscribeOrThrow(this.unknownInputs, graphNodeInput)
 
     graphNodeInput.onArm()
@@ -435,10 +438,10 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
   }
 }
 
-export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
+export class GraphNodeOutputUnknown extends GraphNodeOutputType<unknown> {
   private numberInputs: Set<GraphNodeInputNumber> = new Set<GraphNodeInputNumber>()
   private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
-  private unknownInputs: Set<GraphNodeInputUnkown> = new Set<GraphNodeInputUnkown>()
+  private unknownInputs: Set<GraphNodeInputUnknown> = new Set<GraphNodeInputUnknown>()
   private objectInputs: Set<GraphNodeInputObject> = new Set<GraphNodeInputObject>()
   private booleanInputs: Set<GraphNodeInputBoolean> = new Set<GraphNodeInputBoolean>()
 
@@ -461,7 +464,7 @@ export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
       return this.onSubscribeString(graphNodeInput)
     }
 
-    if (graphNodeInput instanceof GraphNodeInputUnkown) {
+    if (graphNodeInput instanceof GraphNodeInputUnknown) {
       return this.onSubscribeUnknown(graphNodeInput)
     }
 
@@ -539,7 +542,7 @@ export class GraphNodeOutputUnkown extends GraphNodeOutputType<unknown> {
     return subscription
   }
 
-  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnkown): Unsubscriber {
+  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnknown): Unsubscriber {
     const subscription = Subscription.subscribeOrThrow(this.unknownInputs, graphNodeInput)
 
     graphNodeInput.onArm()

@@ -1,10 +1,18 @@
 <!-- src/components/GraphNodeInputRenderer.vue -->
 <template>
-  <div class="node-port input-port" @mousedown.stop @mouseup="handleMouseUp">
+  <div class="node-port input-port" :style="{ top: positionY + 'px' }" @mousedown.stop @mouseup="handleMouseUp">
+    <button v-if="graphNode.paramsInputOrigin?.index == input.index && graphNode.canInsertInput(input.index)"
+      class="prepender fade-toggle" :class="{ show: scale >= 3 }" @click.stop="prependerClick">+</button>
+
     <HandleRenderer :description="input.description" />
     <div class="label">
       <span>{{ input.description[0] }}</span>
     </div>
+    <button v-if="graphNode.canRemoveInput(input.index)" class="remover fade-toggle" :class="{ show: scale >= 3 }"
+      @click.stop="removerClick">-</button>
+
+    <button v-if="graphNode.canInsertInput(input.index + 1)" class="extender fade-toggle" :class="{ show: scale >= 3 }"
+      @click.stop="adderClick">+</button>
   </div>
 </template>
 
@@ -13,11 +21,20 @@ import HandleRenderer from '@/components/graph/HandleRenderer.vue';
 import type { GraphNodeInput } from '@/models/graph/core/graph-node-input';
 import { useEdgeDrag } from '@/composables/useEdgeDrag';
 import { useGraph } from '@/stores/graph-store';
+import { useCanvasTransform } from '@/composables/useCanvasTransform';
+import { computed } from 'vue';
+import type { GraphNode } from '@/models/graph/core/graph-node';
 
 const props = defineProps<{
+  graphNode: GraphNode;
   input: GraphNodeInput;
+  positionY: number;
 }>();
 
+const canvasTransform = useCanvasTransform()
+const scale = computed(() => canvasTransform.scale.value)
+
+const graph = useGraph();
 const { finishEdgeDrag } = useEdgeDrag();
 const { connect } = useGraph();
 const handleMouseUp = () => {
@@ -31,10 +48,24 @@ const handleMouseUp = () => {
     )
   }
 }
+
+const removerClick = () => {
+  graph.removeInput(props.graphNode.id, props.input.index)
+}
+
+const adderClick = () => {
+  graph.insertInput(props.graphNode.id, props.input.index + 1)
+}
+
+const prependerClick = () => {
+  graph.insertInput(props.graphNode.id, props.input.index)
+}
 </script>
 
 <style scoped>
 .node-port {
+  position: absolute;
+  transform: translate(0%, -50%);
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -51,5 +82,70 @@ const handleMouseUp = () => {
   font-size: 10px;
   padding-left: 3px;
   color: var(--color-text);
+}
+
+.fade-toggle {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.fade-toggle.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.prepender,
+.extender,
+.remover {
+  position: absolute;
+
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  margin: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+  /* smooth interaction */
+  cursor: pointer;
+  /* makes it feel clickable */
+}
+
+.prepender:hover,
+.extender:hover,
+.remover:hover {
+  transform: scale(1.2);
+  /* slight shrink on click */
+  background-color: #ddd;
+  /* darker shade for feedback */
+  border-color: #999;
+  /* emphasize edge */
+}
+
+.remover {
+  left: 15px;
+  top: -2px;
+  background-color: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.extender {
+  left: 5px;
+  top: 18px;
+  background-color: var(--color-text);
+  border: 1px solid var(--color-background-soft);
+  color: var(--color-border);
+}
+
+.prepender {
+  left: 5px;
+  top: -12px;
+  background-color: var(--color-text);
+  border: 1px solid var(--color-background-soft);
+  color: var(--color-border);
 }
 </style>
