@@ -4,7 +4,8 @@ import type { GraphNodeModel } from './models/graph-node-model'
 export class GraphNodeWrapper {
   private _height = 30
   private _width = 100
-  private _handlePad = 45
+  private _handlePadStartStop = 20
+  private _handlePad = 30
   public version
 
   public x: number = 0
@@ -27,9 +28,13 @@ export class GraphNodeWrapper {
   }
 
   public get minHeight(): number {
-    return (
-      Math.max(this.innerNode.numberOfInputs, this.innerNode.numberOfOutputs, 1) * this._handlePad
-    )
+    const totalHandles = Math.max(this.innerNode.numberOfInputs, this.innerNode.numberOfOutputs, 1)
+    if (totalHandles === 1) {
+      return this._handlePadStartStop * 2 // just top and bottom padding
+    }
+
+    const usableHandleArea = (totalHandles - 1) * this._handlePad
+    return usableHandleArea + this._handlePadStartStop * 2
   }
 
   public get minWidth(): number {
@@ -74,23 +79,17 @@ export class GraphNodeWrapper {
   }
 
   /**
-   * Computes relative position factor of a connector handle.
-   */
-  public calculateHandleFactor(index: number, of: number): number {
-    if (index > of) {
-      throw new RangeError(`The index ${index} cannot be greater than 'of' value ${of}.`)
-    }
-
-    const parts = of + 1
-    return (1 / parts) * (index + 1)
-  }
-
-  /**
-   * Calculates vertical position of a handle within the node.
+   * Returns Y-coordinate for a connector handle relative to node top.
    */
   public calculateHandleHeight(index: number, of: number): number {
-    const factor = this.calculateHandleFactor(index, of)
-    return factor * this.height
+    if (of === 1) {
+      // If there's only one handle, position it at the center
+      return this.height / 2
+    }
+
+    const usableHeight = this.height - 2 * this._handlePadStartStop
+    const spacing = usableHeight / (of - 1)
+    return this._handlePadStartStop + index * spacing
   }
 
   /**

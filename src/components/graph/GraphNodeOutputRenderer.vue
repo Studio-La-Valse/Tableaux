@@ -1,5 +1,5 @@
 <template>
-  <div class="node-port output-port" @mousedown.stop="handleMouseDown">
+  <div class="node-port output-port" :style="{ top: positionY + 'px' }"  @mousedown.stop="handleMouseDown">
     <div class="label">
       <span>{{ output.description[0] }}</span>
     </div>
@@ -13,7 +13,8 @@ import HandleRenderer from './HandleRenderer.vue';
 import type { GraphNodeOutput } from '@/models/graph/core/graph-node-output';
 
 const props = defineProps<{
-  output: GraphNodeOutput; // assumed properties: nodeId and outputIndex
+  output: GraphNodeOutput;
+  positionY: number;
 }>();
 
 const { startEdgeDrag } = useEdgeDrag();
@@ -26,6 +27,8 @@ function handleMouseDown(e: MouseEvent) {
 
 <style scoped>
 .node-port {
+  position: absolute;
+  transform: translate(0%, -50%);
   display: flex;
   align-items: center;
   justify-content: flex-end;

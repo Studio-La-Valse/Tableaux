@@ -10,15 +10,14 @@
       <component :is="getGraphNodePanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
 
 
-      <!-- Input Ports rendered via our renderer component -->
-      <div class="inputs" v-if="graphNode.inputs && graphNode.inputs.length">
-        <GraphNodeInputRenderer v-for="(input, index) in graphNode.inputs" :key="'input-' + index" :input="input" />
+      <div class="inputs">
+        <GraphNodeInputRenderer v-for="(input, index) in graphNode.inputs" :key="'input-' + index" :input="input"
+          :positionY="getRelativePosition(input).y" />
       </div>
 
-      <!-- Output Ports rendered via our renderer component -->
-      <div class="outputs" v-if="graphNode.outputs && graphNode.outputs.length">
-        <GraphNodeOutputRenderer v-for="(output, index) in graphNode.outputs" :key="'output-' + index"
-          :output="output" />
+      <div class="outputs">
+        <GraphNodeOutputRenderer v-for="(output, index) in graphNode.outputs" :key="'output-' + index" :output="output"
+          :positionY="getRelativePosition(output).y" />
       </div>
     </div>
 
@@ -42,6 +41,8 @@ import type { GraphNode } from "@/models/graph/core/graph-node";
 import { useGraph } from "@/stores/graph-store";
 import { useSelectionStore } from "@/stores/selection-store";
 import type { GraphNodeWrapper } from "@/models/graph/core/graph-node-wrapper";
+import { GraphNodeInput } from "@/models/graph/core/graph-node-input";
+import { GraphNodeOutput } from "@/models/graph/core/graph-node-output";
 
 const { getNode } = useGraph();
 const { isSelected } = useSelectionStore()
@@ -107,6 +108,13 @@ const getGraphNodePanel = (node: GraphNode) => {
   const key = node.path.join('/').toLowerCase();
   return componentMap[key] || GraphNodePanel;
 };
+
+const getRelativePosition = (handle: GraphNodeInput | GraphNodeOutput) => {
+  const x = handle instanceof GraphNodeInput ? graphNode.x : graphNode.x + graphNode.width;
+  const number = handle instanceof GraphNodeInput ? graphNode.inputs.length : graphNode.outputs.length;
+  const y = graphNode.calculateHandleHeight(handle.index, number);
+  return { x, y }
+}
 </script>
 
 <style scoped>
@@ -140,11 +148,6 @@ const getGraphNodePanel = (node: GraphNode) => {
   top: 0;
   width: 30px;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  padding-top: 8px;
-  padding-bottom: 8px;
 }
 
 .inputs {
