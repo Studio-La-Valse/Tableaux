@@ -7,7 +7,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useGraphStore } from '@/stores/use-graph-store';
 import { useEdgeSelection } from '@/composables/use-edge-selection';
 import type { GraphEdge } from '@/models/graph/core/graph-edge';
 import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
@@ -15,16 +14,15 @@ import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store';
 
 const props = defineProps<{ edge: GraphEdge }>();
 
-const { getNode } = useGraphStore();
 const selectionStore = useEdgeSelectionStore();
 
 const { handleClick } = useEdgeSelection(props.edge.id);
 
 const isSelected = computed(() => selectionStore.isSelected(props.edge.id));
 
-const leftNode = computed(() => getNode(props.edge.leftGraphNodeId));
-const rightNode = computed(() => getNode(props.edge.rightGraphNodeId));
-const leftNodeWidth = computed(() => leftNode.value?.width ?? 150);
+const leftNode = computed(() => props.edge.leftGraphNode);
+const rightNode = computed(() => props.edge.rightGraphNode);
+const leftNodeWidth = computed(() => leftNode.value.width ?? 150);
 
 const start = computed(() => {
   if (!leftNode.value) return { x: 0, y: 0 };

@@ -32,21 +32,12 @@ export abstract class GraphNodeInput {
   // used for params type input.
   public abstract repeat(): GraphNodeInput
 
-  public connectTo(graphNodeOutput: GraphNodeOutput): GraphEdge {
+  public connectTo(graphNodeOutput: GraphNodeOutput) {
     // will throw an error when cyclical subscription is detected.
     const subscription = graphNodeOutput.onSubscribe(this)
 
     // subscription succesful, replace the existing subscription
     this.replaceConnection(subscription)
-
-    // create a description of the new connection
-    const edge = new GraphEdge(
-      graphNodeOutput.graphNode.id,
-      graphNodeOutput.index,
-      this.graphNode.id,
-      this.index,
-    )
-    return edge
   }
 
   public replaceConnection(subscription?: Unsubscriber | undefined) {

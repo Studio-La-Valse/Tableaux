@@ -1,5 +1,4 @@
 import { InvalidObserverTypeError } from './errors/invalid-observer-type-error'
-import type { GraphEdge } from './graph-edge'
 import type { GraphNode } from './graph-node'
 import {
   GraphNodeInputBoolean,
@@ -22,8 +21,8 @@ export abstract class GraphNodeOutput {
     public description: string,
   ) {}
 
-  public connectTo(graphNodeInput: GraphNodeInput): GraphEdge {
-    return graphNodeInput.connectTo(this)
+  public connectTo(graphNodeInput: GraphNodeInput) {
+    graphNodeInput.connectTo(this)
   }
 
   public abstract onSubscribe(graphNodeInput: GraphNodeInput): Unsubscriber
