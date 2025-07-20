@@ -26,8 +26,13 @@ export function useEdgeSelection(edgeId: string) {
   }
 
   const handleKeydown = (event: KeyboardEvent) => {
+    const toRemove = [...edgeSelectionStore.selectedEdgeIds]
+    if (!toRemove.some((v) => v, false)){
+      return;
+    }
+
     if (['Delete', 'Backspace'].includes(event.key)) {
-      graph.removeEdges([...edgeSelectionStore.selectedEdgeIds])
+      graph.removeEdges(toRemove)
       edgeSelectionStore.deselectAll()
     }
   }

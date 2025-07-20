@@ -8,7 +8,7 @@
 import { computed, type StyleValue } from "vue";
 import PanelRenderer from "./PanelRenderer.vue";
 import { useNodeSelectionAndDrag } from "@/composables/use-node-selection-and-drag";
-import { XY } from "@/models/geometry/xy";
+import { type XY } from "@/models/geometry/xy";
 import type { GraphNodeWrapper } from "@/models/graph/core/graph-node-wrapper";
 
 const props = defineProps<{ graphNode: GraphNodeWrapper }>();
@@ -19,7 +19,7 @@ const emit = defineEmits<{
 }>();
 
 const localPos = computed<XY>({
-  get: () => new XY(props.graphNode.x, props.graphNode.y),
+  get: () => ({ x: props.graphNode.x, y: props.graphNode.y }),
   set: (pos: XY) => {
     emit('updatePosition', props.graphNode, pos);
   }

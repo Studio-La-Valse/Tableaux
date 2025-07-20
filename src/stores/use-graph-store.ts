@@ -31,12 +31,11 @@ const useGraphInternal = defineStore('graph', () => {
     wrapper.x = position.x
     wrapper.y = position.y
     graphNode.onInitialize()
-    nodes.value.push(wrapper)
-
     if (graphNode.inputs.length == 0) {
       graphNode.complete()
     }
 
+    nodes.value.push(wrapper)
     return wrapper
   }
 
@@ -64,18 +63,11 @@ const useGraphInternal = defineStore('graph', () => {
 
   const getNode = (nodeId: string) => {
     const node = findNode(nodeId)
-    if (!node) {
-      const msg = `Node with id ${nodeId} not found!`
-      throw new Error(msg)
-    }
-
+    if (!node) throw new Error(`Node with id ${nodeId} not found!`)
     return node
   }
 
-  const findNode = (nodeId: string) => {
-    const node = nodes.value.find((e) => e.innerNode.id == nodeId)
-    return node
-  }
+  const findNode = (nodeId: string) => nodes.value.find((v) => v.innerNode.id == nodeId)
 
   const connect = (
     leftNodeId: string,
@@ -205,11 +197,16 @@ const useGraphInternal = defineStore('graph', () => {
 
   const fromModel: (model: GraphModel) => void = (model: GraphModel) => {
     clear()
-    model.nodes.forEach((n) => addNodeModel(n))
-    model.edges.forEach((e) => addEdgeModel(e))
+    const newNodes = model.nodes.map((v) => createFromNodeModel(v))
+    nodes.value = newNodes
+
+    const newEdges = model.edges.map((v) => createFromEdgeModel(v))
+    edges.value = newEdges
   }
 
-  const addNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (model: GraphNodeModel) => {
+  const createFromNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (
+    model: GraphNodeModel,
+  ) => {
     const activator = activators.getFromPath(model.path)
     if (activator == undefined) {
       throw new Error()
@@ -229,7 +226,6 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     graphNode.onInitialize()
-    nodes.value.push(wrapper)
 
     if (graphNode.inputs.length == 0) {
       graphNode.complete()
@@ -238,8 +234,32 @@ const useGraphInternal = defineStore('graph', () => {
     return wrapper
   }
 
+  const addNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (model: GraphNodeModel) => {
+    const wrapper = createFromNodeModel(model)
+    nodes.value.push(wrapper)
+    return wrapper
+  }
+
+  const createFromEdgeModel: (model: GraphEdgeModel) => GraphEdge = (model: GraphEdgeModel) => {
+    const rightNodeId = model.rightId
+    const inputIndex = model.input
+    const leftNodeId = model.leftId
+    const outputIndex = model.output
+
+    const leftNode = getNode(leftNodeId)
+    const rightNode = getNode(rightNodeId)
+
+    const edge = leftNode.innerNode.outputs[outputIndex].connectTo(
+      rightNode.innerNode.inputs[inputIndex],
+    )
+
+    return edge
+  }
+
   const addEdgeModel: (model: GraphEdgeModel) => GraphEdge = (model: GraphEdgeModel) => {
-    return connect(model.leftId, model.output, model.rightId, model.input)
+    const edge = createFromEdgeModel(model)
+    edges.value.push(edge)
+    return edge
   }
 
   return {
@@ -296,6 +316,10 @@ export const useGraphStore = defineStore('graph-with-history', () => {
   }
 
   const removeNodes = (ids: string[]) => {
+    if (ids.length === 0) {
+      return
+    }
+
     const state = internalGraph.toModel()
     try {
       ids.forEach((id) => internalGraph.removeNode(id))
@@ -321,6 +345,10 @@ export const useGraphStore = defineStore('graph-with-history', () => {
   }
 
   const removeEdges = (ids: string[]) => {
+    if (ids.length === 0) {
+      return
+    }
+
     const state = internalGraph.toModel()
     try {
       const edges = [...internalGraph.edges.filter((v) => ids.includes(v.id))]
@@ -348,28 +376,6 @@ export const useGraphStore = defineStore('graph-with-history', () => {
       history.commit(internalGraph.toModel())
     } catch {
       internalGraph.fromModel(state)
-    }
-  }
-
-  const addNodeModels = (models: GraphNodeModel[]) => {
-    const state = internalGraph.toModel()
-    try {
-      models.forEach((model) => internalGraph.addNodeModel(model))
-      history.commit(internalGraph.toModel())
-    } catch (e) {
-      internalGraph.fromModel(state)
-      throw e
-    }
-  }
-
-  const addEdgeModels = (models: GraphEdgeModel[]) => {
-    const state = internalGraph.toModel()
-    try {
-      models.forEach((m) => internalGraph.addEdgeModel(m))
-      history.commit(internalGraph.toModel())
-    } catch (e) {
-      internalGraph.fromModel(state)
-      throw e
     }
   }
 
@@ -410,6 +416,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     nodes,
     addNode,
     removeNodes,
+    getNode: internalGraph.getNode,
 
     edges,
     connect,
@@ -421,11 +428,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     duplicate,
 
     fromModel,
-    addNodeModels,
-    addEdgeModels,
-
     toModel: internalGraph.toModel,
-    getNode: internalGraph.getNode,
 
     getPresent: history.getPresent,
     commit,

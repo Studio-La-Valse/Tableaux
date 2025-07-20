@@ -16,10 +16,10 @@ export class Merge extends GraphNode {
   }
 
   protected solve(): void {
-    this.params.forEach((i) => {
-      i.payload.forEach((v) => {
-        this.output.next(v);
-      })
-    })
+    for (const param of this.params){
+      for (const value of param.payload){
+        this.output.next(value)
+      }
+    }
   }
 }

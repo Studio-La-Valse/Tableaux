@@ -1,7 +1,7 @@
 import type { ComponentState } from './component-state'
 import type { GraphNodeInput } from './graph-node-input'
 import type { GraphNodeOutput } from './graph-node-output'
-import type { JsonObject } from './models/json-object'
+import type { JsonObject } from './models/json-value'
 
 /**
  * Abstract base class representing the core logic of a graph node.

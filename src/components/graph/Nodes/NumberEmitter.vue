@@ -23,21 +23,13 @@ const props = defineProps<{
 
 const inputRef = ref<HTMLTextAreaElement | null>(null);
 
-let debounceTimer: number | undefined
-const debounceDelay = 2
-
 const handleInput = (e: Event) => {
   const target = e.target as HTMLInputElement
   const numValue = Number(target.value)
   if (isNaN(numValue)) return
 
-  if (debounceTimer) clearTimeout(debounceTimer)
-  debounceTimer = window.setTimeout(() => {
-
-    props.graphNode.onChange(numValue)
-    graph.commit()
-
-  }, debounceDelay)
+  props.graphNode.onChange(numValue)
+  graph.commit()
 }
 
 const handleClickOutside = (event: MouseEvent) => {

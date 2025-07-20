@@ -9,10 +9,12 @@ export class GraphEdge {
     public rightGraphNodeId: string,
     public inputIndex: number,
   ) {
+    // used to track selection, note how the public fields may be modified
     this.id = crypto.randomUUID()
   }
 
   public createKey(): string {
+    // used to track during rendering
     const key = `${this.leftGraphNodeId}-${this.outputIndex}-${this.rightGraphNodeId}-${this.inputIndex}`
     return key
   }

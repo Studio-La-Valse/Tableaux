@@ -1,11 +1,11 @@
-import type { DrawableElement } from '@/models/drawable-elements/drawable-element'
+import type { DrawableGeometry } from '@/models/geometry/geometry'
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
 
 export const useCanvasElementStore = defineStore('canvas-elements', () => {
-  const elements: Ref<DrawableElement[]> = ref([])
+  const elements: Ref<DrawableGeometry[]> = ref([])
 
-  function setElements(_elements: DrawableElement[]) {
+  function setElements(_elements: DrawableGeometry[]) {
     elements.value = [..._elements]
   }
 

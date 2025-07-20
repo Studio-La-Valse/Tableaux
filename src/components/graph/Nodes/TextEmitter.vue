@@ -24,21 +24,11 @@ const props = defineProps<{
 
 const textInputRef = ref<HTMLTextAreaElement | null>(null);
 
-let debounceTimer: number | undefined
-const debounceDelay = 2
-
 const handleInput = (event: Event) => {
   const target = event.target as HTMLTextAreaElement
   const value = target.value
-
-  // Clear previous timer
-  if (debounceTimer) clearTimeout(debounceTimer)
-
-  // Set a new one
-  debounceTimer = window.setTimeout(() => {
-    props.graphNode.onChange(value)
-    graph.commit()
-  }, debounceDelay)
+  props.graphNode.onChange(value)
+  graph.commit()
 }
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -62,7 +52,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  if (debounceTimer) clearTimeout(debounceTimer)
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
