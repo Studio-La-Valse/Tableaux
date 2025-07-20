@@ -64,6 +64,7 @@ export function useEdgeDrag() {
   ): GraphEdgePrototype | null {
     if (e.button !== 0 || !tempEdge.value) return null
     e.stopPropagation()
+    e.preventDefault();
 
     const edge: GraphEdgePrototype = {
       fromNodeId: tempEdge.value.fromNodeId,

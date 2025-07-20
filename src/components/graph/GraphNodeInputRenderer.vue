@@ -1,18 +1,18 @@
 <!-- src/components/GraphNodeInputRenderer.vue -->
 <template>
-  <div class="node-port input-port" :style="{ top: positionY + 'px' }" @mousedown.stop @mouseup="handleMouseUp">
+  <div class="node-port input-port" :style="{ top: positionY + 'px' }" @mousedown.stop @mouseup.stop="handleMouseUp">
     <button v-if="graphNode.paramsInputOrigin?.index == input.index && graphNode.canInsertInput(input.index)"
-      class="prepender fade-toggle" :class="{ show: scale >= 3 }" @click.stop="prependerClick">+</button>
+      class="prepender fade-toggle" :class="{ show: scale >= 3 }" @mouseup.stop @click.stop="prependerClick">+</button>
 
     <HandleRenderer :description="input.description" />
     <div class="label">
       <span>{{ input.description[0] }}</span>
     </div>
     <button v-if="graphNode.canRemoveInput(input.index)" class="remover fade-toggle" :class="{ show: scale >= 3 }"
-      @click.stop="removerClick">-</button>
+       @mouseup.stop @click.stop="removerClick">-</button>
 
     <button v-if="graphNode.canInsertInput(input.index + 1)" class="extender fade-toggle" :class="{ show: scale >= 3 }"
-      @click.stop="adderClick">+</button>
+       @mouseup.stop @click.stop="adderClick">+</button>
   </div>
 </template>
 
