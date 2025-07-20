@@ -1,6 +1,8 @@
 import { GraphNode } from '../../core/graph-node'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Emitters', 'Number')
 export class NumberEmitter extends GraphNode {
   private readonly output: GraphNodeOutputType<number>
 

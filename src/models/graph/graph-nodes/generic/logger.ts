@@ -1,7 +1,9 @@
 import type { GraphNodeInputType } from '../../core/graph-node-input'
 import { GraphNode } from '../../core/graph-node'
 import { reactive } from 'vue'
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Generic', 'Logger')
 export class Logger extends GraphNode {
   private input: GraphNodeInputType<string>
 

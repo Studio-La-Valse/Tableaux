@@ -1,6 +1,8 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Generic', 'Trim Longest')
 export class TrimLongest extends GraphNode {
   private input1
   private input2

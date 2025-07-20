@@ -1,7 +1,9 @@
 import { DrawableCircle } from '@/models/drawable-elements/drawable-circle'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Canvas', 'Circle')
 export class Circle extends GraphNode {
   private _x
   private _y

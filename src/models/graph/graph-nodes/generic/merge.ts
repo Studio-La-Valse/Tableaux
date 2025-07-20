@@ -1,7 +1,9 @@
 import { GraphNode } from '../../core/graph-node'
 import type { GraphNodeInputType } from '../../core/graph-node-input'
 import type { GraphNodeOutputType } from '../../core/graph-node-output';
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Generic', 'Merge')
 export class Merge extends GraphNode {
   private params: GraphNodeInputType<unknown>[];
   private output: GraphNodeOutputType<unknown>;

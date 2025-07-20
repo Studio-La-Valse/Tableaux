@@ -1,8 +1,10 @@
 import { useCanvasProps } from '@/stores/canvas-props-store'
 import { GraphNode } from '../../core/graph-node'
 import { watch } from 'vue'
+import { GraphNodeType } from '../decorators'
 
-export class CanvasProps extends GraphNode {
+@GraphNodeType('Canvas', 'Props')
+export class Props extends GraphNode {
   private output1
   private output2
   private canvasProps: { dimensions: { x: number; y: number } } | null = null

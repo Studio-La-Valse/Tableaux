@@ -1,7 +1,9 @@
 import { DrawableRectangle } from '@/models/drawable-elements/drawable-rectangle'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Canvas', 'Rectangle')
 export class Rectangle extends GraphNode {
   private _x1
   private _y1

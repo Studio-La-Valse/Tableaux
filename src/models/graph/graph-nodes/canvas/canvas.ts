@@ -1,7 +1,9 @@
 import { useCanvasElementStore } from '@/stores/canvas-element-store'
 import { GraphNode } from '../../core/graph-node'
 import type { DrawableElement } from '@/models/drawable-elements/drawable-element'
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Canvas', 'Canvas')
 export class Canvas extends GraphNode {
   private input
   private elementStore: { setElements: (e: DrawableElement[]) => void } | null
