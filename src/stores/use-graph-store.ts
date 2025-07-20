@@ -10,14 +10,15 @@ import { GraphNodeWrapper } from '@/models/graph/core/graph-node-wrapper'
 import { useGraphHistoryStore } from './use-graph-history-store'
 
 const useGraphInternal = defineStore('graph', () => {
-  const nodes: Ref<GraphNodeWrapper[]> = ref([])
+  const nodeMap: Ref<Record<string, GraphNodeWrapper>> = ref({})
+  const nodes = computed(() => [...Object.values(nodeMap.value)])
   const edges: Ref<GraphEdge[]> = ref([])
 
   const activators = useGraphNodeActivatorStore()
 
   const clear = () => {
-    nodes.value.splice(0)
-    edges.value.splice(0)
+    nodeMap.value = {}
+    edges.value = []
   }
 
   const addNode = (nodePath: string[], position: XY, id: string) => {
@@ -35,13 +36,13 @@ const useGraphInternal = defineStore('graph', () => {
       graphNode.complete()
     }
 
-    nodes.value.push(wrapper)
+    nodeMap.value[id] = wrapper
     return wrapper
   }
 
   const removeNode = (id: string) => {
-    const existing = nodes.value.findIndex((e) => e.innerNode.id == id)
-    if (existing == -1) {
+    const existing = findNode(id)
+    if (!existing) {
       return
     }
 
@@ -55,10 +56,8 @@ const useGraphInternal = defineStore('graph', () => {
       removeEdge(conn.rightGraphNodeId, conn.inputIndex)
     })
 
-    const node = nodes.value[existing]
-    node.innerNode.onDestroy()
-
-    nodes.value.splice(existing, 1)
+    existing.innerNode.onDestroy()
+    delete nodeMap.value[existing.innerNode.id]
   }
 
   const getNode = (nodeId: string) => {
@@ -67,7 +66,7 @@ const useGraphInternal = defineStore('graph', () => {
     return node
   }
 
-  const findNode = (nodeId: string) => nodes.value.find((v) => v.innerNode.id == nodeId)
+  const findNode = (nodeId: string) => nodeMap.value[nodeId] ?? null
 
   const connect = (
     leftNodeId: string,
@@ -197,8 +196,9 @@ const useGraphInternal = defineStore('graph', () => {
 
   const fromModel: (model: GraphModel) => void = (model: GraphModel) => {
     clear()
-    const newNodes = model.nodes.map((v) => createFromNodeModel(v))
-    nodes.value = newNodes
+    model.nodes
+      .map((v) => createFromNodeModel(v))
+      .forEach((v) => (nodeMap.value[v.innerNode.id] = v))
 
     const newEdges = model.edges.map((v) => createFromEdgeModel(v))
     edges.value = newEdges
@@ -236,7 +236,7 @@ const useGraphInternal = defineStore('graph', () => {
 
   const addNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (model: GraphNodeModel) => {
     const wrapper = createFromNodeModel(model)
-    nodes.value.push(wrapper)
+    nodeMap.value[wrapper.innerNode.id] = wrapper
     return wrapper
   }
 
