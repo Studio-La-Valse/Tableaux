@@ -9,6 +9,7 @@ import {
   GraphNodeInputUnknown,
   type GraphNodeInput,
 } from './graph-node-input'
+import { type JsonObject } from './models/json-value'
 import { Subscription } from './subscription'
 import type { Unsubscriber } from './unsubscriber'
 
@@ -342,9 +343,9 @@ export class GraphNodeOutputString extends GraphNodeOutputType<string> {
   }
 }
 
-export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
+export class GraphNodeOutputObject<T extends JsonObject> extends GraphNodeOutputType<T> {
   private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
-  private objectInputs: Set<GraphNodeInputObject> = new Set<GraphNodeInputObject>()
+  private objectInputs: Set<GraphNodeInputObject<T>> = new Set<GraphNodeInputObject<T>>()
   private unknownInputs: Set<GraphNodeInputUnknown> = new Set<GraphNodeInputUnknown>()
 
   public get targetInputs(): Set<GraphNodeInput> {
@@ -387,7 +388,7 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
     return subscription
   }
 
-  public onSubscribeObject(graphNodeInput: GraphNodeInputObject): Unsubscriber {
+  public onSubscribeObject(graphNodeInput: GraphNodeInputObject<T>): Unsubscriber {
     const subscription = Subscription.subscribeOrThrow(this.objectInputs, graphNodeInput)
 
     graphNodeInput.onArm()
@@ -439,19 +440,19 @@ export class GraphNodeOutputObject extends GraphNodeOutputType<object> {
 }
 
 export class GraphNodeOutputUnknown extends GraphNodeOutputType<unknown> {
-  private numberInputs: Set<GraphNodeInputNumber> = new Set<GraphNodeInputNumber>()
-  private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
-  private unknownInputs: Set<GraphNodeInputUnknown> = new Set<GraphNodeInputUnknown>()
-  private objectInputs: Set<GraphNodeInputObject> = new Set<GraphNodeInputObject>()
-  private booleanInputs: Set<GraphNodeInputBoolean> = new Set<GraphNodeInputBoolean>()
+  private numberInputs = new Set<GraphNodeInputNumber>()
+  private stringInputs = new Set<GraphNodeInputString>()
+  private booleanInputs = new Set<GraphNodeInputBoolean>()
+  private objectInputs = new Set<GraphNodeInputObject<JsonObject>>()
+  private unknownInputs = new Set<GraphNodeInputUnknown>()
 
   public get targetInputs(): Set<GraphNodeInput> {
     return new Set<GraphNodeInput>([
       ...this.numberInputs,
       ...this.stringInputs,
-      ...this.unknownInputs,
       ...this.booleanInputs,
       ...this.objectInputs,
+      ...this.unknownInputs,
     ])
   }
 
@@ -464,16 +465,16 @@ export class GraphNodeOutputUnknown extends GraphNodeOutputType<unknown> {
       return this.onSubscribeString(graphNodeInput)
     }
 
-    if (graphNodeInput instanceof GraphNodeInputUnknown) {
-      return this.onSubscribeUnknown(graphNodeInput)
-    }
-
     if (graphNodeInput instanceof GraphNodeInputBoolean) {
       return this.onSubscribeBoolean(graphNodeInput)
     }
 
     if (graphNodeInput instanceof GraphNodeInputObject) {
       return this.onSubscribeObject(graphNodeInput)
+    }
+
+    if (graphNodeInput instanceof GraphNodeInputUnknown) {
+      return this.onSubscribeUnknown(graphNodeInput)
     }
 
     throw new InvalidObserverTypeError()
@@ -526,13 +527,13 @@ export class GraphNodeOutputUnknown extends GraphNodeOutputType<unknown> {
     return subscription
   }
 
-  public onSubscribeObject(graphNodeInput: GraphNodeInputObject): Unsubscriber {
+  public onSubscribeObject(graphNodeInput: GraphNodeInputObject<JsonObject>): Unsubscriber {
     const subscription = Subscription.subscribeOrThrow(this.objectInputs, graphNodeInput)
 
     graphNodeInput.onArm()
 
     this.payload.forEach((value) => {
-      graphNodeInput.onNext(value as object)
+      graphNodeInput.onNext(value as JsonObject)
     })
 
     if (this.graphNode.componentState == 'complete') {
@@ -575,6 +576,10 @@ export class GraphNodeOutputUnknown extends GraphNodeOutputType<unknown> {
 
       this.stringInputs.forEach((e) => {
         e.onNext(this.unkownToString(value))
+      })
+
+      this.objectInputs.forEach((e) => {
+        e.onNext(value as JsonObject)
       })
 
       this.unknownInputs.forEach((e) => {

@@ -13,9 +13,9 @@
 import type { NumberEmitter } from '@/models/graph/graph-nodes/emitters/number-emitter'
 import ResizablePanel from './ResizablePanel.vue';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useGraph } from '@/stores/graph-store';
+import { useGraphStore } from '@/stores/use-graph-store';
 
-const graph = useGraph();
+const graph = useGraphStore();
 
 const props = defineProps<{
   graphNode: NumberEmitter
@@ -23,21 +23,13 @@ const props = defineProps<{
 
 const inputRef = ref<HTMLTextAreaElement | null>(null);
 
-let debounceTimer: number | undefined
-const debounceDelay = 2
-
 const handleInput = (e: Event) => {
   const target = e.target as HTMLInputElement
   const numValue = Number(target.value)
   if (isNaN(numValue)) return
 
-  if (debounceTimer) clearTimeout(debounceTimer)
-  debounceTimer = window.setTimeout(() => {
-
-    props.graphNode.onChange(numValue)
-    graph.commit()
-
-  }, debounceDelay)
+  props.graphNode.onChange(numValue)
+  graph.commit()
 }
 
 const handleClickOutside = (event: MouseEvent) => {

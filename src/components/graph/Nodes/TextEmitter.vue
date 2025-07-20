@@ -2,7 +2,7 @@
   <ResizablePanel :graph-node-id="graphNode.id">
     <div class="text-input-wrapper">
       <textarea ref="textInputRef" class="text-input" :value="(graphNode.data.value as string)" @input="handleInput"
-        @keydown="handleKeyDown" @mousedown.stop @mousemove.stop @mouseup.stop @wheel.stop @touchstart.stop
+        @keydown.stop="handleKeyDown" @mousedown.stop @mousemove.stop @mouseup.stop @wheel.stop @touchstart.stop
         @touchmove.stop @touchend.stop></textarea>
     </div>
 
@@ -14,9 +14,9 @@
 import type { TextEmitter } from '@/models/graph/graph-nodes/emitters/text-emitter';
 import ResizablePanel from './ResizablePanel.vue';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useGraph } from '@/stores/graph-store';
+import { useGraphStore } from '@/stores/use-graph-store';
 
-const graph = useGraph()
+const graph = useGraphStore()
 
 const props = defineProps<{
   graphNode: TextEmitter
@@ -24,21 +24,11 @@ const props = defineProps<{
 
 const textInputRef = ref<HTMLTextAreaElement | null>(null);
 
-let debounceTimer: number | undefined
-const debounceDelay = 2
-
 const handleInput = (event: Event) => {
   const target = event.target as HTMLTextAreaElement
   const value = target.value
-
-  // Clear previous timer
-  if (debounceTimer) clearTimeout(debounceTimer)
-
-  // Set a new one
-  debounceTimer = window.setTimeout(() => {
-    props.graphNode.onChange(value)
-    graph.commit()
-  }, debounceDelay)
+  props.graphNode.onChange(value)
+  graph.commit()
 }
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -62,7 +52,6 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  if (debounceTimer) clearTimeout(debounceTimer)
   document.removeEventListener('click', handleClickOutside)
 })
 </script>

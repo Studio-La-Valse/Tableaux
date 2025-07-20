@@ -1,6 +1,8 @@
 import { GraphNode } from '../../core/graph-node'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Text', 'New Line')
 export class NewLine extends GraphNode {
   private output: GraphNodeOutputType<string>
 

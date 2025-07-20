@@ -2,7 +2,9 @@ import { GraphNode } from '../../core/graph-node'
 import type { GraphNodeInputString } from '../../core/graph-node-input'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
 import { inputIterators } from '../../core/input-iterators'
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Text', 'Split')
 export class Split extends GraphNode {
   public path: string[] = ['Text', 'Split']
 

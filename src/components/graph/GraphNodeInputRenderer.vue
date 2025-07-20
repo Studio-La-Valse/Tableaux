@@ -1,27 +1,27 @@
 <!-- src/components/GraphNodeInputRenderer.vue -->
 <template>
-  <div class="node-port input-port" :style="{ top: positionY + 'px' }" @mousedown.stop @mouseup="handleMouseUp">
+  <div class="node-port input-port" :style="{ top: positionY + 'px' }" @mousedown.stop @mouseup.stop="handleMouseUp">
     <button v-if="graphNode.paramsInputOrigin?.index == input.index && graphNode.canInsertInput(input.index)"
-      class="prepender fade-toggle" :class="{ show: scale >= 3 }" @click.stop="prependerClick">+</button>
+      class="prepender fade-toggle" :class="{ show: scale >= 3 }" @mouseup.stop @click.stop="prependerClick">+</button>
 
     <HandleRenderer :description="input.description" />
     <div class="label">
       <span>{{ input.description[0] }}</span>
     </div>
     <button v-if="graphNode.canRemoveInput(input.index)" class="remover fade-toggle" :class="{ show: scale >= 3 }"
-      @click.stop="removerClick">-</button>
+      @mouseup.stop @click.stop="removerClick">-</button>
 
     <button v-if="graphNode.canInsertInput(input.index + 1)" class="extender fade-toggle" :class="{ show: scale >= 3 }"
-      @click.stop="adderClick">+</button>
+      @mouseup.stop @click.stop="adderClick">+</button>
   </div>
 </template>
 
 <script setup lang="ts">
 import HandleRenderer from '@/components/graph/HandleRenderer.vue';
 import type { GraphNodeInput } from '@/models/graph/core/graph-node-input';
-import { useEdgeDrag } from '@/composables/useEdgeDrag';
-import { useGraph } from '@/stores/graph-store';
-import { useCanvasTransform } from '@/composables/useCanvasTransform';
+import { useEdgeDrag } from '@/composables/use-edge-drag';
+import { useGraphStore } from '@/stores/use-graph-store';
+import { useCanvasTransform } from '@/composables/use-canvas-transform';
 import { computed } from 'vue';
 import type { GraphNode } from '@/models/graph/core/graph-node';
 
@@ -34,11 +34,11 @@ const props = defineProps<{
 const canvasTransform = useCanvasTransform()
 const scale = computed(() => canvasTransform.scale.value)
 
-const graph = useGraph();
-const { finishEdgeDrag } = useEdgeDrag();
-const { connect } = useGraph();
-const handleMouseUp = () => {
-  const prototype = finishEdgeDrag(props.input.graphNode.id, props.input.index)
+const graph = useGraphStore();
+const { finishConnect } = useEdgeDrag();
+const { connect } = useGraphStore();
+const handleMouseUp = (e: MouseEvent) => {
+  const prototype = finishConnect(props.input.graphNode.id, props.input.index, e)
   if (prototype) {
     connect(
       prototype.fromNodeId,

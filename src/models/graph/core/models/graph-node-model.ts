@@ -1,4 +1,4 @@
-import type { JsonObject } from './json-object'
+import type { JsonObject } from './json-value'
 
 export type GraphNodeModel = {
   id: string

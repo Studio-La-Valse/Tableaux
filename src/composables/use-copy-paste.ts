@@ -1,13 +1,13 @@
-import { useGraph } from '@/stores/graph-store'
-import { useSelectionStore } from '@/stores/selection-store'
+import { useGraphStore } from '@/stores/use-graph-store'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { onMounted, onUnmounted } from 'vue'
 
 export const useCopyPaste = () => {
-  const { duplicate } = useGraph()
+  const { duplicate } = useGraphStore()
 
   const clipboard: string[] = []
 
-  const selection = useSelectionStore()
+  const selection = useGraphNodeSelectionStore()
 
   let pasteEvents = 0
 
@@ -33,8 +33,6 @@ export const useCopyPaste = () => {
       })
     }
   }
-
-
 
   onMounted(() => {
     window.removeEventListener('keydown', onKeyDown)

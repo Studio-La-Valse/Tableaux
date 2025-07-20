@@ -1,21 +1,26 @@
 // src/composables/useSelectionInteraction.ts
 import { onMounted, onUnmounted } from 'vue'
-import { useSelectionStore } from '@/stores/selection-store'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
+import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store'
 
 export function useClearSelection() {
-  const selectionStore = useSelectionStore()
+  const nodeSelection = useGraphNodeSelectionStore()
+  const edgeSelection = useEdgeSelectionStore()
 
   // Global click handler using capture phase.
   function onClickClearSelection(event: MouseEvent) {
     if (event.button !== 0) return
+    if (event.ctrlKey || event.shiftKey || event.metaKey) return
 
-    selectionStore.clearSelection()
+    nodeSelection.clearSelection()
+    edgeSelection.deselectAll()
   }
 
   // Global keydown handler.
   function onKeyDown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
-      selectionStore.clearSelection()
+      nodeSelection.clearSelection()
+      edgeSelection.deselectAll()
     }
   }
 
@@ -27,5 +32,5 @@ export function useClearSelection() {
     window.removeEventListener('keydown', onKeyDown, true)
   })
 
-  return { onClickClearSelection }
+  return { onMouseDown: onClickClearSelection }
 }

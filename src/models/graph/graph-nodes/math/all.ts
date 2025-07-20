@@ -1,5 +1,7 @@
 import { GraphNode } from "../../core/graph-node";
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Math', 'All')
 export class All extends GraphNode {
     private input1
     private output

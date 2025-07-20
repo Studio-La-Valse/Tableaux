@@ -2,7 +2,9 @@ import { GraphNode } from '../../core/graph-node'
 import type { GraphNodeInputType } from '../../core/graph-node-input'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
 import { inputIterators } from '../../core/input-iterators'
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Math', 'Multiply')
 export class Multiply extends GraphNode {
   private params: GraphNodeInputType<number>[]
   private output: GraphNodeOutputType<number>

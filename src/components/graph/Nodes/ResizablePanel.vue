@@ -8,16 +8,16 @@
 </template>
 
 <script setup lang="ts">
-import { useResizable } from "@/composables/useResizable";
+import { useNodeResize } from "@/composables/use-node-resize";
 import { computed, type StyleValue } from 'vue';
-import { useGraph } from '@/stores/graph-store';
+import { useGraphStore } from '@/stores/use-graph-store';
 
 // `defineProps` gives you a typed `graphNode` in your template
 const props = defineProps<{
   graphNodeId: string
 }>()
 
-const graphNode = useGraph().getNode(props.graphNodeId)
+const graphNode = useGraphStore().getNode(props.graphNodeId)
 
 // Create computed reactive dimensions that read/write the graph node's properties.
 const width = computed({
@@ -39,7 +39,7 @@ const style = computed<StyleValue>(() => ({
 }))
 
 // Integrate the resizable composable.
-const { initResize } = useResizable(width, height);
+const { initResize } = useNodeResize(width, height);
 </script>
 
 <style>

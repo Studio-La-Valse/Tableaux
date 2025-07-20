@@ -1,5 +1,7 @@
 import { GraphNode } from '../../core/graph-node'
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('JSON', 'Stringify')
 export class Stringify extends GraphNode {
   private input
   private output

@@ -35,7 +35,7 @@ import Split from 'split.js'
 import GraphCanvas from '@/components/graph/GraphComponent.vue'
 import CanvasComponent from '@/components/design/CanvasComponent.vue'
 
-import { lastError } from '@/stores/error-log-store'
+import { lastError } from '@/stores/use-error-log-store'
 
 // derive the instance type from the default export:
 type SplitInstance = ReturnType<typeof Split>

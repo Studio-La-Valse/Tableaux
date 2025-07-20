@@ -1,6 +1,8 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Generic', 'Filter')
 export class Filter extends GraphNode {
   private input1
   private input2

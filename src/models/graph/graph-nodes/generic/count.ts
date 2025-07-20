@@ -1,5 +1,7 @@
 import { GraphNode } from "../../core/graph-node";
+import { GraphNodeType } from '../decorators'
 
+@GraphNodeType('Generic', 'Count')
 export class Count extends GraphNode {
 
   private input

@@ -1,13 +1,20 @@
 import { ref } from 'vue'
-import { useSelectionStore } from '@/stores/selection-store'
-import { useGraph } from '@/stores/graph-store'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
+import { useGraphStore } from '@/stores/use-graph-store'
 import type { XY } from '@/models/geometry/xy'
-import { useCanvasRefStore } from '@/stores/canvas-ref-store'
+import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
+import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store'
+import { useContextMenuStore } from '@/stores/use-context-menu-store'
+import { useEdgeDrag } from './use-edge-drag'
 
-export function useGroupDraggable() {
-  const selectionStore = useSelectionStore()
+export function useNodeSelectionAndDrag() {
+  const selectionStore = useGraphNodeSelectionStore()
+  const edgeSelectionStore = useEdgeSelectionStore()
+  const menu = useContextMenuStore()
+  const edgeDrag = useEdgeDrag()
+
   const { clientToCanvas } = useCanvasRefStore()
-  const graph = useGraph()
+  const graph = useGraphStore()
 
   const dragging = ref(false)
   const wasDragged = ref(false)
@@ -21,7 +28,16 @@ export function useGroupDraggable() {
   function onMouseDown(event: MouseEvent, nodeId: string) {
     if (event.button !== 0) return
 
+    // Prevent default and propagation
+    event.preventDefault()
+    event.stopPropagation()
+
+    // but still need to close and cancel menu and edge drag.
+    menu.close()
+    edgeDrag.cancelConnect()
+
     // ——— selection logic ———
+    edgeSelectionStore.deselectAll()
     if (event.shiftKey) {
       if (!selectionStore.isSelected(nodeId)) {
         selectionStore.selectNode(nodeId)
@@ -55,9 +71,6 @@ export function useGroupDraggable() {
 
     window.addEventListener('mousemove', onMouseMove, { capture: true })
     window.addEventListener('mouseup', onMouseUp)
-
-    event.preventDefault()
-    event.stopPropagation()
   }
 
   function onMouseMove(event: MouseEvent) {

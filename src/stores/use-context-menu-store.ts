@@ -1,11 +1,11 @@
 // stores/contextMenu.ts
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useGraph } from './graph-store'
-import { useCanvasRefStore } from './canvas-ref-store'
+import { useGraphStore } from './use-graph-store'
+import { useCanvasRefStore } from './use-canvas-ref-store'
 
 export const useContextMenuStore = defineStore('contextMenu', () => {
-  const graph = useGraph()
+  const graph = useGraphStore()
   const canvasTransform = useCanvasRefStore()
 
   // state

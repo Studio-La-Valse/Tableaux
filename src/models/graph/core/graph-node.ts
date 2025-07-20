@@ -20,6 +20,7 @@ import {
   GraphNodeOutputString,
   GraphNodeOutputUnknown,
 } from './graph-node-output'
+import type { JsonObject } from './models/json-value'
 
 /**
  * GraphNode is the public-facing interface for individual nodes in a graph.
@@ -101,7 +102,7 @@ export abstract class GraphNode extends GraphNodeCore {
     return this._stringParams
   }
 
-  private _objectParams: GraphNodeInputObject[] | undefined
+  private _objectParams: GraphNodeInputObject<JsonObject>[] | undefined
   public registerObjectInputParams(description: string) {
     this.assertNotInitialized()
     this.assertParamsHasNotBeenSet()
@@ -259,11 +260,11 @@ export abstract class GraphNode extends GraphNodeCore {
     return input
   }
 
-  public registerObjectInput(description: string): GraphNodeInputObject {
+  public registerObjectInput<T extends JsonObject>(description: string): GraphNodeInputObject<T> {
     this.assertNotInitialized()
     this.assertParamsHasNotBeenSet()
 
-    const input = new GraphNodeInputObject(this, description)
+    const input = new GraphNodeInputObject<T>(this, description)
     this._inputs.push(input)
     return input
   }
@@ -303,10 +304,10 @@ export abstract class GraphNode extends GraphNodeCore {
     return output
   }
 
-  public registerObjectOutput(description: string): GraphNodeOutputObject {
+  public registerObjectOutput<T extends JsonObject>(description: string): GraphNodeOutputObject<T> {
     this.assertNotInitialized()
 
-    const output = new GraphNodeOutputObject(this, this.numberOfOutputs, description)
+    const output = new GraphNodeOutputObject<T>(this, this.numberOfOutputs, description)
     this._outputs.push(output)
     return output
   }

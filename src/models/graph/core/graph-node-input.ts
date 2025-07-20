@@ -1,6 +1,7 @@
 import { GraphEdge } from './graph-edge'
 import type { GraphNode } from './graph-node'
 import type { GraphNodeOutput } from './graph-node-output'
+import type { JsonObject } from './models/json-value'
 import { type Unsubscriber } from './unsubscriber'
 
 export abstract class GraphNodeInput {
@@ -110,7 +111,7 @@ export class GraphNodeInputString extends GraphNodeInputType<string> {
   }
 }
 
-export class GraphNodeInputObject extends GraphNodeInputType<object> {
+export class GraphNodeInputObject<T extends JsonObject> extends GraphNodeInputType<T> {
   public repeat(): GraphNodeInputType<object> {
     return new GraphNodeInputObject(this.graphNode, this.description)
   }

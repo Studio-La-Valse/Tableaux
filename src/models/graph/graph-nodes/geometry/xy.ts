@@ -1,6 +1,9 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
+import { GraphNodeType } from '../decorators'
+import { type XY as xy } from '@/models/geometry/xy'
 
+@GraphNodeType('Geometry', 'XY')
 export class XY extends GraphNode {
   private input1
   private input2
@@ -11,7 +14,7 @@ export class XY extends GraphNode {
 
     this.input1 = this.registerNumberInput('X')
     this.input2 = this.registerNumberInput('Y')
-    this.output = this.registerObjectOutput('XY')
+    this.output = this.registerObjectOutput<xy>('XY')
   }
 
   protected solve(): void {
