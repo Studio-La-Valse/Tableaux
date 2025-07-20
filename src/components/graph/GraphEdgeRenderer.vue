@@ -27,7 +27,7 @@ const leftNodeWidth = computed(() => leftNode.value.width ?? 150);
 const start = computed(() => {
   if (!leftNode.value) return { x: 0, y: 0 };
   return {
-    x: leftNode.value.x + leftNodeWidth.value,
+    x: leftNode.value.xy.x + leftNodeWidth.value,
     y: leftNode.value.calculateHandleCoordinate(
       props.edge.outputIndex,
       leftNode.value.innerNode.outputs.length
@@ -38,7 +38,7 @@ const start = computed(() => {
 const end = computed(() => {
   if (!rightNode.value) return { x: 0, y: 0 };
   return {
-    x: rightNode.value.x,
+    x: rightNode.value.xy.x,
     y: rightNode.value.calculateHandleCoordinate(
       props.edge.inputIndex,
       rightNode.value.innerNode.inputs.length

@@ -30,7 +30,7 @@ const startX = computed(() => {
     const node = graph.getNode(tempEdge.value.fromNodeId);
     if (node) {
       // Assume the output handle is at the right edge with an extra offset.
-      return node.x + (node.width ?? 150);
+      return node.xy.x + (node.width ?? 150);
     }
   }
   return 0;

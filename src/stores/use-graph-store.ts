@@ -29,8 +29,7 @@ const useGraphInternal = defineStore('graph', () => {
 
     const graphNode = activator.activate(id)
     const wrapper = new GraphNodeWrapper(graphNode)
-    wrapper.x = position.x
-    wrapper.y = position.y
+    wrapper.xy = { x: position.x, y: position.y }
     graphNode.onInitialize()
     if (graphNode.inputs.length == 0) {
       graphNode.complete()
@@ -82,9 +81,7 @@ const useGraphInternal = defineStore('graph', () => {
     const leftNode = getNode(leftNodeId)
     const rightNode = getNode(rightNodeId)
 
-    leftNode.innerNode.outputs[outputIndex].connectTo(
-      rightNode.innerNode.inputs[inputIndex],
-    )
+    leftNode.innerNode.outputs[outputIndex].connectTo(rightNode.innerNode.inputs[inputIndex])
     const edge = new GraphEdge(leftNode, outputIndex, rightNode, inputIndex)
     edges.value.push(edge)
 
@@ -215,8 +212,7 @@ const useGraphInternal = defineStore('graph', () => {
 
     const graphNode = activator.activate(model.id)
     const wrapper = new GraphNodeWrapper(graphNode)
-    wrapper.x = model.x
-    wrapper.y = model.y
+    wrapper.xy = { x: model.x, y: model.y }
     if (model.width) wrapper.width = model.width
     if (model.height) wrapper.height = model.height
     if (model.data) Object.assign(graphNode.data, JSON.parse(JSON.stringify(model.data)))
@@ -250,9 +246,7 @@ const useGraphInternal = defineStore('graph', () => {
     const leftNode = getNode(leftNodeId)
     const rightNode = getNode(rightNodeId)
 
-    leftNode.innerNode.outputs[outputIndex].connectTo(
-      rightNode.innerNode.inputs[inputIndex],
-    )
+    leftNode.innerNode.outputs[outputIndex].connectTo(rightNode.innerNode.inputs[inputIndex])
     const edge = new GraphEdge(leftNode, outputIndex, rightNode, inputIndex)
     return edge
   }

@@ -105,7 +105,7 @@ const getGraphNodePanel = (node: GraphNode) => {
 };
 
 const getRelativePosition = (handle: GraphNodeInput | GraphNodeOutput) => {
-  const x = handle instanceof GraphNodeInput ? props.graphNode.x : props.graphNode.x + props.graphNode.width;
+  const x = handle instanceof GraphNodeInput ? props.graphNode.xy.x : props.graphNode.xy.x + props.graphNode.width;
   const number = handle instanceof GraphNodeInput ? props.graphNode.innerNode.inputs.length : props.graphNode.innerNode.outputs.length;
   const y = props.graphNode.calculateHandleHeight(handle.index, number);
   return { x, y }
