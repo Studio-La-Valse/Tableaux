@@ -26,9 +26,9 @@ import GraphRenderer from '@/components/graph/GraphRenderer.vue'
 import SelectionBorder from '@/components/graph/SelectionBorder.vue'
 import GraphControls from '@/components/graph/GraphControls/GraphControls.vue';
 
-import { useSelectionArea } from '@/composables/useSelectionArea';
-import { useClearSelection } from '@/composables/useClearSelection';
-import { useCanvasTransform } from '@/composables/useCanvasTransform';
+import { useSelectionArea } from '@/composables/use-selection-area';
+import { useClearSelection } from '@/composables/use-clear-selection';
+import { useCanvasTransform } from '@/composables/use-canvas-transform';
 
 import { useContextMenuStore } from "@/stores/context-menu";
 import { useGraphNodeSelectionStore } from '@/stores/graph-node-selection-store';
@@ -55,11 +55,9 @@ const contentStyle = computed<StyleValue>(() => ({
 }));
 
 function onMouseDown(event: MouseEvent) {
-  if (event.target !== viewportRef.value) return;
-
   canvasTransform.onMouseDown(event);
   selectionArea.onMouseDown(event);
-  clearSelection.onClickClearSelection(event);
+  clearSelection.onMouseDown(event);
 
   menu.close();
 }

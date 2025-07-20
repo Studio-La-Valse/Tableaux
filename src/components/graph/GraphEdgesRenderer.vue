@@ -14,7 +14,7 @@
 import { computed } from 'vue';
 import GraphEdgeRenderer from './GraphEdgeRenderer.vue';
 import { useGraph } from '@/stores/graph-store';
-import { useEdgeDrag } from '@/composables/useEdgeDrag';
+import { useEdgeDrag } from '@/composables/use-edge-drag';
 import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
 
 // Get your permanent edges from the graph store.

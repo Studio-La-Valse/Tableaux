@@ -1,5 +1,5 @@
 <template>
-  <div v-if="menu.visible" class="tree-container" @wheel.capture="onWheel"
+  <div v-if="menu.visible" class="tree-container" @mousedown.stop @wheel.capture="onWheel"
     :style="{ top: menu.y + 'px', left: menu.x + 'px' }">
     <input ref="inputRef" v-model="search" class="tree-filter" type="text" placeholder="Filter nodes…" />
 
@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import ActivatorNode from '@/components/graph/NodeBrowser/ActivatorNode.vue'
 import { useGraphNodeActivatorStore } from '@/stores/graph-node-activator-store';
 import { useContextMenuStore } from '@/stores/context-menu';
@@ -38,6 +38,10 @@ const onWheel = (evt: WheelEvent) => {
   evt.stopPropagation();
 }
 
+const close = (e: KeyboardEvent) => {
+  if(e.key == "Escape") menu.close()
+}
+
 onMounted(() => {
   watch(() => menu.visible, (newValue: boolean) => {
     if (newValue) {
@@ -48,6 +52,12 @@ onMounted(() => {
       search.value = '';
     }
   })
+
+  window.addEventListener("keydown", close)
+})
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", close)
 })
 </script>
 

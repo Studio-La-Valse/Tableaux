@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { useGraph } from '@/stores/graph-store';
 import GraphNodeRenderer from './GraphNodeRenderer.vue';
-import { useCopyPaste } from '@/composables/useCopyPaste';
+import { useCopyPaste } from '@/composables/use-copy-paste';
 
 const graph = useGraph();
 

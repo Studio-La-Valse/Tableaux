@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { useResizable } from "@/composables/useResizable";
+import { useNodeResize } from "@/composables/use-node-resize";
 import { computed, type StyleValue } from 'vue';
 import { useGraph } from '@/stores/graph-store';
 
@@ -39,7 +39,7 @@ const style = computed<StyleValue>(() => ({
 }))
 
 // Integrate the resizable composable.
-const { initResize } = useResizable(width, height);
+const { initResize } = useNodeResize(width, height);
 </script>
 
 <style>

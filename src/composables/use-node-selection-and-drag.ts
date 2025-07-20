@@ -4,10 +4,14 @@ import { useGraph } from '@/stores/graph-store'
 import type { XY } from '@/models/geometry/xy'
 import { useCanvasRefStore } from '@/stores/canvas-ref-store'
 import { useEdgeSelectionStore } from '@/stores/edge-selection-store'
+import { useContextMenuStore } from '@/stores/context-menu'
+import { useEdgeDrag } from './use-edge-drag'
 
-export function useGroupDraggable() {
+export function useNodeSelectionAndDrag() {
   const selectionStore = useGraphNodeSelectionStore()
   const edgeSelectionStore = useEdgeSelectionStore()
+  const menu = useContextMenuStore()
+  const edgeDrag = useEdgeDrag();
 
   const { clientToCanvas } = useCanvasRefStore()
   const graph = useGraph()
@@ -23,6 +27,14 @@ export function useGroupDraggable() {
 
   function onMouseDown(event: MouseEvent, nodeId: string) {
     if (event.button !== 0) return
+
+    // Prevent default and propagation
+    event.preventDefault()
+    event.stopPropagation()
+
+    // but still need to close and cancel menu and edge drag.
+    menu.close()
+    edgeDrag.cancelConnect();
 
     // ——— selection logic ———
     edgeSelectionStore.deselectAll()
@@ -59,9 +71,6 @@ export function useGroupDraggable() {
 
     window.addEventListener('mousemove', onMouseMove, { capture: true })
     window.addEventListener('mouseup', onMouseUp)
-
-    event.preventDefault()
-    event.stopPropagation()
   }
 
   function onMouseMove(event: MouseEvent) {

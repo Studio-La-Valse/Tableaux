@@ -3,24 +3,29 @@ import { useSelectionAreaStore } from '@/stores/selection-area-store'
 import { useGraphNodeSelectionStore } from '@/stores/graph-node-selection-store'
 import { useGraph } from '@/stores/graph-store'
 import { useCanvasRefStore } from '@/stores/canvas-ref-store'
+import { useEdgeDrag } from './use-edge-drag'
+
+type mode = 'default' | 'add' | 'subtract'
 
 export function useSelectionArea() {
   const selectionAreaStore = useSelectionAreaStore()
   const nodeSelectionStore = useGraphNodeSelectionStore()
   const canvasRefStore = useCanvasRefStore()
   const graphStore = useGraph()
+  const edgeDrag = useEdgeDrag();
 
   function onMouseDown(e: MouseEvent) {
     if (e.button !== 0) return
+    if (edgeDrag.tempEdge.value) return
+
+    e.preventDefault()
+    e.stopPropagation()
 
     const { x, y } = canvasRefStore.clientToCanvas(e)
     selectionAreaStore.begin(x, y)
 
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
-
-    e.preventDefault()
-    e.stopPropagation()
   }
 
   function onMouseMove(e: MouseEvent) {
@@ -36,7 +41,7 @@ export function useSelectionArea() {
 
     const finalRect = selectionAreaStore.end()
     if (finalRect.width > 0 && finalRect.height > 0) {
-      let mode: 'default' | 'add' | 'subtract' = 'default'
+      let mode: mode = 'default'
       if (e.ctrlKey || e.metaKey) mode = 'subtract'
       if (e.shiftKey) mode = 'add'
 
@@ -52,7 +57,7 @@ export function useSelectionArea() {
 
   function applySelection(
     rect: { x: number; y: number; width: number; height: number },
-    mode: 'default' | 'add' | 'subtract'
+    mode: mode
   ) {
     if (mode === 'default') nodeSelectionStore.clearSelection()
 

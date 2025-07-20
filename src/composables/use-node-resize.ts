@@ -1,6 +1,8 @@
 import { useCanvasRefStore } from '@/stores/canvas-ref-store'
 import { useGraph } from '@/stores/graph-store'
 import { onUnmounted, type Ref } from 'vue'
+import { useEdgeDrag } from './use-edge-drag'
+import { useContextMenuStore } from '@/stores/context-menu'
 
 // Define a simple XY interface.
 interface XY {
@@ -15,9 +17,11 @@ interface XY {
  * @param height - A reactive reference to the current height.
  * @returns An object exposing the initResize function, which must be bound to the pointerdown event of the resizer element.
  */
-export function useResizable(width: Ref<number>, height: Ref<number>) {
+export function useNodeResize(width: Ref<number>, height: Ref<number>) {
   const { clientToCanvas } = useCanvasRefStore()
-  const graph = useGraph();
+  const edgeDrag = useEdgeDrag();
+  const menu = useContextMenuStore();
+  const graph = useGraph()
 
   // State variables to track the resize start.
   let startLocal: XY = { x: 0, y: 0 }
@@ -32,6 +36,10 @@ export function useResizable(width: Ref<number>, height: Ref<number>) {
     if (e.button !== 0) return // Only respond to the primary (usually left) button.
     e.preventDefault()
     e.stopPropagation()
+
+    // we prevented default behavior but need to stop other stuff.
+    edgeDrag.cancelConnect()
+    menu.close();
 
     // Record the initial pointer position in logical coordinates.
     startLocal = clientToCanvas(e)

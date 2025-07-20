@@ -16,7 +16,17 @@ interface Options {
   zoomIntensity?: number
 }
 
+// Pan & zoom state
 const scale = ref<number>(1)
+const position = ref<Position>({ x: 0, y: 0 })
+
+const style = computed(() => ({
+  transform: `translate(${position.value.x}px, ${position.value.y}px) scale(${scale.value})`,
+  transformOrigin: 'top left',
+}))
+
+// Drag‐to‐pan
+const isDragging = ref(false)
 
 export function useCanvasTransform(options: Options = {}) {
   const { minScale = 0.2, maxScale = 5, zoomIntensity = 0.1 } = options
@@ -45,30 +55,21 @@ export function useCanvasTransform(options: Options = {}) {
     resizeObserver?.disconnect()
   })
 
-  // Pan & zoom state
-  const position = ref<Position>({ x: 0, y: 0 })
-
-  const style = computed(() => ({
-    transform: `translate(${position.value.x}px, ${position.value.y}px) scale(${scale.value})`,
-    transformOrigin: 'top left',
-  }))
-
-  // Drag‐to‐pan
-  const isDragging = ref(false)
   const startPosition = ref<Position>({ x: 0, y: 0 })
 
   function onMouseDown(event: MouseEvent) {
     // Only right-button pans
     if (event.button !== 2) return
 
+    // stop everything.
+    event.preventDefault()
+    event.stopPropagation()
+
     isDragging.value = true
     startPosition.value = { x: event.clientX, y: event.clientY }
 
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
-
-    event.preventDefault()
-    event.stopPropagation()
   }
 
   function onMouseMove(event: MouseEvent) {

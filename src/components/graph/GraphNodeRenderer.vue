@@ -1,18 +1,17 @@
 <template>
   <div class="node" @mousedown="onMouseDown" :style="style">
-    <PanelRenderer :graphNode="graphNode"
-      :panel-style="panelStyle" />
+    <PanelRenderer :graphNode="graphNode" :panel-style="panelStyle" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, type StyleValue } from "vue";
 import PanelRenderer from "./PanelRenderer.vue";
-import { useGroupDraggable } from "@/composables/useGroupDraggable";
+import { useNodeSelectionAndDrag } from "@/composables/use-node-selection-and-drag";
 import { XY } from "@/models/geometry/xy";
 import { useGraph } from "@/stores/graph-store";
 
-const groupDrag = useGroupDraggable();
+const groupDrag = useNodeSelectionAndDrag();
 
 const props = defineProps<{ graphNodeId: string }>();
 const graphNode = useGraph().getNode(props.graphNodeId);
@@ -32,7 +31,7 @@ const style = computed<StyleValue>(() => ({
 }))
 
 const panelStyle = computed<StyleValue>(() => ({
-  width:  graphNode.width  + "px",
+  width: graphNode.width + "px",
   height: graphNode.height + "px",
 }));
 

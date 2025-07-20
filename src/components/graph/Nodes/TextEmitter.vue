@@ -2,7 +2,7 @@
   <ResizablePanel :graph-node-id="graphNode.id">
     <div class="text-input-wrapper">
       <textarea ref="textInputRef" class="text-input" :value="(graphNode.data.value as string)" @input="handleInput"
-        @keydown="handleKeyDown" @mousedown.stop @mousemove.stop @mouseup.stop @wheel.stop @touchstart.stop
+        @keydown.stop="handleKeyDown" @mousedown.stop @mousemove.stop @mouseup.stop @wheel.stop @touchstart.stop
         @touchmove.stop @touchend.stop></textarea>
     </div>
 

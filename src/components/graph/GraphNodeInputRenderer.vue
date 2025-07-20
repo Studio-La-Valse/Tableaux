@@ -19,9 +19,9 @@
 <script setup lang="ts">
 import HandleRenderer from '@/components/graph/HandleRenderer.vue';
 import type { GraphNodeInput } from '@/models/graph/core/graph-node-input';
-import { useEdgeDrag } from '@/composables/useEdgeDrag';
+import { useEdgeDrag } from '@/composables/use-edge-drag';
 import { useGraph } from '@/stores/graph-store';
-import { useCanvasTransform } from '@/composables/useCanvasTransform';
+import { useCanvasTransform } from '@/composables/use-canvas-transform';
 import { computed } from 'vue';
 import type { GraphNode } from '@/models/graph/core/graph-node';
 
@@ -35,10 +35,10 @@ const canvasTransform = useCanvasTransform()
 const scale = computed(() => canvasTransform.scale.value)
 
 const graph = useGraph();
-const { finishEdgeDrag } = useEdgeDrag();
+const { finishConnect } = useEdgeDrag();
 const { connect } = useGraph();
-const handleMouseUp = () => {
-  const prototype = finishEdgeDrag(props.input.graphNode.id, props.input.index)
+const handleMouseUp = (e: MouseEvent) => {
+  const prototype = finishConnect(props.input.graphNode.id, props.input.index, e)
   if (prototype) {
     connect(
       prototype.fromNodeId,

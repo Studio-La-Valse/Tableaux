@@ -2,13 +2,13 @@
   <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y"
     :stroke="isSelected ? 'var(--color-accent)' : 'var(--color-text)'" :stroke-width="isSelected ? 3 : 1" />
   <GraphEdgePathRenderer :x1="start.x" :y1="start.y" :x2="end.x" :y2="end.y" stroke="var(--color-text)"
-    :stroke-opacity="0" :stroke-width="3" :callback="handleClick" pointer-events="all" />
+    :stroke-opacity="0" :stroke-width="10" :callback="handleClick" pointer-events="all" />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useGraph } from '@/stores/graph-store';
-import { useEdgeSelection } from '@/composables/useEdgeSelection';
+import { useEdgeSelection } from '@/composables/use-edge-selection';
 import type { GraphEdge } from '@/models/graph/core/graph-edge';
 import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
 import { useEdgeSelectionStore } from '@/stores/edge-selection-store';

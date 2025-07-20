@@ -12,10 +12,10 @@
 import { ref, onMounted, onUnmounted, computed, type StyleValue } from 'vue'
 import CanvasControls from './CanvasControls.vue'
 import DesignCanvas from './CanvasContainer.vue'
-import { useGroupDraggable } from '@/composables/useGroupDraggable'
-import { useCanvasTransform } from '@/composables/useCanvasTransform'
+import { useNodeSelectionAndDrag } from '@/composables/use-node-selection-and-drag'
+import { useCanvasTransform } from '@/composables/use-canvas-transform'
 
-const groupDrag = useGroupDraggable()
+const groupDrag = useNodeSelectionAndDrag()
 const canvasPan = useCanvasTransform()
 
 const style = computed<StyleValue>(() => ({

@@ -10,6 +10,8 @@ export function useEdgeSelection(edgeId: string) {
   const graph = useGraph()
 
   const handleClick = (e: MouseEvent) => {
+    if (e.button !== 0) return
+
     e.stopPropagation()
     e.preventDefault()
 
