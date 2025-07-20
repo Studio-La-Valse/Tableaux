@@ -1,4 +1,4 @@
-import { useCanvasElementStore } from '@/stores/canvas-element-store'
+import { useCanvasElementStore } from '@/stores/use-canvas-element-store'
 import { GraphNode } from '../../core/graph-node'
 import type { DrawableElement } from '@/models/drawable-elements/drawable-element'
 import { GraphNodeType } from '../decorators'
@@ -11,7 +11,7 @@ export class Canvas extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerObjectInput("Drawable Elements")
+    this.input = this.registerObjectInput('Drawable Elements')
     this.elementStore = null
   }
 
@@ -34,7 +34,7 @@ export class Canvas extends GraphNode {
   }
 
   public onDestroy(): void {
-    super.onDestroy();
+    super.onDestroy()
 
     this.elementStore?.setElements([])
   }

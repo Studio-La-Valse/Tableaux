@@ -1,6 +1,6 @@
 import { ref, onUnmounted } from 'vue'
-import { useCanvasRefStore } from '@/stores/canvas-ref-store'
-import { useContextMenuStore } from '@/stores/context-menu'
+import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
+import { useContextMenuStore } from '@/stores/use-context-menu-store'
 
 export interface TempEdgeData {
   fromNodeId: string
@@ -20,7 +20,7 @@ const tempEdge = ref<TempEdgeData | null>(null)
 
 export function useEdgeDrag() {
   const { clientToCanvas } = useCanvasRefStore()
-  const { close } = useContextMenuStore();
+  const { close } = useContextMenuStore()
 
   // update preview line end coords
   function onMouseMove(e: MouseEvent) {
@@ -47,7 +47,7 @@ export function useEdgeDrag() {
     if (e.button !== 0) return
     e.stopPropagation()
 
-    close();
+    close()
 
     const { x, y } = clientToCanvas(e)
     tempEdge.value = { fromNodeId, fromOutputIndex, currentX: x, currentY: y }
@@ -64,7 +64,7 @@ export function useEdgeDrag() {
   ): GraphEdgePrototype | null {
     if (e.button !== 0 || !tempEdge.value) return null
     e.stopPropagation()
-    e.preventDefault();
+    e.preventDefault()
 
     const edge: GraphEdgePrototype = {
       fromNodeId: tempEdge.value.fromNodeId,
@@ -74,7 +74,7 @@ export function useEdgeDrag() {
     }
 
     // allow to connect multiple.
-    if (e.shiftKey) return edge;
+    if (e.shiftKey) return edge
 
     cancelConnect()
     return edge

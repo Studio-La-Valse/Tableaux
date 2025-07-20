@@ -1,13 +1,13 @@
 // composables/useEdgeSelection.ts
-import { useEdgeSelectionStore } from '@/stores/edge-selection-store'
-import { useGraphNodeSelectionStore } from '@/stores/graph-node-selection-store'
-import { useGraph } from '@/stores/graph-store'
+import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
+import { useGraphStore } from '@/stores/use-graph-store'
 import { onMounted, onUnmounted } from 'vue'
 
 export function useEdgeSelection(edgeId: string) {
   const edgeSelectionStore = useEdgeSelectionStore()
   const nodeSelectionStore = useGraphNodeSelectionStore()
-  const graph = useGraph()
+  const graph = useGraphStore()
 
   const handleClick = (e: MouseEvent) => {
     if (e.button !== 0) return

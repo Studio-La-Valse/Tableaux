@@ -1,4 +1,4 @@
-import { useCanvasPropsStore } from '@/stores/canvas-props-store'
+import { useCanvasPropsStore } from '@/stores/use-canvas-props-store'
 import { GraphNode } from '../../core/graph-node'
 import { watch } from 'vue'
 import { GraphNodeType } from '../decorators'

@@ -1,8 +1,8 @@
 import { onUnmounted } from 'vue'
-import { useSelectionAreaStore } from '@/stores/selection-area-store'
-import { useGraphNodeSelectionStore } from '@/stores/graph-node-selection-store'
-import { useGraph } from '@/stores/graph-store'
-import { useCanvasRefStore } from '@/stores/canvas-ref-store'
+import { useSelectionAreaStore } from '@/stores/use-selection-area-store'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
+import { useGraphStore } from '@/stores/use-graph-store'
+import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
 import { useEdgeDrag } from './use-edge-drag'
 
 type mode = 'default' | 'add' | 'subtract'
@@ -11,8 +11,8 @@ export function useSelectionArea() {
   const selectionAreaStore = useSelectionAreaStore()
   const nodeSelectionStore = useGraphNodeSelectionStore()
   const canvasRefStore = useCanvasRefStore()
-  const graphStore = useGraph()
-  const edgeDrag = useEdgeDrag();
+  const graphStore = useGraphStore()
+  const edgeDrag = useEdgeDrag()
 
   function onMouseDown(e: MouseEvent) {
     if (e.button !== 0) return
@@ -57,7 +57,7 @@ export function useSelectionArea() {
 
   function applySelection(
     rect: { x: number; y: number; width: number; height: number },
-    mode: mode
+    mode: mode,
   ) {
     if (mode === 'default') nodeSelectionStore.clearSelection()
 

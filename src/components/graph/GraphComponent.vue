@@ -30,18 +30,18 @@ import { useSelectionArea } from '@/composables/use-selection-area';
 import { useClearSelection } from '@/composables/use-clear-selection';
 import { useCanvasTransform } from '@/composables/use-canvas-transform';
 
-import { useContextMenuStore } from "@/stores/context-menu";
-import { useGraphNodeSelectionStore } from '@/stores/graph-node-selection-store';
-import { useSelectionAreaStore } from '@/stores/selection-area-store';
-import { useCanvasRefStore } from '@/stores/canvas-ref-store';
-import { useGraph } from '@/stores/graph-store';
+import { useContextMenuStore } from "@/stores/use-context-menu-store";
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store';
+import { useSelectionAreaStore } from '@/stores/use-selection-area-store';
+import { useCanvasRefStore } from '@/stores/use-canvas-ref-store';
+import { useGraphStore } from '@/stores/use-graph-store';
 
 const selectionArea = useSelectionArea();
 const selectionAreaStore = useSelectionAreaStore();
 const clearSelection = useClearSelection();
 const menu = useContextMenuStore()
 const selection = useGraphNodeSelectionStore();
-const graph = useGraph();
+const graph = useGraphStore();
 const canvasTransform = useCanvasTransform();
 const canvasStore = useCanvasRefStore()
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="node" @mousedown="onMouseDown" :style="style">
+  <div class="node" @mousedown="(e) => onMouseDown(e, graphNode.innerNode.id)" :style="style">
     <PanelRenderer :graphNode="graphNode" :panel-style="panelStyle" />
   </div>
 </template>
@@ -9,20 +9,20 @@ import { computed, type StyleValue } from "vue";
 import PanelRenderer from "./PanelRenderer.vue";
 import { useNodeSelectionAndDrag } from "@/composables/use-node-selection-and-drag";
 import { XY } from "@/models/geometry/xy";
-import { useGraph } from "@/stores/graph-store";
+import type { GraphNodeWrapper } from "@/models/graph/core/graph-node-wrapper";
 
-const groupDrag = useNodeSelectionAndDrag();
+const props = defineProps<{ graphNode: GraphNodeWrapper }>();
+const { onMouseDown } = useNodeSelectionAndDrag();
 
-const props = defineProps<{ graphNodeId: string }>();
-const graphNode = useGraph().getNode(props.graphNodeId);
+const emit = defineEmits<{
+  (e: 'updatePosition', graphNode: GraphNodeWrapper, pos: XY): void
+}>();
 
-// Node position is kept in sync with the graph node.
 const localPos = computed<XY>({
-  get: () => new XY(graphNode.x, graphNode.y),
+  get: () => new XY(props.graphNode.x, props.graphNode.y),
   set: (pos: XY) => {
-    graphNode.x = pos.x;
-    graphNode.y = pos.y;
-  },
+    emit('updatePosition', props.graphNode, pos);
+  }
 });
 
 const style = computed<StyleValue>(() => ({
@@ -31,14 +31,9 @@ const style = computed<StyleValue>(() => ({
 }))
 
 const panelStyle = computed<StyleValue>(() => ({
-  width: graphNode.width + "px",
-  height: graphNode.height + "px",
+  width: props.graphNode.width + "px",
+  height: props.graphNode.height + "px",
 }));
-
-// Determines visual styling based on whether the node is selected.
-const onMouseDown = (evt: MouseEvent) => {
-  groupDrag.onMouseDown(evt, props.graphNodeId)
-}
 </script>
 
 <style scoped>

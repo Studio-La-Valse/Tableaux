@@ -13,9 +13,9 @@
 import type { NumberEmitter } from '@/models/graph/graph-nodes/emitters/number-emitter'
 import ResizablePanel from './ResizablePanel.vue';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useGraph } from '@/stores/graph-store';
+import { useGraphStore } from '@/stores/use-graph-store';
 
-const graph = useGraph();
+const graph = useGraphStore();
 
 const props = defineProps<{
   graphNode: NumberEmitter

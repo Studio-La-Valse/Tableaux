@@ -1,13 +1,13 @@
 import type { XY } from '@/models/geometry/xy'
 import { defineStore } from 'pinia'
-import { ref, type Ref } from 'vue'
-import { useGraphNodeActivatorStore } from './graph-node-activator-store'
+import { computed, ref, type Ref } from 'vue'
+import { useGraphNodeActivatorStore } from './use-graph-node-activator-store'
 import type { GraphEdge } from '@/models/graph/core/graph-edge'
 import type { GraphNodeModel } from '@/models/graph/core/models/graph-node-model'
 import type { GraphModel } from '@/models/graph/core/models/graph-model'
 import type { GraphEdgeModel } from '@/models/graph/core/models/graph-edge-model'
 import { GraphNodeWrapper } from '@/models/graph/core/graph-node-wrapper'
-import { useGraphHistoryStore } from './graph-history-store'
+import { useGraphHistoryStore } from './use-graph-history-store'
 
 const useGraphInternal = defineStore('graph', () => {
   const nodes: Ref<GraphNodeWrapper[]> = ref([])
@@ -267,10 +267,13 @@ const useGraphInternal = defineStore('graph', () => {
   }
 })
 
-export const useGraph = defineStore('graph-with-history', () => {
+export const useGraphStore = defineStore('graph-with-history', () => {
   const internalGraph = useGraphInternal()
   const history = useGraphHistoryStore()
   history.init(internalGraph.toModel())
+
+  const nodes = computed(() => internalGraph.nodes)
+  const edges = computed(() => internalGraph.edges)
 
   const clear = () => {
     const state = internalGraph.toModel()
@@ -404,9 +407,11 @@ export const useGraph = defineStore('graph-with-history', () => {
   return {
     clear,
 
+    nodes,
     addNode,
     removeNodes,
 
+    edges,
     connect,
     removeEdges,
 
@@ -421,8 +426,6 @@ export const useGraph = defineStore('graph-with-history', () => {
 
     toModel: internalGraph.toModel,
     getNode: internalGraph.getNode,
-    nodes: internalGraph.nodes,
-    edges: internalGraph.edges,
 
     getPresent: history.getPresent,
     commit,

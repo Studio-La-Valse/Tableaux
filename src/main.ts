@@ -6,8 +6,8 @@ import router from './router'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
-import { logError } from '@/stores/error-log-store'
-import { useGraphNodeActivatorStore } from '@/stores/graph-node-activator-store'
+import { logError } from '@/stores/use-error-log-store'
+import { useGraphNodeActivatorStore } from '@/stores/use-graph-node-activator-store'
 
 import { graphNodeTypes } from '@/models/graph/graph-nodes/decorators'
 import.meta.glob('@/models/graph/graph-nodes/**/*.ts', { eager: true })

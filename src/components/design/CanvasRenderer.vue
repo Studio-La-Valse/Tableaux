@@ -4,8 +4,8 @@
 
 <script setup lang="ts">
 import { CanvasRenderingContextPainter } from '@/models/bitmap-painters/canvas-rendering-context-painter';
-import { useCanvasElementStore } from '@/stores/canvas-element-store';
-import { useCanvasPropsStore } from '@/stores/canvas-props-store';
+import { useCanvasElementStore } from '@/stores/use-canvas-element-store';
+import { useCanvasPropsStore } from '@/stores/use-canvas-props-store';
 import { nextTick, onMounted, ref, watch } from 'vue';
 
 const elementStore = useCanvasElementStore();

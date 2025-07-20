@@ -6,9 +6,9 @@
 
 <script setup lang="ts">
 import { computed, type StyleValue } from 'vue'
-import { useSelectionAreaStore } from '@/stores/selection-area-store'
+import { useSelectionAreaStore } from '@/stores/use-selection-area-store'
 
-const store  = useSelectionAreaStore()
+const store = useSelectionAreaStore()
 const borderStyle = computed<StyleValue>(() => ({
   position: 'absolute',
   left: `${store.rect.x}px`,

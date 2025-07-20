@@ -1,20 +1,20 @@
 import { ref } from 'vue'
-import { useGraphNodeSelectionStore } from '@/stores/graph-node-selection-store'
-import { useGraph } from '@/stores/graph-store'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
+import { useGraphStore } from '@/stores/use-graph-store'
 import type { XY } from '@/models/geometry/xy'
-import { useCanvasRefStore } from '@/stores/canvas-ref-store'
-import { useEdgeSelectionStore } from '@/stores/edge-selection-store'
-import { useContextMenuStore } from '@/stores/context-menu'
+import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
+import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store'
+import { useContextMenuStore } from '@/stores/use-context-menu-store'
 import { useEdgeDrag } from './use-edge-drag'
 
 export function useNodeSelectionAndDrag() {
   const selectionStore = useGraphNodeSelectionStore()
   const edgeSelectionStore = useEdgeSelectionStore()
   const menu = useContextMenuStore()
-  const edgeDrag = useEdgeDrag();
+  const edgeDrag = useEdgeDrag()
 
   const { clientToCanvas } = useCanvasRefStore()
-  const graph = useGraph()
+  const graph = useGraphStore()
 
   const dragging = ref(false)
   const wasDragged = ref(false)
@@ -34,7 +34,7 @@ export function useNodeSelectionAndDrag() {
 
     // but still need to close and cancel menu and edge drag.
     menu.close()
-    edgeDrag.cancelConnect();
+    edgeDrag.cancelConnect()
 
     // ——— selection logic ———
     edgeSelectionStore.deselectAll()

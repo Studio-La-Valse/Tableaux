@@ -1,9 +1,9 @@
-import { useGraph } from '@/stores/graph-store'
-import { useGraphNodeSelectionStore } from '@/stores/graph-node-selection-store'
+import { useGraphStore } from '@/stores/use-graph-store'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { onMounted, onUnmounted } from 'vue'
 
 export const useCopyPaste = () => {
-  const { duplicate } = useGraph()
+  const { duplicate } = useGraphStore()
 
   const clipboard: string[] = []
 

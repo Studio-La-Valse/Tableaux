@@ -17,8 +17,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import ActivatorNode from '@/components/graph/NodeBrowser/ActivatorNode.vue'
-import { useGraphNodeActivatorStore } from '@/stores/graph-node-activator-store';
-import { useContextMenuStore } from '@/stores/context-menu';
+import { useGraphNodeActivatorStore } from '@/stores/use-graph-node-activator-store';
+import { useContextMenuStore } from '@/stores/use-context-menu-store';
 
 const menu = useContextMenuStore()
 const { filterTree } = useGraphNodeActivatorStore();
@@ -39,7 +39,7 @@ const onWheel = (evt: WheelEvent) => {
 }
 
 const close = (e: KeyboardEvent) => {
-  if(e.key == "Escape") menu.close()
+  if (e.key == "Escape") menu.close()
 }
 
 onMounted(() => {

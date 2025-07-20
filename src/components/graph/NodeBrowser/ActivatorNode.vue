@@ -7,10 +7,11 @@
 
     <ul v-if="expanded" class="node-children">
       <!-- recurse, passing down the path so far -->
-      <ActivatorNode v-for="child in group.children" :key="child.name" :group="child" :parentPath="currentPath" :forceExpand="forceExpand" />
+      <ActivatorNode v-for="child in group.children" :key="child.name" :group="child" :parentPath="currentPath"
+        :forceExpand="forceExpand" />
 
       <!-- leaf items emit the full path -->
-      <li v-for="act in group.activators" :key="act.name" class="leaf"  @click.stop="(evt) => clickNode(evt, act.name)">
+      <li v-for="act in group.activators" :key="act.name" class="leaf" @click.stop="(evt) => clickNode(evt, act.name)">
         {{ act.name }}
       </li>
     </ul>
@@ -19,8 +20,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import type { ActivatorGroup } from '@/stores/graph-node-activator-store'
-import { useContextMenuStore } from '@/stores/context-menu';
+import type { ActivatorGroup } from '@/stores/use-graph-node-activator-store'
+import { useContextMenuStore } from '@/stores/use-context-menu-store';
 
 const menu = useContextMenuStore();
 

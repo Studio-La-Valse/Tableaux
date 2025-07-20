@@ -38,13 +38,13 @@ import LoggerPanel from "./Nodes/LoggerPanel.vue";
 import GraphNodeInputRenderer from "./GraphNodeInputRenderer.vue";
 import GraphNodeOutputRenderer from "./GraphNodeOutputRenderer.vue";
 import type { GraphNode } from "@/models/graph/core/graph-node";
-import { useGraph } from "@/stores/graph-store";
-import { useGraphNodeSelectionStore } from "@/stores/graph-node-selection-store";
+import { useGraphStore } from "@/stores/use-graph-store";
+import { useGraphNodeSelectionStore } from "@/stores/use-graph-node-selection-store";
 import type { GraphNodeWrapper } from "@/models/graph/core/graph-node-wrapper";
 import { GraphNodeInput } from "@/models/graph/core/graph-node-input";
 import { GraphNodeOutput } from "@/models/graph/core/graph-node-output";
 
-const { getNode } = useGraph();
+const { getNode } = useGraphStore();
 const { isSelected } = useGraphNodeSelectionStore()
 
 const props = defineProps<{

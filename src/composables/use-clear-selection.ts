@@ -1,7 +1,7 @@
 // src/composables/useSelectionInteraction.ts
 import { onMounted, onUnmounted } from 'vue'
-import { useGraphNodeSelectionStore } from '@/stores/graph-node-selection-store'
-import { useEdgeSelectionStore } from '@/stores/edge-selection-store'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
+import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store'
 
 export function useClearSelection() {
   const nodeSelection = useGraphNodeSelectionStore()

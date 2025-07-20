@@ -1,8 +1,8 @@
-import { useCanvasRefStore } from '@/stores/canvas-ref-store'
-import { useGraph } from '@/stores/graph-store'
+import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
+import { useGraphStore } from '@/stores/use-graph-store'
 import { onUnmounted, type Ref } from 'vue'
 import { useEdgeDrag } from './use-edge-drag'
-import { useContextMenuStore } from '@/stores/context-menu'
+import { useContextMenuStore } from '@/stores/use-context-menu-store'
 
 // Define a simple XY interface.
 interface XY {
@@ -19,9 +19,9 @@ interface XY {
  */
 export function useNodeResize(width: Ref<number>, height: Ref<number>) {
   const { clientToCanvas } = useCanvasRefStore()
-  const edgeDrag = useEdgeDrag();
-  const menu = useContextMenuStore();
-  const graph = useGraph()
+  const edgeDrag = useEdgeDrag()
+  const menu = useContextMenuStore()
+  const graph = useGraphStore()
 
   // State variables to track the resize start.
   let startLocal: XY = { x: 0, y: 0 }
@@ -39,7 +39,7 @@ export function useNodeResize(width: Ref<number>, height: Ref<number>) {
 
     // we prevented default behavior but need to stop other stuff.
     edgeDrag.cancelConnect()
-    menu.close();
+    menu.close()
 
     // Record the initial pointer position in logical coordinates.
     startLocal = clientToCanvas(e)

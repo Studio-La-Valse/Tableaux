@@ -18,9 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { useGraph } from '@/stores/graph-store';
+import { useGraphStore } from '@/stores/use-graph-store';
 
-const { toModel, fromModel, undo, redo } = useGraph()
+const { toModel, fromModel, undo, redo } = useGraphStore()
 
 const save = async () => {
   const model = toModel()

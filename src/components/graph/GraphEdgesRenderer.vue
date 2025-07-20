@@ -13,12 +13,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import GraphEdgeRenderer from './GraphEdgeRenderer.vue';
-import { useGraph } from '@/stores/graph-store';
+import { useGraphStore } from '@/stores/use-graph-store';
 import { useEdgeDrag } from '@/composables/use-edge-drag';
 import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
 
 // Get your permanent edges from the graph store.
-const graph = useGraph();
+const graph = useGraphStore();
 
 // Get the reactive temporary edge state
 const edgeDrag = useEdgeDrag();

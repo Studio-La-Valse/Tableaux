@@ -71,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCanvasPropsStore } from '@/stores/canvas-props-store';
+import { useCanvasPropsStore } from '@/stores/use-canvas-props-store';
 import { ref, toRefs, watch, computed } from 'vue'
 
 const canvasProps = useCanvasPropsStore();

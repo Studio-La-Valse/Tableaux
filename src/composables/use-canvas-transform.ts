@@ -1,5 +1,5 @@
 // src/composables/usePanZoom.ts
-import { useCanvasRefStore } from '@/stores/canvas-ref-store'
+import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 
 interface Position {

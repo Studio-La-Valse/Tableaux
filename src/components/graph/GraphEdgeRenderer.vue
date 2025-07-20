@@ -7,15 +7,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useGraph } from '@/stores/graph-store';
+import { useGraphStore } from '@/stores/use-graph-store';
 import { useEdgeSelection } from '@/composables/use-edge-selection';
 import type { GraphEdge } from '@/models/graph/core/graph-edge';
 import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
-import { useEdgeSelectionStore } from '@/stores/edge-selection-store';
+import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store';
 
 const props = defineProps<{ edge: GraphEdge }>();
 
-const { getNode } = useGraph();
+const { getNode } = useGraphStore();
 const selectionStore = useEdgeSelectionStore();
 
 const { handleClick } = useEdgeSelection(props.edge.id);
