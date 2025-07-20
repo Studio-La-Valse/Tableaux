@@ -1,4 +1,4 @@
-import { useCanvasProps } from '@/stores/canvas-props-store'
+import { useCanvasPropsStore } from '@/stores/canvas-props-store'
 import { GraphNode } from '../../core/graph-node'
 import { watch } from 'vue'
 import { GraphNodeType } from '../decorators'
@@ -13,14 +13,14 @@ export class Props extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.output1 = this.registerNumberOutput("Width")
-    this.output2 = this.registerNumberOutput("Height")
+    this.output1 = this.registerNumberOutput('Width')
+    this.output2 = this.registerNumberOutput('Height')
   }
 
   public onInitialize(): void {
     super.onInitialize()
 
-    this.canvasProps = useCanvasProps()
+    this.canvasProps = useCanvasPropsStore()
 
     watch(
       () => this.canvasProps?.dimensions && { ...this.canvasProps.dimensions },

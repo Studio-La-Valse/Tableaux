@@ -71,10 +71,10 @@
 </template>
 
 <script setup lang="ts">
-import { useCanvasProps } from '@/stores/canvas-props-store';
+import { useCanvasPropsStore } from '@/stores/canvas-props-store';
 import { ref, toRefs, watch, computed } from 'vue'
 
-const canvasProps = useCanvasProps();
+const canvasProps = useCanvasPropsStore();
 
 type optionItem = { label: string; w: number; h: number }
 type option = { label: string; items: optionItem[] }

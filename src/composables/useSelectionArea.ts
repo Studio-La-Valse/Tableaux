@@ -1,20 +1,20 @@
 import { onUnmounted } from 'vue'
 import { useSelectionAreaStore } from '@/stores/selection-area-store'
-import { useSelectionStore } from '@/stores/selection-store'
+import { useGraphNodeSelectionStore } from '@/stores/graph-node-selection-store'
 import { useGraph } from '@/stores/graph-store'
 import { useCanvasRefStore } from '@/stores/canvas-ref-store'
 
 export function useSelectionArea() {
-  const store = useSelectionAreaStore()
-  const selectionStore = useSelectionStore()
-  const graphCanvasStroe = useCanvasRefStore()
+  const selectionAreaStore = useSelectionAreaStore()
+  const nodeSelectionStore = useGraphNodeSelectionStore()
+  const canvasRefStore = useCanvasRefStore()
   const graphStore = useGraph()
 
   function onMouseDown(e: MouseEvent) {
     if (e.button !== 0) return
 
-    const { x, y } = graphCanvasStroe.clientToCanvas(e)
-    store.begin(x, y)
+    const { x, y } = canvasRefStore.clientToCanvas(e)
+    selectionAreaStore.begin(x, y)
 
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
@@ -24,8 +24,8 @@ export function useSelectionArea() {
   }
 
   function onMouseMove(e: MouseEvent) {
-    const { x, y } = graphCanvasStroe.clientToCanvas(e)
-    store.update(x, y)
+    const { x, y } = canvasRefStore.clientToCanvas(e)
+    selectionAreaStore.update(x, y)
 
     e.preventDefault()
     e.stopPropagation()
@@ -33,9 +33,14 @@ export function useSelectionArea() {
 
   function onMouseUp(e: MouseEvent) {
     if (e.button !== 0) return
-    const finalRect = store.end()
+
+    const finalRect = selectionAreaStore.end()
     if (finalRect.width > 0 && finalRect.height > 0) {
-      applySelection(finalRect)
+      let mode: 'default' | 'add' | 'subtract' = 'default'
+      if (e.ctrlKey || e.metaKey) mode = 'subtract'
+      if (e.shiftKey) mode = 'add'
+
+      applySelection(finalRect, mode)
     }
 
     document.removeEventListener('mousemove', onMouseMove)
@@ -45,29 +50,31 @@ export function useSelectionArea() {
     e.stopPropagation()
   }
 
-  /**
-   * Given the final selection rectangle, iterate over the provided graph nodes
-   * and select those that lie entirely within the rectangle.
-   */
-  const applySelection = (rect: { x: number; y: number; width: number; height: number }) => {
-    // Clear any prior selection.
-    selectionStore.clearSelection()
-    const min = { clientX: rect.x, clientY: rect.y }
-    const max = { clientX: rect.x + rect.width, clientY: rect.y + rect.height }
+  function applySelection(
+    rect: { x: number; y: number; width: number; height: number },
+    mode: 'default' | 'add' | 'subtract'
+  ) {
+    if (mode === 'default') nodeSelectionStore.clearSelection()
 
-    // For every node provided, check whether its rectangle is completely within the selection.
-    graphStore.nodes.forEach((node) => {
-      if (
-        // Node's top-left point is to the right and below the selection's top-left...
-        node.x >= min.clientX &&
-        node.y >= min.clientY &&
-        // ... and the node's bottom-right is to the left and above the selection's bottom-right.
-        node.x + node.width <= max.clientX &&
-        node.y + node.height <= max.clientY
-      ) {
-        selectionStore.selectNode(node.innerNode.id)
-      }
-    })
+    const min = { x: rect.x, y: rect.y }
+    const max = { x: rect.x + rect.width, y: rect.y + rect.height }
+
+    graphStore.nodes
+      .filter((node) => {
+        return (
+          node.x >= min.x &&
+          node.y >= min.y &&
+          node.x + node.width <= max.x &&
+          node.y + node.height <= max.y
+        )
+      })
+      .forEach((node) => {
+        if (mode === 'add' || mode === 'default') {
+          nodeSelectionStore.selectNode(node.innerNode.id)
+        } else if (mode === 'subtract') {
+          nodeSelectionStore.unselectNode(node.innerNode.id)
+        }
+      })
   }
 
   onUnmounted(() => {

@@ -1,14 +1,15 @@
 // src/composables/useSelectionInteraction.ts
 import { onMounted, onUnmounted } from 'vue'
-import { useSelectionStore } from '@/stores/selection-store'
+import { useGraphNodeSelectionStore } from '@/stores/graph-node-selection-store'
 
 export function useClearSelection() {
-  const selectionStore = useSelectionStore()
+  const selectionStore = useGraphNodeSelectionStore()
 
   // Global click handler using capture phase.
   function onClickClearSelection(event: MouseEvent) {
     if (event.button !== 0) return
-
+    if (event.ctrlKey || event.shiftKey || event.metaKey) return
+    
     selectionStore.clearSelection()
   }
 

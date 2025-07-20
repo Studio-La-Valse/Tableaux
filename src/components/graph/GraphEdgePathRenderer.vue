@@ -36,7 +36,7 @@ const props = defineProps({
   },
   pointerEvents: {
     type: String,
-    default: "none"
+    default: "auto"
   },
   callback: {
     type: Function as PropType<(ev: MouseEvent) => void>,

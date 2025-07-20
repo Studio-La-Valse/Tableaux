@@ -1,5 +1,6 @@
 <template>
-  <div v-if="menu.visible" class="tree-container" @wheel.capture="onWheel" :style="{ top: menu.y + 'px', left: menu.x + 'px' }">
+  <div v-if="menu.visible" class="tree-container" @wheel.capture="onWheel"
+    :style="{ top: menu.y + 'px', left: menu.x + 'px' }">
     <input ref="inputRef" v-model="search" class="tree-filter" type="text" placeholder="Filter nodes…" />
 
     <ul class="tree-root" v-if="filteredGroup">
@@ -16,13 +17,13 @@
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import ActivatorNode from '@/components/graph/NodeBrowser/ActivatorNode.vue'
-import { useGraphNodeActivatorCollection } from '@/stores/graph-node-activator-store';
+import { useGraphNodeActivatorStore } from '@/stores/graph-node-activator-store';
 import { useContextMenuStore } from '@/stores/context-menu';
 
 const menu = useContextMenuStore()
-const { filterTree } = useGraphNodeActivatorCollection();
+const { filterTree } = useGraphNodeActivatorStore();
 
-const rootGroup = useGraphNodeActivatorCollection().activatorTree;
+const rootGroup = useGraphNodeActivatorStore().activatorTree;
 
 const search = ref('')
 const inputRef = ref<HTMLInputElement | null>(null)

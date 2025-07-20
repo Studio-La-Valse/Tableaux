@@ -1,11 +1,14 @@
 import { ref } from 'vue'
-import { useSelectionStore } from '@/stores/selection-store'
+import { useGraphNodeSelectionStore } from '@/stores/graph-node-selection-store'
 import { useGraph } from '@/stores/graph-store'
 import type { XY } from '@/models/geometry/xy'
 import { useCanvasRefStore } from '@/stores/canvas-ref-store'
+import { useEdgeSelectionStore } from '@/stores/edge-selection-store'
 
 export function useGroupDraggable() {
-  const selectionStore = useSelectionStore()
+  const selectionStore = useGraphNodeSelectionStore()
+  const edgeSelectionStore = useEdgeSelectionStore()
+
   const { clientToCanvas } = useCanvasRefStore()
   const graph = useGraph()
 
@@ -22,6 +25,7 @@ export function useGroupDraggable() {
     if (event.button !== 0) return
 
     // ——— selection logic ———
+    edgeSelectionStore.deselectAll()
     if (event.shiftKey) {
       if (!selectionStore.isSelected(nodeId)) {
         selectionStore.selectNode(nodeId)

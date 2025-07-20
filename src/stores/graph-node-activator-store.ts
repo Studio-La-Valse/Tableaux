@@ -1,7 +1,7 @@
 import type { GraphNode } from '@/models/graph/core/graph-node'
 import { defineStore } from 'pinia'
 
-export const useGraphNodeActivatorCollection = defineStore('graph-node-activator-store', () => {
+export const useGraphNodeActivatorStore = defineStore('graph-node-activator-store', () => {
   const activatorTree = new ActivatorGroup('root')
 
   function register(path: string[], activate: (id: string, path: string[]) => GraphNode) {

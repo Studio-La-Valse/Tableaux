@@ -6,7 +6,7 @@ export type HistoryOptions = {
   maxHistory?: number
 }
 
-export const useHistory = defineStore('history', () => {
+export const useGraphHistoryStore = defineStore('history', () => {
   // 1) reactive state
   const past = ref<GraphModel[]>([])
   const future = ref<GraphModel[]>([])

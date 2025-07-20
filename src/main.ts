@@ -7,9 +7,9 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
 import { logError } from '@/stores/error-log-store'
-import { useGraphNodeActivatorCollection } from '@/stores/graph-node-activator-store'
+import { useGraphNodeActivatorStore } from '@/stores/graph-node-activator-store'
 
-import { graphNodeTypes } from '@/models/graph/graph-nodes/decorators';
+import { graphNodeTypes } from '@/models/graph/graph-nodes/decorators'
 import.meta.glob('@/models/graph/graph-nodes/**/*.ts', { eager: true })
 
 const app = createApp(App)
@@ -34,10 +34,10 @@ app.use(router)
 
 app.use(createPinia())
 
-const { register } = useGraphNodeActivatorCollection()
+const { register } = useGraphNodeActivatorStore()
 
 for (const { category, ctor } of graphNodeTypes) {
-  register(category, (id, path) => new ctor(id, path));
+  register(category, (id, path) => new ctor(id, path))
 }
 
 app.mount('#app')

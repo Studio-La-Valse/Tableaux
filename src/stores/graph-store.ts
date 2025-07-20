@@ -1,19 +1,19 @@
 import type { XY } from '@/models/geometry/xy'
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
-import { useGraphNodeActivatorCollection } from './graph-node-activator-store'
+import { useGraphNodeActivatorStore } from './graph-node-activator-store'
 import type { GraphEdge } from '@/models/graph/core/graph-edge'
 import type { GraphNodeModel } from '@/models/graph/core/models/graph-node-model'
 import type { GraphModel } from '@/models/graph/core/models/graph-model'
 import type { GraphEdgeModel } from '@/models/graph/core/models/graph-edge-model'
 import { GraphNodeWrapper } from '@/models/graph/core/graph-node-wrapper'
-import { useHistory } from './graph-history-store'
+import { useGraphHistoryStore } from './graph-history-store'
 
 const useGraphInternal = defineStore('graph', () => {
   const nodes: Ref<GraphNodeWrapper[]> = ref([])
   const edges: Ref<GraphEdge[]> = ref([])
 
-  const activators = useGraphNodeActivatorCollection()
+  const activators = useGraphNodeActivatorStore()
 
   const clear = () => {
     nodes.value.splice(0)
@@ -91,7 +91,9 @@ const useGraphInternal = defineStore('graph', () => {
     const leftNode = getNode(leftNodeId)
     const rightNode = getNode(rightNodeId)
 
-    const edge = leftNode.innerNode.outputs[outputIndex].connectTo(rightNode.innerNode.inputs[inputIndex])
+    const edge = leftNode.innerNode.outputs[outputIndex].connectTo(
+      rightNode.innerNode.inputs[inputIndex],
+    )
     edges.value.push(edge)
 
     // seems like the subscription was succesful, so remove the existing edge.
@@ -267,7 +269,7 @@ const useGraphInternal = defineStore('graph', () => {
 
 export const useGraph = defineStore('graph-with-history', () => {
   const internalGraph = useGraphInternal()
-  const history = useHistory()
+  const history = useGraphHistoryStore()
   history.init(internalGraph.toModel())
 
   const clear = () => {
@@ -315,10 +317,11 @@ export const useGraph = defineStore('graph-with-history', () => {
     }
   }
 
-  const removeEdge = (rightNodeId: string, inputIndex: number) => {
+  const removeEdges = (ids: string[]) => {
     const state = internalGraph.toModel()
     try {
-      internalGraph.removeEdge(rightNodeId, inputIndex)
+      const edges = [...internalGraph.edges.filter((v) => ids.includes(v.id))]
+      edges.forEach((v) => internalGraph.removeEdge(v.rightGraphNodeId, v.inputIndex))
       history.commit(internalGraph.toModel())
     } catch {
       internalGraph.fromModel(state)
@@ -405,7 +408,7 @@ export const useGraph = defineStore('graph-with-history', () => {
     removeNodes,
 
     connect,
-    removeEdge,
+    removeEdges,
 
     insertInput,
     removeInput,
