@@ -19,7 +19,7 @@ const emit = defineEmits<{
 }>();
 
 const localPos = computed<XY>({
-  get: () => ({ x: props.graphNode.x, y: props.graphNode.y }),
+  get: () => props.graphNode.xy,
   set: (pos: XY) => {
     emit('updatePosition', props.graphNode, pos);
   }

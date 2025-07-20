@@ -18,7 +18,6 @@ const nodes = computed(() => graph.nodes)
 useCopyPaste();
 
 const onUpdatePosition = (graphNode: GraphNodeWrapper, pos: XY) => {
-  graphNode.x = pos.x;
-  graphNode.y = pos.y;
+  graphNode.xy = { x: pos.y, y: pos.y }
 };
 </script>

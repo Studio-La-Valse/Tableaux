@@ -6,6 +6,7 @@ import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
 import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store'
 import { useContextMenuStore } from '@/stores/use-context-menu-store'
 import { useEdgeDrag } from './use-edge-drag'
+import type { GraphNodeWrapper } from '@/models/graph/core/graph-node-wrapper'
 
 export function useNodeSelectionAndDrag() {
   const selectionStore = useGraphNodeSelectionStore()
@@ -22,8 +23,8 @@ export function useNodeSelectionAndDrag() {
 
   let startPointerPos: XY = { x: 0, y: 0 }
 
-  // maps nodeId → offset from pointer to node at start
-  let dragOffsetMap: Record<string, XY> = {}
+  // maps elements to drag with their original position
+  const draggableElements: { node: GraphNodeWrapper; startPos: XY }[] = []
 
   function onMouseDown(event: MouseEvent, nodeId: string) {
     if (event.button !== 0) return
@@ -35,9 +36,9 @@ export function useNodeSelectionAndDrag() {
     // but still need to close and cancel menu and edge drag.
     menu.close()
     edgeDrag.cancelConnect()
+    edgeSelectionStore.deselectAll()
 
     // ——— selection logic ———
-    edgeSelectionStore.deselectAll()
     if (event.shiftKey) {
       if (!selectionStore.isSelected(nodeId)) {
         selectionStore.selectNode(nodeId)
@@ -56,14 +57,11 @@ export function useNodeSelectionAndDrag() {
 
     // record anchor point & initial node positions
     startPointerPos = clientToCanvas(event)
-    dragOffsetMap = {}
+    draggableElements.length = 0
 
     selectionStore.selectedNodes.forEach((id) => {
       const n = graph.getNode(id)
-      dragOffsetMap[id] = {
-        x: startPointerPos.x - n.x,
-        y: startPointerPos.y - n.y,
-      }
+      draggableElements.push({ node: n, startPos: n.xy })
     })
 
     wasDragged.value = false
@@ -76,6 +74,9 @@ export function useNodeSelectionAndDrag() {
   function onMouseMove(event: MouseEvent) {
     if (!dragging.value) return
 
+    event.preventDefault()
+    event.stopPropagation()
+
     const cur = clientToCanvas(event)
     const dx = cur.x - startPointerPos.x
     const dy = cur.y - startPointerPos.y
@@ -84,22 +85,19 @@ export function useNodeSelectionAndDrag() {
       wasDragged.value = true
     }
 
-    // move whatever is selected
-    selectionStore.selectedNodes.forEach((id) => {
-      const n = graph.getNode(id)
-      const offs = dragOffsetMap[id] || { x: 0, y: 0 }
-      n.x = cur.x - offs.x
-      n.y = cur.y - offs.y
-    })
-
-    event.preventDefault()
-    event.stopPropagation()
+    if (wasDragged.value) {
+      // move whatever is selected
+      draggableElements.forEach(({ node, startPos }) => {
+        node.xy = { x: startPos.x + dx, y: startPos.y + dy }
+      })
+    }
   }
 
   function onMouseUp() {
     if (!dragging.value) return
 
     dragging.value = false
+    draggableElements.length = 0
 
     window.removeEventListener('mousemove', onMouseMove)
     window.removeEventListener('mouseup', onMouseUp)

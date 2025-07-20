@@ -1,3 +1,4 @@
+import type { XY } from '@/models/geometry/xy'
 import type { GraphNode } from './graph-node'
 import type { GraphNodeModel } from './models/graph-node-model'
 
@@ -8,8 +9,7 @@ export class GraphNodeWrapper {
   private _handlePad = 30
   public version
 
-  public x: number = 0
-  public y: number = 0
+  public xy: XY = { x: 0, y: 0}
 
   public get height(): number {
     return Math.max(this._height, this.minHeight)
@@ -49,8 +49,8 @@ export class GraphNodeWrapper {
     const result = {
       id: this.innerNode.id,
       path: this.innerNode.path,
-      x: this.x,
-      y: this.y,
+      x: this.xy.x,
+      y: this.xy.y,
       ...(Object.keys(this.innerNode.data).length > 0 && { data: this.innerNode.data }),
       ...(this.width !== this.minWidth && { width: this.width }),
       ...(this.height !== this.minHeight && { height: this.height }),
@@ -77,6 +77,6 @@ export class GraphNodeWrapper {
    */
   public calculateHandleCoordinate(index: number, of: number): number {
     const height = this.calculateHandleHeight(index, of)
-    return this.y + height
+    return this.xy.y + height
   }
 }

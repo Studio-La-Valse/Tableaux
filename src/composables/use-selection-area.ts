@@ -67,10 +67,10 @@ export function useSelectionArea() {
     graphStore.nodes
       .filter((node) => {
         return (
-          node.x >= min.x &&
-          node.y >= min.y &&
-          node.x + node.width <= max.x &&
-          node.y + node.height <= max.y
+          node.xy.x >= min.x &&
+          node.xy.y >= min.y &&
+          node.xy.x + node.width <= max.x &&
+          node.xy.y + node.height <= max.y
         )
       })
       .forEach((node) => {

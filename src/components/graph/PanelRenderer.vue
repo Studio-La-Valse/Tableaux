@@ -38,13 +38,11 @@ import LoggerPanel from "./Nodes/LoggerPanel.vue";
 import GraphNodeInputRenderer from "./GraphNodeInputRenderer.vue";
 import GraphNodeOutputRenderer from "./GraphNodeOutputRenderer.vue";
 import type { GraphNode } from "@/models/graph/core/graph-node";
-import { useGraphStore } from "@/stores/use-graph-store";
 import { useGraphNodeSelectionStore } from "@/stores/use-graph-node-selection-store";
 import type { GraphNodeWrapper } from "@/models/graph/core/graph-node-wrapper";
 import { GraphNodeInput } from "@/models/graph/core/graph-node-input";
 import { GraphNodeOutput } from "@/models/graph/core/graph-node-output";
 
-const { getNode } = useGraphStore();
 const { isSelected } = useGraphNodeSelectionStore()
 
 const props = defineProps<{
@@ -66,7 +64,7 @@ const borderColor = computed(() => {
 })
 
 const shadowColor = computed(() => {
-  switch (graphNode.innerNode.componentState) {
+  switch (props.graphNode.innerNode.componentState) {
     case "armed":
       return "--vt-armed-1"
     case "error":
@@ -88,14 +86,11 @@ const borderStyle = computed(() => ({
 }))
 
 const contentStyle = computed<StyleValue>(() => ({
-  minWidth: graphNode.minWidth + 'px',
-  minHeight: graphNode.minHeight + 'px',
-  width: graphNode.width + 'px',
-  height: graphNode.height + 'px'
+  minWidth: props.graphNode.minWidth + 'px',
+  minHeight: props.graphNode.minHeight + 'px',
+  width: props.graphNode.width + 'px',
+  height: props.graphNode.height + 'px'
 }))
-
-// Get the reactive graph node instance.
-const graphNode = getNode(props.graphNode.innerNode.id);
 
 const componentMap: Record<string, Component> = {
   "emitters/number": NumberEmitterPanel,
@@ -110,9 +105,9 @@ const getGraphNodePanel = (node: GraphNode) => {
 };
 
 const getRelativePosition = (handle: GraphNodeInput | GraphNodeOutput) => {
-  const x = handle instanceof GraphNodeInput ? graphNode.x : graphNode.x + graphNode.width;
-  const number = handle instanceof GraphNodeInput ? graphNode.innerNode.inputs.length : graphNode.innerNode.outputs.length;
-  const y = graphNode.calculateHandleHeight(handle.index, number);
+  const x = handle instanceof GraphNodeInput ? props.graphNode.xy.x : props.graphNode.xy.x + props.graphNode.width;
+  const number = handle instanceof GraphNodeInput ? props.graphNode.innerNode.inputs.length : props.graphNode.innerNode.outputs.length;
+  const y = props.graphNode.calculateHandleHeight(handle.index, number);
   return { x, y }
 }
 </script>

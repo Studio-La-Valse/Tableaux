@@ -1,12 +1,13 @@
+import type { GraphNodeWrapper } from './graph-node-wrapper'
 import type { GraphEdgeModel } from './models/graph-edge-model'
 
 export class GraphEdge {
   public readonly id: string
 
   constructor(
-    public leftGraphNodeId: string,
+    public readonly leftGraphNode: GraphNodeWrapper,
     public outputIndex: number,
-    public rightGraphNodeId: string,
+    public readonly rightGraphNode: GraphNodeWrapper,
     public inputIndex: number,
   ) {
     // used to track selection, note how the public fields may be modified
@@ -15,15 +16,15 @@ export class GraphEdge {
 
   public createKey(): string {
     // used to track during rendering
-    const key = `${this.leftGraphNodeId}-${this.outputIndex}-${this.rightGraphNodeId}-${this.inputIndex}`
+    const key = `${this.leftGraphNode.innerNode.id}-${this.outputIndex}-${this.rightGraphNode.innerNode.id}-${this.inputIndex}`
     return key
   }
 
   public toModel(): GraphEdgeModel {
     return {
-      leftId: this.leftGraphNodeId,
+      leftId: this.leftGraphNode.innerNode.id,
       output: this.outputIndex,
-      rightId: this.rightGraphNodeId,
+      rightId: this.rightGraphNode.innerNode.id,
       input: this.inputIndex,
     }
   }
