@@ -1,4 +1,4 @@
-import { type ColorRGB } from '@/models/geometry/color-hex'
+import { type ColorRGB } from '@/models/geometry/color'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'

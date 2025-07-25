@@ -1,5 +1,5 @@
 import { isDrawableCircle, type DrawableCircle } from '../geometry/circle'
-import { formatCSSRGBA } from '../geometry/color-hex'
+import { formatCSSRGBA } from '../geometry/color-rgb'
 import type { DrawableGeometry } from '../geometry/geometry'
 import { isDrawableLine, type DrawableLine } from '../geometry/line'
 import { isDrawableRectangle, type DrawableRectangle } from '../geometry/rectangle'

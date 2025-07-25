@@ -1,4 +1,5 @@
-import { isRGB, type ColorRGB } from './color-hex'
+import { type ColorRGB } from './color'
+import { isColorRGB } from './color-rgb'
 
 export type Fill = { fill: ColorRGB }
 
@@ -8,7 +9,7 @@ export function hasFill(value: object): value is Fill {
     value !== null &&
     'fill' in value &&
     typeof value.fill === 'object' &&
-    isRGB(value.fill)
+    isColorRGB(value.fill)
   )
 }
 
@@ -20,7 +21,7 @@ export function hasStroke(value: object): value is Stroke {
     value !== null &&
     'stroke' in value &&
     typeof value.stroke === 'object' &&
-    isRGB(value.stroke) &&
+    isColorRGB(value.stroke) &&
     'strokeWidth' in value &&
     typeof value.strokeWidth === 'number'
   )

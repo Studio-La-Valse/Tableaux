@@ -1,8 +1,11 @@
-import { type ColorARGB } from '@/models/geometry/color-hex'
+import { type ColorARGB } from '@/models/geometry/color'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import type { Rectangle as rectangle, DrawableRectangle as drawableRectangle } from '@/models/geometry/rectangle'
+import type {
+  Rectangle as rectangle,
+  DrawableRectangle as drawableRectangle,
+} from '@/models/geometry/rectangle'
 
 @GraphNodeType('Canvas', 'Drawable Rectangle')
 export class DrawableRectangle extends GraphNode {
