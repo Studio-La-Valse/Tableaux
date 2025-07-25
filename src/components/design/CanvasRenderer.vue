@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { CanvasRenderingContextPainter } from '@/models/bitmap-painters/canvas-rendering-context-painter';
+import { BitmapPainter } from '@/models/bitmap-painters/bitmap-painter';
 import { useCanvasElementStore } from '@/stores/use-canvas-element-store';
 import { useCanvasPropsStore } from '@/stores/use-canvas-props-store';
 import { nextTick, onMounted, ref, watch } from 'vue';
@@ -22,7 +22,7 @@ function redraw() {
   const ctx = canvas.value.getContext('2d')
   if (!ctx) return;
 
-  const painter = new CanvasRenderingContextPainter(ctx);
+  const painter = new BitmapPainter(ctx);
   painter.Init(props.dimensions.x, props.dimensions.y);
 
   elementStore.elements.forEach(el => {

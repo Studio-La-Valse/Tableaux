@@ -1,6 +1,5 @@
+import type { XY } from '@/models/geometry/xy'
 import { ref } from 'vue'
-
-export type XY = { x: number; y: number }
 
 const viewportRef = ref<HTMLElement | null>(null)
 const canvasRef = ref<HTMLElement | null>(null)
