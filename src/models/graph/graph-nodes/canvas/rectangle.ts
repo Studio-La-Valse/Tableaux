@@ -1,3 +1,4 @@
+import { type ColorARGB } from '@/models/geometry/color-hex'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
@@ -15,8 +16,8 @@ export class DrawableRectangle extends GraphNode {
     super(id, path)
 
     this.input1 = this.registerObjectInput<rectangle>('Rectangle')
-    this.input2 = this.registerStringInput('Fill')
-    this.input3 = this.registerStringInput('Stroke')
+    this.input2 = this.registerObjectInput<ColorARGB>('Fill')
+    this.input3 = this.registerObjectInput<ColorARGB>('Stroke')
     this.input4 = this.registerNumberInput('StrokeWidth')
     this.output = this.registerObjectOutput<drawableRectangle>('Rectangle')
   }
