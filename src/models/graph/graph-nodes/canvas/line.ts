@@ -1,3 +1,4 @@
+import type { ColorARGB } from '@/models/geometry/color'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
@@ -14,7 +15,7 @@ export class DrawableLine extends GraphNode {
     super(id, path)
 
     this.input1 = this.registerObjectInput<line>('Line')
-    this.input2 = this.registerStringInput('Stroke')
+    this.input2 = this.registerObjectInput<ColorARGB>('Stroke')
     this.input3 = this.registerNumberInput('StrokeWidth')
     this.output = this.registerObjectOutput<drawableLine>('Line')
   }

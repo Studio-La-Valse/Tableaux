@@ -1,4 +1,5 @@
 import { isDrawableCircle, type DrawableCircle } from '../geometry/circle'
+import { formatCSSRGBA } from '../geometry/color-rgb'
 import type { DrawableGeometry } from '../geometry/geometry'
 import { isDrawableLine, type DrawableLine } from '../geometry/line'
 import { isDrawableRectangle, type DrawableRectangle } from '../geometry/rectangle'
@@ -37,7 +38,7 @@ export class CanvasRenderingContextPainter extends BitmapPainter {
   }
 
   public DrawLine(bitmap: CanvasRenderingContext2D, element: DrawableLine): BitmapPainter {
-    bitmap.strokeStyle = element.stroke
+    bitmap.strokeStyle = formatCSSRGBA(element.stroke)
     bitmap.lineWidth = element.strokeWidth
 
     bitmap.beginPath()
@@ -52,8 +53,8 @@ export class CanvasRenderingContextPainter extends BitmapPainter {
     bitmap: CanvasRenderingContext2D,
     element: DrawableRectangle,
   ): BitmapPainter {
-    bitmap.fillStyle = element.fill
-    bitmap.strokeStyle = element.stroke
+    bitmap.fillStyle = formatCSSRGBA(element.fill)
+    bitmap.strokeStyle = formatCSSRGBA(element.stroke)
     bitmap.lineWidth = element.strokeWidth
 
     bitmap.beginPath()
@@ -65,8 +66,8 @@ export class CanvasRenderingContextPainter extends BitmapPainter {
   }
 
   public DrawCircle(bitmap: CanvasRenderingContext2D, element: DrawableCircle): BitmapPainter {
-    bitmap.fillStyle = element.fill
-    bitmap.strokeStyle = element.stroke
+    bitmap.fillStyle = formatCSSRGBA(element.fill)
+    bitmap.strokeStyle = formatCSSRGBA(element.stroke)
     bitmap.lineWidth = element.strokeWidth
 
     bitmap.beginPath()

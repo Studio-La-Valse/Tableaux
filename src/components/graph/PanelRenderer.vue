@@ -31,8 +31,9 @@
 
 <script setup lang="ts">
 import { computed, type StyleValue, type Component } from "vue";
-import NumberEmitterPanel from "./Nodes/NumberEmitter.vue";
-import TextEmitterPanel from "./Nodes/TextEmitter.vue";
+import NumberEmitter from "./Nodes/NumberEmitter.vue";
+import TextEmitter from "./Nodes/TextEmitter.vue";
+import ColorEmitter from "./Nodes/ColorEmitter.vue";
 import GraphNodePanel from "./GraphNodePanel.vue";
 import LoggerPanel from "./Nodes/LoggerPanel.vue";
 import GraphNodeInputRenderer from "./GraphNodeInputRenderer.vue";
@@ -93,8 +94,9 @@ const contentStyle = computed<StyleValue>(() => ({
 }))
 
 const componentMap: Record<string, Component> = {
-  "emitters/number": NumberEmitterPanel,
-  "emitters/text": TextEmitterPanel,
+  "emitters/number": NumberEmitter,
+  "emitters/text": TextEmitter,
+  "emitters/color": ColorEmitter,
   "generic/logger": LoggerPanel,
   // Add other path keys as needed
 };
