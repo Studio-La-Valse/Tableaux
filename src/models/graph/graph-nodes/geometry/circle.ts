@@ -8,20 +8,20 @@ import { type Circle as circle } from '@/models/geometry/circle'
 export class Circle extends GraphNode {
   private input1
   private input2
-  private output
+  private outputCircle
 
   constructor(id: string, path: string[]) {
     super(id, path)
 
     this.input1 = this.registerObjectInput<XY>('XY')
     this.input2 = this.registerNumberInput('Radius')
-    this.output = this.registerObjectOutput<circle>('Circle')
+
+    this.outputCircle = this.registerObjectOutput<circle>('Circle')
   }
 
   protected solve(): void {
     inputIterators
       .cycleValues(this.input1, this.input2)
-      .map(([xy, radius]) => ({ origin: xy, radius }))
-      .forEach((v) => this.output.next(v))
+      .forEach(([xy, radius]) => this.outputCircle.next({ origin: xy, radius }))
   }
 }

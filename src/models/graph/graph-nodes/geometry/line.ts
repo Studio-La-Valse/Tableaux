@@ -14,8 +14,8 @@ export class Line extends GraphNode {
     super(id, path)
 
     this.input1 = this.registerObjectInput<xy>('Start')
-    this.input2 = this.registerObjectInput<xy>('end')
-    this.output = this.registerObjectOutput<line>('Circle')
+    this.input2 = this.registerObjectInput<xy>('End')
+    this.output = this.registerObjectOutput<line>('Line')
   }
 
   protected solve(): void {

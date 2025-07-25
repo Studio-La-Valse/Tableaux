@@ -1,4 +1,3 @@
-import { GraphEdge } from './graph-edge'
 import type { GraphNode } from './graph-node'
 import type { GraphNodeOutput } from './graph-node-output'
 import type { JsonObject } from './models/json-value'

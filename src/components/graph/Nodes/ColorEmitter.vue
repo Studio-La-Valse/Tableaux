@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ColorEmitter } from '@/models/graph/graph-nodes/emitters/color-emitter'
+import type { ColorPicker } from '@/models/graph/graph-nodes/geometry/color/color-picker'
 import ResizablePanel from './ResizablePanel.vue';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useGraphStore } from '@/stores/use-graph-store';
@@ -16,7 +16,7 @@ import { useGraphStore } from '@/stores/use-graph-store';
 const graph = useGraphStore();
 
 const props = defineProps<{
-  graphNode: ColorEmitter
+  graphNode: ColorPicker
 }>()
 
 const inputRef = ref<HTMLInputElement | null>(null);

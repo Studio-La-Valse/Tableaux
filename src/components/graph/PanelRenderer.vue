@@ -94,9 +94,9 @@ const contentStyle = computed<StyleValue>(() => ({
 }))
 
 const componentMap: Record<string, Component> = {
-  "emitters/number": NumberEmitter,
-  "emitters/text": TextEmitter,
-  "emitters/color": ColorEmitter,
+  "math/number emitter": NumberEmitter,
+  "text/text emitter": TextEmitter,
+  "geometry/color/color picker": ColorEmitter,
   "generic/logger": LoggerPanel,
   // Add other path keys as needed
 };

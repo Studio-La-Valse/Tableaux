@@ -9,7 +9,7 @@ export class GraphNodeWrapper {
   private _handlePad = 30
   public version
 
-  public xy: XY = { x: 0, y: 0}
+  public xy: XY = { x: 0, y: 0 }
 
   public get height(): number {
     return Math.max(this._height, this.minHeight)
@@ -67,9 +67,10 @@ export class GraphNodeWrapper {
       return this.height / 2
     }
 
-    const usableHeight = this.height - 2 * this._handlePadStartStop
+    const padStartStop = (this.height - (of - 1) * this._handlePad) / 2
+    const usableHeight = this.height - 2 * padStartStop
     const spacing = usableHeight / (of - 1)
-    return this._handlePadStartStop + index * spacing
+    return padStartStop + index * spacing
   }
 
   /**
