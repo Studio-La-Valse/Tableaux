@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import type { NumberEmitter } from '@/models/graph/graph-nodes/emitters/number-emitter'
+import type { NumberEmitter } from '@/models/graph/graph-nodes/math/number-emitter'
 import ResizablePanel from './ResizablePanel.vue';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useGraphStore } from '@/stores/use-graph-store';

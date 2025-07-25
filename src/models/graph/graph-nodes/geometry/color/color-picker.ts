@@ -1,10 +1,10 @@
 import type { ColorARGB } from '@/models/geometry/color'
 import { isValidHexColor, toColorARGB } from '@/models/geometry/color-hex'
-import { GraphNode } from '../../core/graph-node'
-import { GraphNodeType } from '../decorators'
+import { GraphNode } from '../../../core/graph-node'
+import { GraphNodeType } from '../../decorators'
 
-@GraphNodeType('Emitters', 'Color')
-export class ColorEmitter extends GraphNode {
+@GraphNodeType('Geometry', 'Color', 'Color Picker')
+export class ColorPicker extends GraphNode {
   private output
 
   constructor(id: string, path: string[]) {

@@ -2,7 +2,7 @@ import { type ColorRGB } from '@/models/geometry/color'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import type { Circle as circle, DrawableCircle as drawableCircle } from '@/models/geometry/circle'
+import type { Circle, DrawableCircle as drawableCircle } from '@/models/geometry/circle'
 
 @GraphNodeType('Canvas', 'Drawable Circle')
 export class DrawableCircle extends GraphNode {
@@ -15,7 +15,7 @@ export class DrawableCircle extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerObjectInput<circle>('Circle')
+    this.input1 = this.registerObjectInput<Circle>('Circle')
     this.input2 = this.registerObjectInput<ColorRGB>('Fill')
     this.input3 = this.registerObjectInput<ColorRGB>('Stroke')
     this.input4 = this.registerNumberInput('StrokeWidth')
