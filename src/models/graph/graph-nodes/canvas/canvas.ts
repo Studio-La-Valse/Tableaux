@@ -1,17 +1,17 @@
 import { useCanvasElementStore } from '@/stores/use-canvas-element-store'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { type DrawableGeometry } from '@/models/geometry/geometry'
+import { type Geometry } from '@/models/geometry/geometry'
 
 @GraphNodeType('Canvas', 'Canvas')
 export class Canvas extends GraphNode {
   private input
-  private elementStore: { setElements: (e: DrawableGeometry[]) => void } | null
+  private elementStore: { setElements: (e: Geometry[]) => void } | null
 
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerObjectInput<DrawableGeometry>('Drawable Elements')
+    this.input = this.registerObjectInput<Geometry>('Drawable Elements')
     this.elementStore = null
   }
 
