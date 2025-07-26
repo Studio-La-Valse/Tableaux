@@ -1,11 +1,10 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import { type Geometry } from '@/models/geometry/geometry'
-import type { Rotation } from '@/models/geometry/rotation'
+import { rotate, type Geometry } from '@/models/geometry/geometry'
 import type { XY } from '@/models/geometry/xy'
 
-@GraphNodeType('Geometry', 'Set Rotation')
+@GraphNodeType('Geometry', 'Rotate')
 export class SetRotation extends GraphNode {
   private inputGeometry
   private origin
@@ -20,18 +19,14 @@ export class SetRotation extends GraphNode {
     this.origin = this.registerObjectInput<XY>('Origin')
     this.angle = this.registerNumberInput('Angle (Radians)')
 
-    this.outputGeometry = this.registerObjectOutput<Geometry & Rotation>('Rotated Geometry')
+    this.outputGeometry = this.registerObjectOutput<Geometry>('Rotated Geometry')
   }
 
   protected solve(): void {
     inputIterators
       .cycleValues(this.inputGeometry, this.origin, this.angle)
       .forEach(([geom, origin, angle]) => {
-        const rotated = {
-          ...geom,
-          origin,
-          angle,
-        }
+        const rotated = rotate(geom, origin, angle)
         this.outputGeometry.next(rotated)
       })
   }

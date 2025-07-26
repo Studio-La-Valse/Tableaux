@@ -2,14 +2,13 @@ import { type XY } from '@/models/geometry/xy'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import { scale, type Geometry } from '@/models/geometry/geometry'
+import { scaleUniform, type Geometry } from '@/models/geometry/geometry'
 
-@GraphNodeType('Geometry', 'ScaleGeometry')
+@GraphNodeType('Geometry', 'Scale Geometry (Uniform)')
 export class ScaleGeometry extends GraphNode {
   private inputGeometry
   private inputCenter
-  private inputFactorX
-  private inputFactorY
+  private inputFactor
 
   private outputGeometry
 
@@ -18,18 +17,16 @@ export class ScaleGeometry extends GraphNode {
 
     this.inputGeometry = this.registerObjectInput<Geometry>('Geometry')
     this.inputCenter = this.registerObjectInput<XY>('Center')
-    this.inputFactorX = this.registerNumberInput('X Scale Factor')
-    this.inputFactorY = this.registerNumberInput('Y Scale Factor')
+    this.inputFactor = this.registerNumberInput('Scale Factor X')
 
     this.outputGeometry = this.registerObjectOutput<Geometry>('Scaled Geometry')
   }
 
   protected solve(): void {
     inputIterators
-      .cycleValues(this.inputGeometry, this.inputCenter, this.inputFactorX, this.inputFactorY)
-      .forEach(([geom, center, x, y]) => {
-        const factor = { x, y }
-        const scaled = scale(geom, center, factor)
+      .cycleValues(this.inputGeometry, this.inputCenter, this.inputFactor)
+      .forEach(([geom, center, factor]) => {
+        const scaled = scaleUniform(geom, center, factor)
         this.outputGeometry.next(scaled)
       })
   }

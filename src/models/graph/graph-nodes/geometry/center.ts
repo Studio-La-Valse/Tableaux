@@ -1,11 +1,11 @@
-import { isCircle } from '@/models/geometry/circle'
-import { isLine } from '@/models/geometry/line'
-import { isRectangle } from '@/models/geometry/rectangle'
-import { isXY, type XY } from '@/models/geometry/xy'
+import { type XY } from '@/models/geometry/xy'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type Geometry } from '@/models/geometry/geometry'
+import { getCenter as getCenterCircle } from '@/models/geometry/circle'
+import { getCenter as getCenterLine } from '@/models/geometry/line'
+import { getCenter as getCenterRectangle } from '@/models/geometry/rectangle'
 
 @GraphNodeType('Geometry', 'Center')
 export class Center extends GraphNode {
@@ -23,22 +23,18 @@ export class Center extends GraphNode {
     inputIterators.cycleValues(this.inputGeometry).forEach(([geom]) => {
       let center: XY
 
-      if (isCircle(geom)) {
-        center = geom.origin
-      } else if (isLine(geom)) {
-        center = {
-          x: (geom.start.x + geom.end.x) / 2,
-          y: (geom.start.y + geom.end.y) / 2
-        }
-      } else if (isRectangle(geom)) {
-        center = {
-          x: geom.topLeft.x + geom.width / 2,
-          y: geom.topLeft.y + geom.height / 2
-        }
-      } else if (isXY(geom)) {
-        center = geom
-      } else {
-        throw new Error('Unsupported Geometry type')
+      switch (geom.kind) {
+        case 'circle':
+          center = getCenterCircle(geom)
+          break
+        case 'line':
+          center = getCenterLine(geom)
+          break
+        case 'rectangle':
+          center = getCenterRectangle(geom)
+          break
+        default:
+          throw new Error('Unsupported Geometry type')
       }
 
       this.outputCenter.next(center)

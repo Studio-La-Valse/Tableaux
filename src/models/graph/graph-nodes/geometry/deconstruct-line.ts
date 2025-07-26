@@ -2,7 +2,7 @@ import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/models/geometry/xy'
-import { type Line as line } from '@/models/geometry/line'
+import { getEnd, getStart, type Line as line } from '@/models/geometry/line'
 
 @GraphNodeType('Geometry', 'Deconstruct Line')
 export class DeconstructLine extends GraphNode {
@@ -26,7 +26,8 @@ export class DeconstructLine extends GraphNode {
 
   protected solve(): void {
     inputIterators.cycleValues(this.inputLine).forEach(([line]) => {
-      const { start, end } = line
+      const start = getStart(line)
+      const end = getEnd(line)
 
       const dx = end.x - start.x
       const dy = end.y - start.y

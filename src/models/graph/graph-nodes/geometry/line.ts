@@ -2,7 +2,7 @@ import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/models/geometry/xy'
-import { type Line as line } from '@/models/geometry/line'
+import { createLineFromPoints, type Line as line } from '@/models/geometry/line'
 
 @GraphNodeType('Geometry', 'Line')
 export class Line extends GraphNode {
@@ -21,7 +21,9 @@ export class Line extends GraphNode {
   protected solve(): void {
     inputIterators
       .cycleValues(this.input1, this.input2)
-      .map(([start, end]) => ({ start, end }))
+      .map(([start, end]) => {
+        return createLineFromPoints(start, end)
+      })
       .forEach((v) => this.output.next(v))
   }
 }
