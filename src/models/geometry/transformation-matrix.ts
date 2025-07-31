@@ -1,9 +1,5 @@
-import type { Geometry } from './geometry'
 import { type XY } from './xy'
 
-export type TransformedObject<T extends Geometry> = T & {
-  transformation: TransformationMatrix
-}
 export type TransformationMatrix = {
   a: number
   b: number // scale + shear X
@@ -116,14 +112,17 @@ export function createScale(origin: XY, factor: XY): TransformationMatrix {
   }
 }
 
-export function createScaleUniform(origin: XY, factor: number): TransformationMatrix {
+export function createSkew(origin: XY, skew: XY): TransformationMatrix {
+  const skewX = Math.tan(skew.x)
+  const skewY = Math.tan(skew.y)
+
   return {
-    a: factor,
-    b: 0,
-    c: 0,
-    d: factor,
-    e: origin.x * (1 - factor),
-    f: origin.y * (1 - factor),
+    a: 1,
+    b: skewY,
+    c: skewX,
+    d: 1,
+    e: -origin.y * skewX,
+    f: -origin.x * skewY,
   }
 }
 

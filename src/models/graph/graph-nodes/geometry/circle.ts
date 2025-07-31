@@ -2,7 +2,7 @@ import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY } from '@/models/geometry/xy'
-import { createCircleFromOriginAndRadius, type Circle as circle } from '@/models/geometry/circle'
+import { createCircle, type Circle as circle } from '@/models/geometry/circle'
 
 @GraphNodeType('Geometry', 'Circle')
 export class Circle extends GraphNode {
@@ -21,7 +21,7 @@ export class Circle extends GraphNode {
 
   protected solve(): void {
     inputIterators.cycleValues(this.input1, this.input2).forEach(([xy, radius]) => {
-      const circle = createCircleFromOriginAndRadius(xy, radius)
+      const circle = createCircle(xy, radius)
       this.outputCircle.next(circle)
     })
   }

@@ -4,7 +4,7 @@ import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { scale, type Geometry } from '@/models/geometry/geometry'
 
-@GraphNodeType('Geometry', 'ScaleGeometry')
+@GraphNodeType('Geometry', 'Scale')
 export class ScaleGeometry extends GraphNode {
   private inputGeometry
   private inputCenter

@@ -1,10 +1,8 @@
-import { identity, type TransformationMatrix } from './transformation-matrix'
-import { applyMatrix, type XY } from './xy'
-import { getScale } from './decomposed-transformation-matrix'
+import { compose, createRotation, createScale, createSkew, createTranslation, type TransformationMatrix } from './transformation-matrix'
+import { applyMatrix, distance, type XY } from './xy'
 import type { BaseShape } from './geometry'
-/**
- * A Rectangle is just a transformed unit square.
- */
+import { createTransformedParallelogram, type Parallelogram } from './parallelogram'
+
 export type Rectangle = BaseShape & { kind: 'rectangle' }
 
 export const IDENTITY_RECTANGLE_TL: XY = { x: 0, y: 0 }
@@ -13,11 +11,11 @@ export const IDENTITY_RECTANGLE_BR: XY = { x: 1, y: 1 }
 export const IDENTITY_RECTANGLE_BL: XY = { x: 0, y: 1 }
 export const IDENTITY_RECTANGLE_CENTER: XY = { x: 0.5, y: 0.5 }
 
-export function createRectangleFromDimensions(
-  topLeft: XY,
-  width: number,
-  height: number,
-): Rectangle {
+export function createUnitRectangle() {
+  return createRectangle(IDENTITY_RECTANGLE_TL, 1, 1)
+}
+
+export function createRectangle(topLeft: XY, width: number, height: number): Rectangle {
   const transformation: TransformationMatrix = {
     a: width, // scale X
     b: 0,
@@ -27,48 +25,95 @@ export function createRectangleFromDimensions(
     f: topLeft.y, // translate Y
   }
 
-  return createRectangle(transformation)
-}
-
-/**
- * Create a new unit‐rectangle with an optional initial transform.
- */
-export function createRectangle(transformation: TransformationMatrix = identity()): Rectangle {
   return { kind: 'rectangle', transformation }
 }
 
-/**
- * Transformed corners in world‐space.
- */
-export function getTopLeft(rect: Rectangle): XY {
-  return applyMatrix(IDENTITY_RECTANGLE_TL, rect.transformation)
-}
-export function getTopRight(rect: Rectangle): XY {
-  return applyMatrix(IDENTITY_RECTANGLE_TR, rect.transformation)
-}
-export function getBottomRight(rect: Rectangle): XY {
-  return applyMatrix(IDENTITY_RECTANGLE_BR, rect.transformation)
-}
-export function getBottomLeft(rect: Rectangle): XY {
-  return applyMatrix(IDENTITY_RECTANGLE_BL, rect.transformation)
+export type DeconstructedRectangle = {
+  topLeft: XY
+  topRight: XY
+  bottomRight: XY
+  bottomLeft: XY
+  center: XY
+  width: number
+  height: number
+  rotation: number
+  area: number
+  perimeter: number
+  diagonal: number
 }
 
-/**
- * World‐space center.
- */
-export function getCenter(rect: Rectangle): XY {
-  return applyMatrix(IDENTITY_RECTANGLE_CENTER, rect.transformation)
+export function deconstruct(rect: Rectangle): DeconstructedRectangle {
+  const topLeft = applyMatrix(IDENTITY_RECTANGLE_TL, rect.transformation)
+  const topRight = applyMatrix(IDENTITY_RECTANGLE_TR, rect.transformation)
+  const bottomRight = applyMatrix(IDENTITY_RECTANGLE_BR, rect.transformation)
+  const bottomLeft = applyMatrix(IDENTITY_RECTANGLE_BL, rect.transformation)
+  const center = applyMatrix(IDENTITY_RECTANGLE_CENTER, rect.transformation)
+
+  const width = distance(topRight, topLeft)
+  const height = distance(topLeft, bottomLeft)
+
+  const dx = topRight.x - topLeft.x
+  const dy = topRight.y - topLeft.y
+  const rotation = Math.atan2(dy, dx)
+
+  const area = width * height
+  const perimeter = width * 2 + height * 2
+  const diagonal = distance(topLeft, bottomRight)
+
+  return {
+    topLeft,
+    topRight,
+    bottomRight,
+    bottomLeft,
+    center,
+    width,
+    height,
+    rotation,
+    area,
+    perimeter,
+    diagonal,
+  }
 }
 
-/**
- * Width and height derived from the decomposed scale.
- * Non-uniform transforms are respected.
- */
-export function getWidth(rect: Rectangle): number {
-  const { x: sx } = getScale(rect.transformation)
-  return sx
+export function translate(square: Rectangle, delta: XY): Rectangle {
+  const transformationMatrix = createTranslation(delta)
+  const transformation = compose(transformationMatrix, square.transformation)
+  return {
+    ...square,
+    transformation,
+  }
 }
-export function getHeight(rect: Rectangle): number {
-  const { y: sy } = getScale(rect.transformation)
-  return sy
+
+export function scale(square: Rectangle, origin: XY, factor: XY): Rectangle {
+  const transformationMatrix = createScale(origin, factor)
+  const transformation = compose(transformationMatrix, square.transformation)
+  const rectangle = createUnitRectangle()
+  return {
+    ...rectangle,
+    transformation,
+  }
+}
+
+export function scaleUniform(square: Rectangle, origin: XY, factor: number): Rectangle {
+  const transformationMatrix = createScale(origin, { x: factor, y: factor })
+  const transformation = compose(transformationMatrix, square.transformation)
+  return {
+    ...square,
+    transformation,
+  }
+}
+
+export function rotate(square: Rectangle, origin: XY, angle: number): Rectangle {
+  const transformationMatrix = createRotation(origin, angle)
+  const transformation = compose(transformationMatrix, square.transformation)
+  return {
+    ...square,
+    transformation,
+  }
+}
+
+export function skew(square: Rectangle, origin: XY, factor: XY): Parallelogram {
+  const transformationMatrix = createSkew(origin, factor)
+  const transformation = compose(transformationMatrix, square.transformation)
+  return createTransformedParallelogram(transformation)
 }

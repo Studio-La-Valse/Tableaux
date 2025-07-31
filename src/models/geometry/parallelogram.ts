@@ -1,0 +1,157 @@
+import {
+  compose,
+  createRotation,
+  createScale,
+  createSkew,
+  createTranslation,
+  identity,
+  type TransformationMatrix,
+} from './transformation-matrix'
+import { applyMatrix, distance, type XY } from './xy'
+import type { BaseShape } from './geometry'
+
+export type Parallelogram = BaseShape & { kind: 'parallelogram' }
+
+export const IDENTITY_PARALLELOGRAM_BL: XY = { x: 0, y: 0 }
+export const IDENTITY_PARALLELOGRAM_BR: XY = { x: 1, y: 0 }
+export const IDENTITY_PARALLELOGRAM_TR: XY = { x: 1, y: 1 }
+export const IDENTITY_PARALLELOGRAM_TL: XY = { x: 0, y: 1 }
+export const IDENTITY_PARALLELOGRAM_CENTER: XY = { x: 0.5, y: 0.5 }
+
+export function createUnitParallelogram() {
+  const transform = identity()
+  return createTransformedParallelogram(transform)
+}
+
+export function createParallelogram(
+  topLeft: XY,
+  topRight: XY,
+  bottomLeft: XY,
+): Parallelogram {
+  // Vectors from topLeft
+  const vectorA = {
+    x: topRight.x - topLeft.x,
+    y: topRight.y - topLeft.y,
+  }
+
+  const vectorB = {
+    x: bottomLeft.x - topLeft.x,
+    y: bottomLeft.y - topLeft.y,
+  }
+
+  // Affine transformation matrix:
+  // Maps unit square to parallelogram defined by TL, TR, BL
+  const transformation: TransformationMatrix = {
+    a: vectorA.x,
+    b: vectorB.x,
+    c: vectorA.y,
+    d: vectorB.y,
+    e: topLeft.x,
+    f: topLeft.y,
+  }
+
+  return createTransformedParallelogram(transformation)
+}
+
+export function createTransformedParallelogram(
+  transformation: TransformationMatrix,
+): Parallelogram {
+  return { kind: 'parallelogram', transformation }
+}
+
+export type DeconstructedParallelogram = {
+  bottomLeft: XY
+  bottomRight: XY
+  topRight: XY
+  topLeft: XY
+  center: XY
+  sideA: number
+  sideB: number
+  area: number
+  perimeter: number
+}
+
+export function deconstruct(p: Parallelogram): DeconstructedParallelogram {
+  const bottomLeft = applyMatrix(IDENTITY_PARALLELOGRAM_BL, p.transformation)
+  const bottomRight = applyMatrix(IDENTITY_PARALLELOGRAM_BR, p.transformation)
+  const topRight = applyMatrix(IDENTITY_PARALLELOGRAM_TR, p.transformation)
+  const topLeft = applyMatrix(IDENTITY_PARALLELOGRAM_TL, p.transformation)
+  const center = applyMatrix(IDENTITY_PARALLELOGRAM_CENTER, p.transformation)
+
+  const sideA = distance(bottomLeft, bottomRight)
+  const sideB = distance(bottomLeft, topLeft)
+
+  // Area using vector cross product
+  const vectorA = {
+    x: bottomRight.x - bottomLeft.x,
+    y: bottomRight.y - bottomLeft.y,
+  }
+  const vectorB = {
+    x: topLeft.x - bottomLeft.x,
+    y: topLeft.y - bottomLeft.y,
+  }
+  const area = Math.abs(vectorA.x * vectorB.y - vectorA.y * vectorB.x)
+
+  const perimeter = 2 * (sideA + sideB)
+
+  return {
+    bottomLeft,
+    bottomRight,
+    topRight,
+    topLeft,
+    center,
+    sideA,
+    sideB,
+    area,
+    perimeter,
+  }
+}
+
+export function translate(parallelogram: Parallelogram, delta: XY): Parallelogram {
+  const transformationMatrix = createTranslation(delta)
+  const transformation = compose(transformationMatrix, parallelogram.transformation)
+  return {
+    ...parallelogram,
+    transformation,
+  }
+}
+
+export function scale(parallelogram: Parallelogram, origin: XY, factor: XY): Parallelogram {
+  const transformationMatrix = createScale(origin, factor)
+  const transformation = compose(transformationMatrix, parallelogram.transformation)
+  return {
+    ...parallelogram,
+    transformation,
+  }
+}
+
+export function scaleUniform(
+  parallelogram: Parallelogram,
+  origin: XY,
+  factor: number,
+): Parallelogram {
+  const transformationMatrix = createScale(origin, { x: factor, y: factor })
+  const transformation = compose(transformationMatrix, parallelogram.transformation)
+  return {
+    ...parallelogram,
+    transformation,
+  }
+}
+
+export function rotate(parallelogram: Parallelogram, origin: XY, angle: number): Parallelogram {
+  const transformationMatrix = createRotation(origin, angle)
+  const transformation = compose(transformationMatrix, parallelogram.transformation)
+  return {
+    ...parallelogram,
+    transformation,
+  }
+}
+
+export function skew(parallelogram: Parallelogram, origin: XY, factor: XY): Parallelogram {
+  const transformationMatrix = createSkew(origin, factor)
+  const transformation = compose(transformationMatrix, parallelogram.transformation)
+  return {
+    ...parallelogram,
+    transformation,
+  }
+}

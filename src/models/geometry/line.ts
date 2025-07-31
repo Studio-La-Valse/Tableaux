@@ -1,16 +1,25 @@
-import { identity, type TransformationMatrix } from './transformation-matrix'
+import {
+  compose,
+  createRotation,
+  createScale,
+  createSkew,
+  createTranslation,
+  identity,
+  type TransformationMatrix,
+} from './transformation-matrix'
 import { applyMatrix, distance, type XY } from './xy'
 import type { BaseShape } from './geometry'
 
-/**
- * A Line is just a transformed unit‐segment [ (0,0) → (1,0) ].
- */
 export type Line = BaseShape & { kind: 'line' }
 
 export const IDENTITY_LINE_START: XY = { x: 0, y: 0 }
 export const IDENTITY_LINE_END: XY = { x: 1, y: 0 }
 
-export function createLineFromPoints(start: XY, end: XY): Line {
+export function createUnitLine(): Line {
+  return createLine(IDENTITY_LINE_START, IDENTITY_LINE_END)
+}
+
+export function createLine(start: XY, end: XY): Line {
   const dx = end.x - start.x
   const dy = end.y - start.y
 
@@ -30,45 +39,77 @@ export function createLineFromPoints(start: XY, end: XY): Line {
     f: start.y,
   }
 
-  return createLine(transformation)
+  return createTransformedLine(transformation)
 }
 
-/**
- * Create a new unit‐line with an optional initial transform.
- */
-export function createLine(transformation: TransformationMatrix = identity()): Line {
+export function createTransformedLine(transformation: TransformationMatrix = identity()): Line {
   return { kind: 'line', transformation }
 }
 
-/**
- * World‐space start point = transform × (0,0).
- */
-export function getStart(line: Line): XY {
-  return applyMatrix(IDENTITY_LINE_START, line.transformation)
+export type DeconstructedLine = {
+  start: XY
+  center: XY
+  end: XY
+  length: number
 }
 
-/**
- * World‐space end point = transform × (1,0).
- */
-export function getEnd(line: Line): XY {
-  return applyMatrix(IDENTITY_LINE_END, line.transformation)
-}
-
-/**
- * Midpoint of the transformed segment.
- */
-export function getCenter(line: Line): XY {
-  const s = getStart(line)
-  const e = getEnd(line)
+export function deconstruct(line: Line): DeconstructedLine {
+  const start = applyMatrix(IDENTITY_LINE_START, line.transformation)
+  const end = applyMatrix(IDENTITY_LINE_END, line.transformation)
+  const middle = {
+    x: (start.x + end.x) / 2,
+    y: (start.y + end.y) / 2,
+  }
+  const length = distance(start, end)
   return {
-    x: (s.x + e.x) / 2,
-    y: (s.y + e.y) / 2,
+    start,
+    center: middle,
+    end,
+    length,
   }
 }
 
-/**
- * Euclidean length of the transformed segment.
- */
-export function getLength(line: Line): number {
-  return distance(getStart(line), getEnd(line))
+export function translate(line: Line, delta: XY): Line {
+  const transformationMatrix = createTranslation(delta)
+  const transformation = compose(transformationMatrix, line.transformation)
+  return {
+    ...line,
+    transformation,
+  }
+}
+
+export function scale(line: Line, origin: XY, factor: XY): Line {
+  const transformationMatrix = createScale(origin, factor)
+  const transformation = compose(transformationMatrix, line.transformation)
+  return {
+    ...line,
+    transformation,
+  }
+}
+
+export function scaleUniform(line: Line, origin: XY, factor: number): Line {
+  const transformationMatrix = createScale(origin, { x: factor, y: factor })
+  const transformation = compose(transformationMatrix, line.transformation)
+  return {
+    ...line,
+    transformation,
+  }
+}
+
+export function rotate(line: Line, origin: XY, angle: number): Line {
+  const transformationMatrix = createRotation(origin, angle)
+  const transformation = compose(transformationMatrix, line.transformation)
+  return {
+    ...line,
+    transformation,
+  }
+}
+
+export function skew(line: Line, origin: XY, factor: XY): Line {
+  const transformationMatrix = createSkew(origin, factor)
+  const transformation = compose(transformationMatrix, line.transformation)
+  return {
+    ...line,
+    transformation,
+  }
 }

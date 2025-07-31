@@ -1,8 +1,10 @@
-import { IDENTITY_RADIUS } from './circle'
+import { deconstruct as deconstructCircle } from './circle'
+import { deconstruct as deconstructEllipse } from './ellipse'
+import { deconstruct as deconstructLine } from './line'
+import { deconstruct as deconstructRectangle } from './rectangle'
+import { deconstruct as deconstructSquare } from './square'
+import { deconstruct as deconstructParallelogram } from './parallelogram'
 import type { Geometry } from './geometry'
-import { IDENTITY_LINE_START, IDENTITY_LINE_END } from './line'
-import { IDENTITY_RECTANGLE_TL, IDENTITY_RECTANGLE_BR, IDENTITY_RECTANGLE_TR, IDENTITY_RECTANGLE_BL } from './rectangle'
-import { applyMatrix } from './xy'
 
 export type AxisAlignedBoundingBox = {
   minX: number
@@ -13,52 +15,74 @@ export type AxisAlignedBoundingBox = {
 
 export function getAxisAlignedBoundingBox(element: Geometry): AxisAlignedBoundingBox {
   switch (element.kind) {
-    case 'circle':
-      const { a, b, c, d, e, f } = element.transformation
-
-      // center + radius in x/y after affine
-      // unit circle → ellipse;
-      // max deviation along x is R * sqrt(a^2 + c^2), along y is R * sqrt(b^2 + d^2)
-      const cx = e
-      const cy = f
-      const r = IDENTITY_RADIUS
-      const rx = r * Math.hypot(a, c)
-      const ry = r * Math.hypot(b, d)
-
+    case 'circle': {
+      const { origin, radius } = deconstructCircle(element)
       return {
-        minX: cx - rx,
-        maxX: cx + rx,
-        minY: cy - ry,
-        maxY: cy + ry,
+        minX: origin.x - radius,
+        maxX: origin.x + radius,
+        minY: origin.y - radius,
+        maxY: origin.y + radius,
       }
+    }
 
-    case 'line':
-      // only two points
-      const p1 = applyMatrix(IDENTITY_LINE_START, element.transformation)
-      const p2 = applyMatrix(IDENTITY_LINE_END, element.transformation)
-      const minX = Math.min(p1.x, p2.x)
-      const maxX = Math.max(p1.x, p2.x)
-      const minY = Math.min(p1.y, p2.y)
-      const maxY = Math.max(p1.y, p2.y)
+    case 'ellipse': {
+      const { origin, radiusX, radiusY } = deconstructEllipse(element)
+      return {
+        minX: origin.x - radiusX,
+        maxX: origin.x + radiusX,
+        minY: origin.y - radiusY,
+        maxY: origin.y + radiusY,
+      }
+    }
 
-      return { minX, minY, maxX, maxY }
+    case 'line': {
+      const { start, end } = deconstructLine(element)
+      return {
+        minX: Math.min(start.x, end.x),
+        maxX: Math.max(start.x, end.x),
+        minY: Math.min(start.y, end.y),
+        maxY: Math.max(start.y, end.y),
+      }
+    }
 
-    case 'rectangle':
-      // four corners of unit rect
-      const tl = applyMatrix(IDENTITY_RECTANGLE_TL, element.transformation)
-      const tr = applyMatrix(IDENTITY_RECTANGLE_TR, element.transformation)
-      const br = applyMatrix(IDENTITY_RECTANGLE_BR, element.transformation)
-      const bl = applyMatrix(IDENTITY_RECTANGLE_BL, element.transformation)
-
-      const xs = [tl.x, tr.x, br.x, bl.x]
-      const ys = [tl.y, tr.y, br.y, bl.y]
-
+    case 'rectangle': {
+      const { topLeft, topRight, bottomLeft, bottomRight } = deconstructRectangle(element)
+      const corners = [topLeft, topRight, bottomLeft, bottomRight]
+      const xs = corners.map((p) => p.x)
+      const ys = corners.map((p) => p.y)
       return {
         minX: Math.min(...xs),
         maxX: Math.max(...xs),
         minY: Math.min(...ys),
         maxY: Math.max(...ys),
       }
+    }
+
+    case 'square': {
+      const { topLeft, topRight, bottomLeft, bottomRight } = deconstructSquare(element)
+      const corners = [topLeft, topRight, bottomLeft, bottomRight]
+      const xs = corners.map((p) => p.x)
+      const ys = corners.map((p) => p.y)
+      return {
+        minX: Math.min(...xs),
+        maxX: Math.max(...xs),
+        minY: Math.min(...ys),
+        maxY: Math.max(...ys),
+      }
+    }
+
+    case 'parallelogram': {
+      const { topLeft, topRight, bottomLeft, bottomRight } = deconstructParallelogram(element)
+      const corners = [topLeft, topRight, bottomLeft, bottomRight]
+      const xs = corners.map((p) => p.x)
+      const ys = corners.map((p) => p.y)
+      return {
+        minX: Math.min(...xs),
+        maxX: Math.max(...xs),
+        minY: Math.min(...ys),
+        maxY: Math.max(...ys),
+      }
+    }
 
     default:
       throw new Error('Unsupported Geometry type')

@@ -2,7 +2,7 @@ import { useCanvasPropsStore } from '@/stores/use-canvas-props-store'
 import { GraphNode } from '../../core/graph-node'
 import { watch } from 'vue'
 import { GraphNodeType } from '../decorators'
-import { createRectangleFromDimensions, type Rectangle } from '@/models/geometry/rectangle'
+import { createRectangle, type Rectangle } from '@/models/geometry/rectangle'
 
 @GraphNodeType('Canvas', 'Viewport')
 export class Props extends GraphNode {
@@ -37,11 +37,7 @@ export class Props extends GraphNode {
   protected solve(): void {
     if (!this.canvasProps) return
 
-    const rectangle = createRectangleFromDimensions(
-      { x: 0, y: 0 },
-      this.dimensions.x,
-      this.dimensions.y,
-    )
+    const rectangle = createRectangle({ x: 0, y: 0 }, this.dimensions.x, this.dimensions.y)
     this.output.next(rectangle)
   }
 }
