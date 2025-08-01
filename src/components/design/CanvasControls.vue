@@ -94,48 +94,48 @@ const presetGroups: option[] = [
   {
     label: '4:3',
     items: [
-      { label: '640×480', w: 640, h: 480 },
-      { label: '800×600', w: 800, h: 600 },
-      { label: '1024×768', w: 1024, h: 768 },
-      { label: '1280×960', w: 1280, h: 960 },
-      { label: '1600×1200', w: 1600, h: 1200 }
+      { label: '640x480', w: 640, h: 480 },
+      { label: '800x600', w: 800, h: 600 },
+      { label: '1024x768', w: 1024, h: 768 },
+      { label: '1280x960', w: 1280, h: 960 },
+      { label: '1600x1200', w: 1600, h: 1200 }
     ]
   },
   {
     label: '16:10',
     items: [
-      { label: '1280×800', w: 1280, h: 800 },
-      { label: '1440×900', w: 1440, h: 900 },
-      { label: '1680×1050', w: 1680, h: 1050 },
-      { label: '1920×1200', w: 1920, h: 1200 }
+      { label: '1280x800', w: 1280, h: 800 },
+      { label: '1440x900', w: 1440, h: 900 },
+      { label: '1680x1050', w: 1680, h: 1050 },
+      { label: '1920x1200', w: 1920, h: 1200 }
     ]
   },
   {
     label: '16:9',
     items: [
-      { label: '1280×720', w: 1280, h: 720 },
-      { label: '1366×768', w: 1366, h: 768 },
-      { label: '1600×900', w: 1600, h: 900 },
-      { label: '1920×1080', w: 1920, h: 1080 },
-      { label: '2560×1440', w: 2560, h: 1440 },
-      { label: '3840×2160', w: 3840, h: 2160 }
+      { label: '1280x720', w: 1280, h: 720 },
+      { label: '1366x768', w: 1366, h: 768 },
+      { label: '1600x900', w: 1600, h: 900 },
+      { label: '1920x1080', w: 1920, h: 1080 },
+      { label: '2560x1440', w: 2560, h: 1440 },
+      { label: '3840x2160', w: 3840, h: 2160 }
     ]
   },
   {
     label: '21:9',
     items: [
-      { label: '2560×1080', w: 2560, h: 1080 },
-      { label: '3440×1440', w: 3440, h: 1440 },
-      { label: '5120×2160', w: 5120, h: 2160 }
+      { label: '2560x1080', w: 2560, h: 1080 },
+      { label: '3440x1440', w: 3440, h: 1440 },
+      { label: '5120x2160', w: 5120, h: 2160 }
     ]
   },
   {
     label: 'Square',
     items: [
-      { label: '256×256', w: 256, h: 256 },
-      { label: '512×512', w: 512, h: 512 },
-      { label: '1024×1024', w: 1024, h: 1024 },
-      { label: '2048×2048', w: 2048, h: 2048 }
+      { label: '256x256', w: 256, h: 256 },
+      { label: '512x512', w: 512, h: 512 },
+      { label: '1024x1024', w: 1024, h: 1024 },
+      { label: '2048x2048', w: 2048, h: 2048 }
     ]
   }
 ] as const
@@ -171,29 +171,34 @@ function toggleLock() {
 
 // Input handlers that clamp to >=1 integer
 function onWidthInput(val: string) {
-  let n = Math.round(Number(val))
-  if (isNaN(n) || n < 1) n = 1
-  canvasProps.dimensions = { x: n, y: canvasProps.dimensions.y }
+  let newX = Math.round(Number(val))
+  if (isNaN(newX) || newX < 1) newX = 1
+
+  let newY = canvasProps.dimensions.y
   if (aspectLocked.value) {
-    const newY = Math.max(1, Math.round(n / ratio.value))
-    canvasProps.dimensions = { x: canvasProps.dimensions.x, y: newY }
+    newY = Math.max(1, Math.round(newX / ratio.value))
   }
+
+  canvasProps.setDimensions({ x: newX, y: newY })
 }
 function onHeightInput(val: string) {
-  let n = Math.round(Number(val))
-  if (isNaN(n) || n < 1) n = 1
-  canvasProps.dimensions = { x: canvasProps.dimensions.x, y: n }
+  let newY = Math.round(Number(val))
+  if (isNaN(newY) || newY < 1) newY = 1
+
+  let newX = canvasProps.dimensions.x
   if (aspectLocked.value) {
-    const newX = Math.max(1, Math.round(n * ratio.value))
-    canvasProps.dimensions = { x: newX, y: canvasProps.dimensions.y }
+    newX = Math.max(1, Math.round(newX * ratio.value))
   }
+
+  canvasProps.setDimensions({ x: newX, y: newY })
+
 }
 
 // Flip and Full-Screen
 function onFlip() {
   const oldX = canvasProps.dimensions.x
   const oldY = canvasProps.dimensions.y
-  canvasProps.dimensions = { x: oldY, y: oldX }
+  canvasProps.setDimensions({ x: oldY, y: oldX })
   if (aspectLocked.value) {
     ratio.value = canvasProps.dimensions.x / canvasProps.dimensions.y
   }
@@ -209,7 +214,7 @@ watch(selectedPreset, label => {
   const p = allPresets.value.find(x => x.label === label)
   if (!p) return
 
-  canvasProps.dimensions = { x: p.w, y: p.h }
+  canvasProps.setDimensions({ x: p.w, y: p.h })
   if (aspectLocked.value) {
     ratio.value = p.w / p.h
   }
@@ -238,7 +243,8 @@ watch(selectedPreset, label => {
   // otherwise, we’re “applying” a preset,
   // so set the guard so our dims-watcher can ignore the next assignment
   applyingPreset = true
-  canvasProps.dimensions = { x: p.w, y: p.h }
+
+  canvasProps.setDimensions({ x: p.w, y: p.h })
   if (aspectLocked.value) {
     ratio.value = p.w / p.h
   }

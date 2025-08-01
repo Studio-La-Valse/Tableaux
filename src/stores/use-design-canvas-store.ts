@@ -1,15 +1,17 @@
 import type { Shape } from '@/geometry/geometry'
 import type { XY } from '@/geometry/xy'
 import { defineStore } from 'pinia'
-import { ref, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { useGraphStore } from './use-graph-store'
 import { CanvasClick } from '@/graph/graph-nodes/canvas/canvas-click'
 import { MouseMove } from '@/graph/graph-nodes/canvas/mouse-move'
+import { Viewport } from '@/graph/graph-nodes/canvas/viewport'
 
 const canvasRef = ref<HTMLCanvasElement | undefined>()
+const innerDimensions = ref<XY>({ x: 1920, y: 1080 })
 
 export const useDesignCanvasStore = defineStore('canvas-props', () => {
-  const dimensions = ref<{ x: number; y: number }>({ x: 1920, y: 1080 })
+  const dimensions = computed(() => innerDimensions.value)
   const lastClick = ref<XY | undefined>()
   const elements: Ref<Shape[]> = ref([])
   const graph = useGraphStore()
@@ -56,9 +58,18 @@ export const useDesignCanvasStore = defineStore('canvas-props', () => {
     return { x: canvasX, y: canvasY }
   }
 
+  const setDimensions = (_dimensions: XY) => {
+    innerDimensions.value = _dimensions
+
+    graph.nodes
+      .map((v) => v.innerNode)
+      .filter((v) => v instanceof Viewport)
+      .forEach((v) => v.onChange(_dimensions))
+  }
+
   function setElements(_elements: Shape[]) {
     elements.value = [..._elements]
   }
 
-  return { dimensions, lastClick, elements, setElements, setCanvas }
+  return { dimensions, setDimensions, lastClick, elements, setElements, setCanvas }
 })

@@ -1,14 +1,13 @@
-import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 import { GraphNode } from '../../core/graph-node'
-import { watch } from 'vue'
 import { GraphNodeType } from '../decorators'
 import { createRectangle, type Rectangle } from '@/geometry/rectangle'
+import { type XY } from '@/geometry/xy'
 
 @GraphNodeType('Canvas', 'Viewport')
-export class Props extends GraphNode {
+export class Viewport extends GraphNode {
   private output
-  private canvasProps: { dimensions: { x: number; y: number } } | null = null
-  private dimensions = { x: 0, y: 0 }
+
+  public override data: { dimensions: XY } = { dimensions: { x: 0, y: 0 } }
 
   constructor(id: string, path: string[]) {
     super(id, path)
@@ -16,28 +15,15 @@ export class Props extends GraphNode {
     this.output = this.registerObjectOutput<Rectangle>('Viewport')
   }
 
-  public onInitialize(): void {
-    super.onInitialize()
+  public onChange(newValue: XY): void {
+    this.data.dimensions = newValue
 
-    this.canvasProps = useDesignCanvasStore()
-
-    watch(
-      () => this.canvasProps?.dimensions && { ...this.canvasProps.dimensions },
-      (newValue) => {
-        if (!newValue) return
-
-        this.arm()
-        this.dimensions = newValue
-        this.complete()
-      },
-      { immediate: true },
-    )
+    this.arm()
+    this.complete()
   }
 
   protected solve(): void {
-    if (!this.canvasProps) return
-
-    const rectangle = createRectangle({ x: 0, y: 0 }, this.dimensions.x, this.dimensions.y)
+    const rectangle = createRectangle({ x: 0, y: 0 }, this.data.dimensions.x, this.data.dimensions.y)
     this.output.next(rectangle)
   }
 }
