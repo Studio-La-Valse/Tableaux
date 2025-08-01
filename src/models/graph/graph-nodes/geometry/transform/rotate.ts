@@ -1,10 +1,10 @@
-import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
-import { GraphNodeType } from '../decorators'
+import { GraphNode } from '../../../core/graph-node'
+import { inputIterators } from '../../../core/input-iterators'
+import { GraphNodeType } from '../../decorators'
 import { rotate, type Geometry } from '@/models/geometry/geometry'
 import type { XY } from '@/models/geometry/xy'
 
-@GraphNodeType('Geometry', 'Rotate')
+@GraphNodeType('Geometry', 'Transform', 'Rotate')
 export class SetRotation extends GraphNode {
   private inputGeometry
   private origin

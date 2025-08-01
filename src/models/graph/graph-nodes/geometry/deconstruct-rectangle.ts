@@ -2,51 +2,100 @@ import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/models/geometry/xy'
-import { type Rectangle as rect, deconstruct } from '@/models/geometry/rectangle'
+import { deconstruct as deconstructRectangle } from '@/models/geometry/rectangle'
+import { deconstruct as deconstructSquare } from '@/models/geometry/square'
+import type { Geometry } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Rectangle')
 export class DeconstructRectangle extends GraphNode {
-  private inputRect
+  private inputShape
 
-  private outputTopLeft
-  private outputBottomRight
-  private outputCenter
-  private outputWidth
-  private outputHeight
-  private outputRotation
-  private outputArea
-  private outputPerimeter
+  private topLeft
+  private topRight
+  private bottomRight
+  private bottomLeft
+  private center
+  private width
+  private height
+  private rotation
+  private area
+  private perimeter
 
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputRect = this.registerObjectInput<rect>('Rectangle')
+    this.inputShape = this.registerObjectInput<Geometry>('Shape')
 
-    this.outputTopLeft = this.registerObjectOutput<xy>('TopLeft')
-    this.outputBottomRight = this.registerObjectOutput<xy>('BottomRight')
-    this.outputCenter = this.registerObjectOutput<xy>('Center')
-
-    this.outputWidth = this.registerNumberOutput('Width')
-    this.outputHeight = this.registerNumberOutput('Height')
-
-    this.outputRotation = this.registerNumberOutput('Rotation')
-    this.outputArea = this.registerNumberOutput('Area')
-    this.outputPerimeter = this.registerNumberOutput('Perimeter')
+    this.topLeft = this.registerObjectOutput<xy>('Origin')
+    this.topRight = this.registerObjectOutput<xy>('Origin')
+    this.bottomRight = this.registerObjectOutput<xy>('Origin')
+    this.bottomLeft = this.registerObjectOutput<xy>('Origin')
+    this.center = this.registerObjectOutput<xy>('Origin')
+    this.width = this.registerNumberOutput('Width')
+    this.height = this.registerNumberOutput('Height')
+    this.rotation = this.registerNumberOutput('Rotation')
+    this.area = this.registerNumberOutput('Area')
+    this.perimeter = this.registerNumberOutput('Perimeter')
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.inputRect).forEach(([rect]) => {
-      const { topLeft, bottomRight, center, width, height, rotation, area, perimeter } =
-        deconstruct(rect)
+    inputIterators.cycleValues(this.inputShape).forEach(([shape]) => {
+      let topLeft: xy
+      let topRight: xy
+      let bottomRight: xy
+      let bottomLeft: xy
+      let center: xy
+      let width: number
+      let height: number
+      let area: number
+      let perimeter: number
+      let rotation: number
 
-      this.outputTopLeft.next(topLeft)
-      this.outputBottomRight.next(bottomRight)
-      this.outputCenter.next(center)
-      this.outputWidth.next(width)
-      this.outputHeight.next(height)
-      this.outputRotation.next(rotation)
-      this.outputArea.next(area)
-      this.outputPerimeter.next(perimeter)
+      switch (shape.kind) {
+        case 'rectangle': {
+          const result = deconstructRectangle(shape)
+          topLeft = result.topLeft
+          topRight = result.topRight
+          bottomRight = result.bottomRight
+          bottomLeft = result.bottomLeft
+          center = result.center
+          width = result.width
+          height = result.height
+          area = result.area
+          perimeter = result.perimeter
+          rotation = result.rotation
+          break
+        }
+        case 'square': {
+          const result = deconstructSquare(shape)
+          topLeft = result.topLeft
+          topRight = result.topRight
+          bottomRight = result.bottomRight
+          bottomLeft = result.bottomLeft
+          center = result.center
+          width = result.size
+          height = result.size
+          area = result.area
+          perimeter = result.perimeter
+          rotation = result.rotation
+          break
+        }
+        default:
+          throw new Error(
+            `Unsupported shape kind, expected 'rectangle' or 'square', got: ${shape.kind}`,
+          )
+      }
+
+      this.topLeft.next(topLeft)
+      this.topRight.next(topRight)
+      this.bottomRight.next(bottomRight)
+      this.bottomLeft.next(bottomLeft)
+      this.center.next(center)
+      this.width.next(width)
+      this.height.next(height)
+      this.rotation.next(rotation)
+      this.area.next(area)
+      this.perimeter.next(perimeter)
     })
   }
 }

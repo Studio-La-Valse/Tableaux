@@ -69,6 +69,7 @@ export type DeconstructedParallelogram = {
   sideB: number
   area: number
   perimeter: number
+  rotation: number
 }
 
 export function deconstruct(p: Parallelogram): DeconstructedParallelogram {
@@ -94,16 +95,22 @@ export function deconstruct(p: Parallelogram): DeconstructedParallelogram {
 
   const perimeter = 2 * (sideA + sideB)
 
+  // Rotation based on top edge direction
+  const dx = topRight.x - topLeft.x
+  const dy = topRight.y - topLeft.y
+  const rotation = Math.atan2(dy, dx)
+
   return {
-    bottomLeft,
-    bottomRight,
-    topRight,
     topLeft,
+    topRight,
+    bottomRight,
+    bottomLeft,
     center,
     sideA,
     sideB,
     area,
     perimeter,
+    rotation,
   }
 }
 

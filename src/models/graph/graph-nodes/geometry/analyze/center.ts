@@ -1,10 +1,10 @@
 import { type XY } from '@/models/geometry/xy'
-import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
-import { GraphNodeType } from '../decorators'
+import { GraphNode } from '@/models/graph/core/graph-node'
+import { inputIterators } from '@/models/graph/core/input-iterators'
+import { GraphNodeType } from '@/models/graph/graph-nodes/decorators'
 import { getCenter, type Geometry } from '@/models/geometry/geometry'
 
-@GraphNodeType('Geometry', 'Center')
+@GraphNodeType('Geometry', 'Analyze', 'Center')
 export class Center extends GraphNode {
   private inputGeometry
   private outputCenter

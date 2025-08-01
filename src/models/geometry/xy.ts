@@ -2,17 +2,6 @@ import type { TransformationMatrix } from './transformation-matrix'
 
 export type XY = { x: number; y: number }
 
-export function isXY(value: unknown): value is XY {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'x' in value &&
-    'y' in value &&
-    typeof value.x === 'number' &&
-    typeof value.y === 'number'
-  )
-}
-
 export function applyMatrix(p: XY, m: TransformationMatrix): XY {
   return {
     x: p.x * m.a + p.y * m.c + m.e,

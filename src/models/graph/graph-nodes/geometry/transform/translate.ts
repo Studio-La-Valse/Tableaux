@@ -1,10 +1,10 @@
 import { type XY } from '@/models/geometry/xy'
-import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
-import { GraphNodeType } from '../decorators'
+import { GraphNode } from '@/models/graph/core/graph-node'
+import { inputIterators } from '@/models/graph/core/input-iterators'
+import { GraphNodeType } from '@/models/graph/graph-nodes/decorators'
 import { translate, type Geometry } from '@/models/geometry/geometry'
 
-@GraphNodeType('Geometry', 'Translate')
+@GraphNodeType('Geometry', 'Transform', 'Translate')
 export class Translate extends GraphNode {
   private inputGeometry
   private inputOffset

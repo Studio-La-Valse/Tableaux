@@ -1,14 +1,13 @@
-import { deconstruct as deconstructParallelogram } from '@/models/geometry/parallelogram'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/models/geometry/xy'
-import { deconstruct as deconstructRectangle } from '@/models/geometry/rectangle'
 import { deconstruct as deconstructSquare } from '@/models/geometry/square'
 import type { Geometry } from '@/models/geometry/geometry'
 
-@GraphNodeType('Geometry', 'Deconstruct Parallelogram')
-export class DeconstructParallelogram extends GraphNode {
+@GraphNodeType('Geometry', 'Deconstruct Square')
+export class DeconstrucSquare extends GraphNode {
+
   private inputShape
 
   private topLeft
@@ -16,11 +15,10 @@ export class DeconstructParallelogram extends GraphNode {
   private bottomRight
   private bottomLeft
   private center
-  private sideA
-  private sideB
+  private size
+  private rotation
   private area
   private perimeter
-  private rotation
 
   constructor(id: string, path: string[]) {
     super(id, path)
@@ -32,11 +30,10 @@ export class DeconstructParallelogram extends GraphNode {
     this.bottomRight = this.registerObjectOutput<xy>('Origin')
     this.bottomLeft = this.registerObjectOutput<xy>('Origin')
     this.center = this.registerObjectOutput<xy>('Origin')
-    this.sideA = this.registerNumberOutput('Side A')
-    this.sideB = this.registerNumberOutput('Side B')
+    this.size = this.registerNumberOutput('Size')
+    this.rotation = this.registerNumberOutput('Rotation')
     this.area = this.registerNumberOutput('Area')
     this.perimeter = this.registerNumberOutput('Perimeter')
-    this.rotation = this.registerNumberOutput('Rotation')
   }
 
   protected solve(): void {
@@ -46,41 +43,12 @@ export class DeconstructParallelogram extends GraphNode {
       let bottomRight: xy
       let bottomLeft: xy
       let center: xy
-      let sideA: number
-      let sideB: number
+      let size: number
       let area: number
       let perimeter: number
       let rotation: number
 
       switch (shape.kind) {
-        case 'parallelogram': {
-          const result = deconstructParallelogram(shape)
-          topLeft = result.topLeft
-          topRight = result.topRight
-          bottomRight = result.bottomRight
-          bottomLeft = result.bottomLeft
-          center = result.center
-          sideA = result.sideA
-          sideB = result.sideB
-          area = result.area
-          perimeter = result.perimeter
-          rotation = result.rotation
-          break
-        }
-        case 'rectangle': {
-          const result = deconstructRectangle(shape)
-          topLeft = result.topLeft
-          topRight = result.topRight
-          bottomRight = result.bottomRight
-          bottomLeft = result.bottomLeft
-          center = result.center
-          sideA = result.width
-          sideB = result.height
-          area = result.area
-          perimeter = result.perimeter
-          rotation = result.rotation
-          break
-        }
         case 'square': {
           const result = deconstructSquare(shape)
           topLeft = result.topLeft
@@ -88,17 +56,14 @@ export class DeconstructParallelogram extends GraphNode {
           bottomRight = result.bottomRight
           bottomLeft = result.bottomLeft
           center = result.center
-          sideA = result.size
-          sideB = result.size
+          size = result.size
           area = result.area
           perimeter = result.perimeter
           rotation = result.rotation
           break
         }
         default:
-          throw new Error(
-            `Unsupported shape kind, expected 'parallelogram', 'rectangle' or 'circle', got: ${shape.kind}`,
-          )
+          throw new Error(`Unsupported shape kind: ${shape.kind}`)
       }
 
       this.topLeft.next(topLeft)
@@ -106,11 +71,10 @@ export class DeconstructParallelogram extends GraphNode {
       this.bottomRight.next(bottomRight)
       this.bottomLeft.next(bottomLeft)
       this.center.next(center)
-      this.sideA.next(sideA)
-      this.sideB.next(sideB)
+      this.size.next(size)
+      this.rotation.next(rotation)
       this.area.next(area)
       this.perimeter.next(perimeter)
-      this.rotation.next(rotation)
     })
   }
 }
