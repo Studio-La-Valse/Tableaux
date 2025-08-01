@@ -1,9 +1,12 @@
 import { IDENTITY_ORIGIN, IDENTITY_RADIUS, type Circle } from '../geometry/circle'
 import { formatCSSRGBA } from '../geometry/color-rgb'
+import type { Ellipse } from '../geometry/ellipse'
 import { hasFill } from '../geometry/fill'
-import type { Geometry } from '../geometry/geometry'
-import { IDENTITY_LINE_END, IDENTITY_LINE_START, type Line } from '../geometry/line'
-import { IDENTITY_RECTANGLE_BR, IDENTITY_RECTANGLE_TL, type Rectangle } from '../geometry/rectangle'
+import type { Geometry, Shape } from '../geometry/geometry'
+import { IDENTITY_END, IDENTITY_START, type Line } from '../geometry/line'
+import type { Parallelogram } from '../geometry/parallelogram'
+import { type Rectangle } from '../geometry/rectangle'
+import { IDENTITY_BR, IDENTITY_TL, type Square } from '../geometry/square'
 import { hasStroke } from '../geometry/stroke'
 
 export class BitmapPainter {
@@ -20,7 +23,7 @@ export class BitmapPainter {
     return this
   }
 
-  public DrawElements(elements: Iterable<Geometry>): BitmapPainter {
+  public DrawElements(elements: Iterable<Shape>): BitmapPainter {
     for (const element of elements) {
       this.DrawElement(element)
     }
@@ -28,13 +31,16 @@ export class BitmapPainter {
     return this
   }
 
-  public DrawElement(element: Geometry): BitmapPainter {
+  public DrawElement(element: Shape): BitmapPainter {
     switch (element.kind) {
       case 'circle':
+      case 'ellipse':
         return this.DrawCircle(element)
       case 'line':
         return this.DrawLine(element)
       case 'rectangle':
+      case 'square':
+      case 'parallelogram':
         return this.DrawRectangle(element)
       default:
         const msg = `Element ${element} not recognized as a drawable element.`
@@ -48,25 +54,25 @@ export class BitmapPainter {
     this.ctx.save()
     this.ctx.setTransform(a, b, c, d, e, f)
     this.ctx.beginPath()
-    this.ctx.moveTo(IDENTITY_LINE_START.x, IDENTITY_LINE_START.y)
-    this.ctx.lineTo(IDENTITY_LINE_END.x, IDENTITY_LINE_END.y)
+    this.ctx.moveTo(IDENTITY_START.x, IDENTITY_START.y)
+    this.ctx.lineTo(IDENTITY_END.x, IDENTITY_END.y)
     this.ctx.restore()
     this.setStroke(element)
 
     return this
   }
 
-  public DrawRectangle(element: Rectangle): this {
+  public DrawRectangle(element: Square | Rectangle | Parallelogram): this {
     const { a, b, c, d, e, f } = element.transformation
 
     this.ctx.save()
     this.ctx.setTransform(a, b, c, d, e, f)
     this.ctx.beginPath()
     this.ctx.rect(
-      IDENTITY_RECTANGLE_TL.x,
-      IDENTITY_RECTANGLE_TL.y,
-      IDENTITY_RECTANGLE_BR.x - IDENTITY_RECTANGLE_TL.x,
-      IDENTITY_RECTANGLE_BR.y - IDENTITY_RECTANGLE_TL.y,
+      IDENTITY_TL.x,
+      IDENTITY_TL.y,
+      IDENTITY_BR.x - IDENTITY_TL.x,
+      IDENTITY_BR.y - IDENTITY_TL.y,
     )
     this.ctx.restore()
     this.setFill(element)
@@ -75,7 +81,7 @@ export class BitmapPainter {
     return this
   }
 
-  public DrawCircle(element: Circle): this {
+  public DrawCircle(element: Circle | Ellipse): this {
     const { a, b, c, d, e, f } = element.transformation
 
     this.ctx.save()

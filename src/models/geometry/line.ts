@@ -12,11 +12,11 @@ import type { BaseShape } from './geometry'
 
 export type Line = BaseShape & { kind: 'line' }
 
-export const IDENTITY_LINE_START: XY = { x: 0, y: 0 }
-export const IDENTITY_LINE_END: XY = { x: 1, y: 0 }
+export const IDENTITY_START: XY = { x: 0, y: 0 }
+export const IDENTITY_END: XY = { x: 1, y: 0 }
 
 export function createUnitLine(): Line {
-  return createLine(IDENTITY_LINE_START, IDENTITY_LINE_END)
+  return createLine(IDENTITY_START, IDENTITY_END)
 }
 
 export function createLine(start: XY, end: XY): Line {
@@ -54,8 +54,8 @@ export type DeconstructedLine = {
 }
 
 export function deconstruct(line: Line): DeconstructedLine {
-  const start = applyMatrix(IDENTITY_LINE_START, line.transformation)
-  const end = applyMatrix(IDENTITY_LINE_END, line.transformation)
+  const start = applyMatrix(IDENTITY_START, line.transformation)
+  const end = applyMatrix(IDENTITY_END, line.transformation)
   const middle = {
     x: (start.x + end.x) / 2,
     y: (start.y + end.y) / 2,

@@ -1,6 +1,40 @@
-import type { TransformationMatrix } from './transformation-matrix'
+import {
+  createRotation,
+  createScale,
+  createSkew,
+  createTranslation,
+  type TransformationMatrix,
+} from './transformation-matrix'
 
 export type XY = { x: number; y: number }
+
+export function isXY(value: unknown): value is XY {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'x' in value &&
+    'y' in value &&
+    typeof value.x === 'number' &&
+    typeof value.y === 'number'
+  )
+}
+
+export function assertIsXY(value: unknown): XY {
+  if (!isXY(value)) {
+    throw new Error('Value is not XY')
+  }
+
+  return value
+}
+
+export function assertAreXY<T extends unknown[]>(...values: T): { [K in keyof T]: XY } {
+  return values.map((value, index) => {
+    if (!isXY(value)) {
+      throw new Error(`Value at index ${index} is not XY`)
+    }
+    return value
+  }) as { [K in keyof T]: XY }
+}
 
 export function applyMatrix(p: XY, m: TransformationMatrix): XY {
   return {
@@ -47,4 +81,29 @@ export function polygonArea(points: XY[]): number {
 
 export function polygonPerimeter(points: XY[]): number {
   return points.reduce((sum, pt, i) => sum + distance(pt, points[(i + 1) % points.length]), 0)
+}
+
+export function translate(xy: XY, delta: XY): XY {
+  const transformationMatrix = createTranslation(delta)
+  return applyMatrix(xy, transformationMatrix)
+}
+
+export function scale(xy: XY, origin: XY, factor: XY): XY {
+  const transformationMatrix = createScale(origin, factor)
+  return applyMatrix(xy, transformationMatrix)
+}
+
+export function scaleUniform(xy: XY, origin: XY, factor: number): XY {
+  const transformationMatrix = createScale(origin, { x: factor, y: factor })
+  return applyMatrix(xy, transformationMatrix)
+}
+
+export function rotate(xy: XY, origin: XY, angle: number): XY {
+  const transformationMatrix = createRotation(origin, angle)
+  return applyMatrix(xy, transformationMatrix)
+}
+
+export function skew(xy: XY, origin: XY, factor: XY): XY {
+  const transformationMatrix = createSkew(origin, factor)
+  return applyMatrix(xy, transformationMatrix)
 }

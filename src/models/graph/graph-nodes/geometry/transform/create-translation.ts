@@ -2,11 +2,13 @@ import { assertIsXY } from '@/models/geometry/xy'
 import { GraphNode } from '@/models/graph/core/graph-node'
 import { inputIterators } from '@/models/graph/core/input-iterators'
 import { GraphNodeType } from '@/models/graph/graph-nodes/decorators'
-import { assertIsGeometry, translate, type Geometry } from '@/models/geometry/geometry'
+import {
+  createTranslation,
+  type TransformationMatrix,
+} from '@/models/geometry/transformation-matrix'
 
-@GraphNodeType('Geometry', 'Transform', 'Translate')
-export class Translate extends GraphNode {
-  private inputGeometry
+@GraphNodeType('Geometry', 'Transform', 'Create Translation')
+export class CreateTranslation extends GraphNode {
   private inputOffset
 
   private outputGeometry
@@ -14,17 +16,15 @@ export class Translate extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
     this.inputOffset = this.registerObjectInput('Offset')
 
-    this.outputGeometry = this.registerObjectOutput<Geometry>('Translated Geometry')
+    this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.inputGeometry, this.inputOffset).forEach(([_geom, _offset]) => {
-      const geom = assertIsGeometry(_geom)
+    inputIterators.cycleValues(this.inputOffset).forEach(([_offset]) => {
       const xy = assertIsXY(_offset)
-      const moved = translate(geom, xy)
+      const moved = createTranslation(xy)
       this.outputGeometry.next(moved)
     })
   }

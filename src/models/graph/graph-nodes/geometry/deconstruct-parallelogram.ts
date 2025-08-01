@@ -5,7 +5,7 @@ import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/models/geometry/xy'
 import { deconstruct as deconstructRectangle } from '@/models/geometry/rectangle'
 import { deconstruct as deconstructSquare } from '@/models/geometry/square'
-import type { Geometry } from '@/models/geometry/geometry'
+import { assertIsShape } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Parallelogram')
 export class DeconstructParallelogram extends GraphNode {
@@ -25,7 +25,7 @@ export class DeconstructParallelogram extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputShape = this.registerObjectInput<Geometry>('Shape')
+    this.inputShape = this.registerObjectInput('Shape')
 
     this.topLeft = this.registerObjectOutput<xy>('Origin')
     this.topRight = this.registerObjectOutput<xy>('Origin')
@@ -40,7 +40,9 @@ export class DeconstructParallelogram extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.inputShape).forEach(([shape]) => {
+    inputIterators.cycleValues(this.inputShape).forEach(([_shape]) => {
+      const geom = assertIsShape(_shape)
+
       let topLeft: xy
       let topRight: xy
       let bottomRight: xy
@@ -52,9 +54,9 @@ export class DeconstructParallelogram extends GraphNode {
       let perimeter: number
       let rotation: number
 
-      switch (shape.kind) {
+      switch (geom.kind) {
         case 'parallelogram': {
-          const result = deconstructParallelogram(shape)
+          const result = deconstructParallelogram(geom)
           topLeft = result.topLeft
           topRight = result.topRight
           bottomRight = result.bottomRight
@@ -68,7 +70,7 @@ export class DeconstructParallelogram extends GraphNode {
           break
         }
         case 'rectangle': {
-          const result = deconstructRectangle(shape)
+          const result = deconstructRectangle(geom)
           topLeft = result.topLeft
           topRight = result.topRight
           bottomRight = result.bottomRight
@@ -82,7 +84,7 @@ export class DeconstructParallelogram extends GraphNode {
           break
         }
         case 'square': {
-          const result = deconstructSquare(shape)
+          const result = deconstructSquare(geom)
           topLeft = result.topLeft
           topRight = result.topRight
           bottomRight = result.bottomRight
@@ -97,7 +99,7 @@ export class DeconstructParallelogram extends GraphNode {
         }
         default:
           throw new Error(
-            `Unsupported shape kind, expected 'parallelogram', 'rectangle' or 'circle', got: ${shape.kind}`,
+            `Unsupported shape kind, expected 'parallelogram', 'rectangle' or 'circle', got: ${geom.kind}`,
           )
       }
 

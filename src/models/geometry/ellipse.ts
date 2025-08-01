@@ -1,11 +1,17 @@
-import { compose, createRotation, createScale, createSkew, createTranslation, identity, type TransformationMatrix } from './transformation-matrix'
+import {
+  compose,
+  createRotation,
+  createScale,
+  createSkew,
+  createTranslation,
+  identity,
+  type TransformationMatrix,
+} from './transformation-matrix'
 import { applyMatrix, type XY } from './xy'
 import type { BaseShape } from './geometry'
+import { IDENTITY_ORIGIN, IDENTITY_RADIUS, type Circle } from './circle'
 
 export type Ellipse = BaseShape & { kind: 'ellipse' }
-
-export const IDENTITY_ORIGIN: XY = { x: 0, y: 0 }
-export const IDENTITY_RADIUS: XY = { x: 0, y: 0 }
 
 export function createEllipse(origin: XY, radius: XY): Ellipse {
   const transformation: TransformationMatrix = {
@@ -33,15 +39,15 @@ export type DeconstructedEllipse = {
   circumference: number
 }
 
-export function deconstruct(ellipse: Ellipse): DeconstructedEllipse {
+export function deconstruct(ellipse: Ellipse | Circle): DeconstructedEllipse {
   const { transformation } = ellipse
 
   // Origin is the transformed (0,0)
   const origin = applyMatrix(IDENTITY_ORIGIN, transformation)
 
   // Transformed unit vectors
-  const transformedX = applyMatrix({ x: 1, y: 0 }, transformation)
-  const transformedY = applyMatrix({ x: 0, y: 1 }, transformation)
+  const transformedX = applyMatrix({ x: IDENTITY_RADIUS, y: 0 }, transformation)
+  const transformedY = applyMatrix({ x: 0, y: IDENTITY_RADIUS }, transformation)
 
   // Radii are lengths of transformed unit vectors
   const radiusX = Math.hypot(transformedX.x - origin.x, transformedX.y - origin.y)

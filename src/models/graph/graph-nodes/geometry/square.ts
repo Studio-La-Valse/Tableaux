@@ -2,8 +2,8 @@ import { createSquare } from '@/models/geometry/square'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import { type XY as xy } from '@/models/geometry/xy'
 import { type Square as square } from '@/models/geometry/square'
+import { assertIsXY } from '@/models/geometry/xy'
 
 @GraphNodeType('Geometry', 'Square')
 export class Square extends GraphNode {
@@ -14,14 +14,15 @@ export class Square extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputTopLeft = this.registerObjectInput<xy>('TopLeft')
+    this.inputTopLeft = this.registerObjectInput('TopLeft')
     this.inputSize = this.registerNumberInput('Size')
 
     this.outputSquare = this.registerObjectOutput<square>('Square')
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.inputTopLeft, this.inputSize).forEach(([topLeft, size]) => {
+    inputIterators.cycleValues(this.inputTopLeft, this.inputSize).forEach(([_topLeft, size]) => {
+      const topLeft = assertIsXY(_topLeft)
       const rectangle = createSquare(topLeft, size)
       this.outputSquare.next(rectangle)
     })

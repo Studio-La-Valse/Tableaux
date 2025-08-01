@@ -13,11 +13,11 @@ import { createTransformedParallelogram, type Parallelogram } from './parallelog
 
 export type Square = BaseShape & { kind: 'square' }
 
-export const IDENTITY_SQUARE_TL: XY = { x: 0, y: 0 }
-export const IDENTITY_SQUARE_TR: XY = { x: 1, y: 0 }
-export const IDENTITY_SQUARE_BR: XY = { x: 1, y: 1 }
-export const IDENTITY_SQUARE_BL: XY = { x: 0, y: 1 }
-export const IDENTITY_SQUARE_CENTER: XY = { x: 0.5, y: 0.5 }
+export const IDENTITY_TL: XY = { x: 0, y: 0 }
+export const IDENTITY_TR: XY = { x: 1, y: 0 }
+export const IDENTITY_BR: XY = { x: 1, y: 1 }
+export const IDENTITY_BL: XY = { x: 0, y: 1 }
+export const IDENTITY_CENTER: XY = { x: 0.5, y: 0.5 }
 
 export function createSquare(topLeft: XY, size: number): Square {
   const transformation: TransformationMatrix = {
@@ -45,11 +45,11 @@ export type DeconstructedSquare = {
 }
 
 export function deconstruct(square: Square): DeconstructedSquare {
-  const topLeft = applyMatrix(IDENTITY_SQUARE_TL, square.transformation)
-  const topRight = applyMatrix(IDENTITY_SQUARE_TR, square.transformation)
-  const bottomRight = applyMatrix(IDENTITY_SQUARE_BR, square.transformation)
-  const bottomLeft = applyMatrix(IDENTITY_SQUARE_BL, square.transformation)
-  const center = applyMatrix(IDENTITY_SQUARE_CENTER, square.transformation)
+  const topLeft = applyMatrix(IDENTITY_TL, square.transformation)
+  const topRight = applyMatrix(IDENTITY_TR, square.transformation)
+  const bottomRight = applyMatrix(IDENTITY_BR, square.transformation)
+  const bottomLeft = applyMatrix(IDENTITY_BL, square.transformation)
+  const center = applyMatrix(IDENTITY_CENTER, square.transformation)
 
   const size = distance(topRight, topLeft)
 

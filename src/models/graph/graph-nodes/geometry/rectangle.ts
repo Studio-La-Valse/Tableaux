@@ -1,7 +1,7 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import { type XY as xy } from '@/models/geometry/xy'
+import { assertIsXY } from '@/models/geometry/xy'
 import { createRectangle, type Rectangle as rect } from '@/models/geometry/rectangle'
 
 @GraphNodeType('Geometry', 'Rectangle')
@@ -14,7 +14,7 @@ export class Rectangle extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputTopLeft = this.registerObjectInput<xy>('TopLeft')
+    this.inputTopLeft = this.registerObjectInput('TopLeft')
     this.inputWidth = this.registerNumberInput('Width')
     this.inputHeight = this.registerNumberInput('Height')
 
@@ -24,7 +24,8 @@ export class Rectangle extends GraphNode {
   protected solve(): void {
     inputIterators
       .cycleValues(this.inputTopLeft, this.inputWidth, this.inputHeight)
-      .forEach(([topLeft, width, height]) => {
+      .forEach(([_topLeft, width, height]) => {
+        const topLeft = assertIsXY(_topLeft)
         const rectangle = createRectangle(topLeft, width, height)
         this.outputRect.next(rectangle)
       })

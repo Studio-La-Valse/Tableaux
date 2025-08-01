@@ -1,4 +1,4 @@
-import type { ColorARGB } from '@/models/geometry/color'
+import { assertIsColorARGB } from '@/models/geometry/color-rgb'
 import { GraphNode } from '../../../core/graph-node'
 import { inputIterators } from '../../../core/input-iterators'
 import { GraphNodeType } from '../../decorators'
@@ -14,7 +14,7 @@ export class DeconstructARGB extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerObjectInput<ColorARGB>('Color')
+    this.input = this.registerObjectInput('Color')
     this.output1 = this.registerNumberOutput('Alpha')
     this.output2 = this.registerNumberOutput('Red')
     this.output3 = this.registerNumberOutput('Green')
@@ -22,7 +22,8 @@ export class DeconstructARGB extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.input).forEach(([argb]) => {
+    inputIterators.cycleValues(this.input).forEach(([_argb]) => {
+      const argb = assertIsColorARGB(_argb)
       this.output1.next(argb.a)
       this.output2.next(argb.r)
       this.output3.next(argb.g)

@@ -1,8 +1,9 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import { type XY as xy } from '@/models/geometry/xy'
-import { deconstruct, type Circle as circle } from '@/models/geometry/circle'
+import { type XY } from '@/models/geometry/xy'
+import { deconstruct } from '@/models/geometry/circle'
+import { assertIsShape } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Circle')
 export class DeconstructCircle extends GraphNode {
@@ -17,9 +18,9 @@ export class DeconstructCircle extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputCircle = this.registerObjectInput<circle>('Circle')
+    this.inputCircle = this.registerObjectInput('Circle')
 
-    this.outputOrigin = this.registerObjectOutput<xy>('Origin')
+    this.outputOrigin = this.registerObjectOutput<XY>('Origin')
     this.outputRadius = this.registerNumberOutput('Radius')
     this.outputRotation = this.registerNumberOutput('Rotation')
     this.outputArea = this.registerNumberOutput('Area')
@@ -27,8 +28,10 @@ export class DeconstructCircle extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.inputCircle).forEach(([geom]) => {
-      let origin: xy
+    inputIterators.cycleValues(this.inputCircle).forEach(([_geom]) => {
+      const geom = assertIsShape(_geom)
+
+      let origin: XY
       let radius: number
       let rotation: number
       let area: number

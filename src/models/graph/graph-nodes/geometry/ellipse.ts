@@ -1,7 +1,7 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import { type XY } from '@/models/geometry/xy'
+import { assertIsXY } from '@/models/geometry/xy'
 import { createEllipse, type Ellipse as ellipse } from '@/models/geometry/ellipse'
 
 @GraphNodeType('Geometry', 'Ellipse')
@@ -14,7 +14,7 @@ export class Ellipse extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerObjectInput<XY>('XY')
+    this.input1 = this.registerObjectInput('XY')
     this.input2 = this.registerNumberInput('Radius X')
     this.input3 = this.registerNumberInput('Radius Y')
 
@@ -22,7 +22,9 @@ export class Ellipse extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.input1, this.input2, this.input3).forEach(([xy, x, y]) => {
+    inputIterators.cycleValues(this.input1, this.input2, this.input3).forEach(([_xy, x, y]) => {
+      const xy = assertIsXY(_xy)
+
       const ellipse = createEllipse(xy, { x, y })
       this.output.next(ellipse)
     })

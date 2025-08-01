@@ -4,7 +4,7 @@ import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/models/geometry/xy'
 import { deconstruct as deconstructRectangle } from '@/models/geometry/rectangle'
 import { deconstruct as deconstructSquare } from '@/models/geometry/square'
-import type { Geometry } from '@/models/geometry/geometry'
+import { assertIsShape } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Rectangle')
 export class DeconstructRectangle extends GraphNode {
@@ -24,13 +24,13 @@ export class DeconstructRectangle extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputShape = this.registerObjectInput<Geometry>('Shape')
+    this.inputShape = this.registerObjectInput('Shape')
 
-    this.topLeft = this.registerObjectOutput<xy>('Origin')
-    this.topRight = this.registerObjectOutput<xy>('Origin')
-    this.bottomRight = this.registerObjectOutput<xy>('Origin')
-    this.bottomLeft = this.registerObjectOutput<xy>('Origin')
-    this.center = this.registerObjectOutput<xy>('Origin')
+    this.topLeft = this.registerObjectOutput<xy>('Top Left')
+    this.topRight = this.registerObjectOutput<xy>('Top Right')
+    this.bottomRight = this.registerObjectOutput<xy>('Bottom Right')
+    this.bottomLeft = this.registerObjectOutput<xy>('Bottom Left')
+    this.center = this.registerObjectOutput<xy>('Center')
     this.width = this.registerNumberOutput('Width')
     this.height = this.registerNumberOutput('Height')
     this.rotation = this.registerNumberOutput('Rotation')
@@ -40,6 +40,8 @@ export class DeconstructRectangle extends GraphNode {
 
   protected solve(): void {
     inputIterators.cycleValues(this.inputShape).forEach(([shape]) => {
+      const geom = assertIsShape(shape)
+
       let topLeft: xy
       let topRight: xy
       let bottomRight: xy
@@ -51,9 +53,9 @@ export class DeconstructRectangle extends GraphNode {
       let perimeter: number
       let rotation: number
 
-      switch (shape.kind) {
+      switch (geom.kind) {
         case 'rectangle': {
-          const result = deconstructRectangle(shape)
+          const result = deconstructRectangle(geom)
           topLeft = result.topLeft
           topRight = result.topRight
           bottomRight = result.bottomRight
@@ -67,7 +69,7 @@ export class DeconstructRectangle extends GraphNode {
           break
         }
         case 'square': {
-          const result = deconstructSquare(shape)
+          const result = deconstructSquare(geom)
           topLeft = result.topLeft
           topRight = result.topRight
           bottomRight = result.bottomRight
@@ -82,7 +84,7 @@ export class DeconstructRectangle extends GraphNode {
         }
         default:
           throw new Error(
-            `Unsupported shape kind, expected 'rectangle' or 'square', got: ${shape.kind}`,
+            `Unsupported shape kind, expected 'rectangle' or 'square', got: ${geom.kind}`,
           )
       }
 

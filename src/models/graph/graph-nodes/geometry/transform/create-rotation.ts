@@ -2,11 +2,10 @@ import { assertIsXY } from '@/models/geometry/xy'
 import { GraphNode } from '../../../core/graph-node'
 import { inputIterators } from '../../../core/input-iterators'
 import { GraphNodeType } from '../../decorators'
-import { assertIsGeometry, rotate, type Geometry } from '@/models/geometry/geometry'
+import { createRotation, type TransformationMatrix } from '@/models/geometry/transformation-matrix'
 
-@GraphNodeType('Geometry', 'Transform', 'Rotate')
-export class SetRotation extends GraphNode {
-  private inputGeometry
+@GraphNodeType('Geometry', 'Transform', 'Create Rotation')
+export class CreateRotation extends GraphNode {
   private origin
   private angle
 
@@ -15,20 +14,18 @@ export class SetRotation extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
     this.origin = this.registerObjectInput('Origin')
     this.angle = this.registerNumberInput('Angle (Radians)')
 
-    this.outputGeometry = this.registerObjectOutput<Geometry>('Rotated Geometry')
+    this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
   protected solve(): void {
     inputIterators
-      .cycleValues(this.inputGeometry, this.origin, this.angle)
-      .forEach(([_geom, _origin, angle]) => {
-        const geom = assertIsGeometry(_geom)
+      .cycleValues(this.origin, this.angle)
+      .forEach(([_origin, angle]) => {
         const origin = assertIsXY(_origin)
-        const rotated = rotate(geom, origin, angle)
+        const rotated = createRotation(origin, angle)
         this.outputGeometry.next(rotated)
       })
   }

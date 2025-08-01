@@ -1,3 +1,14 @@
+import type { XY } from './xy'
+import {
+  skew as skewXY,
+  translate as translateXY,
+  rotate as rotateXY,
+  scale as scaleXY,
+  scaleUniform as scaleUniformXY,
+  isXY,
+  applyMatrix,
+} from './xy'
+
 import type { Circle } from './circle'
 import {
   skew as skewCircle,
@@ -58,8 +69,7 @@ import { deconstruct as deconstructRectangle } from './rectangle'
 import { deconstruct as deconstructSquare } from './square'
 import { deconstruct as deconstructParallelogram } from './parallelogram'
 
-import { type TransformationMatrix } from './transformation-matrix'
-import type { XY } from './xy'
+import { compose, isTransformationMatrix, type TransformationMatrix } from './transformation-matrix'
 
 export type ShapeKind = 'circle' | 'ellipse' | 'line' | 'square' | 'rectangle' | 'parallelogram'
 
@@ -68,9 +78,51 @@ export type BaseShape = {
   transformation: TransformationMatrix
 }
 
-export type Geometry = Circle | Ellipse | Line | Square | Rectangle | Parallelogram
+export type Shape = Circle | Ellipse | Line | Square | Rectangle | Parallelogram
+
+export function isShape(value: unknown): value is Shape {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'kind' in value &&
+    typeof value.kind === 'string' &&
+    isShapeKind(value.kind) &&
+    'transformation' in value &&
+    isTransformationMatrix(value.transformation)
+  )
+}
+
+export function isShapeKind(value: string): value is ShapeKind {
+  return ['circle', 'ellipse', 'line', 'square', 'rectangle', 'parallelogram'].includes(value)
+}
+
+export function assertIsShape(value: unknown): Shape {
+  if (!isShape(value)) {
+    throw new Error('Value is not a shape.')
+  }
+
+  return value
+}
+
+export type Geometry = Shape | XY
+
+export function isGeometry(value: unknown): value is Geometry {
+  return isXY(value) || isShape(value)
+}
+
+export function assertIsGeometry(value: unknown): Geometry {
+  if (!isGeometry(value)) {
+    throw new Error('Value is not geometry')
+  }
+
+  return value
+}
 
 export function translate(geometry: Geometry, delta: XY): Geometry {
+  if (isXY(geometry)) {
+    return translateXY(geometry, delta)
+  }
+
   switch (geometry.kind) {
     case 'circle':
       return translateCircle(geometry, delta)
@@ -90,6 +142,10 @@ export function translate(geometry: Geometry, delta: XY): Geometry {
 }
 
 export function rotate(geometry: Geometry, origin: XY, angle: number): Geometry {
+  if (isXY(geometry)) {
+    return rotateXY(geometry, origin, angle)
+  }
+
   switch (geometry.kind) {
     case 'circle':
       return rotateCircle(geometry, origin, angle)
@@ -109,6 +165,10 @@ export function rotate(geometry: Geometry, origin: XY, angle: number): Geometry 
 }
 
 export function scale(geometry: Geometry, origin: XY, factor: XY): Geometry {
+  if (isXY(geometry)) {
+    return scaleXY(geometry, origin, factor)
+  }
+
   switch (geometry.kind) {
     case 'circle':
       return scaleCircle(geometry, origin, factor)
@@ -128,6 +188,10 @@ export function scale(geometry: Geometry, origin: XY, factor: XY): Geometry {
 }
 
 export function scaleUniform(geometry: Geometry, origin: XY, factor: number): Geometry {
+  if (isXY(geometry)) {
+    return scaleUniformXY(geometry, origin, factor)
+  }
+
   switch (geometry.kind) {
     case 'circle':
       return scaleUniformCircle(geometry, origin, factor)
@@ -147,6 +211,10 @@ export function scaleUniform(geometry: Geometry, origin: XY, factor: number): Ge
 }
 
 export function skew(geometry: Geometry, origin: XY, factor: XY): Geometry {
+  if (isXY(geometry)) {
+    return skewXY(geometry, origin, factor)
+  }
+
   switch (geometry.kind) {
     case 'circle':
       return skewCircle(geometry, origin, factor)
@@ -161,11 +229,51 @@ export function skew(geometry: Geometry, origin: XY, factor: XY): Geometry {
     case 'parallelogram':
       return skewParallelogram(geometry, origin, factor)
     default:
-      throw new Error('Skew not supported for this Geometry type')
+      throw new Error('Unsupported Geometry type')
+  }
+}
+
+export function transform(geometry: Geometry, transformation: TransformationMatrix): Geometry {
+  if (isXY(geometry)) {
+    return applyMatrix(geometry, transformation)
+  }
+
+  const newMatrix = compose(transformation, geometry.transformation)
+  switch (geometry.kind) {
+    case 'circle':
+    case 'ellipse': {
+      const result: Ellipse = {
+        kind: 'ellipse',
+        transformation: newMatrix,
+      }
+      return result
+    }
+    case 'line': {
+      const result: Line = {
+        kind: 'line',
+        transformation: newMatrix,
+      }
+      return result
+    }
+    case 'square':
+    case 'rectangle':
+    case 'parallelogram': {
+      const result: Parallelogram = {
+        kind: 'parallelogram',
+        transformation: newMatrix,
+      }
+      return result
+    }
+    default:
+      throw new Error('Unsupported Geometry type')
   }
 }
 
 export function getCenter(element: Geometry): XY {
+  if (isXY(element)) {
+    return { x: element.x, y: element.y }
+  }
+
   switch (element.kind) {
     case 'circle': {
       const { origin } = deconstructCircle(element)

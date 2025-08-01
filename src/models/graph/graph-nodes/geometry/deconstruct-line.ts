@@ -3,7 +3,7 @@ import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY } from '@/models/geometry/xy'
 import { deconstruct } from '@/models/geometry/line'
-import type { Geometry } from '@/models/geometry/geometry'
+import { assertIsShape } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Line')
 export class DeconstructLine extends GraphNode {
@@ -17,7 +17,7 @@ export class DeconstructLine extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputLine = this.registerObjectInput<Geometry>('Line')
+    this.inputLine = this.registerObjectInput('Line')
 
     this.outputStart = this.registerObjectOutput<XY>('Start')
     this.outputEnd = this.registerObjectOutput<XY>('End')
@@ -26,7 +26,9 @@ export class DeconstructLine extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.inputLine).forEach(([geom]) => {
+    inputIterators.cycleValues(this.inputLine).forEach(([_geom]) => {
+      const geom = assertIsShape(_geom)
+
       let start: XY
       let end: XY
       let length: number

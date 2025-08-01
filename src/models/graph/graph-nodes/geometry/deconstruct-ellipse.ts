@@ -4,7 +4,7 @@ import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/models/geometry/xy'
 import { deconstruct as deconstructCircle } from '@/models/geometry/circle'
 import { deconstruct as deconstructEllipse } from '@/models/geometry/ellipse'
-import type { Geometry } from '@/models/geometry/geometry'
+import { assertIsShape } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Ellipse')
 export class DeconstructEllipse extends GraphNode {
@@ -20,7 +20,7 @@ export class DeconstructEllipse extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputCircle = this.registerObjectInput<Geometry>('Circle')
+    this.inputCircle = this.registerObjectInput('Circle')
 
     this.outputOrigin = this.registerObjectOutput<xy>('Origin')
     this.outputRadiusX = this.registerNumberOutput('Radius X')
@@ -31,7 +31,9 @@ export class DeconstructEllipse extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.inputCircle).forEach(([geom]) => {
+    inputIterators.cycleValues(this.inputCircle).forEach(([_geom]) => {
+      const geom = assertIsShape(_geom)
+
       let origin: xy
       let radiusX: number
       let radiusY: number

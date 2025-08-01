@@ -2,17 +2,14 @@ import { compose, createRotation, createScale, createSkew, createTranslation, ty
 import { applyMatrix, distance, type XY } from './xy'
 import type { BaseShape } from './geometry'
 import { createTransformedParallelogram, type Parallelogram } from './parallelogram'
+import { IDENTITY_TL, IDENTITY_TR, IDENTITY_BR, IDENTITY_BL, IDENTITY_CENTER, type Square } from './square'
 
 export type Rectangle = BaseShape & { kind: 'rectangle' }
 
-export const IDENTITY_RECTANGLE_TL: XY = { x: 0, y: 0 }
-export const IDENTITY_RECTANGLE_TR: XY = { x: 1, y: 0 }
-export const IDENTITY_RECTANGLE_BR: XY = { x: 1, y: 1 }
-export const IDENTITY_RECTANGLE_BL: XY = { x: 0, y: 1 }
-export const IDENTITY_RECTANGLE_CENTER: XY = { x: 0.5, y: 0.5 }
-
 export function createUnitRectangle() {
-  return createRectangle(IDENTITY_RECTANGLE_TL, 1, 1)
+  const width = IDENTITY_TR.x - IDENTITY_TL.x
+  const height = IDENTITY_BL.y - IDENTITY_TL.y
+  return createRectangle(IDENTITY_TL, width, height)
 }
 
 export function createRectangle(topLeft: XY, width: number, height: number): Rectangle {
@@ -42,12 +39,12 @@ export type DeconstructedRectangle = {
   diagonal: number
 }
 
-export function deconstruct(rect: Rectangle): DeconstructedRectangle {
-  const topLeft = applyMatrix(IDENTITY_RECTANGLE_TL, rect.transformation)
-  const topRight = applyMatrix(IDENTITY_RECTANGLE_TR, rect.transformation)
-  const bottomRight = applyMatrix(IDENTITY_RECTANGLE_BR, rect.transformation)
-  const bottomLeft = applyMatrix(IDENTITY_RECTANGLE_BL, rect.transformation)
-  const center = applyMatrix(IDENTITY_RECTANGLE_CENTER, rect.transformation)
+export function deconstruct(rect: Rectangle | Square): DeconstructedRectangle {
+  const topLeft = applyMatrix(IDENTITY_TL, rect.transformation)
+  const topRight = applyMatrix(IDENTITY_TR, rect.transformation)
+  const bottomRight = applyMatrix(IDENTITY_BR, rect.transformation)
+  const bottomLeft = applyMatrix(IDENTITY_BL, rect.transformation)
+  const center = applyMatrix(IDENTITY_CENTER, rect.transformation)
 
   const width = distance(topRight, topLeft)
   const height = distance(topLeft, bottomLeft)

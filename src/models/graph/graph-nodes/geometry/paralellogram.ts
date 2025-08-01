@@ -1,7 +1,7 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import { type XY as xy } from '@/models/geometry/xy'
+import { assertAreXY } from '@/models/geometry/xy'
 import {
   type Parallelogram as parallelogram,
   createParallelogram,
@@ -17,9 +17,9 @@ export class Parallelogram extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.bottomLeft = this.registerObjectInput<xy>('Bottom Left')
-    this.topLeft = this.registerObjectInput<xy>('Top Left')
-    this.topRight = this.registerObjectInput<xy>('Top Right')
+    this.bottomLeft = this.registerObjectInput('Bottom Left')
+    this.topLeft = this.registerObjectInput('Top Left')
+    this.topRight = this.registerObjectInput('Top Right')
 
     this.outputRect = this.registerObjectOutput<parallelogram>('Rectangle')
   }
@@ -27,8 +27,9 @@ export class Parallelogram extends GraphNode {
   protected solve(): void {
     inputIterators
       .cycleValues(this.bottomLeft, this.topLeft, this.topRight)
-      .forEach(([topLeft, width, height]) => {
-        const rectangle = createParallelogram(topLeft, width, height)
+      .forEach(([_bottomLeft, _topLeft, _topRight]) => {
+        const [bottomLeft, topLeft, topRight] = assertAreXY(_bottomLeft, _topLeft, _topRight)
+        const rectangle = createParallelogram(bottomLeft, topLeft, topRight)
         this.outputRect.next(rectangle)
       })
   }

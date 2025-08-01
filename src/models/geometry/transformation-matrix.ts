@@ -28,6 +28,14 @@ export function isTransformationMatrix(value: unknown): value is TransformationM
   )
 }
 
+export function assertIsTransformationMatrix(value: unknown): TransformationMatrix {
+  if (!isTransformationMatrix(value)) {
+    throw new Error('Provided value is not a transformation matrix.')
+  }
+
+  return value
+}
+
 export function identity() {
   return {
     a: 1,
@@ -36,18 +44,6 @@ export function identity() {
     d: 1,
     e: 0,
     f: 0,
-  }
-}
-
-// before drawing anything, build the flip matrix
-export function createScreenSpaceMatrix(canvasHeight: number): TransformationMatrix {
-  return {
-    a: 1,
-    b: 0,
-    c: 0,
-    d: -1,
-    e: 0,
-    f: canvasHeight,
   }
 }
 

@@ -1,13 +1,12 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import { type XY as xy } from '@/models/geometry/xy'
+import { type XY } from '@/models/geometry/xy'
 import { deconstruct as deconstructSquare } from '@/models/geometry/square'
-import type { Geometry } from '@/models/geometry/geometry'
+import { assertIsShape } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Square')
 export class DeconstrucSquare extends GraphNode {
-
   private inputShape
 
   private topLeft
@@ -23,13 +22,13 @@ export class DeconstrucSquare extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputShape = this.registerObjectInput<Geometry>('Shape')
+    this.inputShape = this.registerObjectInput('Shape')
 
-    this.topLeft = this.registerObjectOutput<xy>('Origin')
-    this.topRight = this.registerObjectOutput<xy>('Origin')
-    this.bottomRight = this.registerObjectOutput<xy>('Origin')
-    this.bottomLeft = this.registerObjectOutput<xy>('Origin')
-    this.center = this.registerObjectOutput<xy>('Origin')
+    this.topLeft = this.registerObjectOutput<XY>('Origin')
+    this.topRight = this.registerObjectOutput<XY>('Origin')
+    this.bottomRight = this.registerObjectOutput<XY>('Origin')
+    this.bottomLeft = this.registerObjectOutput<XY>('Origin')
+    this.center = this.registerObjectOutput<XY>('Origin')
     this.size = this.registerNumberOutput('Size')
     this.rotation = this.registerNumberOutput('Rotation')
     this.area = this.registerNumberOutput('Area')
@@ -38,19 +37,21 @@ export class DeconstrucSquare extends GraphNode {
 
   protected solve(): void {
     inputIterators.cycleValues(this.inputShape).forEach(([shape]) => {
-      let topLeft: xy
-      let topRight: xy
-      let bottomRight: xy
-      let bottomLeft: xy
-      let center: xy
+      const geom = assertIsShape(shape)
+
+      let topLeft: XY
+      let topRight: XY
+      let bottomRight: XY
+      let bottomLeft: XY
+      let center: XY
       let size: number
       let area: number
       let perimeter: number
       let rotation: number
 
-      switch (shape.kind) {
+      switch (geom.kind) {
         case 'square': {
-          const result = deconstructSquare(shape)
+          const result = deconstructSquare(geom)
           topLeft = result.topLeft
           topRight = result.topRight
           bottomRight = result.bottomRight
@@ -63,7 +64,7 @@ export class DeconstrucSquare extends GraphNode {
           break
         }
         default:
-          throw new Error(`Unsupported shape kind: ${shape.kind}`)
+          throw new Error(`Unsupported shape kind: ${geom.kind}`)
       }
 
       this.topLeft.next(topLeft)

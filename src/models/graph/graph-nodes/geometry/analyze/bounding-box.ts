@@ -1,8 +1,11 @@
 import { GraphNode } from '@/models/graph/core/graph-node'
 import { inputIterators } from '@/models/graph/core/input-iterators'
 import { GraphNodeType } from '@/models/graph/graph-nodes/decorators'
-import { type Geometry } from '@/models/geometry/geometry'
-import { getAxisAlignedBoundingBox, type AxisAlignedBoundingBox } from '@/models/geometry/axis-aligned-bounding-box'
+import { assertIsShape } from '@/models/geometry/geometry'
+import {
+  getAxisAlignedBoundingBox,
+  type AxisAlignedBoundingBox,
+} from '@/models/geometry/axis-aligned-bounding-box'
 
 @GraphNodeType('Geometry', 'Analyze', 'BoundingBox')
 export class BoundingBox extends GraphNode {
@@ -12,12 +15,13 @@ export class BoundingBox extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput<Geometry>('Geometry')
+    this.inputGeometry = this.registerObjectInput('Geometry')
     this.outputBox = this.registerObjectOutput<AxisAlignedBoundingBox>('Bounding Box')
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.inputGeometry).forEach(([geom]) => {
+    inputIterators.cycleValues(this.inputGeometry).forEach(([_geom]) => {
+      const geom = assertIsShape(_geom)
       const aabb = getAxisAlignedBoundingBox(geom)
       this.outputBox.next(aabb)
     })

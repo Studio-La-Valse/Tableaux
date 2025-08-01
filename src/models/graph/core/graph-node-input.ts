@@ -102,7 +102,7 @@ export class GraphNodeInputString extends GraphNodeInputType<string> {
 }
 
 export class GraphNodeInputObject<T extends JsonObject> extends GraphNodeInputType<T> {
-  public repeat(): GraphNodeInputType<object> {
+  public repeat(): GraphNodeInputType<T> {
     return new GraphNodeInputObject(this.graphNode, this.description)
   }
 }

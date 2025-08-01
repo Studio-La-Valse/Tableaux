@@ -9,25 +9,17 @@ import {
 } from './transformation-matrix'
 import { applyMatrix, distance, type XY } from './xy'
 import type { BaseShape } from './geometry'
+import { IDENTITY_BL, IDENTITY_BR, IDENTITY_TR, IDENTITY_TL, IDENTITY_CENTER, type Square } from './square'
+import type { Rectangle } from './rectangle'
 
 export type Parallelogram = BaseShape & { kind: 'parallelogram' }
-
-export const IDENTITY_PARALLELOGRAM_BL: XY = { x: 0, y: 0 }
-export const IDENTITY_PARALLELOGRAM_BR: XY = { x: 1, y: 0 }
-export const IDENTITY_PARALLELOGRAM_TR: XY = { x: 1, y: 1 }
-export const IDENTITY_PARALLELOGRAM_TL: XY = { x: 0, y: 1 }
-export const IDENTITY_PARALLELOGRAM_CENTER: XY = { x: 0.5, y: 0.5 }
 
 export function createUnitParallelogram() {
   const transform = identity()
   return createTransformedParallelogram(transform)
 }
 
-export function createParallelogram(
-  topLeft: XY,
-  topRight: XY,
-  bottomLeft: XY,
-): Parallelogram {
+export function createParallelogram(topLeft: XY, topRight: XY, bottomLeft: XY): Parallelogram {
   // Vectors from topLeft
   const vectorA = {
     x: topRight.x - topLeft.x,
@@ -72,12 +64,12 @@ export type DeconstructedParallelogram = {
   rotation: number
 }
 
-export function deconstruct(p: Parallelogram): DeconstructedParallelogram {
-  const bottomLeft = applyMatrix(IDENTITY_PARALLELOGRAM_BL, p.transformation)
-  const bottomRight = applyMatrix(IDENTITY_PARALLELOGRAM_BR, p.transformation)
-  const topRight = applyMatrix(IDENTITY_PARALLELOGRAM_TR, p.transformation)
-  const topLeft = applyMatrix(IDENTITY_PARALLELOGRAM_TL, p.transformation)
-  const center = applyMatrix(IDENTITY_PARALLELOGRAM_CENTER, p.transformation)
+export function deconstruct(p: Parallelogram | Rectangle | Square): DeconstructedParallelogram {
+  const bottomLeft = applyMatrix(IDENTITY_BL, p.transformation)
+  const bottomRight = applyMatrix(IDENTITY_BR, p.transformation)
+  const topRight = applyMatrix(IDENTITY_TR, p.transformation)
+  const topLeft = applyMatrix(IDENTITY_TL, p.transformation)
+  const center = applyMatrix(IDENTITY_CENTER, p.transformation)
 
   const sideA = distance(bottomLeft, bottomRight)
   const sideB = distance(bottomLeft, topLeft)

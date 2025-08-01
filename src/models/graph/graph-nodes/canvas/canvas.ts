@@ -1,17 +1,17 @@
 import { useCanvasElementStore } from '@/stores/use-canvas-element-store'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { type Geometry } from '@/models/geometry/geometry'
+import { assertIsShape, type Shape } from '@/models/geometry/geometry'
 
 @GraphNodeType('Canvas', 'Canvas')
 export class Canvas extends GraphNode {
   private input
-  private elementStore: { setElements: (e: Geometry[]) => void } | null
+  private elementStore: { setElements: (e: Shape[]) => void } | null
 
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerObjectInput<Geometry>('Drawable Elements')
+    this.input = this.registerObjectInput('Drawable Elements')
     this.elementStore = null
   }
 
@@ -30,7 +30,7 @@ export class Canvas extends GraphNode {
   }
 
   protected solve(): void {
-    this.elementStore?.setElements(this.input.payload)
+    this.elementStore?.setElements(this.input.payload.map((v) => assertIsShape(v)))
   }
 
   public onDestroy(): void {

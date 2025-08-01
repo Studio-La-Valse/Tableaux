@@ -2,11 +2,10 @@ import { assertIsXY } from '@/models/geometry/xy'
 import { GraphNode } from '@/models/graph/core/graph-node'
 import { inputIterators } from '@/models/graph/core/input-iterators'
 import { GraphNodeType } from '@/models/graph/graph-nodes/decorators'
-import { assertIsGeometry, skew, type Geometry } from '@/models/geometry/geometry'
+import { createSkew, type TransformationMatrix } from '@/models/geometry/transformation-matrix'
 
-@GraphNodeType('Geometry', 'Transform', 'Skew')
-export class ScaleGeometry extends GraphNode {
-  private inputGeometry
+@GraphNodeType('Geometry', 'Transform', 'Create Skew')
+export class CreateSkew extends GraphNode {
   private inputCenter
   private inputFactor
 
@@ -15,20 +14,18 @@ export class ScaleGeometry extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
     this.inputCenter = this.registerObjectInput('Center')
     this.inputFactor = this.registerNumberInput('Skew Factor')
 
-    this.outputGeometry = this.registerObjectOutput<Geometry>('Skewed Geometry')
+    this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
   protected solve(): void {
     inputIterators
-      .cycleValues(this.inputGeometry, this.inputCenter, this.inputFactor)
-      .forEach(([_geom, _origin, factor]) => {
-        const geom = assertIsGeometry(_geom)
+      .cycleValues(this.inputCenter, this.inputFactor)
+      .forEach(([_origin, factor]) => {
         const origin = assertIsXY(_origin)
-        const skewed = skew(geom, origin, { x: factor, y: 0 })
+        const skewed = createSkew(origin, { x: factor, y: 0 })
         this.outputGeometry.next(skewed)
       })
   }

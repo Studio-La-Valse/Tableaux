@@ -4,7 +4,7 @@ import { deconstruct as deconstructLine } from './line'
 import { deconstruct as deconstructRectangle } from './rectangle'
 import { deconstruct as deconstructSquare } from './square'
 import { deconstruct as deconstructParallelogram } from './parallelogram'
-import type { Geometry } from './geometry'
+import type { Shape } from './geometry'
 
 export type AxisAlignedBoundingBox = {
   minX: number
@@ -13,7 +13,7 @@ export type AxisAlignedBoundingBox = {
   maxY: number
 }
 
-export function getAxisAlignedBoundingBox(element: Geometry): AxisAlignedBoundingBox {
+export function getAxisAlignedBoundingBox(element: Shape): AxisAlignedBoundingBox {
   switch (element.kind) {
     case 'circle': {
       const { origin, radius } = deconstructCircle(element)
