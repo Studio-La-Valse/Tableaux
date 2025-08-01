@@ -89,11 +89,11 @@ export function createRotation(origin: XY, angle: number): TransformationMatrix 
   const sin = Math.sin(angle)
   return {
     a: cos,
-    b: sin,
-    c: -sin,
+    b: -sin,
+    c: sin,
     d: cos,
-    e: origin.x - origin.x * cos + origin.y * sin,
-    f: origin.y - origin.x * sin - origin.y * cos,
+    e: origin.x - origin.x * cos - origin.y * sin,
+    f: origin.y + origin.x * sin - origin.y * cos,
   }
 }
 

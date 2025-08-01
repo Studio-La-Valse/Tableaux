@@ -1,7 +1,7 @@
 import { GraphNode } from '@/models/graph/core/graph-node'
 import { inputIterators } from '@/models/graph/core/input-iterators'
 import { GraphNodeType } from '@/models/graph/graph-nodes/decorators'
-import { assertIsGeometry, transform, type Geometry } from '@/models/geometry/geometry'
+import { assertIsGeometry, setTransform, type Geometry } from '@/models/geometry/geometry'
 import { assertIsTransformationMatrix } from '@/models/geometry/transformation-matrix'
 
 @GraphNodeType('Geometry', 'Transform', 'Transform')
@@ -26,7 +26,7 @@ export class Transform extends GraphNode {
       .forEach(([_geom, _transform]) => {
         const geom = assertIsGeometry(_geom)
         const matrix2d = assertIsTransformationMatrix(_transform)
-        const transformed = transform(geom, matrix2d)
+        const transformed = setTransform(geom, matrix2d)
         this.outputGeometry.next(transformed)
       })
   }

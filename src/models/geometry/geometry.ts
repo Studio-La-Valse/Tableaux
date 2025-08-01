@@ -289,7 +289,7 @@ export function skew(geometry: Geometry, origin: XY, factor: XY): Geometry {
   }
 }
 
-export function transform(geometry: Geometry, transformation: TransformationMatrix): Geometry {
+export function pushTransform(geometry: Geometry, transformation: TransformationMatrix): Geometry {
   if (isXY(geometry)) {
     return applyMatrix(geometry, transformation)
   }
@@ -328,6 +328,50 @@ export function transform(geometry: Geometry, transformation: TransformationMatr
         ...geometry,
         kind: 'parallelogram',
         transformation: newMatrix,
+      }
+      return result
+    }
+  }
+}
+
+export function setTransform(geometry: Geometry, transformation: TransformationMatrix): Geometry {
+  if (isXY(geometry)) {
+    return applyMatrix(geometry, transformation)
+  }
+
+  switch (geometry.kind) {
+    case 'arc':
+    case 'elliptical-arc':
+      const result: EllipticalArc = {
+        ...geometry,
+        kind: 'elliptical-arc',
+        transformation,
+      }
+      return result
+    case 'circle':
+    case 'ellipse': {
+      const result: Ellipse = {
+        ...geometry,
+        kind: 'ellipse',
+        transformation,
+      }
+      return result
+    }
+    case 'line': {
+      const result: Line = {
+        ...geometry,
+        kind: 'line',
+        transformation,
+      }
+      return result
+    }
+    case 'square':
+    case 'rectangle':
+    case 'parallelogram': {
+      const result: Parallelogram = {
+        ...geometry,
+        kind: 'parallelogram',
+        transformation,
       }
       return result
     }
