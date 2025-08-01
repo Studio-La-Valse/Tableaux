@@ -260,11 +260,11 @@ export abstract class GraphNode extends GraphNodeCore {
     return input
   }
 
-  public registerObjectInput<T extends JsonObject>(description: string): GraphNodeInputObject<T> {
+  public registerObjectInput(description: string): GraphNodeInputObject<JsonObject> {
     this.assertNotInitialized()
     this.assertParamsHasNotBeenSet()
 
-    const input = new GraphNodeInputObject<T>(this, description)
+    const input = new GraphNodeInputObject<JsonObject>(this, description)
     this._inputs.push(input)
     return input
   }

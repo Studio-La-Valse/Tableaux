@@ -1,7 +1,7 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import { type XY as xy } from '@/models/geometry/xy'
+import { assertIsXY, deconstruct } from '@/models/geometry/xy'
 
 @GraphNodeType('Geometry', 'Deconstruct XY')
 export class DeconstructXY extends GraphNode {
@@ -15,7 +15,7 @@ export class DeconstructXY extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputXY = this.registerObjectInput<xy>('XY')
+    this.inputXY = this.registerObjectInput('XY')
 
     this.outputX = this.registerNumberOutput('X')
     this.outputY = this.registerNumberOutput('Y')
@@ -24,10 +24,10 @@ export class DeconstructXY extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.inputXY).forEach(([xy]) => {
-      const { x, y } = xy
-      const magnitude = Math.sqrt(x * x + y * y)
-      const angle = Math.atan2(y, x)
+    inputIterators.cycleValues(this.inputXY).forEach(([_xy]) => {
+      const xy = assertIsXY(_xy)
+
+      const { x, y, magnitude, angle } = deconstruct(xy)
 
       this.outputX.next(x)
       this.outputY.next(y)

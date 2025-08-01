@@ -1,8 +1,7 @@
-import type { ColorARGB } from '@/models/geometry/color'
 import { GraphNode } from '../../../core/graph-node'
 import { inputIterators } from '../../../core/input-iterators'
 import { GraphNodeType } from '../../decorators'
-import { toColorHSV } from '@/models/geometry/color-rgb'
+import { assertIsColorARGB, toColorHSV } from '@/models/geometry/color-rgb'
 
 @GraphNodeType('Geometry', 'Color', 'Deconstruct AHSV')
 export class DeconstructAHSV extends GraphNode {
@@ -15,7 +14,8 @@ export class DeconstructAHSV extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerObjectInput<ColorARGB>('Color')
+    this.input = this.registerObjectInput('Color')
+
     this.output1 = this.registerNumberOutput('Alpha')
     this.output2 = this.registerNumberOutput('Hue')
     this.output3 = this.registerNumberOutput('Saturation')
@@ -23,7 +23,8 @@ export class DeconstructAHSV extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.input).forEach(([argb]) => {
+    inputIterators.cycleValues(this.input).forEach(([_argb]) => {
+      const argb = assertIsColorARGB(_argb)
       const hsl = toColorHSV(argb)
       this.output1.next(argb.a)
       this.output2.next(hsl.h)

@@ -17,6 +17,14 @@ export function isColorARGB(value: unknown): value is ColorARGB {
   return isColorRGB(value) && 'a' in value && typeof value.a == 'number'
 }
 
+export function assertIsColorARGB(value: unknown): ColorARGB {
+  if (!isColorARGB(value)){
+    throw new Error("Value is not color ARGB")
+  }
+
+  return value
+}
+
 export function toColorHex(colorRGB: ColorRGB): ColorHex {
   const clampChannelValue = (value: number): number => Math.max(0, Math.min(255, value))
   const toHex = (n: number) => clampChannelValue(n).toString(16).padStart(2, '0')
