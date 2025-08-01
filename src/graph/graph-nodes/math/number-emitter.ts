@@ -1,8 +1,10 @@
+import NumberPanel from '@/components/graph/Panels/NumberPanel.vue'
 import { GraphNode } from '../../core/graph-node'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
-import { GraphNodeType } from '../decorators'
+import { GraphNodePanel, GraphNodeType } from '../decorators'
 
 @GraphNodeType('Math', 'Number Emitter')
+@GraphNodePanel(NumberPanel)
 export class NumberEmitter extends GraphNode {
   private readonly output: GraphNodeOutputType<number>
 

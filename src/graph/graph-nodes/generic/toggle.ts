@@ -1,7 +1,9 @@
+import TogglePanel from '@/components/graph/Panels/TogglePanel.vue'
 import { GraphNode } from '../../core/graph-node'
-import { GraphNodeType } from '../decorators'
+import { GraphNodePanel, GraphNodeType } from '../decorators'
 
 @GraphNodeType('Generic', 'Toggle')
+@GraphNodePanel(TogglePanel)
 export class Toggle extends GraphNode {
   private output
 

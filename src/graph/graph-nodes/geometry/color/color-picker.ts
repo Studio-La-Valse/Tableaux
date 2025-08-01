@@ -1,9 +1,11 @@
 import type { ColorARGB } from '@/geometry/color'
 import { isValidHexColor, toColorARGB } from '@/geometry/color-hex'
 import { GraphNode } from '../../../core/graph-node'
-import { GraphNodeType } from '../../decorators'
+import { GraphNodePanel, GraphNodeType } from '../../decorators'
+import ColorPickerPanel from '@/components/graph/Panels/ColorPickerPanel.vue'
 
 @GraphNodeType('Geometry', 'Color', 'Color Picker')
+@GraphNodePanel(ColorPickerPanel)
 export class ColorPicker extends GraphNode {
   private output
 
