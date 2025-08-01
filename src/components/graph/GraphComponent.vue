@@ -33,7 +33,7 @@ import { useCanvasTransform } from '@/composables/use-canvas-transform';
 import { useContextMenuStore } from "@/stores/use-context-menu-store";
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store';
 import { useSelectionAreaStore } from '@/stores/use-selection-area-store';
-import { useCanvasRefStore } from '@/stores/use-canvas-ref-store';
+import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store';
 import { useGraphStore } from '@/stores/use-graph-store';
 
 const selectionArea = useSelectionArea();
@@ -43,7 +43,7 @@ const menu = useContextMenuStore()
 const selection = useGraphNodeSelectionStore();
 const graph = useGraphStore();
 const canvasTransform = useCanvasTransform();
-const canvasStore = useCanvasRefStore()
+const canvasStore = useGraphCanvasStore()
 
 const viewportRef = ref<HTMLElement | null>(null);
 const canvasRef = ref<HTMLElement | null>(null);

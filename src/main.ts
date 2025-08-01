@@ -9,8 +9,8 @@ import { createPinia } from 'pinia'
 import { logError } from '@/stores/use-error-log-store'
 import { useGraphNodeActivatorStore } from '@/stores/use-graph-node-activator-store'
 
-import { graphNodeTypes } from '@/models/graph/graph-nodes/decorators'
-import.meta.glob('@/models/graph/graph-nodes/**/*.ts', { eager: true })
+import { graphNodeTypes } from '@/graph/graph-nodes/decorators'
+import.meta.glob('@/graph/graph-nodes/**/*.ts', { eager: true })
 
 const app = createApp(App)
 

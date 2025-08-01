@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ColorPicker } from '@/models/graph/graph-nodes/geometry/color/color-picker'
+import type { ColorPicker } from '@/graph/graph-nodes/geometry/color/color-picker'
 import ResizablePanel from './ResizablePanel.vue';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useGraphStore } from '@/stores/use-graph-store';

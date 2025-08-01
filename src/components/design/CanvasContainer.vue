@@ -17,11 +17,11 @@ import {
   type StyleValue
 } from 'vue'
 import CanvasRenderer from './CanvasRenderer.vue';
-import { useCanvasPropsStore } from '@/stores/use-canvas-props-store';
+import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
 
 type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200'
 
-const canvasProps = useCanvasPropsStore();
+const canvasProps = useDesignCanvasStore();
 
 const props = defineProps<{
   zoomMode: ZoomMode

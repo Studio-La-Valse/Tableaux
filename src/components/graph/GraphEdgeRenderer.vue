@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useEdgeSelection } from '@/composables/use-edge-selection';
-import type { GraphEdge } from '@/models/graph/core/graph-edge';
+import type { GraphEdge } from '@/graph/core/graph-edge';
 import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
 import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store';
 

@@ -2,7 +2,7 @@ import { onUnmounted } from 'vue'
 import { useSelectionAreaStore } from '@/stores/use-selection-area-store'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { useGraphStore } from '@/stores/use-graph-store'
-import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
+import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useEdgeDrag } from './use-edge-drag'
 
 type mode = 'default' | 'add' | 'subtract'
@@ -10,7 +10,7 @@ type mode = 'default' | 'add' | 'subtract'
 export function useSelectionArea() {
   const selectionAreaStore = useSelectionAreaStore()
   const nodeSelectionStore = useGraphNodeSelectionStore()
-  const canvasRefStore = useCanvasRefStore()
+  const canvasRefStore = useGraphCanvasStore()
   const graphStore = useGraphStore()
   const edgeDrag = useEdgeDrag()
 

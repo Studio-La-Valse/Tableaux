@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import type { TextEmitter } from '@/models/graph/graph-nodes/text/text-emitter';
+import type { TextEmitter } from '@/graph/graph-nodes/text/text-emitter';
 import ResizablePanel from './ResizablePanel.vue';
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useGraphStore } from '@/stores/use-graph-store';

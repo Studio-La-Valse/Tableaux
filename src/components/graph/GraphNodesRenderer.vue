@@ -9,8 +9,8 @@ import { useGraphStore } from '@/stores/use-graph-store';
 import GraphNodeRenderer from './GraphNodeRenderer.vue';
 import { useCopyPaste } from '@/composables/use-copy-paste';
 import { computed } from 'vue';
-import type { XY } from '@/models/geometry/xy';
-import type { GraphNodeWrapper } from '@/models/graph/core/graph-node-wrapper';
+import type { XY } from '@/geometry/xy';
+import type { GraphNodeWrapper } from '@/graph/core/graph-node-wrapper';
 
 const graph = useGraphStore();
 const nodes = computed(() => graph.nodes)

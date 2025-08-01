@@ -8,8 +8,8 @@
 import { computed, type StyleValue } from "vue";
 import PanelRenderer from "./PanelRenderer.vue";
 import { useNodeSelectionAndDrag } from "@/composables/use-node-selection-and-drag";
-import { type XY } from "@/models/geometry/xy";
-import type { GraphNodeWrapper } from "@/models/graph/core/graph-node-wrapper";
+import { type XY } from "@/geometry/xy";
+import type { GraphNodeWrapper } from "@/graph/core/graph-node-wrapper";
 
 const props = defineProps<{ graphNode: GraphNodeWrapper }>();
 const { onMouseDown } = useNodeSelectionAndDrag();

@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { useEdgeDrag } from '@/composables/use-edge-drag';
 import HandleRenderer from './HandleRenderer.vue';
-import type { GraphNodeOutput } from '@/models/graph/core/graph-node-output';
+import type { GraphNodeOutput } from '@/graph/core/graph-node-output';
 
 const props = defineProps<{
   output: GraphNodeOutput;

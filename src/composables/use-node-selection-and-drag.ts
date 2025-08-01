@@ -1,12 +1,12 @@
 import { ref } from 'vue'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { useGraphStore } from '@/stores/use-graph-store'
-import type { XY } from '@/models/geometry/xy'
-import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
+import type { XY } from '@/geometry/xy'
+import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store'
 import { useContextMenuStore } from '@/stores/use-context-menu-store'
 import { useEdgeDrag } from './use-edge-drag'
-import type { GraphNodeWrapper } from '@/models/graph/core/graph-node-wrapper'
+import type { GraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 
 export function useNodeSelectionAndDrag() {
   const selectionStore = useGraphNodeSelectionStore()
@@ -14,7 +14,7 @@ export function useNodeSelectionAndDrag() {
   const menu = useContextMenuStore()
   const edgeDrag = useEdgeDrag()
 
-  const { clientToCanvas } = useCanvasRefStore()
+  const { clientToCanvas } = useGraphCanvasStore()
   const graph = useGraphStore()
 
   const dragging = ref(false)
