@@ -6,17 +6,12 @@ import { GraphNodeType } from '../decorators'
 export class NumberEmitter extends GraphNode {
   private readonly output: GraphNodeOutputType<number>
 
+  public override data: { value: number } = { value: 0 }
+
   constructor(id: string, path: string[]) {
     super(id, path)
 
     this.output = this.registerNumberOutput('Number')
-  }
-
-  override onInitialize(): void {
-    super.onInitialize()
-    
-    if (!this.data.value) this.data.value = 0
-    this.solve()
   }
 
   public onChange(newValue: number): void {
@@ -26,6 +21,6 @@ export class NumberEmitter extends GraphNode {
   }
 
   protected solve(): void {
-    this.output.next(this.data.value as number)
+    this.output.next(this.data.value)
   }
 }

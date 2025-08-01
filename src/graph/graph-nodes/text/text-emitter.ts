@@ -6,15 +6,12 @@ import { GraphNodeType } from '../decorators'
 export class TextEmitter extends GraphNode {
   private output: GraphNodeOutputType<string>
 
+  public override data: { value: string } = { value: 'Hello, world!' }
+
   constructor(id: string, path: string[]) {
     super(id, path)
 
     this.output = this.registerStringOutput('Text')
-  }
-
-  override onInitialize(): void {
-    if (!this.data.value) this.data.value = 'Hello, world!'
-    this.solve()
   }
 
   public onChange(newValue: string): void {
