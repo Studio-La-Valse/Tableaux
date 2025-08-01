@@ -10,6 +10,7 @@ import { logError } from '@/stores/use-error-log-store'
 import { useGraphNodeActivatorStore } from '@/stores/use-graph-node-activator-store'
 
 import { graphNodeTypes } from '@/graph/graph-nodes/decorators'
+import { useGraphNodePanelStore } from './stores/use-graph-node-panel-store'
 import.meta.glob('@/graph/graph-nodes/**/*.ts', { eager: true })
 
 const app = createApp(App)
@@ -35,9 +36,14 @@ app.use(router)
 app.use(createPinia())
 
 const { register } = useGraphNodeActivatorStore()
+const { registerPanel } = useGraphNodePanelStore()
 
 for (const { category, ctor } of graphNodeTypes) {
   register(category, (id, path) => new ctor(id, path))
+  
+  if (ctor.__graphNodePanel) {
+    registerPanel(ctor, ctor.__graphNodePanel);
+  }
 }
 
 app.mount('#app')

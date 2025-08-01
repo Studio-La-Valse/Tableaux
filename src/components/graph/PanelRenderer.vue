@@ -29,14 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type StyleValue } from "vue";
-
-import NumberPanel from "./Panels/NumberPanel.vue";
-import TextPanel from "./Panels/TextPanel.vue";
-import ColorPickerPanel from "./Panels/ColorPickerPanel.vue";
-import LoggerPanel from "./Panels/LoggerPanel.vue";
-import TogglePanel from "./Panels/TogglePanel.vue";
-import GraphNodePanel from "./GraphNodePanel.vue";
+import { computed, type Component, type StyleValue } from "vue";
 
 import GraphNodeInputRenderer from "./GraphNodeInputRenderer.vue";
 import GraphNodeOutputRenderer from "./GraphNodeOutputRenderer.vue";
@@ -47,13 +40,10 @@ import type { GraphNode } from "@/graph/core/graph-node";
 import type { GraphNodeWrapper } from "@/graph/core/graph-node-wrapper";
 import { GraphNodeInput } from "@/graph/core/graph-node-input";
 import { GraphNodeOutput } from "@/graph/core/graph-node-output";
-import { NumberEmitter } from "@/graph/graph-nodes/math/number-emitter";
-import { TextEmitter } from "@/graph/graph-nodes/text/text-emitter";
-import { ColorPicker } from "@/graph/graph-nodes/geometry/color/color-picker";
-import { Logger } from "@/graph/graph-nodes/generic/logger";
-import { Toggle } from "@/graph/graph-nodes/generic/toggle";
+import { useGraphNodePanelStore } from "@/stores/use-graph-node-panel-store";
 
 const { isSelected } = useGraphNodeSelectionStore()
+const { getPanel } = useGraphNodePanelStore()
 
 const props = defineProps<{
   graphNode: GraphNodeWrapper,
@@ -102,24 +92,8 @@ const contentStyle = computed<StyleValue>(() => ({
   height: props.graphNode.height + 'px'
 }))
 
-const getGraphNodePanel = (node: GraphNode) => {
-  if (node instanceof NumberEmitter){
-    return NumberPanel
-  }
-  if (node instanceof TextEmitter) {
-    return TextPanel
-  }
-  if (node instanceof ColorPicker) {
-    return ColorPickerPanel
-  }
-  if (node instanceof Logger) {
-    return LoggerPanel
-  }
-  if (node instanceof Toggle) {
-    return TogglePanel
-  }
-
-  return GraphNodePanel;
+const getGraphNodePanel = (node: GraphNode): Component => {
+  return getPanel(node);
 };
 
 const getRelativePosition = (handle: GraphNodeInput | GraphNodeOutput) => {
