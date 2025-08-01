@@ -21,7 +21,6 @@ export class TextEmitter extends GraphNode {
   }
 
   protected solve(): void {
-    const text = this.data.value as string
-    this.output.next(text)
+    this.output.next(this.data.value)
   }
 }

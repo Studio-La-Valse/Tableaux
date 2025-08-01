@@ -43,6 +43,7 @@ import { useGraphNodeSelectionStore } from "@/stores/use-graph-node-selection-st
 import type { GraphNodeWrapper } from "@/graph/core/graph-node-wrapper";
 import { GraphNodeInput } from "@/graph/core/graph-node-input";
 import { GraphNodeOutput } from "@/graph/core/graph-node-output";
+import ToggleEmitter from "./Nodes/ToggleEmitter.vue";
 
 const { isSelected } = useGraphNodeSelectionStore()
 
@@ -98,6 +99,7 @@ const componentMap: Record<string, Component> = {
   "text/text emitter": TextEmitter,
   "geometry/color/color picker": ColorEmitter,
   "generic/logger": LoggerPanel,
+  "generic/toggle": ToggleEmitter
   // Add other path keys as needed
 };
 

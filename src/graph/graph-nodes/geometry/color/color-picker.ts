@@ -7,15 +7,12 @@ import { GraphNodeType } from '../../decorators'
 export class ColorPicker extends GraphNode {
   private output
 
+  public override data: { value: string } = { value: '#903c3c' }
+
   constructor(id: string, path: string[]) {
     super(id, path)
 
     this.output = this.registerObjectOutput<ColorARGB>('Color')
-  }
-
-  override onInitialize(): void {
-    if (!this.data.value) this.data.value = '#903c3c'
-    this.solve()
   }
 
   public onChange(color: string): void {
@@ -25,7 +22,6 @@ export class ColorPicker extends GraphNode {
   }
 
   protected solve(): void {
-    if (!(typeof this.data.value === 'string')) throw new Error('Expected string value.')
     if (!isValidHexColor(this.data.value)) throw new Error('Expected valid hex format.')
 
     const argb = toColorARGB(this.data.value)
