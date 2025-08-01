@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { GraphModel } from '@/models/graph/core/models/graph-model'
+import type { GraphModel } from '@/graph/core/models/graph-model'
 
 export type HistoryOptions = {
   maxHistory?: number

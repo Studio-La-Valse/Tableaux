@@ -3,43 +3,49 @@
 </template>
 
 <script setup lang="ts">
-import { BitmapPainter } from '@/models/bitmap-painters/bitmap-painter';
-import { useCanvasElementStore } from '@/stores/use-canvas-element-store';
-import { useCanvasPropsStore } from '@/stores/use-canvas-props-store';
+import { BitmapPainter } from '@/bitmap-painters/bitmap-painter';
+import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
 import { nextTick, onMounted, ref, watch } from 'vue';
 
-const elementStore = useCanvasElementStore();
+const canvasStore = useDesignCanvasStore();
 
-const props = useCanvasPropsStore();
-
-const canvas = ref<HTMLCanvasElement | null>(null)
+const canvas = ref<HTMLCanvasElement | undefined>()
 
 function redraw() {
   if (!canvas.value) return
-  canvas.value.width = props.dimensions.x
-  canvas.value.height = props.dimensions.y
+  canvas.value.width = canvasStore.dimensions.x
+  canvas.value.height = canvasStore.dimensions.y
 
   const ctx = canvas.value.getContext('2d')
   if (!ctx) return;
 
   const painter = new BitmapPainter(ctx);
-  painter.Init(props.dimensions.x, props.dimensions.y);
+  painter.Init(canvasStore.dimensions.x, canvasStore.dimensions.y);
 
-  elementStore.elements.forEach(el => {
+  canvasStore.elements.forEach(el => {
     painter.DrawElement(el)
   })
 
   painter.Finish();
 }
 
-onMounted(redraw)
-watch(() => props.dimensions, async () => {
+onMounted(() => {
+  if (!canvas.value) {
+    throw new Error()
+  }
+
+  canvasStore.setCanvas(canvas.value)
+
+  redraw()
+})
+
+watch(() => canvasStore.dimensions, async () => {
   await nextTick()
   redraw()
 })
 
 
-watch(() => elementStore.elements, redraw);
+watch(() => canvasStore.elements, redraw);
 </script>
 
 <style>

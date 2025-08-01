@@ -18,12 +18,12 @@
 
 <script setup lang="ts">
 import HandleRenderer from '@/components/graph/HandleRenderer.vue';
-import type { GraphNodeInput } from '@/models/graph/core/graph-node-input';
+import type { GraphNodeInput } from '@/graph/core/graph-node-input';
 import { useEdgeDrag } from '@/composables/use-edge-drag';
 import { useGraphStore } from '@/stores/use-graph-store';
 import { useCanvasTransform } from '@/composables/use-canvas-transform';
 import { computed } from 'vue';
-import type { GraphNode } from '@/models/graph/core/graph-node';
+import type { GraphNode } from '@/graph/core/graph-node';
 
 const props = defineProps<{
   graphNode: GraphNode;

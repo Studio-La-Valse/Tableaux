@@ -1,12 +1,12 @@
-import type { XY } from '@/models/geometry/xy'
+import type { XY } from '@/geometry/xy'
 import { defineStore } from 'pinia'
 import { computed, ref, type Ref } from 'vue'
 import { useGraphNodeActivatorStore } from './use-graph-node-activator-store'
-import { GraphEdge } from '@/models/graph/core/graph-edge'
-import type { GraphNodeModel } from '@/models/graph/core/models/graph-node-model'
-import type { GraphModel } from '@/models/graph/core/models/graph-model'
-import type { GraphEdgeModel } from '@/models/graph/core/models/graph-edge-model'
-import { GraphNodeWrapper } from '@/models/graph/core/graph-node-wrapper'
+import { GraphEdge } from '@/graph/core/graph-edge'
+import type { GraphNodeModel } from '@/graph/core/models/graph-node-model'
+import type { GraphModel } from '@/graph/core/models/graph-model'
+import type { GraphEdgeModel } from '@/graph/core/models/graph-edge-model'
+import { GraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 import { useGraphHistoryStore } from './use-graph-history-store'
 
 const useGraphInternal = defineStore('graph', () => {

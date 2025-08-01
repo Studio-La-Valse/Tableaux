@@ -1,5 +1,5 @@
 // src/composables/usePanZoom.ts
-import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
+import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 
 interface Position {
@@ -31,7 +31,7 @@ const isDragging = ref(false)
 export function useCanvasTransform(options: Options = {}) {
   const { minScale = 0.2, maxScale = 5, zoomIntensity = 0.1 } = options
 
-  const { viewportRef, clientToViewport } = useCanvasRefStore()
+  const { viewportRef, clientToViewport } = useGraphCanvasStore()
 
   // Track container’s pixel size (for correct zoom centering)
   const canvasSize = ref<Size>({ width: 300, height: 300 })

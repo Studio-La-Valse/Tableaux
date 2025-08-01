@@ -1,5 +1,5 @@
 import { ref, onUnmounted } from 'vue'
-import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
+import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useContextMenuStore } from '@/stores/use-context-menu-store'
 
 export interface TempEdgeData {
@@ -19,7 +19,7 @@ export interface GraphEdgePrototype {
 const tempEdge = ref<TempEdgeData | null>(null)
 
 export function useEdgeDrag() {
-  const { clientToCanvas } = useCanvasRefStore()
+  const { clientToCanvas } = useGraphCanvasStore()
   const { close } = useContextMenuStore()
 
   // update preview line end coords

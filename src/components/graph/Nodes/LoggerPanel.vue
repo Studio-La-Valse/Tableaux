@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Logger } from '@/models/graph/graph-nodes/generic/logger'
+import type { Logger } from '@/graph/graph-nodes/generic/logger'
 import ResizablePanel from "./ResizablePanel.vue"
 
 // `defineProps` gives you a typed `graphNode` in your template

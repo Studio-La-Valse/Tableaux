@@ -1,4 +1,4 @@
-import type { GraphNode } from '@/models/graph/core/graph-node'
+import type { GraphNode } from '@/graph/core/graph-node'
 import { defineStore } from 'pinia'
 
 export const useGraphNodeActivatorStore = defineStore('graph-node-activator-store', () => {

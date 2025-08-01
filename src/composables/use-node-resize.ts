@@ -1,4 +1,4 @@
-import { useCanvasRefStore } from '@/stores/use-canvas-ref-store'
+import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useGraphStore } from '@/stores/use-graph-store'
 import { onUnmounted, type Ref } from 'vue'
 import { useEdgeDrag } from './use-edge-drag'
@@ -18,7 +18,7 @@ interface XY {
  * @returns An object exposing the initResize function, which must be bound to the pointerdown event of the resizer element.
  */
 export function useNodeResize(width: Ref<number>, height: Ref<number>) {
-  const { clientToCanvas } = useCanvasRefStore()
+  const { clientToCanvas } = useGraphCanvasStore()
   const edgeDrag = useEdgeDrag()
   const menu = useContextMenuStore()
   const graph = useGraphStore()
