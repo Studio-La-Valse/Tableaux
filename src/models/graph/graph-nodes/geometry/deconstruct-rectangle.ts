@@ -3,8 +3,7 @@ import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/models/geometry/xy'
 import { deconstruct as deconstructRectangle } from '@/models/geometry/rectangle'
-import { deconstruct as deconstructSquare } from '@/models/geometry/square'
-import { assertIsShape } from '@/models/geometry/geometry'
+import { assertIsShape, isOfShapeKind } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Rectangle')
 export class DeconstructRectangle extends GraphNode {
@@ -20,6 +19,7 @@ export class DeconstructRectangle extends GraphNode {
   private rotation
   private area
   private perimeter
+  private diagonal
 
   constructor(id: string, path: string[]) {
     super(id, path)
@@ -36,57 +36,32 @@ export class DeconstructRectangle extends GraphNode {
     this.rotation = this.registerNumberOutput('Rotation')
     this.area = this.registerNumberOutput('Area')
     this.perimeter = this.registerNumberOutput('Perimeter')
+    this.diagonal = this.registerNumberOutput('Diagnoal')
   }
 
   protected solve(): void {
     inputIterators.cycleValues(this.inputShape).forEach(([shape]) => {
       const geom = assertIsShape(shape)
 
-      let topLeft: xy
-      let topRight: xy
-      let bottomRight: xy
-      let bottomLeft: xy
-      let center: xy
-      let width: number
-      let height: number
-      let area: number
-      let perimeter: number
-      let rotation: number
-
-      switch (geom.kind) {
-        case 'rectangle': {
-          const result = deconstructRectangle(geom)
-          topLeft = result.topLeft
-          topRight = result.topRight
-          bottomRight = result.bottomRight
-          bottomLeft = result.bottomLeft
-          center = result.center
-          width = result.width
-          height = result.height
-          area = result.area
-          perimeter = result.perimeter
-          rotation = result.rotation
-          break
-        }
-        case 'square': {
-          const result = deconstructSquare(geom)
-          topLeft = result.topLeft
-          topRight = result.topRight
-          bottomRight = result.bottomRight
-          bottomLeft = result.bottomLeft
-          center = result.center
-          width = result.size
-          height = result.size
-          area = result.area
-          perimeter = result.perimeter
-          rotation = result.rotation
-          break
-        }
-        default:
-          throw new Error(
-            `Unsupported shape kind, expected 'rectangle' or 'square', got: ${geom.kind}`,
-          )
+      if (!isOfShapeKind(geom, ['rectangle', 'square'])) {
+        throw new Error(
+          `Unsupported shape kind, expected 'rectangle' or 'square', got: ${geom.kind}`,
+        )
       }
+
+      const {
+        topLeft,
+        topRight,
+        bottomRight,
+        bottomLeft,
+        center,
+        width,
+        height,
+        rotation,
+        area,
+        perimeter,
+        diagonal,
+      } = deconstructRectangle(geom)
 
       this.topLeft.next(topLeft)
       this.topRight.next(topRight)
@@ -98,6 +73,7 @@ export class DeconstructRectangle extends GraphNode {
       this.rotation.next(rotation)
       this.area.next(area)
       this.perimeter.next(perimeter)
+      this.diagonal.next(diagonal)
     })
   }
 }

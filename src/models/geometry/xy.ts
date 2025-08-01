@@ -70,6 +70,14 @@ export function distanceSquared(left: XY, right: XY): number {
   return dx * dx + dy * dy
 }
 
+export function pointOnTransformedCircle(matrix: TransformationMatrix, angle: number): XY {
+  const unitPoint: XY = {
+    x: Math.cos(angle),
+    y: Math.sin(angle),
+  }
+  return applyMatrix(unitPoint, matrix)
+}
+
 export function polygonArea(points: XY[]): number {
   let sum = 0
   for (let i = 0; i < points.length; i++) {

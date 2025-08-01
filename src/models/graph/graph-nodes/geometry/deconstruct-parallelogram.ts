@@ -3,9 +3,7 @@ import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/models/geometry/xy'
-import { deconstruct as deconstructRectangle } from '@/models/geometry/rectangle'
-import { deconstruct as deconstructSquare } from '@/models/geometry/square'
-import { assertIsShape } from '@/models/geometry/geometry'
+import { assertIsShape, isOfShapeKind } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Parallelogram')
 export class DeconstructParallelogram extends GraphNode {
@@ -43,65 +41,24 @@ export class DeconstructParallelogram extends GraphNode {
     inputIterators.cycleValues(this.inputShape).forEach(([_shape]) => {
       const geom = assertIsShape(_shape)
 
-      let topLeft: xy
-      let topRight: xy
-      let bottomRight: xy
-      let bottomLeft: xy
-      let center: xy
-      let sideA: number
-      let sideB: number
-      let area: number
-      let perimeter: number
-      let rotation: number
-
-      switch (geom.kind) {
-        case 'parallelogram': {
-          const result = deconstructParallelogram(geom)
-          topLeft = result.topLeft
-          topRight = result.topRight
-          bottomRight = result.bottomRight
-          bottomLeft = result.bottomLeft
-          center = result.center
-          sideA = result.sideA
-          sideB = result.sideB
-          area = result.area
-          perimeter = result.perimeter
-          rotation = result.rotation
-          break
-        }
-        case 'rectangle': {
-          const result = deconstructRectangle(geom)
-          topLeft = result.topLeft
-          topRight = result.topRight
-          bottomRight = result.bottomRight
-          bottomLeft = result.bottomLeft
-          center = result.center
-          sideA = result.width
-          sideB = result.height
-          area = result.area
-          perimeter = result.perimeter
-          rotation = result.rotation
-          break
-        }
-        case 'square': {
-          const result = deconstructSquare(geom)
-          topLeft = result.topLeft
-          topRight = result.topRight
-          bottomRight = result.bottomRight
-          bottomLeft = result.bottomLeft
-          center = result.center
-          sideA = result.size
-          sideB = result.size
-          area = result.area
-          perimeter = result.perimeter
-          rotation = result.rotation
-          break
-        }
-        default:
-          throw new Error(
-            `Unsupported shape kind, expected 'parallelogram', 'rectangle' or 'circle', got: ${geom.kind}`,
-          )
+      if (!isOfShapeKind(geom, ['parallelogram', 'rectangle', 'square'])) {
+        throw new Error(
+          `Unsupported shape kind, expected 'parallelogram', 'rectangle' or 'circle', got: ${geom.kind}`,
+        )
       }
+
+      const {
+        topLeft,
+        topRight,
+        bottomRight,
+        bottomLeft,
+        center,
+        sideA,
+        sideB,
+        area,
+        perimeter,
+        rotation,
+      } = deconstructParallelogram(geom)
 
       this.topLeft.next(topLeft)
       this.topRight.next(topRight)

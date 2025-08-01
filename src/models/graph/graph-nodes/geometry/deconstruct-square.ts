@@ -3,7 +3,7 @@ import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY } from '@/models/geometry/xy'
 import { deconstruct as deconstructSquare } from '@/models/geometry/square'
-import { assertIsShape } from '@/models/geometry/geometry'
+import { assertIsShape, isOfShapeKind } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Square')
 export class DeconstrucSquare extends GraphNode {
@@ -39,33 +39,21 @@ export class DeconstrucSquare extends GraphNode {
     inputIterators.cycleValues(this.inputShape).forEach(([shape]) => {
       const geom = assertIsShape(shape)
 
-      let topLeft: XY
-      let topRight: XY
-      let bottomRight: XY
-      let bottomLeft: XY
-      let center: XY
-      let size: number
-      let area: number
-      let perimeter: number
-      let rotation: number
-
-      switch (geom.kind) {
-        case 'square': {
-          const result = deconstructSquare(geom)
-          topLeft = result.topLeft
-          topRight = result.topRight
-          bottomRight = result.bottomRight
-          bottomLeft = result.bottomLeft
-          center = result.center
-          size = result.size
-          area = result.area
-          perimeter = result.perimeter
-          rotation = result.rotation
-          break
-        }
-        default:
-          throw new Error(`Unsupported shape kind: ${geom.kind}`)
+      if (!isOfShapeKind(geom, ['square'])) {
+        throw new Error(`Unsupported shape kind: ${geom.kind}`)
       }
+
+      const {
+        topLeft,
+        topRight,
+        bottomRight,
+        bottomLeft,
+        center,
+        size,
+        rotation,
+        area,
+        perimeter,
+      } = deconstructSquare(geom)
 
       this.topLeft.next(topLeft)
       this.topRight.next(topRight)

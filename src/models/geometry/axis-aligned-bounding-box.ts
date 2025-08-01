@@ -5,6 +5,8 @@ import { deconstruct as deconstructRectangle } from './rectangle'
 import { deconstruct as deconstructSquare } from './square'
 import { deconstruct as deconstructParallelogram } from './parallelogram'
 import type { Shape } from './geometry'
+import { deconstructArc } from './arc'
+import { deconstructEllipticalArc } from './elliptical-arc'
 
 export type AxisAlignedBoundingBox = {
   minX: number
@@ -15,6 +17,34 @@ export type AxisAlignedBoundingBox = {
 
 export function getAxisAlignedBoundingBox(element: Shape): AxisAlignedBoundingBox {
   switch (element.kind) {
+    case 'arc': {
+      const { start: startPoint, end: endPoint, middle: midPoint } = deconstructArc(element)
+      const xs = [startPoint.x, endPoint.x, midPoint.x]
+      const ys = [startPoint.y, endPoint.y, midPoint.y]
+      return {
+        minX: Math.min(...xs),
+        maxX: Math.max(...xs),
+        minY: Math.min(...ys),
+        maxY: Math.max(...ys),
+      }
+    }
+
+    case 'elliptical-arc': {
+      const {
+        start: startPoint,
+        end: endPoint,
+        middle: midPoint,
+      } = deconstructEllipticalArc(element)
+      const xs = [startPoint.x, endPoint.x, midPoint.x]
+      const ys = [startPoint.y, endPoint.y, midPoint.y]
+      return {
+        minX: Math.min(...xs),
+        maxX: Math.max(...xs),
+        minY: Math.min(...ys),
+        maxY: Math.max(...ys),
+      }
+    }
+
     case 'circle': {
       const { origin, radius } = deconstructCircle(element)
       return {
@@ -83,8 +113,5 @@ export function getAxisAlignedBoundingBox(element: Shape): AxisAlignedBoundingBo
         maxY: Math.max(...ys),
       }
     }
-
-    default:
-      throw new Error('Unsupported Geometry type')
   }
 }

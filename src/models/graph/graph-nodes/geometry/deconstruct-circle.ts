@@ -3,7 +3,7 @@ import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY } from '@/models/geometry/xy'
 import { deconstruct } from '@/models/geometry/circle'
-import { assertIsShape } from '@/models/geometry/geometry'
+import { assertIsShape, isOfShapeKind } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Circle')
 export class DeconstructCircle extends GraphNode {
@@ -31,25 +31,11 @@ export class DeconstructCircle extends GraphNode {
     inputIterators.cycleValues(this.inputCircle).forEach(([_geom]) => {
       const geom = assertIsShape(_geom)
 
-      let origin: XY
-      let radius: number
-      let rotation: number
-      let area: number
-      let circumference: number
-
-      switch (geom.kind) {
-        case 'circle': {
-          const result = deconstruct(geom)
-          origin = result.origin
-          radius = result.radius
-          rotation = result.rotation
-          area = result.area
-          circumference = result.circumference
-          break
-        }
-        default:
-          throw new Error(`Unknown geometry type, expected 'circle', got ${geom.kind}`)
+      if (!isOfShapeKind(geom, ['circle'])) {
+        throw new Error(`Unknown geometry type, expected 'circle', got ${geom.kind}`)
       }
+
+      const { origin, radius, rotation, area, circumference } = deconstruct(geom)
 
       this.outputOrigin.next(origin)
       this.outputRadius.next(radius)

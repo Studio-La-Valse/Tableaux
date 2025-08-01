@@ -2,9 +2,8 @@ import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/models/geometry/xy'
-import { deconstruct as deconstructCircle } from '@/models/geometry/circle'
 import { deconstruct as deconstructEllipse } from '@/models/geometry/ellipse'
-import { assertIsShape } from '@/models/geometry/geometry'
+import { assertIsShape, isOfShapeKind } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Ellipse')
 export class DeconstructEllipse extends GraphNode {
@@ -31,47 +30,26 @@ export class DeconstructEllipse extends GraphNode {
   }
 
   protected solve(): void {
-    inputIterators.cycleValues(this.inputCircle).forEach(([_geom]) => {
-      const geom = assertIsShape(_geom)
+    inputIterators
+      .cycleValues(this.inputCircle)
+      .map((v) => v.map((w) => assertIsShape(w)))
+      .map((v) =>
+        v.map((w) => {
+          if (!isOfShapeKind(w, ['circle', 'ellipse'])) {
+            throw new Error(`Unknown geometry type, expected 'circle' or 'ellipse', got ${w.kind}`)
+          }
+          return w
+        }),
+      )
+      .forEach(([geom]) => {
+        const { origin, radiusX, radiusY, rotation, area, circumference } = deconstructEllipse(geom)
 
-      let origin: xy
-      let radiusX: number
-      let radiusY: number
-      let rotation: number
-      let area: number
-      let circumference: number
-
-      switch (geom.kind) {
-        case 'circle': {
-          const result = deconstructCircle(geom)
-          origin = result.origin
-          radiusX = result.radius
-          radiusY = result.radius
-          rotation = result.rotation
-          area = result.area
-          circumference = result.circumference
-          break
-        }
-        case 'ellipse': {
-          const result = deconstructEllipse(geom)
-          origin = result.origin
-          radiusX = result.radiusX
-          radiusY = result.radiusY
-          rotation = result.rotation
-          area = result.area
-          circumference = result.circumference
-          break
-        }
-        default:
-          throw new Error(`Unknown geometry type, expected 'circle' or 'ellipse', got ${geom.kind}`)
-      }
-
-      this.outputOrigin.next(origin)
-      this.outputRadiusX.next(radiusX)
-      this.outputRadiusY.next(radiusY)
-      this.outputRotation.next(rotation)
-      this.outputArea.next(area)
-      this.outputCircumference.next(circumference)
-    })
+        this.outputOrigin.next(origin)
+        this.outputRadiusX.next(radiusX)
+        this.outputRadiusY.next(radiusY)
+        this.outputRotation.next(rotation)
+        this.outputArea.next(area)
+        this.outputCircumference.next(circumference)
+      })
   }
 }

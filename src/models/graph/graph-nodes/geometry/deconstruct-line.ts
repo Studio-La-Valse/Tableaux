@@ -3,7 +3,7 @@ import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY } from '@/models/geometry/xy'
 import { deconstruct } from '@/models/geometry/line'
-import { assertIsShape } from '@/models/geometry/geometry'
+import { assertIsShape, isOfShapeKind } from '@/models/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Deconstruct Line')
 export class DeconstructLine extends GraphNode {
@@ -29,23 +29,13 @@ export class DeconstructLine extends GraphNode {
     inputIterators.cycleValues(this.inputLine).forEach(([_geom]) => {
       const geom = assertIsShape(_geom)
 
-      let start: XY
-      let end: XY
-      let length: number
-      let center: XY
-
-      switch (geom.kind) {
-        case 'line': {
-          const result = deconstruct(geom)
-          start = result.start
-          end = result.end
-          length = result.length
-          center = result.center
-          break
-        }
-        default:
-          throw new Error(`Unknown geometry type, expected 'line', got ${geom.kind}`)
+      if (!isOfShapeKind(geom, ['line', 'arc', 'elliptical-arc'])) {
+        throw new Error(
+          `Unknown geometry type, expected 'line', 'arc' or 'elliptical-arc', got ${geom.kind}`,
+        )
       }
+
+      const { start, middle: center, end, length } = deconstruct(geom)
 
       this.outputStart.next(start)
       this.outputCenter.next(center)

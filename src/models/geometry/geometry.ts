@@ -9,6 +9,26 @@ import {
   applyMatrix,
 } from './xy'
 
+import type { Arc } from './arc'
+import {
+  skew as skewArc,
+  translate as translateArc,
+  rotate as rotateArc,
+  scale as scaleArc,
+  scaleUniform as scaleUniformArc,
+  deconstructArc,
+} from './arc'
+
+import type { EllipticalArc } from './elliptical-arc'
+import {
+  skew as skewEllipticalArc,
+  translate as translateEllipticalArc,
+  rotate as rotateEllipticalArc,
+  scale as scaleEllipticalArc,
+  scaleUniform as scaleUniformEllipticalArc,
+  deconstructEllipticalArc,
+} from './elliptical-arc'
+
 import type { Circle } from './circle'
 import {
   skew as skewCircle,
@@ -71,14 +91,33 @@ import { deconstruct as deconstructParallelogram } from './parallelogram'
 
 import { compose, isTransformationMatrix, type TransformationMatrix } from './transformation-matrix'
 
-export type ShapeKind = 'circle' | 'ellipse' | 'line' | 'square' | 'rectangle' | 'parallelogram'
+export const shapeKinds = [
+  'arc',
+  'elliptical-arc',
+  'circle',
+  'ellipse',
+  'line',
+  'square',
+  'rectangle',
+  'parallelogram',
+] as const
+
+export type ShapeKind = (typeof shapeKinds)[number]
 
 export type BaseShape = {
   kind: ShapeKind
   transformation: TransformationMatrix
 }
 
-export type Shape = Circle | Ellipse | Line | Square | Rectangle | Parallelogram
+export type Shape =
+  | Arc
+  | EllipticalArc
+  | Circle
+  | Ellipse
+  | Line
+  | Square
+  | Rectangle
+  | Parallelogram
 
 export function isShape(value: unknown): value is Shape {
   return (
@@ -93,7 +132,14 @@ export function isShape(value: unknown): value is Shape {
 }
 
 export function isShapeKind(value: string): value is ShapeKind {
-  return ['circle', 'ellipse', 'line', 'square', 'rectangle', 'parallelogram'].includes(value)
+  return shapeKinds.includes(value as ShapeKind)
+}
+
+export function isOfShapeKind<K extends Shape['kind']>(
+  geom: Shape,
+  allowedKinds: K[],
+): geom is Extract<Shape, { kind: K }> {
+  return allowedKinds.includes(geom.kind as K)
 }
 
 export function assertIsShape(value: unknown): Shape {
@@ -124,6 +170,10 @@ export function translate(geometry: Geometry, delta: XY): Geometry {
   }
 
   switch (geometry.kind) {
+    case 'arc':
+      return translateArc(geometry, delta)
+    case 'elliptical-arc':
+      return translateEllipticalArc(geometry, delta)
     case 'circle':
       return translateCircle(geometry, delta)
     case 'ellipse':
@@ -136,8 +186,6 @@ export function translate(geometry: Geometry, delta: XY): Geometry {
       return translateRectangle(geometry, delta)
     case 'parallelogram':
       return translateParallelogram(geometry, delta)
-    default:
-      throw new Error('Unsupported Geometry type')
   }
 }
 
@@ -147,6 +195,10 @@ export function rotate(geometry: Geometry, origin: XY, angle: number): Geometry 
   }
 
   switch (geometry.kind) {
+    case 'arc':
+      return rotateArc(geometry, origin, angle)
+    case 'elliptical-arc':
+      return rotateEllipticalArc(geometry, origin, angle)
     case 'circle':
       return rotateCircle(geometry, origin, angle)
     case 'ellipse':
@@ -159,8 +211,6 @@ export function rotate(geometry: Geometry, origin: XY, angle: number): Geometry 
       return rotateRectangle(geometry, origin, angle)
     case 'parallelogram':
       return rotateParallelogram(geometry, origin, angle)
-    default:
-      throw new Error('Unsupported Geometry type')
   }
 }
 
@@ -170,6 +220,10 @@ export function scale(geometry: Geometry, origin: XY, factor: XY): Geometry {
   }
 
   switch (geometry.kind) {
+    case 'arc':
+      return scaleArc(geometry, origin, factor)
+    case 'elliptical-arc':
+      return scaleEllipticalArc(geometry, origin, factor)
     case 'circle':
       return scaleCircle(geometry, origin, factor)
     case 'ellipse':
@@ -182,8 +236,6 @@ export function scale(geometry: Geometry, origin: XY, factor: XY): Geometry {
       return scaleRectangle(geometry, origin, factor)
     case 'parallelogram':
       return scaleParallelogram(geometry, origin, factor)
-    default:
-      throw new Error('Unsupported Geometry type')
   }
 }
 
@@ -193,6 +245,10 @@ export function scaleUniform(geometry: Geometry, origin: XY, factor: number): Ge
   }
 
   switch (geometry.kind) {
+    case 'arc':
+      return scaleUniformArc(geometry, origin, factor)
+    case 'elliptical-arc':
+      return scaleUniformEllipticalArc(geometry, origin, factor)
     case 'circle':
       return scaleUniformCircle(geometry, origin, factor)
     case 'ellipse':
@@ -205,8 +261,6 @@ export function scaleUniform(geometry: Geometry, origin: XY, factor: number): Ge
       return scaleUniformRectangle(geometry, origin, factor)
     case 'parallelogram':
       return scaleUniformParallelogram(geometry, origin, factor)
-    default:
-      throw new Error('Unsupported Geometry type')
   }
 }
 
@@ -216,6 +270,10 @@ export function skew(geometry: Geometry, origin: XY, factor: XY): Geometry {
   }
 
   switch (geometry.kind) {
+    case 'arc':
+      return skewArc(geometry, origin, factor)
+    case 'elliptical-arc':
+      return skewEllipticalArc(geometry, origin, factor)
     case 'circle':
       return skewCircle(geometry, origin, factor)
     case 'ellipse':
@@ -228,8 +286,6 @@ export function skew(geometry: Geometry, origin: XY, factor: XY): Geometry {
       return skewRectangle(geometry, origin, factor)
     case 'parallelogram':
       return skewParallelogram(geometry, origin, factor)
-    default:
-      throw new Error('Unsupported Geometry type')
   }
 }
 
@@ -240,9 +296,18 @@ export function transform(geometry: Geometry, transformation: TransformationMatr
 
   const newMatrix = compose(transformation, geometry.transformation)
   switch (geometry.kind) {
+    case 'arc':
+    case 'elliptical-arc':
+      const result: EllipticalArc = {
+        ...geometry,
+        kind: 'elliptical-arc',
+        transformation: newMatrix,
+      }
+      return result
     case 'circle':
     case 'ellipse': {
       const result: Ellipse = {
+        ...geometry,
         kind: 'ellipse',
         transformation: newMatrix,
       }
@@ -250,6 +315,7 @@ export function transform(geometry: Geometry, transformation: TransformationMatr
     }
     case 'line': {
       const result: Line = {
+        ...geometry,
         kind: 'line',
         transformation: newMatrix,
       }
@@ -259,13 +325,12 @@ export function transform(geometry: Geometry, transformation: TransformationMatr
     case 'rectangle':
     case 'parallelogram': {
       const result: Parallelogram = {
+        ...geometry,
         kind: 'parallelogram',
         transformation: newMatrix,
       }
       return result
     }
-    default:
-      throw new Error('Unsupported Geometry type')
   }
 }
 
@@ -275,6 +340,16 @@ export function getCenter(element: Geometry): XY {
   }
 
   switch (element.kind) {
+    case 'arc': {
+      const { middle: midPoint } = deconstructArc(element)
+      return midPoint
+    }
+
+    case 'elliptical-arc': {
+      const { middle: midPoint } = deconstructEllipticalArc(element)
+      return midPoint
+    }
+
     case 'circle': {
       const { origin } = deconstructCircle(element)
       return origin
@@ -286,7 +361,7 @@ export function getCenter(element: Geometry): XY {
     }
 
     case 'line': {
-      const { center } = deconstructLine(element)
+      const { middle: center } = deconstructLine(element)
       return center
     }
 
@@ -304,8 +379,5 @@ export function getCenter(element: Geometry): XY {
       const { center } = deconstructParallelogram(element)
       return center
     }
-
-    default:
-      throw new Error('Unsupported Geometry type')
   }
 }

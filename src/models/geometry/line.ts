@@ -8,7 +8,9 @@ import {
   type TransformationMatrix,
 } from './transformation-matrix'
 import { applyMatrix, distance, type XY } from './xy'
-import type { BaseShape } from './geometry'
+import { isOfShapeKind, type BaseShape } from './geometry'
+import type { Arc } from './arc'
+import { deconstructEllipticalArc, type EllipticalArc } from './elliptical-arc'
 
 export type Line = BaseShape & { kind: 'line' }
 
@@ -48,24 +50,34 @@ export function createTransformedLine(transformation: TransformationMatrix = ide
 
 export type DeconstructedLine = {
   start: XY
-  center: XY
+  middle: XY
   end: XY
   length: number
 }
 
-export function deconstruct(line: Line): DeconstructedLine {
-  const start = applyMatrix(IDENTITY_START, line.transformation)
-  const end = applyMatrix(IDENTITY_END, line.transformation)
-  const middle = {
-    x: (start.x + end.x) / 2,
-    y: (start.y + end.y) / 2,
-  }
-  const length = distance(start, end)
-  return {
-    start,
-    center: middle,
-    end,
-    length,
+export function deconstruct(line: Line | Arc | EllipticalArc): DeconstructedLine {
+  if (isOfShapeKind(line, ['arc', 'elliptical-arc'])) {
+    const { start, middle, end, length } = deconstructEllipticalArc(line)
+    return {
+      start,
+      middle,
+      end,
+      length,
+    }
+  } else {
+    const start = applyMatrix(IDENTITY_START, line.transformation)
+    const end = applyMatrix(IDENTITY_END, line.transformation)
+    const middle = {
+      x: (start.x + end.x) / 2,
+      y: (start.y + end.y) / 2,
+    }
+    const length = distance(start, end)
+    return {
+      start,
+      middle,
+      end,
+      length,
+    }
   }
 }
 
