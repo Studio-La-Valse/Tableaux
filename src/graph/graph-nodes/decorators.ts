@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import type { GraphNode } from '../core/graph-node';
 import type { Component } from 'vue';
 
-interface GraphNodeConstructor {
+export interface GraphNodeConstructor {
   new (id: string, path: string[]): GraphNode;
     __graphNodePanel?: Component;
 }
