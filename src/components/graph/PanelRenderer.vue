@@ -9,7 +9,6 @@
     <div class="content" :style="contentStyle">
       <component :is="getGraphNodePanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
 
-
       <div class="inputs">
         <GraphNodeInputRenderer v-for="(input, index) in graphNode.innerNode.inputs" :key="'input-' + index"
           :input="input" :positionY="getRelativePosition(input).y" :graphNode="graphNode.innerNode" />
@@ -30,20 +29,29 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type StyleValue, type Component } from "vue";
-import NumberEmitter from "./Nodes/NumberEmitter.vue";
-import TextEmitter from "./Nodes/TextEmitter.vue";
-import ColorEmitter from "./Nodes/ColorEmitter.vue";
+import { computed, type StyleValue } from "vue";
+
+import NumberPanel from "./Panels/NumberPanel.vue";
+import TextPanel from "./Panels/TextPanel.vue";
+import ColorPickerPanel from "./Panels/ColorPickerPanel.vue";
+import LoggerPanel from "./Panels/LoggerPanel.vue";
+import TogglePanel from "./Panels/TogglePanel.vue";
 import GraphNodePanel from "./GraphNodePanel.vue";
-import LoggerPanel from "./Nodes/LoggerPanel.vue";
+
 import GraphNodeInputRenderer from "./GraphNodeInputRenderer.vue";
 import GraphNodeOutputRenderer from "./GraphNodeOutputRenderer.vue";
-import type { GraphNode } from "@/graph/core/graph-node";
+
 import { useGraphNodeSelectionStore } from "@/stores/use-graph-node-selection-store";
+
+import type { GraphNode } from "@/graph/core/graph-node";
 import type { GraphNodeWrapper } from "@/graph/core/graph-node-wrapper";
 import { GraphNodeInput } from "@/graph/core/graph-node-input";
 import { GraphNodeOutput } from "@/graph/core/graph-node-output";
-import ToggleEmitter from "./Nodes/ToggleEmitter.vue";
+import { NumberEmitter } from "@/graph/graph-nodes/math/number-emitter";
+import { TextEmitter } from "@/graph/graph-nodes/text/text-emitter";
+import { ColorPicker } from "@/graph/graph-nodes/geometry/color/color-picker";
+import { Logger } from "@/graph/graph-nodes/generic/logger";
+import { Toggle } from "@/graph/graph-nodes/generic/toggle";
 
 const { isSelected } = useGraphNodeSelectionStore()
 
@@ -94,18 +102,24 @@ const contentStyle = computed<StyleValue>(() => ({
   height: props.graphNode.height + 'px'
 }))
 
-const componentMap: Record<string, Component> = {
-  "math/number emitter": NumberEmitter,
-  "text/text emitter": TextEmitter,
-  "geometry/color/color picker": ColorEmitter,
-  "generic/logger": LoggerPanel,
-  "generic/toggle": ToggleEmitter
-  // Add other path keys as needed
-};
-
 const getGraphNodePanel = (node: GraphNode) => {
-  const key = node.path.join('/').toLowerCase();
-  return componentMap[key] || GraphNodePanel;
+  if (node instanceof NumberEmitter){
+    return NumberPanel
+  }
+  if (node instanceof TextEmitter) {
+    return TextPanel
+  }
+  if (node instanceof ColorPicker) {
+    return ColorPickerPanel
+  }
+  if (node instanceof Logger) {
+    return LoggerPanel
+  }
+  if (node instanceof Toggle) {
+    return TogglePanel
+  }
+
+  return GraphNodePanel;
 };
 
 const getRelativePosition = (handle: GraphNodeInput | GraphNodeOutput) => {

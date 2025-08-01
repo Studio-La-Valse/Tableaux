@@ -16,7 +16,7 @@ const props = defineProps<{
   graphNode: Toggle
 }>()
 
-const isActive = computed(() => Boolean(props.graphNode.data.value));
+const isActive = computed(() => props.graphNode.data.value);
 
 const toggleValue = () => {
   props.graphNode.onChange(!isActive.value);

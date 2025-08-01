@@ -7,7 +7,6 @@ import { GraphNodeType } from '../decorators'
 export class Logger extends GraphNode {
   private input: GraphNodeInputType<string>
 
-  // a reactive array of strings
   public readonly values = reactive<string[]>([])
 
   constructor(id: string, path: string[]) {
