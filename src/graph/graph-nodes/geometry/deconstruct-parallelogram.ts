@@ -3,7 +3,7 @@ import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/geometry/xy'
-import { assertIsShape, isOfShapeKind } from '@/geometry/geometry'
+import { assertIsShape, isOfShapeKind } from '@/geometry/shape'
 
 @GraphNodeType('Geometry', 'Deconstruct Parallelogram')
 export class DeconstructParallelogram extends GraphNode {

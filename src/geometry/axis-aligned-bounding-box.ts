@@ -4,7 +4,7 @@ import { deconstruct as deconstructLine } from './line'
 import { deconstruct as deconstructRectangle } from './rectangle'
 import { deconstruct as deconstructSquare } from './square'
 import { deconstruct as deconstructParallelogram } from './parallelogram'
-import type { Shape } from './geometry'
+import type { Shape } from './shape'
 import { deconstructArc } from './arc'
 import { deconstructEllipticalArc } from './elliptical-arc'
 

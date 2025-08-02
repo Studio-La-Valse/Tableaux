@@ -7,7 +7,7 @@ import {
   type TransformationMatrix,
 } from './transformation-matrix'
 import { applyMatrix, distance, type XY } from './xy'
-import type { BaseShape } from './geometry'
+import type { BaseShape } from './shape'
 import { createUnitRectangle, type Rectangle } from './rectangle'
 import { createTransformedParallelogram, type Parallelogram } from './parallelogram'
 

@@ -7,7 +7,7 @@ import {
   type TransformationMatrix,
 } from './transformation-matrix'
 import { applyMatrix, pointOnTransformedCircle, type XY } from './xy'
-import type { BaseShape } from './geometry'
+import type { BaseShape } from './shape'
 import type { Arc } from './arc'
 import { IDENTITY_ORIGIN, IDENTITY_RADIUS, type Circle } from './circle'
 import type { Ellipse } from './ellipse'
@@ -167,4 +167,56 @@ export function skew(arc: EllipticalArc, origin: XY, factor: XY): EllipticalArc 
     ...arc,
     transformation: multiplied,
   }
+}
+
+type CurvedShape = Circle | Ellipse | Arc | EllipticalArc
+
+export function divideCurvedShape(shape: CurvedShape & { clockwise?: boolean }, n: number): XY[] {
+  const points: XY[] = []
+
+  let startAngle = 0
+  let endAngle = 2 * Math.PI
+  let clockwise = false
+
+  const rx = IDENTITY_RADIUS
+  const ry = IDENTITY_RADIUS
+
+  switch (shape.kind) {
+    case 'circle':
+      break
+
+    case 'ellipse':
+      break
+
+    case 'arc':
+    case 'elliptical-arc':
+      startAngle = shape.startAngle
+      endAngle = shape.endAngle
+      clockwise = shape.clockwise ?? false
+      ;[startAngle, endAngle] = normalizeAngleRange(startAngle, endAngle, clockwise)
+      break
+  }
+
+  for (let i = 0; i < n; i++) {
+    const t = i / n
+    const angle = startAngle + t * (endAngle - startAngle)
+    const x = rx * Math.cos(angle)
+    const y = ry * Math.sin(angle)
+    points.push(applyMatrix({ x, y }, shape.transformation))
+  }
+
+  return points
+}
+
+function normalizeAngleRange(start: number, end: number, clockwise: boolean): [number, number] {
+  const fullCircle = 2 * Math.PI
+
+  let delta = end - start
+  if (clockwise && delta > 0) {
+    delta -= fullCircle
+  } else if (!clockwise && delta < 0) {
+    delta += fullCircle
+  }
+
+  return [start, start + delta]
 }

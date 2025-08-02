@@ -1,7 +1,7 @@
 import { GraphNode } from '@/graph/core/graph-node'
 import { inputIterators } from '@/graph/core/input-iterators'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
-import { assertIsShape } from '@/geometry/geometry'
+import { assertIsShape } from '@/geometry/shape'
 import type { TransformationMatrix } from '@/geometry/transformation-matrix'
 
 @GraphNodeType('Geometry', 'Transform', 'Transformation')

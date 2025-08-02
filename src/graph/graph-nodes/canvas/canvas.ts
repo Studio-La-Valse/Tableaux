@@ -1,7 +1,7 @@
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { assertIsShape, type Shape } from '@/geometry/geometry'
+import { assertIsShape, type Shape } from '@/geometry/shape'
 
 @GraphNodeType('Canvas', 'Canvas')
 export class Canvas extends GraphNode {

@@ -7,9 +7,9 @@ import {
   type TransformationMatrix,
 } from './transformation-matrix'
 import { applyMatrix, pointOnTransformedCircle, type XY } from './xy'
-import type { BaseShape } from './geometry'
 import type { EllipticalArc } from './elliptical-arc'
 import { IDENTITY_ORIGIN, IDENTITY_RADIUS, type Circle } from './circle'
+import type { BaseShape } from './shape'
 
 export type Arc = BaseShape & {
   kind: 'arc'

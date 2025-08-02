@@ -3,7 +3,7 @@ import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { type XY } from '@/geometry/xy'
 import { deconstruct as deconstructSquare } from '@/geometry/square'
-import { assertIsShape, isOfShapeKind } from '@/geometry/geometry'
+import { assertIsShape, isOfShapeKind } from '@/geometry/shape'
 
 @GraphNodeType('Geometry', 'Deconstruct Square')
 export class DeconstrucSquare extends GraphNode {
