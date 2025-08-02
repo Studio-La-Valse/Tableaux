@@ -7,8 +7,8 @@ import {
   identity,
   type TransformationMatrix,
 } from './transformation-matrix'
-import { applyMatrix, distance, type XY } from './xy'
-import { isOfShapeKind, type BaseShape } from './geometry'
+import { applyMatrix, distance, interpolate, type XY } from './xy'
+import { isOfShapeKind, type BaseShape } from './shape'
 import type { Arc } from './arc'
 import { deconstructEllipticalArc, type EllipticalArc } from './elliptical-arc'
 
@@ -124,4 +124,16 @@ export function skew(line: Line, origin: XY, factor: XY): Line {
     ...line,
     transformation,
   }
+}
+
+export function divideLine(shape: Line, n: number): XY[] {
+  const start = applyMatrix({ x: 0, y: 0 }, shape.transformation)
+  const end = applyMatrix({ x: 1, y: 0 }, shape.transformation)
+
+  const points: XY[] = []
+  for (let i = 0; i < n; i++) {
+    const t = i / n
+    points.push(interpolate(start, end, t))
+  }
+  return points
 }

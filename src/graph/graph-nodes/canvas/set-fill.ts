@@ -1,7 +1,7 @@
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import { assertIsShape, type Shape } from '@/geometry/geometry'
+import { assertIsShape, type Shape } from '@/geometry/shape'
 import type { Fill } from '@/geometry/fill'
 import { assertIsColorARGB } from '@/geometry/color-rgb'
 

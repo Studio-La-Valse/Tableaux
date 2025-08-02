@@ -1,6 +1,6 @@
 import { compose, createRotation, createScale, createSkew, createTranslation, type TransformationMatrix } from './transformation-matrix'
 import { applyMatrix, distance, type XY } from './xy'
-import type { BaseShape } from './geometry'
+import type { BaseShape } from './shape'
 import { createTransformedParallelogram, type Parallelogram } from './parallelogram'
 import { IDENTITY_TL, IDENTITY_TR, IDENTITY_BR, IDENTITY_BL, IDENTITY_CENTER, type Square } from './square'
 

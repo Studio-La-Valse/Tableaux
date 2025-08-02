@@ -2,7 +2,7 @@ import { assertIsColorARGB } from '@/geometry/color-rgb'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
-import { assertIsShape, type Shape } from '@/geometry/geometry'
+import { assertIsShape, type Shape } from '@/geometry/shape'
 import type { Stroke } from '@/geometry/stroke'
 
 @GraphNodeType('Geometry', 'Set Stroke')

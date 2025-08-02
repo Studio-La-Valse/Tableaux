@@ -2,7 +2,8 @@ import { type XY } from '@/geometry/xy'
 import { GraphNode } from '@/graph/core/graph-node'
 import { inputIterators } from '@/graph/core/input-iterators'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
-import { assertIsShape, getCenter } from '@/geometry/geometry'
+import { assertIsShape } from '@/geometry/shape'
+import { getCenter } from '@/geometry/geometry'
 
 @GraphNodeType('Geometry', 'Analyze', 'Center')
 export class Center extends GraphNode {

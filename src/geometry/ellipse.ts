@@ -8,7 +8,7 @@ import {
   type TransformationMatrix,
 } from './transformation-matrix'
 import { applyMatrix, type XY } from './xy'
-import type { BaseShape } from './geometry'
+import type { BaseShape } from './shape'
 import { IDENTITY_ORIGIN, IDENTITY_RADIUS, type Circle } from './circle'
 
 export type Ellipse = BaseShape & { kind: 'ellipse' }

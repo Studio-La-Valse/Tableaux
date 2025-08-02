@@ -1,11 +1,12 @@
-import type { Shape } from '@/geometry/geometry'
+import type { Shape } from '@/geometry/shape'
 import type { XY } from '@/geometry/xy'
 import { defineStore } from 'pinia'
-import { computed, ref, type Ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { useGraphStore } from './use-graph-store'
 import { CanvasClick } from '@/graph/graph-nodes/canvas/canvas-click'
 import { MouseMove } from '@/graph/graph-nodes/canvas/mouse-move'
 import { Viewport } from '@/graph/graph-nodes/canvas/viewport'
+import { BitmapPainter } from '@/bitmap-painters/bitmap-painter'
 
 const canvasRef = ref<HTMLCanvasElement | undefined>()
 const innerDimensions = ref<XY>({ x: 1920, y: 1080 })
@@ -13,8 +14,8 @@ const innerDimensions = ref<XY>({ x: 1920, y: 1080 })
 export const useDesignCanvasStore = defineStore('canvas-props', () => {
   const dimensions = computed(() => innerDimensions.value)
   const lastClick = ref<XY | undefined>()
-  const elements: Ref<Shape[]> = ref([])
   const graph = useGraphStore()
+  const elements: Shape[] = []
 
   const setCanvas = (canvas: HTMLCanvasElement) => {
     if (canvasRef.value) throw new Error('Canvas has already been set.')
@@ -39,6 +40,8 @@ export const useDesignCanvasStore = defineStore('canvas-props', () => {
         .filter((v) => v instanceof MouseMove)
         .forEach((v) => v.onChange(point))
     })
+
+    requestRedraw()
   }
 
   function clientToCanvas(event: MouseEvent): XY {
@@ -65,11 +68,43 @@ export const useDesignCanvasStore = defineStore('canvas-props', () => {
       .map((v) => v.innerNode)
       .filter((v) => v instanceof Viewport)
       .forEach((v) => v.onChange(_dimensions))
+
+    requestRedraw()
   }
 
   function setElements(_elements: Shape[]) {
-    elements.value = [..._elements]
+    elements.length = 0
+    _elements.forEach((v) => elements.push(v))
   }
 
-  return { dimensions, setDimensions, lastClick, elements, setElements, setCanvas }
+  let redrawRequested = false
+  function requestRedraw() {
+    redrawRequested = true
+    nextTick(() => redraw())
+  }
+
+  function redraw() {
+    if (!redrawRequested) return
+
+    if (!canvasRef.value) return
+
+    const ctx = canvasRef.value.getContext('2d')
+    if (!ctx) return
+
+    canvasRef.value.width = dimensions.value.x
+    canvasRef.value.height = dimensions.value.y
+
+    const painter = new BitmapPainter(ctx)
+    painter.Init(dimensions.value.x, dimensions.value.y)
+
+    elements.forEach((el) => {
+      painter.DrawElement(el)
+    })
+
+    painter.Finish()
+
+    redrawRequested = false
+  }
+
+  return { dimensions, redraw: requestRedraw, setDimensions, lastClick, setElements, setCanvas }
 })

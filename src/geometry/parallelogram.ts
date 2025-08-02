@@ -7,9 +7,16 @@ import {
   identity,
   type TransformationMatrix,
 } from './transformation-matrix'
-import { applyMatrix, distance, type XY } from './xy'
-import type { BaseShape } from './geometry'
-import { IDENTITY_BL, IDENTITY_BR, IDENTITY_TR, IDENTITY_TL, IDENTITY_CENTER, type Square } from './square'
+import { applyMatrix, distance, interpolate, type XY } from './xy'
+import type { BaseShape } from './shape'
+import {
+  IDENTITY_BL,
+  IDENTITY_BR,
+  IDENTITY_TR,
+  IDENTITY_TL,
+  IDENTITY_CENTER,
+  type Square,
+} from './square'
 import type { Rectangle } from './rectangle'
 
 export type Parallelogram = BaseShape & { kind: 'parallelogram' }
@@ -153,4 +160,29 @@ export function skew(parallelogram: Parallelogram, origin: XY, factor: XY): Para
     ...parallelogram,
     transformation,
   }
+}
+
+export function divideParallelogram(shape: Parallelogram | Rectangle | Square, n: number): XY[] {
+  const { topLeft, topRight, bottomRight, bottomLeft, perimeter } = deconstruct(shape)
+  const edges: [XY, XY][] = [
+    [topLeft, topRight],
+    [topRight, bottomLeft],
+    [bottomLeft, bottomRight],
+    [bottomRight, topLeft],
+  ]
+
+  const points: XY[] = []
+
+  let remaining = n
+  for (const [a, b] of edges) {
+    const len = distance(a, b)
+    const count = Math.round((len / perimeter) * n)
+    for (let i = 0; i < count && remaining > 0; i++) {
+      const t = i / count
+      points.push(interpolate(a, b, t))
+      remaining--
+    }
+  }
+
+  return points
 }

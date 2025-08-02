@@ -3,49 +3,20 @@
 </template>
 
 <script setup lang="ts">
-import { BitmapPainter } from '@/bitmap-painters/bitmap-painter';
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 
-const canvasStore = useDesignCanvasStore();
+const { setCanvas } = useDesignCanvasStore();
 
 const canvas = ref<HTMLCanvasElement | undefined>()
-
-function redraw() {
-  if (!canvas.value) return
-  canvas.value.width = canvasStore.dimensions.x
-  canvas.value.height = canvasStore.dimensions.y
-
-  const ctx = canvas.value.getContext('2d')
-  if (!ctx) return;
-
-  const painter = new BitmapPainter(ctx);
-  painter.Init(canvasStore.dimensions.x, canvasStore.dimensions.y);
-
-  canvasStore.elements.forEach(el => {
-    painter.DrawElement(el)
-  })
-
-  painter.Finish();
-}
 
 onMounted(() => {
   if (!canvas.value) {
     throw new Error()
   }
 
-  canvasStore.setCanvas(canvas.value)
-
-  redraw()
+  setCanvas(canvas.value)
 })
-
-watch(() => canvasStore.dimensions, async () => {
-  await nextTick()
-  redraw()
-})
-
-
-watch(() => canvasStore.elements, redraw);
 </script>
 
 <style>

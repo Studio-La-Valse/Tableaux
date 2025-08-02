@@ -70,6 +70,13 @@ export function distanceSquared(left: XY, right: XY): number {
   return dx * dx + dy * dy
 }
 
+export function interpolate(a: XY, b: XY, t: number): XY {
+  return {
+    x: a.x + t * (b.x - a.x),
+    y: a.y + t * (b.y - a.y),
+  }
+}
+
 export function pointOnTransformedCircle(matrix: TransformationMatrix, angle: number): XY {
   const unitPoint: XY = {
     x: Math.cos(angle),

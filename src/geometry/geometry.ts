@@ -9,7 +9,6 @@ import {
   applyMatrix,
 } from './xy'
 
-import type { Arc } from './arc'
 import {
   skew as skewArc,
   translate as translateArc,
@@ -29,7 +28,6 @@ import {
   deconstructEllipticalArc,
 } from './elliptical-arc'
 
-import type { Circle } from './circle'
 import {
   skew as skewCircle,
   translate as translateCircle,
@@ -65,7 +63,6 @@ import {
   skew as skewParallelogram,
 } from './parallelogram'
 
-import type { Rectangle } from './rectangle'
 import {
   translate as translateRectangle,
   rotate as rotateRectangle,
@@ -74,7 +71,6 @@ import {
   skew as skewRectangle,
 } from './rectangle'
 
-import type { Square } from './square'
 import {
   translate as translateSquare,
   rotate as rotateSquare,
@@ -89,66 +85,8 @@ import { deconstruct as deconstructRectangle } from './rectangle'
 import { deconstruct as deconstructSquare } from './square'
 import { deconstruct as deconstructParallelogram } from './parallelogram'
 
-import { compose, isTransformationMatrix, type TransformationMatrix } from './transformation-matrix'
-
-export const shapeKinds = [
-  'arc',
-  'elliptical-arc',
-  'circle',
-  'ellipse',
-  'line',
-  'square',
-  'rectangle',
-  'parallelogram',
-] as const
-
-export type ShapeKind = (typeof shapeKinds)[number]
-
-export type BaseShape = {
-  kind: ShapeKind
-  transformation: TransformationMatrix
-}
-
-export type Shape =
-  | Arc
-  | EllipticalArc
-  | Circle
-  | Ellipse
-  | Line
-  | Square
-  | Rectangle
-  | Parallelogram
-
-export function isShape(value: unknown): value is Shape {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'kind' in value &&
-    typeof value.kind === 'string' &&
-    isShapeKind(value.kind) &&
-    'transformation' in value &&
-    isTransformationMatrix(value.transformation)
-  )
-}
-
-export function isShapeKind(value: string): value is ShapeKind {
-  return shapeKinds.includes(value as ShapeKind)
-}
-
-export function isOfShapeKind<K extends Shape['kind']>(
-  geom: Shape,
-  allowedKinds: K[],
-): geom is Extract<Shape, { kind: K }> {
-  return allowedKinds.includes(geom.kind as K)
-}
-
-export function assertIsShape(value: unknown): Shape {
-  if (!isShape(value)) {
-    throw new Error('Value is not a shape.')
-  }
-
-  return value
-}
+import { compose, type TransformationMatrix } from './transformation-matrix'
+import { isShape, type Shape } from './shape'
 
 export type Geometry = Shape | XY
 
