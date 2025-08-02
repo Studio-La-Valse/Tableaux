@@ -1,6 +1,7 @@
 import type { XY } from '@/geometry/xy'
 import type { GraphNode } from './graph-node'
 import type { GraphNodeModel } from './models/graph-node-model'
+import { nanoid } from 'nanoid'
 
 export class GraphNodeWrapper {
   private _height = 30
@@ -42,7 +43,7 @@ export class GraphNodeWrapper {
   }
 
   constructor(public readonly innerNode: GraphNode) {
-    this.version = crypto.randomUUID()
+    this.version = nanoid(11)
   }
 
   public toModel(): GraphNodeModel {

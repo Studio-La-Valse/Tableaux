@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid'
 import type { GraphNode } from './graph-node'
 import type { GraphNodeOutput } from './graph-node-output'
 import type { JsonObject, JsonValue } from './models/json-value'
@@ -25,7 +26,7 @@ export abstract class GraphNodeInput {
     public graphNode: GraphNode,
     public description: string,
   ) {
-    this.id = crypto.randomUUID()
+    this.id = nanoid(11)
   }
 
   // used for params type input.

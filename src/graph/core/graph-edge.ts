@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid'
 import type { GraphNodeWrapper } from './graph-node-wrapper'
 import type { GraphEdgeModel } from './models/graph-edge-model'
 
@@ -11,7 +12,7 @@ export class GraphEdge {
     public inputIndex: number,
   ) {
     // used to track selection, note how the public fields may be modified
-    this.id = crypto.randomUUID()
+    this.id = nanoid(11)
   }
 
   public createKey(): string {

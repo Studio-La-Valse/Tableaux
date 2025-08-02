@@ -8,6 +8,7 @@ import type { GraphModel } from '@/graph/core/models/graph-model'
 import type { GraphEdgeModel } from '@/graph/core/models/graph-edge-model'
 import { GraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 import { useGraphHistoryStore } from './use-graph-history-store'
+import { nanoid } from 'nanoid'
 
 const useGraphInternal = defineStore('graph', () => {
   const nodeMap: Ref<Record<string, GraphNodeWrapper>> = ref({})
@@ -145,7 +146,7 @@ const useGraphInternal = defineStore('graph', () => {
     // 2) clone each node & build origId→clone map
     const idMap: Record<string, GraphNodeWrapper> = {}
     const clones = originals.map((orig) => {
-      const newId = crypto.randomUUID()
+      const newId = nanoid(11)
       const model = orig.toModel()
       model.id = newId
       model.x += 10 * pasteEvents
