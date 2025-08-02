@@ -40,7 +40,7 @@ const { registerPanel } = useGraphNodePanelStore()
 
 for (const { category, ctor } of graphNodeTypes) {
   register(category, (id, path) => new ctor(id, path))
-  
+
   if (ctor.__graphNodePanel) {
     registerPanel(ctor, ctor.__graphNodePanel);
   }
