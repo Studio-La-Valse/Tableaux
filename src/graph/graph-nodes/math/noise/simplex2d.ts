@@ -7,7 +7,6 @@ import { GraphNodeType } from "../../decorators";
 export class Simplex2d extends GraphNode {
   private input1
   private input2
-  private inputTime
   private inputScale
 
   private output
@@ -19,7 +18,6 @@ export class Simplex2d extends GraphNode {
 
     this.input1 = this.registerNumberInput("X")
     this.input2 = this.registerNumberInput("Y")
-    this.inputTime = this.registerNumberInput("Time")
     this.inputScale = this.registerNumberInput("Scale")
     this.output = this.registerNumberOutput("Value")
     this.perlin = new Perlin()
@@ -27,8 +25,8 @@ export class Simplex2d extends GraphNode {
 
   protected solve(): void {
     inputIterators
-      .cycleValues(this.input1, this.input2, this.inputTime, this.inputScale)
-      .map(([x, y, time, scale]) => this.perlin.simplex2((x + time) / scale, (y + time) / scale))
+      .cycleValues(this.input1, this.input2, this.inputScale)
+      .map(([x, y, scale]) => this.perlin.simplex2(x / scale, y / scale))
       .forEach((v) => this.output.next(v))
   }
 
