@@ -120,8 +120,22 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
 }
 
 export function isMidiState(obj: unknown): obj is MidiState {
-  if (typeof obj !== 'object' || obj === null) return false
+  if (
+    typeof obj !== 'object' ||
+    obj === null
+  ) {
+    return false
+  }
 
-  // Check that all values are valid MidiChannelState objects
-  return Object.values(obj).every(isMidiChannelState)
+  // Use a type guard to narrow obj
+  const maybeState = obj as Partial<MidiState>
+
+  if (
+    typeof maybeState.channels !== 'object' ||
+    maybeState.channels === null
+  ) {
+    return false
+  }
+
+  return Object.values(maybeState.channels).every(isMidiChannelState)
 }
