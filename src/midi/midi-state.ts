@@ -87,12 +87,21 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
       break
 
     case 'controllerChange':
-      newChannelState = {
-        ...newChannelState,
-        controllerValues: {
-          ...newChannelState.controllerValues,
-          [message.controllerNumber]: message.controllerValue,
-        },
+      const controllerValue = message.controllerValue
+      if (controllerValue > 0) {
+        newChannelState = {
+          ...newChannelState,
+          controllerValues: {
+            ...newChannelState.controllerValues,
+            [message.controllerNumber]: controllerValue,
+          },
+        }
+      } else {
+        delete newChannelState.controllerValues[message.controllerNumber]
+      }
+
+      if (message.controllerNumber == 64) {
+        newChannelState = applySustainPedalRelease(newChannelState)
       }
       break
 
@@ -118,12 +127,10 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
       break
   }
 
-  const afterPedelState = applySustainPedalRelease(newChannelState)
-
   return {
     channels: {
       ...state.channels,
-      [message.channel]: afterPedelState,
+      [message.channel]: newChannelState,
     },
   }
 }
