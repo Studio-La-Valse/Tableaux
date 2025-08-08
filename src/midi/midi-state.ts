@@ -28,6 +28,7 @@ export function isMidiChannelState(obj: unknown): obj is MidiChannelState {
     isRecordOfNumbers(o.notes) &&
     isRecordOfNumbers(o.keyPressure) &&
     isRecordOfNumbers(o.controllerValues) &&
+    (o.sustainedNotes === undefined || isRecordOfNumbers(o.sustainedNotes)) &&
     (o.program === undefined || typeof o.program === 'number') &&
     (o.channelPressure === undefined || typeof o.channelPressure === 'number') &&
     (o.pitchBend === undefined || typeof o.pitchBend === 'number')
@@ -67,7 +68,6 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
   if (message.type === 'unknown') return state
 
   const prevChannelState = getChannelState(state, message.channel)
-
   const pedalPressed = prevChannelState.controllerValues[64] >= 64
 
   const newChannelState: MidiChannelState = {
@@ -75,7 +75,10 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
     notes: { ...prevChannelState.notes },
     keyPressure: { ...prevChannelState.keyPressure },
     controllerValues: { ...prevChannelState.controllerValues },
-    sustainedNotes: { ...prevChannelState.sustainedNotes },
+  }
+
+  if (Object.entries(prevChannelState.sustainedNotes ?? {}).length > 0) {
+    newChannelState.sustainedNotes = { ...prevChannelState.sustainedNotes }
   }
 
   switch (message.type) {
