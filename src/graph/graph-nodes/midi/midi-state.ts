@@ -26,7 +26,7 @@ export default class MidiState extends GraphNode {
       this.data['channels'] = {}
     }
 
-    inputIterators.cycleValues(this.inputMessages).forEach((v) => {
+    inputIterators.cycleValues(this.inputMessages).forEach(([v]) => {
       if (!isMidiMessage(v)) throw new Error('Value received is not a midi message.')
 
       this.data = update(this.data, v)

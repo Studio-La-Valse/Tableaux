@@ -69,6 +69,7 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
       break
 
     case 'noteOff': {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [message.key]: _, ...newNotes } = newChannelState.notes
       newChannelState = {
         ...newChannelState,
