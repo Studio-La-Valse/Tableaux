@@ -246,9 +246,13 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
         };
       }
 
-      throw new Error(
-        `The combination of controller number ${controllerNumber} and value ${controllerValue} is not recognized.`
-      );
+      return {
+        type: 'controllerChange',
+        timestamp,
+        channel,
+        controllerNumber,
+        controllerValue
+      }
     }
 
     // Program Change

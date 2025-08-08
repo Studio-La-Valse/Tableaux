@@ -111,6 +111,8 @@ export default class EventEmitter extends GraphNode {
    */
   private handleMIDIMessage = (event: MIDIMessageEvent) => {
     const msg = parse(event)
+    if (msg.type === 'unknown') return
+
     this.missedMessages.push(msg)
 
     if (!this.solveScheduled) {
@@ -118,9 +120,10 @@ export default class EventEmitter extends GraphNode {
       // batch all incoming messages in the same tick
       setTimeout(() => {
         this.solveScheduled = false
-        // trigger our solve override
-        this.solve()
-      }, 0)
+
+        this.arm()
+        this.complete()
+      }, 33)
     }
   }
 
