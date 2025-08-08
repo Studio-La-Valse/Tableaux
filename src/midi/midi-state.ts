@@ -99,10 +99,6 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
       } else {
         delete newChannelState.controllerValues[message.controllerNumber]
       }
-
-      if (message.controllerNumber == 64) {
-        newChannelState = applySustainPedalRelease(newChannelState)
-      }
       break
 
     case 'programChange':
@@ -126,6 +122,9 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
       }
       break
   }
+
+  // we need to adjust for pedal: remove notes with zero velocity if the pedal is not currently pressed.
+  newChannelState = applySustainPedalRelease(newChannelState)
 
   return {
     channels: {
