@@ -26,7 +26,7 @@ function cycleValues<Inputs extends GraphNodeInputType<unknown>[]>(
   const lengths = inputs.map((i) => i.payload.length)
   const maxLen = Math.max(...lengths)
 
-  if (lengths.some((len) => len === 0)) {
+  if (inputs.length >= 2 && lengths.some((len) => len === 0)) {
     throw new Error(
       `cycleInputsValues: all payloads must be non-empty. Got lengths=[${lengths.join(',')}]`,
     )
@@ -48,7 +48,7 @@ function cycleMultiples<Inputs extends GraphNodeInputType<unknown>[]>(
   const lengths = inputs.map((i) => i.payload.length)
   const maxLen = Math.max(...lengths)
 
-  if (lengths.some((len) => len === 0 || maxLen % len !== 0)) {
+  if (inputs.length >= 2 && (lengths.some((len) => len === 0 || maxLen % len !== 0))) {
     throw new Error(
       `cycleInputsMultiples: payload lengths [${lengths.join(',')}] must all be >0 and divide ${maxLen}`,
     )
@@ -70,7 +70,7 @@ function fillLast<Inputs extends GraphNodeInputType<unknown>[]>(
   const lengths = inputs.map((i) => i.payload.length)
   const maxLen = Math.max(...lengths)
 
-  if (lengths.some((len) => len === 0)) {
+  if (inputs.length >= 2 && lengths.some((len) => len === 0)) {
     throw new Error(
       `cycleInputsFillLast: all payloads must be non-empty. Got lengths=[${lengths.join(',')}]`,
     )

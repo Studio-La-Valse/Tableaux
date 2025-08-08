@@ -1,291 +1,343 @@
-export class MidiMessage{
-    constructor(public timestamp: number){
-
-    }
+export type MidiMessageBase = {
+  timestamp: number
+  type: MessageKind
 }
 
-export class NoteOffMidiMessage extends MidiMessage{
-
-    constructor(
-        public timestamp: number,
-        public channel: number, 
-        public key: number, 
-        public velocity: number) {
-            super(timestamp);
-        
-    }
+export type NoteOffMidiMessage = MidiMessageBase & {
+  type: 'noteOff'
+  channel: number
+  key: number
+  velocity: number
 }
 
-export class NoteOnMidiMissage extends MidiMessage{
-    constructor(
-        public timestamp: number,
-        public channel: number,
-        public key: number, 
-        public velocity: number
-    ){
-        super(timestamp);
-    }
+export type NoteOnMidiMessage = MidiMessageBase & {
+  type: 'noteOn'
+  channel: number
+  key: number
+  velocity: number
 }
 
-export class KeyPressureMidiMessage extends MidiMessage{
-    constructor(
-        public timestamp: number,
-        public channel: number,
-        public key: number, 
-        public pressure: number
-    ){
-        super(timestamp);
-    }
+export type KeyPressureMidiMessage = MidiMessageBase & {
+  type: 'keyPressure'
+  channel: number
+  key: number
+  pressure: number
 }
 
-export class ControllerChangeMidiMessage extends MidiMessage{
-     constructor(
-        public timestamp: number,
-        public channel: number,
-        public controllerNumber: number, 
-        public controllerValue: number
-    ){
-        super(timestamp);
-    }
+export type ControllerChangeBase = MidiMessageBase & {
+  channel: number
+  controllerNumber: number
+  controllerValue: number
 }
 
-export class AllSoundOffControllerChangeMidiMessage extends ControllerChangeMidiMessage{
-     constructor(
-        public timestamp: number,
-        public channel: number,
-    ){
-        super(timestamp, channel, 120, 0);
-    }
+export type ControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'controllerChange'
 }
 
-export class ResetAllControllersControllerChangeMidiMessage extends ControllerChangeMidiMessage{
-     constructor(
-        public timestamp: number,
-        public channel: number,
-        public controllerValue: number
-    ){
-        super(timestamp, channel, 121, controllerValue);
-    }
+export type AllSoundOffControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'allSoundOffControllerChange'
 }
 
-export class LocalControlOffControllerChangeMidiMessage extends ControllerChangeMidiMessage{
-     constructor(
-        public timestamp: number,
-        public channel: number,
-    ){
-        super(timestamp, channel, 122, 0);
-    }
+export type ResetAllControllersControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'resetAllControllersControllerChange'
 }
 
-export class LocalControlOnControllerChangeMidiMessage extends ControllerChangeMidiMessage{
-     constructor(
-        public timestamp: number,
-        public channel: number,
-        public controllerValue: number
-    ){
-        super(timestamp, channel, 122, controllerValue);
-    }
+export type LocalControlOffControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'localControlOffControllerChange'
 }
 
-export class AllNotesOffControllerChangeMidiMessage extends ControllerChangeMidiMessage{
-     constructor(
-        public timestamp: number,
-        public channel: number,
-    ){
-        super(timestamp, channel, 123, 0);
-    }
+export type LocalControlOnControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'localControlOnControllerChange'
 }
 
-export class OmniModeOffControllerChangeMidiMessage extends ControllerChangeMidiMessage{
-     constructor(
-        public timestamp: number,
-        public channel: number,
-    ){
-        super(timestamp, channel, 124, 0);
-    }
+export type AllNotesOffControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'allNotesOffControllerChange'
 }
 
-export class OmniModeOnControllerChangeMidiMessage extends ControllerChangeMidiMessage{
-     constructor(
-        public timestamp: number,
-        public channel: number,
-    ){
-        super(timestamp, channel, 125, 0);
-    }
+export type OmniModeOffControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'omniModeOffControllerChange'
 }
 
-export class MonoModeOnControllerChangeMidiMessage extends ControllerChangeMidiMessage{
-     constructor(
-        public timestamp: number,
-        public channel: number,
-        public controllerValue: number
-    ){
-        super(timestamp, channel, 126, controllerValue);
-    }
+export type OmniModeOnControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'omniModeOnControllerChange'
 }
 
-export class PolyModeOnControllerChangeMidiMessage extends ControllerChangeMidiMessage{
-     constructor(
-        public timestamp: number,
-        public channel: number,
-        public controllerValue: number
-    ){
-        super(timestamp, channel, 127, controllerValue);
-    }
+export type MonoModeOnControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'monoModeOnControllerChange'
 }
 
-export class ProgramChangeMidiMessage extends MidiMessage{
-    constructor(
-        public timestamp: number,
-        public channel: number,
-        public program: number
-    ){
-        super(timestamp);
-    }
+export type PolyModeOnControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'polyModeOnControllerChange'
 }
 
-export class ChannelPressureMidiMessage extends MidiMessage{
-    constructor(
-        public timestamp: number,
-        public channel: number,
-        public pressure: number
-    ){
-        super(timestamp);
-    }
+export type ProgramChangeMidiMessage = MidiMessageBase & {
+  type: 'programChange'
+  channel: number
+  program: number
 }
 
-export class PitchBendChangeMidiMessage extends MidiMessage{
-    constructor(
-        public timestamp: number,
-        public channel: number,
-        public pitchBend: number
-    ){
-        super(timestamp);
-    }
+export type ChannelPressureMidiMessage = MidiMessageBase & {
+  type: 'channelPressure'
+  channel: number
+  pressure: number
 }
 
-export function parse(event: MIDIMessageEvent): MidiMessage{
-	let msg: string | undefined;
-        
-    let data = event.data;
-    if (data === null){
-        msg = "Invalid midi message because it contains no data."
-        throw new Error(msg);
+export type PitchBendChangeMidiMessage = MidiMessageBase & {
+  type: 'pitchBendChange'
+  channel: number
+  pitchBend: number
+}
+
+export type UnknownMidiMessage = MidiMessageBase & {
+  type: 'unknown'
+}
+
+export const messageKinds = [
+  'noteOff',
+  'noteOn',
+  'keyPressure',
+  'controllerChange',
+  'allSoundOffControllerChange',
+  'resetAllControllersControllerChange',
+  'localControlOffControllerChange',
+  'localControlOnControllerChange',
+  'allNotesOffControllerChange',
+  'omniModeOffControllerChange',
+  'omniModeOnControllerChange',
+  'monoModeOnControllerChange',
+  'polyModeOnControllerChange',
+  'programChange',
+  'channelPressure',
+  'pitchBendChange',
+  'unknown',
+] as const
+
+export type MessageKind = (typeof messageKinds)[number]
+
+export function isMessageKind(value: unknown): value is MessageKind {
+  return typeof value === 'string' && messageKinds.includes(value as MessageKind)
+}
+
+export type MidiMessage =
+  | UnknownMidiMessage
+  | NoteOffMidiMessage
+  | NoteOnMidiMessage
+  | KeyPressureMidiMessage
+  | ControllerChangeMidiMessage
+  | AllSoundOffControllerChangeMidiMessage
+  | ResetAllControllersControllerChangeMidiMessage
+  | LocalControlOffControllerChangeMidiMessage
+  | LocalControlOnControllerChangeMidiMessage
+  | AllNotesOffControllerChangeMidiMessage
+  | OmniModeOffControllerChangeMidiMessage
+  | OmniModeOnControllerChangeMidiMessage
+  | MonoModeOnControllerChangeMidiMessage
+  | PolyModeOnControllerChangeMidiMessage
+  | ProgramChangeMidiMessage
+  | ChannelPressureMidiMessage
+  | PitchBendChangeMidiMessage
+
+export function isMidiMessage(value: unknown): value is MidiMessage {
+  return typeof value === 'object' && value !== null && 'type' in value && isMessageKind(value.type)
+}
+
+export function isNoteOff(value: MidiMessage): value is NoteOffMidiMessage {
+  return (
+    value.type === 'noteOff' &&
+    'channel' in value &&
+    typeof value.channel === 'number' &&
+    'key' in value &&
+    typeof value.key === 'number' &&
+    'velocity' in value &&
+    typeof value.velocity === 'number'
+  )
+}
+
+export function isNoteOn(value: MidiMessage): value is NoteOffMidiMessage {
+  return (
+    value.type === 'noteOn' &&
+    'channel' in value &&
+    typeof value.channel === 'number' &&
+    'key' in value &&
+    typeof value.key === 'number' &&
+    'velocity' in value &&
+    typeof value.velocity === 'number'
+  )
+}
+
+export function parse(event: MIDIMessageEvent): MidiMessage {
+  const data = event.data
+  if (!data) {
+    throw new Error('Invalid midi message because it contains no data.')
+  }
+
+  const timestamp = event.timeStamp
+  if (data.length < 2) {
+    // no real MIDI data → unknown
+    return { type: 'unknown', timestamp }
+  }
+
+  const status = data[0] & 0xf0
+  const channel = (data[0] & 0x0f) + 1
+
+  switch (status) {
+    // Note Off
+    case 0x80:
+      return {
+        type: 'noteOff',
+        timestamp,
+        channel,
+        key: data[1] & 0x7f,
+        velocity: data[2] & 0x7f,
+      }
+
+    // Note On
+    case 0x90:
+      return {
+        type: 'noteOn',
+        timestamp,
+        channel,
+        key: data[1] & 0x7f,
+        velocity: data[2] & 0x7f,
+      }
+
+    // Polyphonic Key Pressure
+    case 0xa0:
+      return {
+        type: 'keyPressure',
+        timestamp,
+        channel,
+        key: data[1] & 0x7f,
+        pressure: data[2] & 0x7f,
+      }
+
+    // Control Change (and all its sub-types)
+    case 0xb0: {
+      const controllerNumber = data[1] & 0x7f
+      const controllerValue = data[2] & 0x7f
+
+      if (controllerNumber === 120 && controllerValue === 0) {
+        return {
+          type: 'allSoundOffControllerChange',
+          timestamp,
+          channel,
+          controllerNumber,
+          controllerValue,
+        }
+      }
+      if (controllerNumber === 121) {
+        return {
+          type: 'resetAllControllersControllerChange',
+          timestamp,
+          channel,
+          controllerNumber,
+          controllerValue,
+        }
+      }
+      if (controllerNumber === 122) {
+        if (controllerValue === 0) {
+          return {
+            type: 'localControlOffControllerChange',
+            timestamp,
+            channel,
+            controllerNumber,
+            controllerValue,
+          }
+        }
+        return {
+          type: 'localControlOnControllerChange',
+          timestamp,
+          channel,
+          controllerNumber,
+          controllerValue,
+        }
+      }
+      if (controllerNumber === 123 && controllerValue === 0) {
+        return {
+          type: 'allNotesOffControllerChange',
+          timestamp,
+          channel,
+          controllerNumber,
+          controllerValue,
+        }
+      }
+      if (controllerNumber === 124 && controllerValue === 0) {
+        return {
+          type: 'omniModeOffControllerChange',
+          timestamp,
+          channel,
+          controllerNumber,
+          controllerValue,
+        }
+      }
+      if (controllerNumber === 125 && controllerValue === 0) {
+        return {
+          type: 'omniModeOnControllerChange',
+          timestamp,
+          channel,
+          controllerNumber,
+          controllerValue,
+        }
+      }
+      if (controllerNumber === 126) {
+        return {
+          type: 'monoModeOnControllerChange',
+          timestamp,
+          channel,
+          controllerNumber,
+          controllerValue,
+        }
+      }
+      if (controllerNumber === 127) {
+        return {
+          type: 'polyModeOnControllerChange',
+          timestamp,
+          channel,
+          controllerNumber,
+          controllerValue,
+        }
+      }
+
+      return {
+        type: 'controllerChange',
+        timestamp,
+        channel,
+        controllerNumber,
+        controllerValue,
+      }
     }
 
-	let timeStamp = event.timeStamp;
+    // Program Change
+    case 0xc0:
+      return {
+        type: 'programChange',
+        timestamp,
+        channel,
+        program: data[1],
+      }
 
-	if (data.length < 2){
-		return new MidiMessage(timeStamp);
+    // Channel Pressure
+    case 0xd0:
+      return {
+        type: 'channelPressure',
+        timestamp,
+        channel,
+        pressure: data[1] & 0x7f,
+      }
+
+    // Pitch Bend Change
+    case 0xe0: {
+      const msb = data[2] & 0x7f
+      const lsb = data[1] & 0x7f
+      return {
+        type: 'pitchBendChange',
+        timestamp,
+        channel,
+        pitchBend: (msb << 7) + lsb,
+      }
     }
 
-    let _messageCode = data[0] & 0xf0;
-    let channel = (data[0] & 0x0f)+1;
-    let message: MidiMessage | undefined;
-    let key: number | undefined;
-    let velocity: number | undefined;
-    let pressure: number | undefined;
-
-    switch(_messageCode){
-
-        // Note Off
-        case 0x80:
-            key = data[1] & 0x7F;
-            velocity = data[2] & 0x7F;
-            message = new NoteOffMidiMessage(timeStamp, channel, key, velocity);
-            break;
-
-        // Note On
-        case 0x90:
-            key = data[1] & 0x7F;
-            velocity = data[2] & 0x7F;
-            message = new NoteOnMidiMissage(timeStamp, channel, key, velocity)
-            break;
-
-        // Polyphonic Key Pressure
-        case 0xA0:
-            key = data[1] & 0x7F;
-            pressure = data[2] & 0x7F;
-            message = new KeyPressureMidiMessage(timeStamp, channel, key, pressure)
-        break;
-
-        // Control Change
-        case 0xB0:
-            let controllerNumber = data[1] & 0x7F;
-            let controllerValue = data[2] & 0x7F;
-
-            if (controllerNumber === 120 && controllerValue === 0){
-                message = new AllSoundOffControllerChangeMidiMessage(timeStamp, channel)
-                break;
-            }
-
-            if (controllerNumber === 121){
-                message = new ResetAllControllersControllerChangeMidiMessage(timeStamp, channel, controllerValue);
-                break;
-            }
-            
-            if (controllerNumber === 122){
-                if (controllerValue === 0){
-                    message = new LocalControlOffControllerChangeMidiMessage(timeStamp, channel)
-                    break;
-                }
-
-                message = new LocalControlOnControllerChangeMidiMessage(timeStamp, channel, controllerValue);
-                break;
-            }
-
-            if (controllerNumber === 123 && controllerValue === 0){
-                message = new AllNotesOffControllerChangeMidiMessage(timeStamp, channel)
-                break;
-            }
-
-            if (controllerNumber === 124 && controllerValue === 0){
-                message = new OmniModeOffControllerChangeMidiMessage(timeStamp, channel)
-                break;
-            }
-
-            if (controllerNumber === 125 && controllerValue === 0){
-                message = new OmniModeOnControllerChangeMidiMessage(timeStamp, channel);
-                break;
-            }
-
-            if (controllerNumber === 126){
-                message = new MonoModeOnControllerChangeMidiMessage(timeStamp, channel, controllerValue);
-                break;
-            }
-            
-            if (controllerNumber === 127){
-                message = new PolyModeOnControllerChangeMidiMessage(timeStamp, channel, controllerValue);
-                break;
-            }
-
-            msg = `The combination of controller number ${controllerNumber} and -value ${controllerValue} are not recognized.`;
-            throw new Error(msg);
-
-        // Program Change
-        case 0xC0:
-            let program = data[1];
-            message = new ProgramChangeMidiMessage(timeStamp, channel, program);
-        break;
-
-        // Channel Pressure
-        case 0xD0:
-            pressure = data[1] & 0x7F;
-            message = new ChannelPressureMidiMessage(timeStamp, channel, pressure);
-        break;
-
-        // Pitch Bend Change
-        case 0xE0:
-            var msb = data[2] & 0x7F;
-            var lsb = data[1] & 0x7F;
-            let pitchBend = (msb << 7) + lsb;
-            message = new PitchBendChangeMidiMessage(timeStamp, channel, pitchBend);
-        break;
-
-        default:
-            msg = `Message ${_messageCode} is undefined.`
-            throw new Error(msg)
-    }
-
-    return message
+    default:
+      throw new Error(`Message ${status} is undefined.`)
+  }
 }
