@@ -10,21 +10,29 @@ export type MidiChannelState = {
 }
 
 export function isMidiChannelState(obj: unknown): obj is MidiChannelState {
+  if (
+    typeof obj !== 'object' ||
+    obj === null
+  ) {
+    return false
+  }
+
+  const o = obj as Record<string, unknown>
+
+  const isRecordOfNumbers = (val: unknown): val is Record<number, number> =>
+    typeof val === 'object' &&
+    val !== null &&
+    Object.entries(val).every(
+      ([k, v]) => !isNaN(Number(k)) && typeof v === 'number'
+    )
+
   return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'notes' in obj &&
-    'keyPressure' in obj &&
-    'controllerValues' in obj &&
-    'program' in obj &&
-    'channelPressure' in obj &&
-    'pitchBend' in obj &&
-    typeof obj.notes === 'object' &&
-    typeof obj.keyPressure === 'object' &&
-    typeof obj.controllerValues === 'object' &&
-    typeof obj.program === 'number' &&
-    typeof obj.channelPressure === 'number' &&
-    typeof obj.pitchBend === 'number'
+    isRecordOfNumbers(o.notes) &&
+    isRecordOfNumbers(o.keyPressure) &&
+    isRecordOfNumbers(o.controllerValues) &&
+    (o.program === undefined || typeof o.program === 'number') &&
+    (o.channelPressure === undefined || typeof o.channelPressure === 'number') &&
+    (o.pitchBend === undefined || typeof o.pitchBend === 'number')
   )
 }
 
