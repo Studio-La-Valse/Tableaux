@@ -21,6 +21,9 @@ export default class MidiListener extends GraphNode {
   // ensure solve is called only once per batch
   private solveScheduled = false
 
+  // ensure the same promise is handled
+  private startPromise?: Promise<void>
+
   constructor(id: string, path: string[]) {
     super(id, path)
 
@@ -36,9 +39,6 @@ export default class MidiListener extends GraphNode {
     }
   }
 
-  private startPromise?: Promise<void>
-
-  /** Start listening if not already started */
   private start(): Promise<void> {
     // reuse an in-flight promise if present
     if (this.midiAccess) {
@@ -68,7 +68,6 @@ export default class MidiListener extends GraphNode {
     return this.startPromise
   }
 
-  /** Stop and tear down all MIDI listeners */
   private stop(): void {
     if (!this.midiAccess) return
 
@@ -80,7 +79,6 @@ export default class MidiListener extends GraphNode {
     this.midiAccess = undefined
   }
 
-  /** Handle hot-plug/unplug events */
   private handleStateChange = (e: MIDIConnectionEvent) => {
     const port = e.port
     if (port?.type !== 'input') return
@@ -93,23 +91,17 @@ export default class MidiListener extends GraphNode {
     }
   }
 
-  /** Subscribe to a single MIDIInput */
   private addMidiInput(input: MIDIInput) {
     if (this.midiInputs.has(input)) return
     input.onmidimessage = this.handleMIDIMessage
     this.midiInputs.add(input)
   }
 
-  /** Unsubscribe from a single MIDIInput */
   private removeMidiInput(input: MIDIInput) {
     input.onmidimessage = null
     this.midiInputs.delete(input)
   }
 
-  /**
-   * Raw MIDI handler: buffer and schedule a single solve()
-   * for a batch of messages.
-   */
   private handleMIDIMessage = (event: MIDIMessageEvent) => {
     const msg = parse(event)
     if (msg.type === 'unknown') return
@@ -127,11 +119,6 @@ export default class MidiListener extends GraphNode {
     }
   }
 
-  /**
-   * Graph solve loop:
-   *  - toggles start/stop based on the 'Active' input
-   *  - flushes buffered messages exactly once per batch
-   */
   protected override solve(): void {
     const [active] = inputIterators.singletonOnly(this.inputActive)
 
