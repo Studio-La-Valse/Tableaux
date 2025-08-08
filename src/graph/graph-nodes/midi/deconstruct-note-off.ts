@@ -1,10 +1,10 @@
-import { isMidiMessage, isNoteOffOrOn } from '@/midi/midi-message'
+import { isMidiMessage, isNoteOff } from '@/midi/midi-message'
 import { GraphNode } from '../../core/graph-node'
 import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 
-@GraphNodeType('MIDI', 'Deconstruct Note')
-export class DeconstructNote extends GraphNode {
+@GraphNodeType('MIDI', 'Deconstruct Note Off')
+export class DeconstructNoteOff extends GraphNode {
   private inputNote
 
   private outputChannel
@@ -23,13 +23,11 @@ export class DeconstructNote extends GraphNode {
 
   protected solve(): void {
     inputIterators.cycleValues(this.inputNote).forEach(([note]) => {
-      if (!isNoteOffOrOn(note)) {
-        if (isMidiMessage(note)) {
-          return
-        }
-
+      if (!isMidiMessage(note)) {
         throw new Error('Received value is not a midi message.')
       }
+
+      if (!isNoteOff(note)) return
 
       this.outputChannel.next(note.channel)
       this.outputKey.next(note.key)

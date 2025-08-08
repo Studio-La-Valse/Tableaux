@@ -141,9 +141,21 @@ export function isMidiMessage(value: unknown): value is MidiMessage {
   return typeof value === 'object' && value !== null && 'type' in value && isMessageKind(value.type)
 }
 
-export function isNoteOffOrOn(value: unknown): value is NoteOffMidiMessage {
+export function isNoteOff(value: MidiMessage): value is NoteOffMidiMessage {
   return (
-    isMidiMessage(value) &&
+    value.type === 'noteOff' &&
+    'channel' in value &&
+    typeof value.channel === 'number' &&
+    'key' in value &&
+    typeof value.key === 'number' &&
+    'velocity' in value &&
+    typeof value.velocity === 'number'
+  )
+}
+
+export function isNoteOn(value: MidiMessage): value is NoteOffMidiMessage {
+  return (
+    value.type === 'noteOn' &&
     'channel' in value &&
     typeof value.channel === 'number' &&
     'key' in value &&
