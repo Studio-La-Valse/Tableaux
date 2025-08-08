@@ -73,13 +73,11 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
   const newChannelState: MidiChannelState = {
     ...prevChannelState,
     notes: { ...prevChannelState.notes },
+    sustainedNotes: { ...prevChannelState.sustainedNotes },
     keyPressure: { ...prevChannelState.keyPressure },
     controllerValues: { ...prevChannelState.controllerValues },
   }
-
-  if (Object.entries(prevChannelState.sustainedNotes ?? {}).length > 0) {
-    newChannelState.sustainedNotes = { ...prevChannelState.sustainedNotes }
-  }
+  if (!pedalPressed) delete newChannelState.sustainedNotes
 
   switch (message.type) {
     case 'noteOn':
@@ -115,7 +113,7 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
             ),
           )
           newChannelState.notes = filteredNotes
-          newChannelState.sustainedNotes = {}
+          delete newChannelState.sustainedNotes
         }
       } else {
         const { [message.controllerNumber]: _, ...rest } = newChannelState.controllerValues
