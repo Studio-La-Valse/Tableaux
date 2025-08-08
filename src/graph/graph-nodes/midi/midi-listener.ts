@@ -4,8 +4,8 @@ import { inputIterators } from '@/graph/core/input-iterators'
 import type { MidiMessage } from '@/midi/midi-message'
 import { parse } from '@/midi/midi-message'
 
-@GraphNodeType('MIDI', 'Event Emitter')
-export default class EventEmitter extends GraphNode {
+@GraphNodeType('MIDI', 'Midi Listener')
+export default class MidiListener extends GraphNode {
   private inputActive
   private output
 
@@ -18,13 +18,14 @@ export default class EventEmitter extends GraphNode {
   // buffered messages
   private missedMessages: MidiMessage[] = []
 
-  // ensure solve is called only once per batch
-  private solveScheduled = false
-
   constructor(id: string, path: string[]) {
     super(id, path)
 
     this.inputActive = this.registerBooleanInput('Active')
+
+    // An input that is only used to refresh the state of the component and re-complete
+    this.registerNumberInput('Frame')
+
     this.output = this.registerObjectOutput<MidiMessage>('MIDI Message')
   }
 
@@ -114,17 +115,6 @@ export default class EventEmitter extends GraphNode {
     if (msg.type === 'unknown') return
 
     this.missedMessages.push(msg)
-
-    if (!this.solveScheduled) {
-      this.solveScheduled = true
-      // batch all incoming messages in the same tick
-      setTimeout(() => {
-        this.solveScheduled = false
-
-        this.arm()
-        this.complete()
-      }, 33)
-    }
   }
 
   /**
