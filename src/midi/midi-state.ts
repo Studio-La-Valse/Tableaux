@@ -6,6 +6,7 @@ export type MidiChannelState = {
   notes: Record<number, number> // key -> velocity
   keyPressure: Record<number, number> // key -> pressure
   controllerValues: Record<number, number> // controllerNumber -> value
+  sustainedNotes?: Record<number, number> // notes not currently pressed but sustained by pedal
   program?: number
   channelPressure?: number
   pitchBend?: number
@@ -37,103 +38,6 @@ export type MidiState = {
   channels: Record<number, MidiChannelState>
 }
 
-export function getChannelState(state: MidiState, channel: number): MidiChannelState {
-  return (
-    state.channels[channel] ?? {
-      notes: {},
-      keyPressure: {},
-      controllerValues: {},
-    }
-  )
-}
-
-export function update(state: MidiState, message: MidiMessage): MidiState {
-  if (message.type === 'unknown') return state
-
-  const prevChannelState = getChannelState(state, message.channel)
-
-  let newChannelState: MidiChannelState = { ...prevChannelState }
-
-  switch (message.type) {
-    case 'noteOn':
-      newChannelState = {
-        ...newChannelState,
-        notes: {
-          ...newChannelState.notes,
-          [message.key]: message.velocity,
-        },
-      }
-      break
-
-    case 'noteOff': {
-      newChannelState = {
-        ...newChannelState,
-        notes: {
-          ...newChannelState.notes,
-          [message.key]: 0, // Mark as released, but dont remove yet because that will happen only when pedal is released
-        },
-      }
-      break
-    }
-
-    case 'keyPressure':
-      newChannelState = {
-        ...newChannelState,
-        keyPressure: {
-          ...newChannelState.keyPressure,
-          [message.key]: message.pressure,
-        },
-      }
-      break
-
-    case 'controllerChange':
-      const controllerValue = message.controllerValue
-      if (controllerValue > 0) {
-        newChannelState = {
-          ...newChannelState,
-          controllerValues: {
-            ...newChannelState.controllerValues,
-            [message.controllerNumber]: controllerValue,
-          },
-        }
-      } else {
-        delete newChannelState.controllerValues[message.controllerNumber]
-      }
-      break
-
-    case 'programChange':
-      newChannelState = {
-        ...newChannelState,
-        program: message.program,
-      }
-      break
-
-    case 'channelPressure':
-      newChannelState = {
-        ...newChannelState,
-        channelPressure: message.pressure,
-      }
-      break
-
-    case 'pitchBendChange':
-      newChannelState = {
-        ...newChannelState,
-        pitchBend: message.pitchBend,
-      }
-      break
-  }
-
-  // we need to adjust for pedal: remove notes with zero velocity if the pedal is not currently pressed.
-  newChannelState = applySustainPedalRelease(newChannelState)
-
-  return {
-    channels: {
-      ...state.channels,
-      [message.channel]: newChannelState,
-    },
-  }
-}
-
 export function isMidiState(obj: unknown): obj is MidiState {
   if (typeof obj !== 'object' || obj === null) {
     return false
@@ -149,23 +53,90 @@ export function isMidiState(obj: unknown): obj is MidiState {
   return Object.values(maybeState.channels).every(isMidiChannelState)
 }
 
-export function applySustainPedalRelease(channel: MidiChannelState): MidiChannelState {
-  const pedalValue = channel.controllerValues[64]
+export function getChannelState(state: MidiState, channel: number): MidiChannelState {
+  return (
+    state.channels[channel] ?? {
+      notes: {},
+      keyPressure: {},
+      controllerValues: {},
+    }
+  )
+}
 
-  // If pedal is still down, return the original state
-  if (pedalValue >= 64) {
-    return channel
+export function update(state: MidiState, message: MidiMessage): MidiState {
+  if (message.type === 'unknown') return state
+
+  const prevChannelState = getChannelState(state, message.channel)
+
+  const pedalPressed = prevChannelState.controllerValues[64] >= 64
+
+  const newChannelState: MidiChannelState = {
+    ...prevChannelState,
+    notes: { ...prevChannelState.notes },
+    keyPressure: { ...prevChannelState.keyPressure },
+    controllerValues: { ...prevChannelState.controllerValues },
+    sustainedNotes: { ...prevChannelState.sustainedNotes },
   }
 
-  // Pedal released — remove notes with velocity 0
-  const filteredNotes: Record<number, number> = Object.fromEntries(
-    Object.entries(channel.notes)
-      .filter(([_, velocity]) => velocity > 0)
-      .map(([key, velocity]) => [Number(key), velocity]),
-  )
+  switch (message.type) {
+    case 'noteOn':
+      newChannelState.notes[message.key] = message.velocity
+      delete newChannelState.sustainedNotes?.[message.key]
+      break
+
+    case 'noteOff':
+      if (pedalPressed) {
+        newChannelState.sustainedNotes = {
+          ...newChannelState.sustainedNotes,
+          [message.key]: newChannelState.notes[message.key],
+        }
+      } else {
+        delete newChannelState.notes[message.key]
+      }
+      break
+
+    case 'keyPressure':
+      newChannelState.keyPressure[message.key] = message.pressure
+      break
+
+    case 'controllerChange':
+      if (message.controllerValue > 0) {
+        newChannelState.controllerValues[message.controllerNumber] = message.controllerValue
+
+        // Handle sustain pedal release
+        if (message.controllerNumber === 64 && message.controllerValue < 64) {
+          const sustainedKeys = Object.keys(newChannelState.sustainedNotes ?? {}).map(Number)
+          const filteredNotes: Record<number, number> = Object.fromEntries(
+            Object.entries(newChannelState.notes).filter(
+              ([k]) => !sustainedKeys.includes(Number(k)),
+            ),
+          )
+          newChannelState.notes = filteredNotes
+          newChannelState.sustainedNotes = {}
+        }
+      } else {
+        const { [message.controllerNumber]: _, ...rest } = newChannelState.controllerValues
+        newChannelState.controllerValues = rest
+      }
+      break
+
+    case 'programChange':
+      newChannelState.program = message.program
+      break
+
+    case 'channelPressure':
+      newChannelState.channelPressure = message.pressure
+      break
+
+    case 'pitchBendChange':
+      newChannelState.pitchBend = message.pitchBend
+      break
+  }
 
   return {
-    ...channel,
-    notes: filteredNotes,
+    channels: {
+      ...state.channels,
+      [message.channel]: newChannelState,
+    },
   }
 }
