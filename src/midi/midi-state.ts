@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import type { MidiMessage } from './midi-message'
 
 export type MidiChannelState = {
@@ -10,10 +12,7 @@ export type MidiChannelState = {
 }
 
 export function isMidiChannelState(obj: unknown): obj is MidiChannelState {
-  if (
-    typeof obj !== 'object' ||
-    obj === null
-  ) {
+  if (typeof obj !== 'object' || obj === null) {
     return false
   }
 
@@ -22,9 +21,7 @@ export function isMidiChannelState(obj: unknown): obj is MidiChannelState {
   const isRecordOfNumbers = (val: unknown): val is Record<number, number> =>
     typeof val === 'object' &&
     val !== null &&
-    Object.entries(val).every(
-      ([k, v]) => !isNaN(Number(k)) && typeof v === 'number'
-    )
+    Object.entries(val).every(([k, v]) => !isNaN(Number(k)) && typeof v === 'number')
 
   return (
     isRecordOfNumbers(o.notes) &&
@@ -69,11 +66,12 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
       break
 
     case 'noteOff': {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [message.key]: _, ...newNotes } = newChannelState.notes
       newChannelState = {
         ...newChannelState,
-        notes: newNotes,
+        notes: {
+          ...newChannelState.notes,
+          [message.key]: 0, // Mark as released, but dont remove yet because that will happen only when pedal is released
+        },
       }
       break
     }
@@ -120,31 +118,48 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
       break
   }
 
+  const afterPedelState = applySustainPedalRelease(newChannelState)
+
   return {
     channels: {
       ...state.channels,
-      [message.channel]: newChannelState,
+      [message.channel]: afterPedelState,
     },
   }
 }
 
 export function isMidiState(obj: unknown): obj is MidiState {
-  if (
-    typeof obj !== 'object' ||
-    obj === null
-  ) {
+  if (typeof obj !== 'object' || obj === null) {
     return false
   }
 
   // Use a type guard to narrow obj
   const maybeState = obj as Partial<MidiState>
 
-  if (
-    typeof maybeState.channels !== 'object' ||
-    maybeState.channels === null
-  ) {
+  if (typeof maybeState.channels !== 'object' || maybeState.channels === null) {
     return false
   }
 
   return Object.values(maybeState.channels).every(isMidiChannelState)
+}
+
+export function applySustainPedalRelease(channel: MidiChannelState): MidiChannelState {
+  const pedalValue = channel.controllerValues[64]
+
+  // If pedal is still down, return the original state
+  if (pedalValue >= 64) {
+    return channel
+  }
+
+  // Pedal released — remove notes with velocity 0
+  const filteredNotes: Record<number, number> = Object.fromEntries(
+    Object.entries(channel.notes)
+      .filter(([_, velocity]) => velocity > 0)
+      .map(([key, velocity]) => [Number(key), velocity]),
+  )
+
+  return {
+    ...channel,
+    notes: filteredNotes,
+  }
 }
