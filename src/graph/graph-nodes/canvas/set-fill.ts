@@ -21,7 +21,7 @@ export class SetFill extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<Shape & Fill>('Geometry with fill')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputGeometry, this.color).forEach(([_geom, _fill]) => {
       const geom = assertIsShape(_geom)
       const fill = assertIsColorARGB(_fill)

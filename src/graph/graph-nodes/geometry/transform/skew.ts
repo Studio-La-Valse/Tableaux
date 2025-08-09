@@ -22,7 +22,7 @@ export class ScaleGeometry extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<Geometry>('Skewed Geometry')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.inputGeometry, this.inputCenter, this.inputFactor)
       .forEach(([_geom, _origin, factor]) => {

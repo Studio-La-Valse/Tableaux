@@ -11,12 +11,12 @@ export class Filter extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerUnkownInput("Signal")
-    this.input2 = this.registerBooleanInput("Filter")
-    this.output = this.registerUnkownOutput("Values")
+    this.input1 = this.registerUnkownInput('Signal')
+    this.input2 = this.registerBooleanInput('Filter')
+    this.output = this.registerUnkownOutput('Values')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, this.input2)
       .filter(([, right]) => right)

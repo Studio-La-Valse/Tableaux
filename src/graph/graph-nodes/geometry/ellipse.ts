@@ -21,7 +21,7 @@ export class Ellipse extends GraphNode {
     this.output = this.registerObjectOutput<ellipse>('Circle')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.input1, this.input2, this.input3).forEach(([_xy, x, y]) => {
       const xy = assertIsXY(_xy)
 

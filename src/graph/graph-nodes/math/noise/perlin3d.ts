@@ -1,9 +1,9 @@
-import { GraphNode } from "@/graph/core/graph-node";
-import { inputIterators } from "@/graph/core/input-iterators";
+import { GraphNode } from '@/graph/core/graph-node'
+import { inputIterators } from '@/graph/core/input-iterators'
 import Perlin from '@/noise/perlin'
-import { GraphNodeType } from "../../decorators";
+import { GraphNodeType } from '../../decorators'
 
-@GraphNodeType("Math", "Noise", "Perlin 3d")
+@GraphNodeType('Math', 'Noise', 'Perlin 3d')
 export class Perlin3d extends GraphNode {
   private input1
   private input2
@@ -17,20 +17,18 @@ export class Perlin3d extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerNumberInput("X")
-    this.input2 = this.registerNumberInput("Y")
-    this.input3 = this.registerNumberInput("Z")
-    this.inputScale = this.registerNumberInput("Scale")
-    this.output = this.registerNumberOutput("Value")
+    this.input1 = this.registerNumberInput('X')
+    this.input2 = this.registerNumberInput('Y')
+    this.input3 = this.registerNumberInput('Z')
+    this.inputScale = this.registerNumberInput('Scale')
+    this.output = this.registerNumberOutput('Value')
     this.perlin = new Perlin()
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, this.input2, this.input3, this.inputScale)
       .map(([x, y, z, scale]) => this.perlin.perlin3(x / scale, y / scale, z / scale))
       .forEach((v) => this.output.next(v))
   }
-
 }
-

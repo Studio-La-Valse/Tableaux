@@ -22,7 +22,7 @@ export class CreateScale extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.inputCenter, this.inputFactorX, this.inputFactorY)
       .forEach(([_origin, x, y]) => {

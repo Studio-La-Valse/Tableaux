@@ -22,6 +22,8 @@
   --vt-error-2: #fc03b1;
   --vt-complete-1: #a9fc03;
   --vt-complete-2: #03fc90;
+  --vt-working-1: #036ffc;
+  --vt-working-2: #9003fc;
 
   --color-background: var(--vt-c-white);
   --color-background-soft: var(--vt-c-white-soft);

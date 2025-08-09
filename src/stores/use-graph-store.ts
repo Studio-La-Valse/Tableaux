@@ -1,6 +1,6 @@
 import type { XY } from '@/geometry/xy'
 import { defineStore } from 'pinia'
-import { computed, ref, type Ref } from 'vue'
+import { computed, reactive, ref, type Ref } from 'vue'
 import { useGraphNodeActivatorStore } from './use-graph-node-activator-store'
 import { GraphEdge } from '@/graph/core/graph-edge'
 import type { GraphNodeModel } from '@/graph/core/models/graph-node-model'
@@ -31,10 +31,11 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     const graphNode = activator.activate(id)
-    const wrapper = new GraphNodeWrapper(graphNode)
+    const wrapper = reactive(new GraphNodeWrapper(graphNode)) as GraphNodeWrapper
     wrapper.xy = { x: position.x, y: position.y }
     graphNode.onInitialize()
     if (graphNode.inputs.length == 0) {
+      graphNode.arm()
       graphNode.complete()
     }
 
@@ -186,7 +187,10 @@ const useGraphInternal = defineStore('graph', () => {
     clones
       .map((v) => v.innerNode)
       .filter((v) => v.inputs.length == 0)
-      .forEach((v) => v.complete())
+      .forEach((v) => {
+        v.arm()
+        v.complete()
+      })
 
     return clones
   }
@@ -228,7 +232,7 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     const graphNode = activator.activate(model.id)
-    const wrapper = new GraphNodeWrapper(graphNode)
+    const wrapper = reactive(new GraphNodeWrapper(graphNode)) as GraphNodeWrapper
     wrapper.xy = { x: model.x, y: model.y }
     if (model.width) wrapper.width = model.width
     if (model.height) wrapper.height = model.height

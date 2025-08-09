@@ -12,7 +12,7 @@ export class NumberEmitter extends GraphNode {
     this.output = this.registerNumberOutput('Number')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     this.output.next(Math.PI)
   }
 }

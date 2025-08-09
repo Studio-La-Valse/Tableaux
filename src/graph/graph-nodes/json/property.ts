@@ -16,7 +16,7 @@ export default class Property extends GraphNode {
     this.outputValue = this.registerUnkownOutput('Value')
   }
 
-  protected override solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.inputObject, this.inputProperty)
       .map(([o, p]) => {

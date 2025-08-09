@@ -11,12 +11,12 @@ export class Sum extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerNumberInput("Values")
-    this.output = this.registerNumberOutput("Sum")
+    this.input = this.registerNumberInput('Values')
+    this.output = this.registerNumberOutput('Sum')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     const sum = this.input.payload.reduce((p, n) => p + n, 0)
-    this.output.next(sum);
+    this.output.next(sum)
   }
 }

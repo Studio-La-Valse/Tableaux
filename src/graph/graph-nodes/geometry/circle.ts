@@ -19,7 +19,7 @@ export class Circle extends GraphNode {
     this.outputCircle = this.registerObjectOutput<circle>('Circle')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.input1, this.input2).forEach(([_xy, radius]) => {
       const xy = assertIsXY(_xy)
 

@@ -12,14 +12,14 @@ export class RepeatShortest extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerUnkownInput("Left")
-    this.input2 = this.registerUnkownInput("Right")
+    this.input1 = this.registerUnkownInput('Left')
+    this.input2 = this.registerUnkownInput('Right')
 
-    this.output1 = this.registerUnkownOutput("Left")
-    this.output2 = this.registerUnkownOutput("Right")
+    this.output1 = this.registerUnkownOutput('Left')
+    this.output2 = this.registerUnkownOutput('Right')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.fillLast(this.input1, this.input2).forEach(([x, y]) => {
       this.output1.next(x)
       this.output2.next(y)

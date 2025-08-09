@@ -12,7 +12,7 @@ export class NewLine extends GraphNode {
     this.output = this.registerStringOutput('Character')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     const text = '\n'
     this.output.next(text)
   }

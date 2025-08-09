@@ -21,7 +21,7 @@ export class ConstructARGB extends GraphNode {
     this.output = this.registerObjectOutput<ColorARGB>('Color')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, this.input2, this.input3, this.input4)
       .map(([a, r, g, b]) => ({ a, r, g, b }))

@@ -12,13 +12,13 @@ export class Range extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerNumberInput("Start")
-    this.input2 = this.registerNumberInput("Stop")
-    this.input3 = this.registerNumberInput("Step")
-    this.output = this.registerNumberOutput("Values")
+    this.input1 = this.registerNumberInput('Start')
+    this.input2 = this.registerNumberInput('Stop')
+    this.input3 = this.registerNumberInput('Step')
+    this.output = this.registerNumberOutput('Values')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     const [start, stop, step] = inputIterators.singletonOnly(this.input1, this.input2, this.input3)
 
     if (step <= 0) {

@@ -37,7 +37,7 @@ export class DeconstructArc extends GraphNode {
     this.midPoint = this.registerObjectOutput<XY>('Mid Point')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputCircle).forEach(([_geom]) => {
       const geom = assertIsShape(_geom)
 

@@ -119,7 +119,7 @@ export default class MidiListener extends GraphNode {
     }
   }
 
-  protected override solve(): void {
+  protected async solve(): Promise<void> {
     const [active] = inputIterators.singletonOnly(this.inputActive)
 
     if (active && !this.midiAccess) {

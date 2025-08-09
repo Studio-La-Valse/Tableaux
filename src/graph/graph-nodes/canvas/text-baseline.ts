@@ -13,15 +13,15 @@ export class TextBaseline extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.top = this.registerStringOutput("Top")
-    this.hanging = this.registerStringOutput("Hanging")
-    this.middle = this.registerStringOutput("Middle")
-    this.alphabetic = this.registerStringOutput("Alphabetic")
-    this.ideographic = this.registerStringOutput("Ideographic")
-    this.bottom = this.registerStringOutput("Bottom")
+    this.top = this.registerStringOutput('Top')
+    this.hanging = this.registerStringOutput('Hanging')
+    this.middle = this.registerStringOutput('Middle')
+    this.alphabetic = this.registerStringOutput('Alphabetic')
+    this.ideographic = this.registerStringOutput('Ideographic')
+    this.bottom = this.registerStringOutput('Bottom')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     this.top.next('start')
     this.hanging.next('hanging')
     this.middle.next('middle')

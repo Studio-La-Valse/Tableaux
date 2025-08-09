@@ -20,7 +20,7 @@ export class Split extends GraphNode {
     this.output = this.registerStringOutput('Result')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.input1, this.input2).forEach(([left, right]) => {
       const result = left.split(right)
       result.forEach((v) => this.output.next(v))

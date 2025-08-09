@@ -17,7 +17,7 @@ export default class ChannelState extends GraphNode {
     this.outputState = this.registerObjectOutput<MidiChannelState>('MIDI State')
   }
 
-  protected override solve(): void {
+  protected async solve(): Promise<void> {
     const [state, channel] = inputIterators.singletonOnly(this.inputState, this.inputChannel)
 
     if (!isMidiState(state)) {

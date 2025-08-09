@@ -10,12 +10,12 @@ export class TextDirection extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.ltr = this.registerStringOutput("LTR")
-    this.rtl = this.registerStringOutput("RIL")
-    this.inherit = this.registerStringOutput("Inherit")
+    this.ltr = this.registerStringOutput('LTR')
+    this.rtl = this.registerStringOutput('RIL')
+    this.inherit = this.registerStringOutput('Inherit')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     this.ltr.next('ltr')
     this.rtl.next('rtl')
     this.inherit.next('inherit')

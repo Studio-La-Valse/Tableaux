@@ -39,7 +39,7 @@ export class DeconstructRectangle extends GraphNode {
     this.diagonal = this.registerNumberOutput('Diagnoal')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputShape).forEach(([shape]) => {
       const geom = assertIsShape(shape)
 

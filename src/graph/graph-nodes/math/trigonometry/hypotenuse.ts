@@ -16,7 +16,7 @@ export class Hypotenuse extends GraphNode {
     this.output = this.registerNumberOutput('Hypotenuse')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.inputA, this.inputB)
       .map(([a, b]) => Math.sqrt(a * a + b * b))

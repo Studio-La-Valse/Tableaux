@@ -12,14 +12,14 @@ export class TextAlginment extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.start = this.registerStringOutput("Start")
-    this.end = this.registerStringOutput("End")
-    this.left = this.registerStringOutput("Left")
-    this.right = this.registerStringOutput("Right")
-    this.center = this.registerStringOutput("Center")
+    this.start = this.registerStringOutput('Start')
+    this.end = this.registerStringOutput('End')
+    this.left = this.registerStringOutput('Left')
+    this.right = this.registerStringOutput('Right')
+    this.center = this.registerStringOutput('Center')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     this.start.next('start')
     this.end.next('end')
     this.left.next('left')

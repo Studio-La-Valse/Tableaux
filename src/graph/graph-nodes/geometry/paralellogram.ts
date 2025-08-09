@@ -21,7 +21,7 @@ export class Parallelogram extends GraphNode {
     this.outputRect = this.registerObjectOutput<parallelogram>('Rectangle')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.bottomLeft, this.topLeft, this.topRight)
       .forEach(([_bottomLeft, _topLeft, _topRight]) => {
