@@ -1,5 +1,5 @@
 <template>
-  <div v-for="graphNode in nodes" :key="`${graphNode.innerNode.id}-${graphNode.version}`">
+  <div v-for="graphNode in nodes" :key="`${graphNode.version}`">
     <GraphNodeRenderer :graphNode="graphNode" @updatePosition="onUpdatePosition" />
   </div>
 </template>

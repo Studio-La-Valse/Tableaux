@@ -18,8 +18,10 @@ const useGraphInternal = defineStore('graph', () => {
   const activators = useGraphNodeActivatorStore()
 
   const clear = () => {
-    nodeMap.value = {}
-    edges.value = []
+    const nodeIds = Object.keys(nodeMap.value)
+    nodeIds.forEach((v) => {
+      removeNode(v)
+    })
   }
 
   const addNode = (nodePath: string[], position: XY, id: string) => {
@@ -180,6 +182,12 @@ const useGraphInternal = defineStore('graph', () => {
       }
     })
 
+    // 5) Emit the emitters
+    clones
+      .map((v) => v.innerNode)
+      .filter((v) => v.inputs.length == 0)
+      .forEach((v) => v.complete())
+
     return clones
   }
 
@@ -201,6 +209,11 @@ const useGraphInternal = defineStore('graph', () => {
 
     const newEdges = model.edges.map((v) => createFromEdgeModel(v))
     edges.value = newEdges
+
+    nodes.value
+      .map((v) => v.innerNode)
+      .filter((v) => v.inputs.length == 0)
+      .forEach((v) => v.complete())
   }
 
   const createFromNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (
@@ -224,11 +237,6 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     graphNode.onInitialize()
-
-    if (graphNode.inputs.length == 0) {
-      graphNode.complete()
-    }
-
     return wrapper
   }
 
@@ -311,6 +319,8 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     }
   }
 
+  const getNode = (id: string) => internalGraph.getNode(id)
+
   const removeNodes = (ids: string[]) => {
     if (ids.length === 0) {
       return
@@ -392,18 +402,21 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     history.init(model)
   }
 
+  const toModel = () => internalGraph.toModel()
+
   const commit = () => {
-    return history.commit(internalGraph.toModel())
+    const model = internalGraph.toModel()
+    return history.commit(model)
   }
 
   const undo = () => {
     const model = history.undo()
-    if (model) internalGraph.fromModel(model)
+    if (model !== null) internalGraph.fromModel(model)
   }
 
   const redo = () => {
     const model = history.redo()
-    if (model) internalGraph.fromModel(model)
+    if (model !== null) internalGraph.fromModel(model)
   }
 
   return {
@@ -412,7 +425,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     nodes,
     addNode,
     removeNodes,
-    getNode: internalGraph.getNode,
+    getNode,
 
     edges,
     connect,
@@ -424,9 +437,8 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     duplicate,
 
     fromModel,
-    toModel: internalGraph.toModel,
+    toModel,
 
-    getPresent: history.getPresent,
     commit,
     undo,
     redo,

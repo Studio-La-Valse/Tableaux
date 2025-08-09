@@ -2,7 +2,7 @@
 <template>
   <div class="edges-container">
     <!-- Permanent edges -->
-    <GraphEdgeRenderer v-for="edge in graph.edges" :key="edge.createKey()" :edge="edge" />
+    <GraphEdgeRenderer v-for="edge in graph.edges" :key="edge.id" :edge="edge" />
 
     <!-- Temporary (drag) edge -->
     <GraphEdgePathRenderer v-if="tempEdge" class="temp-edge-svg" :x1="startX" :y1="startY" :x2="tempEdge.currentX"

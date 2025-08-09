@@ -1,10 +1,10 @@
 <template>
   <div class="canvas-toolbar">
     <div class="button-group">
-      <button type="button" @click="undo" title="Undo">
+      <button type="button" @click="undo" :disabled="!hasUndo" title="Undo">
         ⏮️
       </button>
-      <button type="button" @click="redo" title="Redo">
+      <button type="button" @click="redo" :disabled="!hasRedo" title="Redo">
         ⏭️
       </button>
       <button type="button" @click="save" title="Save">
@@ -18,9 +18,13 @@
 </template>
 
 <script setup lang="ts">
+import { useGraphHistoryStore } from '@/stores/use-graph-history-store';
 import { useGraphStore } from '@/stores/use-graph-store';
+import { storeToRefs } from 'pinia';
 
-const { toModel, fromModel, undo, redo } = useGraphStore()
+const history = useGraphHistoryStore()
+const { hasUndo, hasRedo } = storeToRefs(history)
+const { toModel, fromModel, undo, redo, } = useGraphStore()
 
 const save = async () => {
   const model = toModel()
@@ -56,8 +60,6 @@ const saveToFile = async (filename: string, content: string) => {
     const writable = await handle.createWritable()
     await writable.write(content)
     await writable.close()
-
-    alert('File saved successfully!')
   } catch (err) {
     alert('Failed to save file:' + err)
   }

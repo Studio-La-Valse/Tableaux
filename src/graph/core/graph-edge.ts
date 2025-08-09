@@ -15,12 +15,6 @@ export class GraphEdge {
     this.id = nanoid(11)
   }
 
-  public createKey(): string {
-    // used to track during rendering
-    const key = `${this.leftGraphNode.innerNode.id}-${this.outputIndex}-${this.rightGraphNode.innerNode.id}-${this.inputIndex}`
-    return key
-  }
-
   public toModel(): GraphEdgeModel {
     return {
       leftId: this.leftGraphNode.innerNode.id,

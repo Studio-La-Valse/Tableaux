@@ -67,6 +67,16 @@ export default class FrameGenerator extends GraphNode {
     }
   }
 
+  override onInitialize(): void {
+    super.onInitialize()
+    this.reset()
+  }
+
+  override onDestroy(): void {
+    super.onDestroy()
+    this.reset()
+  }
+
   protected override solve(): void {
     const [active, reset, delay] = inputIterators.singletonOnly(
       this.inputActive,
