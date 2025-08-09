@@ -12,10 +12,6 @@ export class NewLine extends GraphNode {
     this.output = this.registerStringOutput('Character')
   }
 
-  override onInitialize(): void {
-    this.solve()
-  }
-
   protected solve(): void {
     const text = '\n'
     this.output.next(text)

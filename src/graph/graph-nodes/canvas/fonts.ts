@@ -16,7 +16,11 @@ export class Fonts extends GraphNode {
   public onInitialize(): void {
     super.onInitialize()
 
-    this.loadFallbackFonts().forEach((v) => this.fontList.add(v))
+    this.find()
+      .then((v) => v.forEach((w) => this.fontList.add(w)))
+      .then(() => this.arm())
+      .then(() => this.complete())
+      .catch((e) => alert(e))
   }
 
   protected async solve(): Promise<void> {
