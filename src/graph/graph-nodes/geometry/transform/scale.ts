@@ -24,7 +24,7 @@ export class ScaleGeometry extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<Geometry>('Scaled Geometry')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.inputGeometry, this.inputCenter, this.inputFactorX, this.inputFactorY)
       .forEach(([_geom, _origin, x, y]) => {

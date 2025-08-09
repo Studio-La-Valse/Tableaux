@@ -26,7 +26,7 @@ export class CanvasClick extends GraphNode {
     }
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     const [setActive] = inputIterators.singletonOnly(this.active)
     this.data.active = setActive
 

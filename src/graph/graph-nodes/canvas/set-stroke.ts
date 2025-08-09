@@ -23,7 +23,7 @@ export class SetStroke extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<Shape & Stroke>('Geometry with stroke')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.inputGeometry, this.color, this.strokeWidth)
       .forEach(([_geom, _stroke, strokeWidth]) => {

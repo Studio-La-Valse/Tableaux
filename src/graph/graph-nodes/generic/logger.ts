@@ -14,7 +14,7 @@ export class Logger extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerStringInput("Values")
+    this.input = this.registerStringInput('Values')
   }
 
   public arm(): void {
@@ -22,7 +22,7 @@ export class Logger extends GraphNode {
     super.arm()
   }
 
-  public solve(): void {
+  protected async solve(): Promise<void> {
     this.values.length = 0
     this.input.payload.forEach((e) => this.values.push(e))
   }

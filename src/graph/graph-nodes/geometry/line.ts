@@ -18,7 +18,7 @@ export class Line extends GraphNode {
     this.output = this.registerObjectOutput<line>('Line')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, this.input2)
       .map(([_start, _end]) => {

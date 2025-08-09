@@ -22,7 +22,7 @@ export class DeconstructAHSL extends GraphNode {
     this.output4 = this.registerNumberOutput('Luminance')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.input).forEach(([_argb]) => {
       const argb = assertIsColorARGB(_argb)
       const hsl = toColorHSL(argb)

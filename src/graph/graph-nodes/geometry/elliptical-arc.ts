@@ -27,7 +27,7 @@ export class EllipticalArc extends GraphNode {
     this.outputCircle = this.registerObjectOutput<ellipticalArc>('Circle')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, this.input2, this.input3, this.input4, this.input5, this.input6)
       .forEach(([_xy, radiusx, radiusy, start, end, clockwise]) => {

@@ -14,7 +14,7 @@ export class DegreesToRadians extends GraphNode {
     this.output = this.registerNumberOutput('Radians')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input)
       .map(([a]) => a * (Math.PI / 180))

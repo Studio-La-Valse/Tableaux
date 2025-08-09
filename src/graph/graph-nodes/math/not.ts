@@ -9,11 +9,11 @@ export class Not extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerNumberInput("Values")
-    this.output = this.registerBooleanOutput("Inverted")
+    this.input = this.registerNumberInput('Values')
+    this.output = this.registerBooleanOutput('Inverted')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     this.input.payload.map((v) => !v).forEach((v) => this.output.next(v))
   }
 }

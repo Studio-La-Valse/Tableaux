@@ -11,12 +11,12 @@ export class Divide extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerNumberInput("Values")
-    this.input2 = this.registerNumberInput("Factor")
-    this.output = this.registerNumberOutput("Result")
+    this.input1 = this.registerNumberInput('Values')
+    this.input2 = this.registerNumberInput('Factor')
+    this.output = this.registerNumberOutput('Result')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, this.input2)
       .map(([a, b]) => {

@@ -19,7 +19,7 @@ export class Invert extends GraphNode {
     this.outputTransform = this.registerObjectOutput<TransformationMatrix>('Inverted Matrix')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputTransform).forEach(([_transform]) => {
       const matrix2d = assertIsTransformationMatrix(_transform)
       const inverted = invert(matrix2d)

@@ -25,7 +25,7 @@ export class DeconstructLine extends GraphNode {
     this.outputCenter = this.registerObjectOutput<XY>('Center')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputLine).forEach(([_geom]) => {
       const geom = assertIsShape(_geom)
 

@@ -34,7 +34,7 @@ export class SetTextFormat extends GraphNode {
     )
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.inputText, this.inputAlignment, this.inputBaseline, this.inputDirection)
       .forEach(([text, alignment, baseline, direction]) => {

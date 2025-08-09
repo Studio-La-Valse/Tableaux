@@ -20,7 +20,7 @@ export default class MidiState extends GraphNode {
     this.outputState = this.registerObjectOutput<state>('MIDI State')
   }
 
-  protected override solve(): void {
+  protected async solve(): Promise<void> {
     const [reset] = inputIterators.singletonOnly(this.inputReset)
     if (reset) {
       this.data['channels'] = {}

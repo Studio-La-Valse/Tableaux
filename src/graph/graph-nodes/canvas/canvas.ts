@@ -27,7 +27,7 @@ export class Canvas extends GraphNode {
     super.arm()
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     this.elementStore?.setElements(this.input.payload.map((v) => assertIsShape(v)))
     this.elementStore?.redraw()
   }

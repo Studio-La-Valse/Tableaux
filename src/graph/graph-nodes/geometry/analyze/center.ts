@@ -16,7 +16,7 @@ export class Center extends GraphNode {
     this.outputCenter = this.registerObjectOutput<XY>('Center')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputGeometry).forEach(([_geom]) => {
       let center: XY
 

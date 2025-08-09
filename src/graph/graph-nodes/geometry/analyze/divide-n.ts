@@ -20,7 +20,7 @@ export class Translate extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<XY>('Translated Geometry')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputGeometry, this.inputN).forEach(([_geom, n]) => {
       const geom = assertIsCurveLike(_geom)
       const result = dividen(geom, n)

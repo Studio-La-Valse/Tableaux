@@ -20,7 +20,7 @@ export class BoundingBox extends GraphNode {
     this.outputBox = this.registerObjectOutput<AxisAlignedBoundingBox>('Bounding Box')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputGeometry).forEach(([geom]) => {
       const valid = isSurfaceLike(geom) || isCurveLike(geom)
       if (!valid) {

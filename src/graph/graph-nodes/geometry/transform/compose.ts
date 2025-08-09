@@ -19,7 +19,7 @@ export class Compose extends GraphNode {
     this.output = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(...this.inputParams)
       .map((values) => values.map((v) => assertIsTransformationMatrix(v)))

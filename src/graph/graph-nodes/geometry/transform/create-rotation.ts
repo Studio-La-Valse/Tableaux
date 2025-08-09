@@ -20,7 +20,7 @@ export class CreateRotation extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.origin, this.angle).forEach(([_origin, angle]) => {
       const origin = assertIsXY(_origin)
       const rotated = createRotation(origin, angle)

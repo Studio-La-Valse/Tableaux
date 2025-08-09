@@ -20,7 +20,7 @@ export class Transform extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<Geometry>('Translated Geometry')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.inputGeometry, this.inputTransform)
       .forEach(([_geom, _transform]) => {

@@ -16,7 +16,7 @@ export class HexToColor extends GraphNode {
     this.output = this.registerObjectOutput<ColorARGB>('Color')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1)
       .map(([hex]) => {

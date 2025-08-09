@@ -25,7 +25,7 @@ export class Decompose extends GraphNode {
     this.outputSkew = this.registerObjectOutput<XY>('Skew')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.input).forEach(([_geom]) => {
       const matrix = assertIsTransformationMatrix(_geom)
       const { translation, rotation, scale, skew } = decomposeMatrix(matrix)

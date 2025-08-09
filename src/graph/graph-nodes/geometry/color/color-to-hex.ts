@@ -15,7 +15,7 @@ export class ColorToHex extends GraphNode {
     this.output1 = this.registerStringOutput('Hex Value')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.input).forEach(([_argb]) => {
       const argb = assertIsColorARGB(_argb)
       const hex = toColorHex(argb)

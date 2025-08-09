@@ -20,7 +20,7 @@ export class Square extends GraphNode {
     this.outputSquare = this.registerObjectOutput<square>('Square')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputTopLeft, this.inputSize).forEach(([_topLeft, size]) => {
       const topLeft = assertIsXY(_topLeft)
       const rectangle = createSquare(topLeft, size)

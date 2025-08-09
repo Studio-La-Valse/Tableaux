@@ -16,7 +16,7 @@ export class Modulo extends GraphNode {
     this.output = this.registerNumberOutput('Result')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, this.input2)
       .map(([a, b]) => a % b)

@@ -107,42 +107,108 @@ export abstract class GraphNodeCore {
   }
 
   /**
-   * Executes the computation process if all inputs are unarmed.
-   * Manages state transitions and calls `solve()`.
+   * Attempts to execute the node's computation.
+   *
+   * Contract:
+   * - Synchronous entrypoint (returns void). All async work is awaited internally via Promises.
+   * - If a run is already in flight, this:
+   *   - marks a rerun as pending, and
+   *   - cancels the in-flight run via AbortController.abort().
+   * - Starts a fresh run when idle:
+   *   - clears error state,
+   *   - transitions componentState -> 'working',
+   *   - arms all outputs,
+   *   - calls solve(signal) which MUST observe the AbortSignal (either reject with AbortError or bail early),
+   *   - on success, transitions componentState -> 'complete',
+   *   - on non-abort failure, transitions componentState -> 'error' and sets errorMessage,
+   *   - finally, completes all outputs, clears the controller, and
+   *   - if a rerun was requested and inputs are still unarmed, triggers exactly one more run.
+   *
+   * Notes:
+   * - Multiple rapid calls while running collapse into a single rerun (coalescing).
+   * - If an abort happens and solve still resolves, we guard UI updates with signal.aborted checks.
+   * - If solve rejects because of an abort, we swallow it (treat as cancellation, not an error).
+   * - Outputs' arm()/complete() are assumed to be idempotent.
+   * - Inputs are checked before starting or re-starting; if any input is armed we do nothing.
    */
+  private _controller?: AbortController
+  private _pending = false
+
   public complete(): void {
-    // Clear any previous error
-    this.errorMessage = ''
+    // Do not start if any input is currently armed (precondition not met).
+    if (this.inputs.some((i) => i.armed)) return
 
-    // Abort if any input is still armed
-    if (this.inputs.some((input) => input.armed)) return
-
-    try {
-      // Arm all outputs before solving
-      for (const output of this.outputs) {
-        output.arm()
-      }
-
-      this.solve()
-
-      this.componentState = 'complete'
-
-      for (const output of this.outputs) {
-        output.complete()
-      }
-    } catch (error) {
-      const _error = error instanceof Error ? error : new Error(String(error))
-      console.error(_error)
-
-      this.componentState = 'error'
-      this.errorMessage = _error.message
+    // If a run is already in progress, request a rerun and cancel the current one.
+    // abort() is idempotent; calling it multiple times is safe.
+    if (this._controller) {
+      this._pending = true
+      this._controller.abort()
+      return
     }
+
+    // Start a new run with a fresh controller/signal.
+    this._controller = new AbortController()
+    const signal = this._controller.signal
+
+    // Reset transient errors and move to "working".
+    this.errorMessage = ''
+    this.componentState = 'working'
+
+    // Arm all outputs before solving; idempotent arm() is recommended.
+    for (const o of this.outputs) {
+      try {
+        o.arm()
+      } catch (e) {
+        // If an output throws here, consider logging and continuing so other outputs still arm.
+        // You could also decide to set componentState='error' and bail early.
+        console.error('Output arm() failed:', e)
+      }
+    }
+
+    // Kick off the async solve, passing the signal for cancellation.
+    this.solve(signal)
+      .then(() => {
+        if (signal.aborted) return
+
+        // Only mark complete if we were not aborted during/after solve.
+        this.componentState = 'complete'
+
+        // Complete outputs
+        for (const o of this.outputs) {
+          try {
+            o.complete()
+          } catch (e) {
+            // Prevent one failing output from blocking cleanup or reruns.
+            console.error('Output complete() failed:', e)
+          }
+        }
+      })
+      .catch((error) => {
+        // If the error happened because we aborted, treat it as a cancel, not an error.
+        if (signal.aborted) return
+
+        const _error = error instanceof Error ? error : new Error(String(error))
+        console.error(_error)
+        this.componentState = 'error'
+        this.errorMessage = _error.message
+      })
+      .finally(() => {
+        // Clear the controller to mark this run as finished.
+        this._controller = undefined
+
+        // If another call came in while we were running, run once more,
+        // provided inputs are still ready. Coalesces bursts into a single extra run.
+        if (this._pending && !this.inputs.some((i) => i.armed)) {
+          this._pending = false
+          this.complete()
+        }
+      })
   }
 
   /**
    * Abstract method where concrete node logic should be implemented.
    */
-  protected abstract solve(): void
+  protected abstract solve(signal: AbortSignal): Promise<void>
 
   /**
    * Virtual method to define what happens when a component is destroyed.

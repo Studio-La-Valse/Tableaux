@@ -18,7 +18,7 @@ export class CreateTranslation extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputOffset).forEach(([_offset]) => {
       const xy = assertIsXY(_offset)
       const moved = createTranslation(xy)

@@ -21,7 +21,7 @@ export class Text extends GraphNode {
     this.inputFontSize = this.registerNumberInput('Font Size')
     this.outputText = this.registerObjectOutput<TextShape>('Text')
   }
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.inputText, this.inputOrigin, this.inputFontFamily, this.inputFontSize)
       .map(([t, o, ff, fs]) => createText(t, assertIsXY(o), ff, fs))

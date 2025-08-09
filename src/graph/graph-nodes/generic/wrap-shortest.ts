@@ -12,14 +12,14 @@ export class WrapShortest extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerUnkownInput("First")
-    this.input2 = this.registerUnkownInput("Second")
+    this.input1 = this.registerUnkownInput('First')
+    this.input2 = this.registerUnkownInput('Second')
 
-    this.output1 = this.registerUnkownOutput("First")
-    this.output2 = this.registerUnkownOutput("Second")
+    this.output1 = this.registerUnkownOutput('First')
+    this.output2 = this.registerUnkownOutput('Second')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.input1, this.input2).forEach(([x, y]) => {
       this.output1.next(x)
       this.output2.next(y)

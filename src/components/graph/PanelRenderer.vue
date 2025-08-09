@@ -58,6 +58,8 @@ const borderColor = computed(() => {
       return "linear-gradient(90deg, var(--vt-error-1), var(--vt-error-2))"
     case "complete":
       return "linear-gradient(90deg, var(--vt-complete-1), var(--vt-complete-2))"
+    case 'working':
+      return "linear-gradient(90deg, var(--vt-working-1), var(--vt-working-2))"
     default:
       return "linear-gradient(90deg, var(--vt-error-1), var(--vt-error-2))"
   }
@@ -71,6 +73,8 @@ const shadowColor = computed(() => {
       return "--vt-error-1"
     case "complete":
       return "--vt-complete-1"
+    case "working":
+      return "--vt-working-1"
     default:
       return "#ccc"
   }
