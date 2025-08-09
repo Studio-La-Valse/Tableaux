@@ -35,7 +35,7 @@ export class DeconstrucSquare extends GraphNode {
     this.perimeter = this.registerNumberOutput('Perimeter')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputShape).forEach(([shape]) => {
       const geom = assertIsShape(shape)
 

@@ -32,7 +32,7 @@ export class Viewport extends GraphNode {
     this.complete()
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     const rectangle = createRectangle(
       { x: 0, y: 0 },
       this.data.dimensions.x,

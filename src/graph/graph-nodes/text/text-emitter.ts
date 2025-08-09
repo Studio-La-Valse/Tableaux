@@ -22,7 +22,7 @@ export class TextEmitter extends GraphNode {
     this.complete()
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     this.output.next(this.data.value)
   }
 }

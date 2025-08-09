@@ -10,14 +10,14 @@ export class SimpleRange extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerNumberInput("Length")
-    this.output = this.registerNumberOutput("Values")
+    this.input = this.registerNumberInput('Length')
+    this.output = this.registerNumberOutput('Values')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     const [stop] = inputIterators.singletonOnly(this.input)
     for (let index = 0; index < stop; index++) {
-      this.output.next(index);
+      this.output.next(index)
     }
   }
 }

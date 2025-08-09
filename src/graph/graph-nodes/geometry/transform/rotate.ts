@@ -22,7 +22,7 @@ export class SetRotation extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<Geometry>('Rotated Geometry')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.inputGeometry, this.origin, this.angle)
       .forEach(([_geom, _origin, angle]) => {

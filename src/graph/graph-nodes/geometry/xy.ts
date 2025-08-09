@@ -17,7 +17,7 @@ export class XY extends GraphNode {
     this.output = this.registerObjectOutput<xy>('XY')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, this.input2)
       .map(([x, y]) => ({ x, y }))

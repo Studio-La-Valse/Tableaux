@@ -21,7 +21,7 @@ export class Rectangle extends GraphNode {
     this.outputRect = this.registerObjectOutput<rect>('Rectangle')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.inputTopLeft, this.inputWidth, this.inputHeight)
       .forEach(([_topLeft, width, height]) => {

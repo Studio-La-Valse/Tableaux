@@ -14,7 +14,7 @@ export class Arccos extends GraphNode {
     this.output = this.registerNumberOutput('Angle (Radians)')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input)
       .map(([value]) => Math.acos(value))

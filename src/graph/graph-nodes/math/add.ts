@@ -14,7 +14,7 @@ export class Add extends GraphNode {
     this.output = this.registerNumberOutput('Result')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(...this.params)
       .map((values) => values.reduce((p, c) => p + c))

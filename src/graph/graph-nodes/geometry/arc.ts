@@ -25,7 +25,7 @@ export class Arc extends GraphNode {
     this.outputCircle = this.registerObjectOutput<arc>('Circle')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, this.input2, this.input3, this.input4, this.input5)
       .forEach(([_xy, radius, start, end, clockwise]) => {

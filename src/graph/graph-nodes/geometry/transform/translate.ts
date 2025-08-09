@@ -20,7 +20,7 @@ export class Translate extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<Geometry>('Translated Geometry')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputGeometry, this.inputOffset).forEach(([_geom, _offset]) => {
       const geom = assertIsGeometry(_geom)
       const xy = assertIsXY(_offset)

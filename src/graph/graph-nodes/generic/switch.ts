@@ -16,7 +16,7 @@ export class Switch extends GraphNode {
     this.output = this.registerUnkownOutput('Values')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, ...this.params)
       .map(([value, ...values]) => values[value])

@@ -11,12 +11,12 @@ export class Subtract extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerNumberInput("Left")
-    this.input2 = this.registerNumberInput("Right")
-    this.output = this.registerNumberOutput("Result")
+    this.input1 = this.registerNumberInput('Left')
+    this.input2 = this.registerNumberInput('Right')
+    this.output = this.registerNumberOutput('Result')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, this.input2)
       .map(([a, b]) => a - b)

@@ -27,7 +27,7 @@ export class DeconstructCircle extends GraphNode {
     this.outputCircumference = this.registerNumberOutput('Circumference')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputCircle).forEach(([_geom]) => {
       const geom = assertIsShape(_geom)
 

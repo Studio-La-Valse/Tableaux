@@ -23,7 +23,7 @@ export class ColorPicker extends GraphNode {
     this.complete()
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     if (!isValidHexColor(this.data.value)) throw new Error('Expected valid hex format.')
 
     const argb = toColorARGB(this.data.value)

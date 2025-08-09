@@ -4,9 +4,10 @@ import { deconstruct as deconstructLine } from './line'
 import { deconstruct as deconstructRectangle } from './rectangle'
 import { deconstruct as deconstructSquare } from './square'
 import { deconstruct as deconstructParallelogram } from './parallelogram'
-import type { Shape } from './shape'
-import { deconstructArc } from './arc'
-import { deconstructEllipticalArc } from './elliptical-arc'
+import { deconstruct as deconstructArc } from './arc'
+import { deconstruct as deconstructEllipticalArc } from './elliptical-arc'
+import type { CurveLike } from './curve-like'
+import type { SurfaceLike } from './surface-like'
 
 export type AxisAlignedBoundingBox = {
   minX: number
@@ -15,7 +16,7 @@ export type AxisAlignedBoundingBox = {
   maxY: number
 }
 
-export function getAxisAlignedBoundingBox(element: Shape): AxisAlignedBoundingBox {
+export function getAxisAlignedBoundingBox(element: CurveLike | SurfaceLike): AxisAlignedBoundingBox {
   switch (element.kind) {
     case 'arc': {
       const { start: startPoint, end: endPoint, middle: midPoint } = deconstructArc(element)

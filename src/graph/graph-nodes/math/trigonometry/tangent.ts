@@ -14,7 +14,7 @@ export class Tangent extends GraphNode {
     this.output = this.registerNumberOutput('Tangent Value')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input)
       .map(([angle]) => Math.tan(angle))

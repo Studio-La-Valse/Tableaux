@@ -20,7 +20,7 @@ export class CreateSkew extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputCenter, this.inputFactor).forEach(([_origin, factor]) => {
       const origin = assertIsXY(_origin)
       const skewed = createSkew(origin, { x: factor, y: 0 })

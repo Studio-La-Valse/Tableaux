@@ -11,12 +11,12 @@ export class RepeatUntil extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerUnkownInput("Values")
-    this.input2 = this.registerNumberInput("Count")
-    this.output = this.registerUnkownOutput("Values")
+    this.input1 = this.registerUnkownInput('Values')
+    this.input2 = this.registerNumberInput('Count')
+    this.output = this.registerUnkownOutput('Values')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     const signalLength = this.input1.payloadLength
 
     const [targetLength] = inputIterators.singletonOnly(this.input2)

@@ -13,7 +13,7 @@ export class Stringify extends GraphNode {
     this.output = this.registerStringOutput('String')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     this.input.payload.forEach((v) => this.output.next(JSON.stringify(v)))
   }
 }

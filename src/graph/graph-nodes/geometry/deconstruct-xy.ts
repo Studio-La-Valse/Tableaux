@@ -23,7 +23,7 @@ export class DeconstructXY extends GraphNode {
     this.outputAngle = this.registerNumberOutput('Angle (Radians)')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputXY).forEach(([_xy]) => {
       const xy = assertIsXY(_xy)
 

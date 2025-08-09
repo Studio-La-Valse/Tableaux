@@ -77,7 +77,7 @@ export default class FrameGenerator extends GraphNode {
     this.reset()
   }
 
-  protected override solve(): void {
+  protected async solve(): Promise<void> {
     const [active, reset, delay] = inputIterators.singletonOnly(
       this.inputActive,
       this.inputReset,

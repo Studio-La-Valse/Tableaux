@@ -18,7 +18,7 @@ export class Transformation extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Translated Geometry')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputGeometry).forEach(([_geom]) => {
       const geom = assertIsShape(_geom)
       this.outputGeometry.next(geom.transformation)

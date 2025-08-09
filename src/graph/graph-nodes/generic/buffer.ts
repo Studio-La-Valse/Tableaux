@@ -19,7 +19,7 @@ export class Buffer extends GraphNode {
     this.output = this.registerUnkownOutput('Values')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     const [length] = inputIterators.singletonOnly(this.inputLength)
 
     for (const v of this.inputValues.payload) {

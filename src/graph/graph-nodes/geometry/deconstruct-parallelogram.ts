@@ -37,7 +37,7 @@ export class DeconstructParallelogram extends GraphNode {
     this.rotation = this.registerNumberOutput('Rotation')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.inputShape).forEach(([_shape]) => {
       const geom = assertIsShape(_shape)
 

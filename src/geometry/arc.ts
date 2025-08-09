@@ -63,7 +63,7 @@ export type DeconstructedArc = {
   middle: XY
 }
 
-export function deconstructArc(arc: Arc | Circle): DeconstructedArc {
+export function deconstruct(arc: Arc | Circle): DeconstructedArc {
   let clockwise: boolean | undefined
   let startAngle = 0
   let endAngle = Math.PI * 2

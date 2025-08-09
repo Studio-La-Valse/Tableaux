@@ -22,7 +22,7 @@ export class ConstructAHSV extends GraphNode {
     this.output = this.registerObjectOutput<ColorARGB>('Color')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators
       .cycleValues(this.input1, this.input2, this.input3, this.input4)
       .map(([a, h, s, v]) => ({ a, h, s, v }))

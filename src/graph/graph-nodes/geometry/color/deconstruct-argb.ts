@@ -21,7 +21,7 @@ export class DeconstructARGB extends GraphNode {
     this.output4 = this.registerNumberOutput('Blue')
   }
 
-  protected solve(): void {
+  protected async solve(): Promise<void> {
     inputIterators.cycleValues(this.input).forEach(([_argb]) => {
       const argb = assertIsColorARGB(_argb)
       this.output1.next(argb.a)

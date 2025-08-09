@@ -69,7 +69,7 @@ export type DeconstructedEllipticalArc = {
   middle: XY
 }
 
-export function deconstructEllipticalArc(
+export function deconstruct(
   arc: EllipticalArc | Arc | Circle | Ellipse,
 ): DeconstructedEllipticalArc {
   let clockwise: boolean | undefined
