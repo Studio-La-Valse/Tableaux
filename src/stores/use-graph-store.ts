@@ -33,10 +33,10 @@ const useGraphInternal = defineStore('graph', () => {
     const graphNode = activator.activate(id)
     const wrapper = reactive(new GraphNodeWrapper(graphNode)) as GraphNodeWrapper
     wrapper.xy = { x: position.x, y: position.y }
-    graphNode.onInitialize()
-    if (graphNode.inputs.length == 0) {
-      graphNode.arm()
-      graphNode.complete()
+    wrapper.innerNode.onInitialize()
+    if (wrapper.innerNode.inputs.length == 0) {
+      wrapper.innerNode.arm()
+      wrapper.innerNode.complete()
     }
 
     nodeMap.value[id] = wrapper
