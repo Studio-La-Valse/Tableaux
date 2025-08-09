@@ -29,38 +29,69 @@ export const useGraphHistoryStore = defineStore('history', () => {
 
   // 5) commit a new state
   function commit(model: GraphModel): GraphModel {
-    if (present.value) {
-      past.value.push(duplicate(present.value))
-      if (past.value.length > maxHistory) {
-        past.value.shift()
-      }
-    }
+    if (!present.value)
+      throw new Error('History was not correctly initialized because it has no present state.')
+
+    // Add the current state to the end of the history
+    past.value.push(present.value)
+
+    // make sure the history is not longer than maxHistory
+    while (past.value.length > maxHistory) past.value.shift()
+
+    // the new present is a duplicate of the provided model
     present.value = duplicate(model)
+
+    // Clear the future
     future.value.length = 0
-    return duplicate(present.value)
+
+    // return the original model used for the commit
+    return model
   }
 
   // 6) undo
   function undo(): GraphModel | null {
-    if (!present.value || past.value.length === 0) return null
-    future.value.unshift(duplicate(present.value))
+    if (!present.value)
+      throw new Error('History was not correctly initialized because it has no present state.')
+
+    // the new state will be the last item of the history
     const pastValue = past.value.pop()
-    present.value = pastValue ? duplicate(pastValue) : null
-    return present.value
+
+    // nothing to undo
+    if (!pastValue) return null
+
+    // insert the current state to the futures
+    future.value.unshift(present.value)
+
+    // duplicate if exists
+    present.value = pastValue
+    return duplicate(present.value)
   }
 
   // 7) redo
   function redo(): GraphModel | null {
-    if (!present.value || future.value.length === 0) return null
-    past.value.push(duplicate(present.value))
-    if (past.value.length > maxHistory) past.value.shift()
+    if (!present.value)
+      throw new Error('History was not correctly initialized because it has no present state.')
+
+    // the new state is the first item of the futures
     const futureValue = future.value.shift()
-    present.value = futureValue ? duplicate(futureValue) : null
-    return present.value
+
+    // nothing to redo
+    if (!futureValue) return null
+
+    // add the current state to the end of the past states
+    past.value.push(present.value)
+
+    // Make sure at most maxHistory items in history by removing first
+    while (past.value.length > maxHistory) past.value.shift()
+
+    // Set the present state to the retrieved future state
+    present.value = futureValue
+
+    // return a duplicate of the current state
+    return duplicate(present.value)
   }
 
   // 8) selectors
-  const getPresent = computed(() => present)
   const hasUndo = computed(() => past.value.length > 0)
   const hasRedo = computed(() => future.value.length > 0)
 
@@ -69,7 +100,6 @@ export const useGraphHistoryStore = defineStore('history', () => {
     commit,
     undo,
     redo,
-    getPresent,
     hasUndo,
     hasRedo,
   }

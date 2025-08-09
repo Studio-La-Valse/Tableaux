@@ -20,8 +20,8 @@ export default class ChannelState extends GraphNode {
   protected override solve(): void {
     const [state, channel] = inputIterators.singletonOnly(this.inputState, this.inputChannel)
 
-    if (!isMidiState(state)){
-      throw new Error("Provided value is not a midi state.")
+    if (!isMidiState(state)) {
+      throw new Error('Provided value is not a midi state.')
     }
 
     const channelState = getChannelState(state, channel)
