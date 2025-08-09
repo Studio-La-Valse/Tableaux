@@ -138,6 +138,10 @@ export abstract class GraphNodeCore {
     // Do not start if any input is currently armed (precondition not met).
     if (this.inputs.some((i) => i.armed)) return
 
+    // Reset transient errors and move to "working".
+    this.errorMessage = ''
+    this.componentState = 'working'
+
     // If a run is already in progress, request a rerun and cancel the current one.
     // abort() is idempotent; calling it multiple times is safe.
     if (this._controller) {
@@ -149,10 +153,6 @@ export abstract class GraphNodeCore {
     // Start a new run with a fresh controller/signal.
     this._controller = new AbortController()
     const signal = this._controller.signal
-
-    // Reset transient errors and move to "working".
-    this.errorMessage = ''
-    this.componentState = 'working'
 
     // Arm all outputs before solving; idempotent arm() is recommended.
     for (const o of this.outputs) {
