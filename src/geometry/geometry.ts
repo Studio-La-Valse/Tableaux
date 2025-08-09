@@ -15,7 +15,6 @@ import {
   rotate as rotateArc,
   scale as scaleArc,
   scaleUniform as scaleUniformArc,
-  deconstructArc,
 } from './arc'
 
 import type { EllipticalArc } from './elliptical-arc'
@@ -25,7 +24,6 @@ import {
   rotate as rotateEllipticalArc,
   scale as scaleEllipticalArc,
   scaleUniform as scaleUniformEllipticalArc,
-  deconstructEllipticalArc,
 } from './elliptical-arc'
 
 import {
@@ -78,12 +76,15 @@ import {
   scaleUniform as scaleUniformSquare,
   skew as skewSquare,
 } from './square'
-import { deconstruct as deconstructCircle } from './circle'
-import { deconstruct as deconstructEllipse } from './ellipse'
-import { deconstruct as deconstructLine } from './line'
-import { deconstruct as deconstructRectangle } from './rectangle'
-import { deconstruct as deconstructSquare } from './square'
-import { deconstruct as deconstructParallelogram } from './parallelogram'
+
+import {
+  translate as translateText,
+  rotate as rotateText,
+  scale as scaleText,
+  scaleUniform as scaleUniformText,
+  skew as skewText,
+  type TextShape,
+} from './text-shape'
 
 import { compose, type TransformationMatrix } from './transformation-matrix'
 import { isShape, type Shape } from './shape'
@@ -124,6 +125,8 @@ export function translate(geometry: Geometry, delta: XY): Geometry {
       return translateRectangle(geometry, delta)
     case 'parallelogram':
       return translateParallelogram(geometry, delta)
+    case 'text':
+      return translateText(geometry, delta)
   }
 }
 
@@ -149,6 +152,8 @@ export function rotate(geometry: Geometry, origin: XY, angle: number): Geometry 
       return rotateRectangle(geometry, origin, angle)
     case 'parallelogram':
       return rotateParallelogram(geometry, origin, angle)
+    case 'text':
+      return rotateText(geometry, origin, angle)
   }
 }
 
@@ -174,6 +179,8 @@ export function scale(geometry: Geometry, origin: XY, factor: XY): Geometry {
       return scaleRectangle(geometry, origin, factor)
     case 'parallelogram':
       return scaleParallelogram(geometry, origin, factor)
+    case 'text':
+      return scaleText(geometry, origin, factor)
   }
 }
 
@@ -199,6 +206,8 @@ export function scaleUniform(geometry: Geometry, origin: XY, factor: number): Ge
       return scaleUniformRectangle(geometry, origin, factor)
     case 'parallelogram':
       return scaleUniformParallelogram(geometry, origin, factor)
+    case 'text':
+      return scaleUniformText(geometry, origin, factor)
   }
 }
 
@@ -224,6 +233,8 @@ export function skew(geometry: Geometry, origin: XY, factor: XY): Geometry {
       return skewRectangle(geometry, origin, factor)
     case 'parallelogram':
       return skewParallelogram(geometry, origin, factor)
+    case 'text':
+      return skewText(geometry, origin, factor)
   }
 }
 
@@ -265,6 +276,14 @@ export function pushTransform(geometry: Geometry, transformation: Transformation
       const result: Parallelogram = {
         ...geometry,
         kind: 'parallelogram',
+        transformation: newMatrix,
+      }
+      return result
+    }
+    case 'text': {
+      const result: TextShape = {
+        ...geometry,
+        kind: 'text',
         transformation: newMatrix,
       }
       return result
@@ -313,53 +332,13 @@ export function setTransform(geometry: Geometry, transformation: TransformationM
       }
       return result
     }
-  }
-}
-
-export function getCenter(element: Geometry): XY {
-  if (isXY(element)) {
-    return { x: element.x, y: element.y }
-  }
-
-  switch (element.kind) {
-    case 'arc': {
-      const { middle: midPoint } = deconstructArc(element)
-      return midPoint
-    }
-
-    case 'elliptical-arc': {
-      const { middle: midPoint } = deconstructEllipticalArc(element)
-      return midPoint
-    }
-
-    case 'circle': {
-      const { origin } = deconstructCircle(element)
-      return origin
-    }
-
-    case 'ellipse': {
-      const { origin } = deconstructEllipse(element)
-      return origin
-    }
-
-    case 'line': {
-      const { middle: center } = deconstructLine(element)
-      return center
-    }
-
-    case 'rectangle': {
-      const { center } = deconstructRectangle(element)
-      return center
-    }
-
-    case 'square': {
-      const { center } = deconstructSquare(element)
-      return center
-    }
-
-    case 'parallelogram': {
-      const { center } = deconstructParallelogram(element)
-      return center
+    case 'text': {
+      const result: TextShape = {
+        ...geometry,
+        kind: 'text',
+        transformation,
+      }
+      return result
     }
   }
 }

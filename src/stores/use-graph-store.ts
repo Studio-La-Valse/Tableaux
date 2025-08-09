@@ -213,7 +213,10 @@ const useGraphInternal = defineStore('graph', () => {
     nodes.value
       .map((v) => v.innerNode)
       .filter((v) => v.inputs.length == 0)
-      .forEach((v) => v.complete())
+      .forEach((v) => {
+        v.arm()
+        v.complete()
+      })
   }
 
   const createFromNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (

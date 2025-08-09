@@ -10,7 +10,7 @@ import {
 import { applyMatrix, distance, interpolate, type XY } from './xy'
 import { isOfShapeKind, type BaseShape } from './shape'
 import type { Arc } from './arc'
-import { deconstructEllipticalArc, type EllipticalArc } from './elliptical-arc'
+import { deconstruct as deconstructEllipticalArc, type EllipticalArc } from './elliptical-arc'
 
 export type Line = BaseShape & { kind: 'line' }
 

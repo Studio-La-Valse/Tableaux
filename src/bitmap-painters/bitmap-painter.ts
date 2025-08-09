@@ -5,12 +5,13 @@ import { formatCSSRGBA } from '../geometry/color-rgb'
 import type { Ellipse } from '../geometry/ellipse'
 import type { EllipticalArc } from '../geometry/elliptical-arc'
 import { hasFill } from '../geometry/fill'
-import type { Geometry } from '../geometry/geometry'
 import { IDENTITY_END, IDENTITY_START, type Line } from '../geometry/line'
 import type { Parallelogram } from '../geometry/parallelogram'
 import { type Rectangle } from '../geometry/rectangle'
 import { IDENTITY_BR, IDENTITY_TL, type Square } from '../geometry/square'
 import { hasStroke } from '../geometry/stroke'
+import type { TextShape } from '@/geometry/text-shape'
+import { hasAlignment, hasBaseLine, hasDirection } from '@/geometry/text-format-options'
 
 export class BitmapPainter {
   constructor(private ctx: CanvasRenderingContext2D) {}
@@ -26,7 +27,7 @@ export class BitmapPainter {
     return this
   }
 
-  public DrawElements(elements: Iterable<Shape>): BitmapPainter {
+  public DrawElements(elements: Iterable<Shape | TextShape>): BitmapPainter {
     for (const element of elements) {
       this.DrawElement(element)
     }
@@ -34,7 +35,7 @@ export class BitmapPainter {
     return this
   }
 
-  public DrawElement(element: Shape): BitmapPainter {
+  public DrawElement(element: Shape | TextShape): BitmapPainter {
     switch (element.kind) {
       case 'arc':
       case 'elliptical-arc':
@@ -47,6 +48,8 @@ export class BitmapPainter {
       case 'square':
       case 'parallelogram':
         return this.DrawRectangle(element)
+      case 'text':
+        return this.drawText(element)
     }
   }
 
@@ -113,15 +116,54 @@ export class BitmapPainter {
     return this
   }
 
-  public setFill(element: Geometry) {
+  public drawText(element: TextShape) {
+    const fill = hasFill(element)
+    const stroke = hasStroke(element)
+    if (!fill && !stroke) return this
+
+    const { a, b, c, d, e, f } = element.transformation
+
+    this.ctx.save()
+    this.ctx.font = `${element.fontSize}px ${element.fontFamily}`
+
+    if (hasAlignment(element)) {
+      this.ctx.textAlign = element.align
+    }
+
+    if (hasBaseLine(element)) {
+      this.ctx.textBaseline = element.baseLine
+    }
+
+    if (hasDirection(element)) {
+      this.ctx.direction = element.direction
+    }
+
+    this.ctx.setTransform(a, b, c, d, e, f)
+
+    if (fill) {
+      this.setFill(element)
+      this.ctx.fillText(element.text, 0, 0)
+    }
+    if (stroke) {
+      this.setStroke(element)
+      this.ctx.strokeText(element.text, 0, 0)
+    }
+
+    this.ctx.restore()
+
+    return this
+  }
+
+  public setFill(element: object) {
     if (!hasFill(element)) return
 
     this.ctx.fillStyle = formatCSSRGBA(element.fill)
     this.ctx.fill()
   }
 
-  public setStroke(element: Geometry) {
+  public setStroke(element: object) {
     if (!hasStroke(element)) return
+
     this.ctx.strokeStyle = formatCSSRGBA(element.stroke)
     this.ctx.lineWidth = element.strokeWidth
     this.ctx.stroke()

@@ -1,24 +1,9 @@
-import type { Arc } from './arc'
-import { divideCurvedShape, type EllipticalArc } from './elliptical-arc'
-import type { Circle } from './circle'
-import type { Ellipse } from './ellipse'
-import { divideLine, type Line } from './line'
-import { divideParallelogram, type Parallelogram } from './parallelogram'
-import type { Rectangle } from './rectangle'
-import type { Square } from './square'
 import { isTransformationMatrix, type TransformationMatrix } from './transformation-matrix'
-import type { XY } from './xy'
+import type { TextShape } from './text-shape'
+import { curveKinds, type CurveLike } from './curve-like'
+import { surfaceKinds, type SurfaceLike } from './surface-like'
 
-export const shapeKinds = [
-  'arc',
-  'elliptical-arc',
-  'circle',
-  'ellipse',
-  'line',
-  'square',
-  'rectangle',
-  'parallelogram',
-] as const
+export const shapeKinds = [...curveKinds, ...surfaceKinds, 'text'] as const
 
 export type ShapeKind = (typeof shapeKinds)[number]
 
@@ -27,15 +12,7 @@ export type BaseShape = {
   transformation: TransformationMatrix
 }
 
-export type Shape =
-  | Arc
-  | EllipticalArc
-  | Circle
-  | Ellipse
-  | Line
-  | Square
-  | Rectangle
-  | Parallelogram
+export type Shape = CurveLike | SurfaceLike | TextShape
 
 export function isShape(value: unknown): value is Shape {
   return (
@@ -66,23 +43,4 @@ export function assertIsShape(value: unknown): Shape {
   }
 
   return value
-}
-
-export function dividen(shape: Shape, n: number): XY[] {
-  switch (shape.kind) {
-    case 'arc':
-    case 'elliptical-arc':
-    case 'circle':
-    case 'ellipse': {
-      return divideCurvedShape(shape, n)
-    }
-    case 'line': {
-      return divideLine(shape, n)
-    }
-    case 'square':
-    case 'rectangle':
-    case 'parallelogram': {
-      return divideParallelogram(shape, n)
-    }
-  }
 }
