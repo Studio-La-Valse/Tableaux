@@ -1,5 +1,5 @@
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNode } from '../../../core/graph-node'
-import { inputIterators } from '../../../core/input-iterators'
 import { GraphNodeType } from '../../decorators'
 import { assertIsColorARGB, toColorHex } from '@/geometry/color-rgb'
 
@@ -15,11 +15,11 @@ export class ColorToHex extends GraphNode {
     this.output1 = this.registerStringOutput('Hex Value')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.input).forEach(([_argb]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_argb] of inputIterators.cycleValues(this.input)) {
       const argb = assertIsColorARGB(_argb)
       const hex = toColorHex(argb)
       this.output1.next(hex)
-    })
+    }
   }
 }

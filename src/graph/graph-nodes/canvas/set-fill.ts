@@ -1,9 +1,9 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
 import { GraphNodeType } from '../decorators'
 import { assertIsShape, type Shape } from '@/geometry/shape'
 import type { Fill } from '@/geometry/fill'
 import { assertIsColorARGB } from '@/geometry/color-rgb'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 
 @GraphNodeType('Geometry', 'Set Fill')
 export class SetFill extends GraphNode {
@@ -21,8 +21,11 @@ export class SetFill extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<Shape & Fill>('Geometry with fill')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.inputGeometry, this.color).forEach(([_geom, _fill]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_geom, _fill] of inputIterators.cycleValues(
+      this.inputGeometry,
+      this.color,
+    )) {
       const geom = assertIsShape(_geom)
       const fill = assertIsColorARGB(_fill)
 
@@ -31,6 +34,6 @@ export class SetFill extends GraphNode {
         fill,
       }
       this.outputGeometry.next(withFill)
-    })
+    }
   }
 }

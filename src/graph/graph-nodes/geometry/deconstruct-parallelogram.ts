@@ -1,6 +1,6 @@
 import { deconstruct as deconstructParallelogram } from '@/geometry/parallelogram'
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/geometry/xy'
 import { assertIsShape, isOfShapeKind } from '@/geometry/shape'
@@ -37,8 +37,8 @@ export class DeconstructParallelogram extends GraphNode {
     this.rotation = this.registerNumberOutput('Rotation')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.inputShape).forEach(([_shape]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_shape] of inputIterators.cycleValues(this.inputShape)) {
       const geom = assertIsShape(_shape)
 
       if (!isOfShapeKind(geom, ['parallelogram', 'rectangle', 'square'])) {
@@ -70,6 +70,6 @@ export class DeconstructParallelogram extends GraphNode {
       this.area.next(area)
       this.perimeter.next(perimeter)
       this.rotation.next(rotation)
-    })
+    }
   }
 }

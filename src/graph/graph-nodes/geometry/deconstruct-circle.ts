@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { type XY } from '@/geometry/xy'
 import { deconstruct } from '@/geometry/circle'
@@ -27,8 +27,8 @@ export class DeconstructCircle extends GraphNode {
     this.outputCircumference = this.registerNumberOutput('Circumference')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.inputCircle).forEach(([_geom]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_geom] of inputIterators.cycleValues(this.inputCircle)) {
       const geom = assertIsShape(_geom)
 
       if (!isOfShapeKind(geom, ['circle'])) {
@@ -42,6 +42,6 @@ export class DeconstructCircle extends GraphNode {
       this.outputRotation.next(rotation)
       this.outputArea.next(area)
       this.outputCircumference.next(circumference)
-    })
+    }
   }
 }

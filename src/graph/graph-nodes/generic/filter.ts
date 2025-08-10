@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Generic', 'Filter')
@@ -16,11 +16,11 @@ export class Filter extends GraphNode {
     this.output = this.registerUnkownOutput('Values')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.input1, this.input2)
-      .filter(([, right]) => right)
-      .map(([left]) => left)
-      .forEach((v) => this.output.next(v))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [left, right] of inputIterators.cycleValues(this.input1, this.input2)) {
+      if (right) {
+        this.output.next(left)
+      }
+    }
   }
 }

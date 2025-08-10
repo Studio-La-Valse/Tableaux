@@ -1,5 +1,5 @@
 import { GraphNode } from '@/graph/core/graph-node'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import Perlin from '@/noise/perlin'
 import { GraphNodeType } from '../../decorators'
 
@@ -25,10 +25,15 @@ export class Simplex3d extends GraphNode {
     this.perlin = new Perlin()
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.input1, this.input2, this.input3, this.inputScale)
-      .map(([x, y, z, scale]) => this.perlin.simplex3(x / scale, y / scale, z / scale))
-      .forEach((v) => this.output.next(v))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [x, y, z, scale] of inputIterators.cycleValues(
+      this.input1,
+      this.input2,
+      this.input3,
+      this.inputScale,
+    )) {
+      const v = this.perlin.simplex3(x / scale, y / scale, z / scale)
+      this.output.next(v)
+    }
   }
 }

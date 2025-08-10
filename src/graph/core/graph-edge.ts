@@ -1,14 +1,14 @@
 import { nanoid } from 'nanoid'
-import type { GraphNodeWrapper } from './graph-node-wrapper'
+import type { IGraphNodeWrapper } from './graph-node-wrapper'
 import type { GraphEdgeModel } from './models/graph-edge-model'
 
 export class GraphEdge {
   public readonly id: string
 
   constructor(
-    public readonly leftGraphNode: GraphNodeWrapper,
+    public readonly leftGraphNode: IGraphNodeWrapper,
     public outputIndex: number,
-    public readonly rightGraphNode: GraphNodeWrapper,
+    public readonly rightGraphNode: IGraphNodeWrapper,
     public inputIndex: number,
   ) {
     // used to track selection, note how the public fields may be modified
@@ -17,9 +17,9 @@ export class GraphEdge {
 
   public toModel(): GraphEdgeModel {
     return {
-      leftId: this.leftGraphNode.innerNode.id,
+      leftId: this.leftGraphNode.nodeId,
       output: this.outputIndex,
-      rightId: this.rightGraphNode.innerNode.id,
+      rightId: this.rightGraphNode.nodeId,
       input: this.inputIndex,
     }
   }

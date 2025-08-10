@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/geometry/xy'
 import { deconstruct as deconstructRectangle } from '@/geometry/rectangle'
@@ -39,8 +39,8 @@ export class DeconstructRectangle extends GraphNode {
     this.diagonal = this.registerNumberOutput('Diagnoal')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.inputShape).forEach(([shape]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [shape] of inputIterators.cycleValues(this.inputShape)) {
       const geom = assertIsShape(shape)
 
       if (!isOfShapeKind(geom, ['rectangle', 'square'])) {
@@ -74,6 +74,6 @@ export class DeconstructRectangle extends GraphNode {
       this.area.next(area)
       this.perimeter.next(perimeter)
       this.diagonal.next(diagonal)
-    })
+    }
   }
 }

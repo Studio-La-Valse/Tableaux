@@ -10,10 +10,10 @@
 <script setup lang="ts">
 import { useEdgeDrag } from '@/composables/use-edge-drag';
 import HandleRenderer from './HandleRenderer.vue';
-import type { GraphNodeOutput } from '@/graph/core/graph-node-output';
+import type { IGraphNodeOutput } from '@/graph/core/graph-node-output';
 
 const props = defineProps<{
-  output: GraphNodeOutput;
+  output: IGraphNodeOutput;
   positionY: number;
 }>();
 
@@ -21,7 +21,7 @@ const { startConnect } = useEdgeDrag();
 
 function handleMouseDown(e: MouseEvent) {
   // Start the drag using the node's id and the output index.
-  startConnect(props.output.graphNode.id, props.output.index, e);
+  startConnect(props.output.graphNodeId, props.output.index, e);
 }
 </script>
 

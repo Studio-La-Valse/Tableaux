@@ -3,6 +3,7 @@ import { GraphNode } from '../../core/graph-node'
 import { reactive } from 'vue'
 import { GraphNodePanel, GraphNodeType } from '../decorators'
 import LoggerPanel from '@/components/graph/Panels/LoggerPanel.vue'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 
 @GraphNodeType('Generic', 'Logger')
 @GraphNodePanel(LoggerPanel)
@@ -22,8 +23,11 @@ export class Logger extends GraphNode {
     super.arm()
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     this.values.length = 0
-    this.input.payload.forEach((e) => this.values.push(e))
+
+    for await (const [e] of inputIterators.cycleValues(this.input)) {
+      this.values.push(e)
+    }
   }
 }

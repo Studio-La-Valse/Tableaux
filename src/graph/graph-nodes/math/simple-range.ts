@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Math', 'Simple Range')
@@ -14,10 +14,11 @@ export class SimpleRange extends GraphNode {
     this.output = this.registerNumberOutput('Values')
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const [stop] = inputIterators.singletonOnly(this.input)
-    for (let index = 0; index < stop; index++) {
-      this.output.next(index)
+
+    for await (const i of inputIterators.createRange(0, stop, 1)) {
+      this.output.next(i)
     }
   }
 }

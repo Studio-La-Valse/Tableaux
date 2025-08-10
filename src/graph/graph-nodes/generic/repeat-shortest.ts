@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Generic', 'Repeat Shortest')
@@ -19,10 +19,10 @@ export class RepeatShortest extends GraphNode {
     this.output2 = this.registerUnkownOutput('Right')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.fillLast(this.input1, this.input2).forEach(([x, y]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [x, y] of inputIterators.fillLast(this.input1, this.input2)) {
       this.output1.next(x)
       this.output2.next(y)
-    })
+    }
   }
 }

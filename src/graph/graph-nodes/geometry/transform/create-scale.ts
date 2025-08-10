@@ -1,6 +1,6 @@
 import { assertIsXY } from '@/geometry/xy'
 import { GraphNode } from '@/graph/core/graph-node'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 import { createScale, type TransformationMatrix } from '@/geometry/transformation-matrix'
 
@@ -22,14 +22,16 @@ export class CreateScale extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.inputCenter, this.inputFactorX, this.inputFactorY)
-      .forEach(([_origin, x, y]) => {
-        const origin = assertIsXY(_origin)
-        const factor = { x, y }
-        const scaled = createScale(origin, factor)
-        this.outputGeometry.next(scaled)
-      })
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_origin, x, y] of inputIterators.cycleValues(
+      this.inputCenter,
+      this.inputFactorX,
+      this.inputFactorY,
+    )) {
+      const origin = assertIsXY(_origin)
+      const factor = { x, y }
+      const scaled = createScale(origin, factor)
+      this.outputGeometry.next(scaled)
+    }
   }
 }

@@ -1,6 +1,6 @@
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 
 @GraphNodeType('JSON', 'Property')
 export default class Property extends GraphNode {
@@ -16,15 +16,12 @@ export default class Property extends GraphNode {
     this.outputValue = this.registerUnkownOutput('Value')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.inputObject, this.inputProperty)
-      .map(([o, p]) => {
-        const result = o[p]
-        if (result === undefined)
-          throw new Error(`Property '${p}' not found in object '${JSON.stringify(o)}'`)
-        return result
-      })
-      .forEach((v) => this.outputValue.next(v))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [o, p] of inputIterators.cycleValues(this.inputObject, this.inputProperty)) {
+      const result = o[p]
+      if (result === undefined)
+        throw new Error(`Property '${p}' not found in object '${JSON.stringify(o)}'`)
+      this.outputValue.next(result)
+    }
   }
 }

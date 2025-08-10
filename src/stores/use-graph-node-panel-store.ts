@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import type { Component } from "vue";
 import GraphNodePanel from "@/components/graph/GraphNodePanel.vue";
-import type { GraphNode } from "@/graph/core/graph-node";
 import type { GraphNodeConstructor } from "@/graph/graph-nodes/decorators";
+import type { IGraphNode } from "@/graph/core/graph-node";
 
 export const useGraphNodePanelStore = defineStore('graph-node-panel-store', () => {
     const graphNodeComponentRegistry = new Map<GraphNodeConstructor, Component>();
@@ -11,7 +11,7 @@ export const useGraphNodePanelStore = defineStore('graph-node-panel-store', () =
         graphNodeComponentRegistry.set(constructor, component);
     };
 
-    const getPanel = (node: GraphNode): Component => {
+    const getPanel = (node: IGraphNode): Component => {
         for (const [ctor, component] of graphNodeComponentRegistry.entries()) {
             if (node instanceof ctor) {
                 return component;

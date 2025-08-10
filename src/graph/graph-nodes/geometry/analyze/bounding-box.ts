@@ -1,5 +1,5 @@
 import { GraphNode } from '@/graph/core/graph-node'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 import {
   getAxisAlignedBoundingBox,
@@ -20,8 +20,8 @@ export class BoundingBox extends GraphNode {
     this.outputBox = this.registerObjectOutput<AxisAlignedBoundingBox>('Bounding Box')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.inputGeometry).forEach(([geom]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [geom] of inputIterators.cycleValues(this.inputGeometry)) {
       const valid = isSurfaceLike(geom) || isCurveLike(geom)
       if (!valid) {
         throw new Error('Provided geometry is not surface like or curve like')
@@ -29,6 +29,6 @@ export class BoundingBox extends GraphNode {
 
       const aabb = getAxisAlignedBoundingBox(geom)
       this.outputBox.next(aabb)
-    })
+    }
   }
 }

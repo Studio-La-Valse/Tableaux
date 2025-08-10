@@ -1,6 +1,7 @@
 import type { ComponentState } from './component-state'
 import type { GraphNodeInput } from './graph-node-input'
 import type { GraphNodeOutput } from './graph-node-output'
+import { InputIteratorsAsync } from './input-iterators-async'
 import type { JsonObject } from './models/json-value'
 
 /**
@@ -132,7 +133,7 @@ export abstract class GraphNodeCore {
    * - Inputs are checked before starting or re-starting; if any input is armed we do nothing.
    */
   private _controller?: AbortController
-  private _pending = false
+  private _rerunRequested = false
 
   public complete(): void {
     // Do not start if any input is currently armed (precondition not met).
@@ -145,7 +146,7 @@ export abstract class GraphNodeCore {
     // If a run is already in progress, request a rerun and cancel the current one.
     // abort() is idempotent; calling it multiple times is safe.
     if (this._controller) {
-      this._pending = true
+      this._rerunRequested = true
       this._controller.abort()
       return
     }
@@ -159,17 +160,18 @@ export abstract class GraphNodeCore {
       try {
         o.arm()
       } catch (e) {
-        // If an output throws here, consider logging and continuing so other outputs still arm.
-        // You could also decide to set componentState='error' and bail early.
-        console.error('Output arm() failed:', e)
+        this.setError(e)
+        return
       }
     }
 
-    // Kick off the async solve, passing the signal for cancellation.
-    this.solve(signal)
-      .then(() => {
-        if (signal.aborted) return
+    // create the iterators
+    const yieldEvery = 10_000
+    const iterators = new InputIteratorsAsync({ signal, yieldEvery })
 
+    // Kick off the async solve, passing the signal for cancellation.
+    this.solve(iterators)
+      .then(() => {
         // Only mark complete if we were not aborted during/after solve.
         this.componentState = 'complete'
 
@@ -178,19 +180,22 @@ export abstract class GraphNodeCore {
           try {
             o.complete()
           } catch (e) {
-            // Prevent one failing output from blocking cleanup or reruns.
-            console.error('Output complete() failed:', e)
+            this.setError(e)
+            break
           }
         }
       })
       .catch((error) => {
         // If the error happened because we aborted, treat it as a cancel, not an error.
-        if (signal.aborted) return
+        if (signal.aborted) {
+          // no rerun requested, this was an abort action, arm the component and bail
+          if (!this._rerunRequested) {
+            this.arm()
+          }
+          return
+        }
 
-        const _error = error instanceof Error ? error : new Error(String(error))
-        console.error(_error)
-        this.componentState = 'error'
-        this.errorMessage = _error.message
+        this.setError(error)
       })
       .finally(() => {
         // Clear the controller to mark this run as finished.
@@ -198,22 +203,54 @@ export abstract class GraphNodeCore {
 
         // If another call came in while we were running, run once more,
         // provided inputs are still ready. Coalesces bursts into a single extra run.
-        if (this._pending && !this.inputs.some((i) => i.armed)) {
-          this._pending = false
+        if (this._rerunRequested && !this.inputs.some((i) => i.armed)) {
+          this._rerunRequested = false
           this.complete()
         }
       })
   }
 
   /**
+   * Set error state
+   * @param error
+   */
+  private setError(error: unknown) {
+    this.componentState = 'error'
+
+    const _error = error instanceof Error ? error : new Error(String(error))
+    this.errorMessage = _error.message
+  }
+
+  /**
    * Abstract method where concrete node logic should be implemented.
    */
-  protected abstract solve(signal: AbortSignal): Promise<void>
+  protected abstract solve(iterators: InputIteratorsAsync): Promise<void>
+
+  /**
+   * Recompute the node
+   */
+  public recompute(): void {
+    this.arm()
+    this.complete()
+  }
+
+  /**
+   * Abort the current calculation of the node
+   */
+  public abort(): void {
+    if (!this._controller) return
+    this._controller.abort()
+  }
 
   /**
    * Virtual method to define what happens when a component is destroyed.
    */
   public onDestroy(): void {
+    if (this._controller) this._controller.abort()
+    this._controller = undefined
+
+    this.arm()
+
     this._initialized = false
   }
 }

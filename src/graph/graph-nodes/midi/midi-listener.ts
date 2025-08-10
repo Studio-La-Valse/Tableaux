@@ -1,6 +1,6 @@
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import type { MidiMessage } from '@/midi/midi-message'
 import { parse } from '@/midi/midi-message'
 
@@ -21,9 +21,6 @@ export default class MidiListener extends GraphNode {
   // ensure solve is called only once per batch
   private solveScheduled = false
 
-  // ensure the same promise is handled
-  private startPromise?: Promise<void>
-
   constructor(id: string, path: string[]) {
     super(id, path)
 
@@ -39,33 +36,23 @@ export default class MidiListener extends GraphNode {
     }
   }
 
-  private start(): Promise<void> {
+  private async start(): Promise<void> {
     // reuse an in-flight promise if present
     if (this.midiAccess) {
       return Promise.resolve()
     }
-    if (this.startPromise) {
-      return this.startPromise
+
+    try {
+      this.midiAccess = await navigator.requestMIDIAccess()
+      this.midiAccess.onstatechange = this.handleStateChange
+
+      for (const input of this.midiAccess.inputs.values()) {
+        this.addMidiInput(input)
+      }
+    } catch (err) {
+      console.error('Failed to get MIDI access:', err)
+      this.midiAccess = undefined
     }
-
-    this.startPromise = navigator
-      .requestMIDIAccess()
-      .then((access) => {
-        this.midiAccess = access
-        this.midiAccess.onstatechange = this.handleStateChange
-        for (const input of access.inputs.values()) {
-          this.addMidiInput(input)
-        }
-      })
-      .catch((err) => {
-        console.error('Failed to get MIDI access:', err)
-        this.midiAccess = undefined
-      })
-      .finally(() => {
-        this.startPromise = undefined
-      })
-
-    return this.startPromise
   }
 
   private stop(): void {
@@ -119,11 +106,11 @@ export default class MidiListener extends GraphNode {
     }
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const [active] = inputIterators.singletonOnly(this.inputActive)
 
     if (active && !this.midiAccess) {
-      this.start()
+      await this.start()
     } else if (!active && this.midiAccess) {
       this.stop()
     }

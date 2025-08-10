@@ -61,6 +61,7 @@ const saveToFile = async (filename: string, content: string) => {
     await writable.write(content)
     await writable.close()
   } catch (err) {
+    if ((err as Error).name === 'AbortError') return
     alert('Failed to save file:' + err)
   }
 }
@@ -83,6 +84,7 @@ const loadFromFile = async () => {
     const contents = await file.text()
     return contents
   } catch (err) {
+    if ((err as Error).name === 'AbortError') return
     alert('Failed to load file:' + err)
   }
 }

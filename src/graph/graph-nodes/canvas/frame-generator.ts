@@ -1,6 +1,6 @@
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 
 @GraphNodeType('Canvas', 'Frame Generator')
 export default class FrameGenerator extends GraphNode {
@@ -77,7 +77,7 @@ export default class FrameGenerator extends GraphNode {
     this.reset()
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const [active, reset, delay] = inputIterators.singletonOnly(
       this.inputActive,
       this.inputReset,

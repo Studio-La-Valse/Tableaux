@@ -1,4 +1,4 @@
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -14,10 +14,10 @@ export class DegreesToRadians extends GraphNode {
     this.output = this.registerNumberOutput('Radians')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.input)
-      .map(([a]) => a * (Math.PI / 180))
-      .forEach((result) => this.output.next(result))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [value] of inputIterators.cycleValues(this.input)) {
+      const result = value * (Math.PI / 180)
+      this.output.next(result)
+    }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="node" @mousedown="(e) => onMouseDown(e, graphNode.innerNode.id)" :style="style">
+  <div class="node" @mousedown="(e) => onMouseDown(e, graphNode.nodeId)" :style="style">
     <PanelRenderer :graphNode="graphNode" :panel-style="panelStyle" />
   </div>
 </template>
@@ -9,21 +9,12 @@ import { computed, type StyleValue } from "vue";
 import PanelRenderer from "./PanelRenderer.vue";
 import { useNodeSelectionAndDrag } from "@/composables/use-node-selection-and-drag";
 import { type XY } from "@/geometry/xy";
-import type { GraphNodeWrapper } from "@/graph/core/graph-node-wrapper";
+import type { IGraphNodeWrapper } from "@/graph/core/graph-node-wrapper";
 
-const props = defineProps<{ graphNode: GraphNodeWrapper }>();
+const props = defineProps<{ graphNode: IGraphNodeWrapper }>();
 const { onMouseDown } = useNodeSelectionAndDrag();
 
-const emit = defineEmits<{
-  (e: 'updatePosition', graphNode: GraphNodeWrapper, pos: XY): void
-}>();
-
-const localPos = computed<XY>({
-  get: () => props.graphNode.xy,
-  set: (pos: XY) => {
-    emit('updatePosition', props.graphNode, pos);
-  }
-});
+const localPos = computed<XY>(() => props.graphNode.xy);
 
 const style = computed<StyleValue>(() => ({
   transform: `translate(${localPos.value.x}px, ${localPos.value.y}px)`,

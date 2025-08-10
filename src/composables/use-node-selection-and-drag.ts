@@ -6,7 +6,7 @@ import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store'
 import { useContextMenuStore } from '@/stores/use-context-menu-store'
 import { useEdgeDrag } from './use-edge-drag'
-import type { GraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
+import type { IGraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 
 export function useNodeSelectionAndDrag() {
   const selectionStore = useGraphNodeSelectionStore()
@@ -24,7 +24,7 @@ export function useNodeSelectionAndDrag() {
   let startPointerPos: XY = { x: 0, y: 0 }
 
   // maps elements to drag with their original position
-  const draggableElements: { node: GraphNodeWrapper; startPos: XY }[] = []
+  const draggableElements: { node: IGraphNodeWrapper; startPos: XY }[] = []
 
   function onMouseDown(event: MouseEvent, nodeId: string) {
     if (event.button !== 0) return

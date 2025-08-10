@@ -1,6 +1,6 @@
 import { assertIsColorARGB } from '@/geometry/color-rgb'
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { assertIsShape, type Shape } from '@/geometry/shape'
 import type { Stroke } from '@/geometry/stroke'
@@ -23,19 +23,21 @@ export class SetStroke extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<Shape & Stroke>('Geometry with stroke')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.inputGeometry, this.color, this.strokeWidth)
-      .forEach(([_geom, _stroke, strokeWidth]) => {
-        const geom = assertIsShape(_geom)
-        const stroke = assertIsColorARGB(_stroke)
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_geom, _stroke, strokeWidth] of inputIterators.cycleValues(
+      this.inputGeometry,
+      this.color,
+      this.strokeWidth,
+    )) {
+      const geom = assertIsShape(_geom)
+      const stroke = assertIsColorARGB(_stroke)
 
-        const withStroke = {
-          ...geom,
-          stroke,
-          strokeWidth,
-        }
-        this.outputGeometry.next(withStroke)
-      })
+      const withStroke = {
+        ...geom,
+        stroke,
+        strokeWidth,
+      }
+      this.outputGeometry.next(withStroke)
+    }
   }
 }

@@ -1,6 +1,6 @@
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { update, type MidiState as state } from '@/midi/midi-state'
 import { isMidiMessage } from '@/midi/midi-message'
 
@@ -20,17 +20,17 @@ export default class MidiState extends GraphNode {
     this.outputState = this.registerObjectOutput<state>('MIDI State')
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const [reset] = inputIterators.singletonOnly(this.inputReset)
     if (reset) {
       this.data['channels'] = {}
     }
 
-    inputIterators.cycleValues(this.inputMessages).forEach(([v]) => {
+    for await (const [v] of inputIterators.cycleValues(this.inputMessages)) {
       if (!isMidiMessage(v)) throw new Error('Value received is not a midi message.')
 
       this.data = update(this.data, v)
-    })
+    }
 
     this.outputState.next(this.data)
   }

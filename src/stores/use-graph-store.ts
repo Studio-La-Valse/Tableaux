@@ -6,12 +6,12 @@ import { GraphEdge } from '@/graph/core/graph-edge'
 import type { GraphNodeModel } from '@/graph/core/models/graph-node-model'
 import type { GraphModel } from '@/graph/core/models/graph-model'
 import type { GraphEdgeModel } from '@/graph/core/models/graph-edge-model'
-import { GraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
+import { type IGraphNodeWrapper, GraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 import { useGraphHistoryStore } from './use-graph-history-store'
 import { nanoid } from 'nanoid'
 
 const useGraphInternal = defineStore('graph', () => {
-  const nodeMap: Ref<Record<string, GraphNodeWrapper>> = ref({})
+  const nodeMap: Ref<Record<string, IGraphNodeWrapper>> = ref({})
   const nodes = computed(() => [...Object.values(nodeMap.value)])
   const edges: Ref<GraphEdge[]> = ref([])
 
@@ -31,7 +31,7 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     const graphNode = activator.activate(id)
-    const wrapper = reactive(new GraphNodeWrapper(graphNode)) as GraphNodeWrapper
+    const wrapper = reactive<IGraphNodeWrapper>(new GraphNodeWrapper(graphNode))
     wrapper.xy = { x: position.x, y: position.y }
     wrapper.innerNode.onInitialize()
     if (wrapper.innerNode.inputs.length == 0) {
@@ -49,18 +49,18 @@ const useGraphInternal = defineStore('graph', () => {
       return
     }
 
-    const leftConnections = [...edges.value.filter((e) => e.rightGraphNode.innerNode.id == id)]
+    const leftConnections = [...edges.value.filter((e) => e.rightGraphNode.nodeId == id)]
     leftConnections.forEach((conn) => {
-      removeEdge(conn.rightGraphNode.innerNode.id, conn.inputIndex)
+      removeEdge(conn.rightGraphNode.nodeId, conn.inputIndex)
     })
 
-    const rightConnections = [...edges.value.filter((e) => e.leftGraphNode.innerNode.id == id)]
+    const rightConnections = [...edges.value.filter((e) => e.leftGraphNode.nodeId == id)]
     rightConnections.forEach((conn) => {
-      removeEdge(conn.rightGraphNode.innerNode.id, conn.inputIndex)
+      removeEdge(conn.rightGraphNode.nodeId, conn.inputIndex)
     })
 
     existing.innerNode.onDestroy()
-    delete nodeMap.value[existing.innerNode.id]
+    delete nodeMap.value[existing.nodeId]
   }
 
   const getNode = (nodeId: string) => {
@@ -79,7 +79,7 @@ const useGraphInternal = defineStore('graph', () => {
   ) => {
     // we need to remove the existing edge after succesfull subscription, but dont call removeEdge because it will close the connection
     const existingEdge = edges.value.findIndex(
-      (e) => e.rightGraphNode.innerNode.id == rightNodeId && e.inputIndex == inputIndex,
+      (e) => e.rightGraphNode.nodeId == rightNodeId && e.inputIndex == inputIndex,
     )
 
     const leftNode = getNode(leftNodeId)
@@ -100,7 +100,7 @@ const useGraphInternal = defineStore('graph', () => {
 
   const removeEdge = (rightNodeId: string, inputIndex: number) => {
     const existingEdge = edges.value.findIndex(
-      (e) => e.rightGraphNode.innerNode.id == rightNodeId && e.inputIndex == inputIndex,
+      (e) => e.rightGraphNode.nodeId == rightNodeId && e.inputIndex == inputIndex,
     )
     if (existingEdge == -1) {
       return
@@ -114,13 +114,13 @@ const useGraphInternal = defineStore('graph', () => {
   }
 
   const insertInput = (graphNodeId: string, index: number) => {
-    const node = getNode(graphNodeId).innerNode
+    const node = getNode(graphNodeId)
     node.insertInput(index)
 
     // adding input succesful, but maybe edges need to be moved.
     const allEdges = [...edges.value] // snapshot so we don't iterate newly created edges
     allEdges
-      .filter((v) => v.rightGraphNode.innerNode.id == graphNodeId)
+      .filter((v) => v.rightGraphNode.nodeId == graphNodeId)
       .filter((v) => v.inputIndex >= index)
       .forEach((v) => {
         v.inputIndex++
@@ -128,26 +128,26 @@ const useGraphInternal = defineStore('graph', () => {
   }
 
   const removeInput = (graphNodeId: string, index: number) => {
-    const node = getNode(graphNodeId).innerNode
+    const node = getNode(graphNodeId)
     node.removeInput(index)
 
     // removing input succesful, but maybe edges need to be moved.
     const allEdges = [...edges.value] // snapshot so we don't iterate newly created edges
     allEdges
-      .filter((v) => v.rightGraphNode.innerNode.id == graphNodeId)
+      .filter((v) => v.rightGraphNode.nodeId == graphNodeId)
       .filter((v) => v.inputIndex > index)
       .forEach((v) => {
         v.inputIndex--
       })
   }
 
-  const duplicate = (nodeIds: string[], pasteEvents: number): GraphNodeWrapper[] => {
+  const duplicate = (nodeIds: string[], pasteEvents: number): IGraphNodeWrapper[] => {
     // 1) grab originals & snapshot the current edges
     const originals = nodeIds.map(getNode)
     const allEdges = [...edges.value] // snapshot so we don't iterate newly created edges
 
     // 2) clone each node & build origId→clone map
-    const idMap: Record<string, GraphNodeWrapper> = {}
+    const idMap: Record<string, IGraphNodeWrapper> = {}
     const clones = originals.map((orig) => {
       const newId = nanoid(11)
       const model = orig.toModel()
@@ -155,31 +155,31 @@ const useGraphInternal = defineStore('graph', () => {
       model.x += 10 * pasteEvents
       model.y += 10 * pasteEvents
       const copy = addNodeModel(model)
-      idMap[orig.innerNode.id] = copy
+      idMap[orig.nodeId] = copy
       return copy
     })
 
     // 3) Re-create edges BETWEEN selected originals
     allEdges.forEach((edge) => {
-      const Lclone = idMap[edge.leftGraphNode.innerNode.id]
-      const Rclone = idMap[edge.rightGraphNode.innerNode.id]
+      const Lclone = idMap[edge.leftGraphNode.nodeId]
+      const Rclone = idMap[edge.rightGraphNode.nodeId]
 
       if (Lclone && Rclone) {
         // internal→internal
-        connect(Lclone.innerNode.id, edge.outputIndex, Rclone.innerNode.id, edge.inputIndex)
+        connect(Lclone.nodeId, edge.outputIndex, Rclone.nodeId, edge.inputIndex)
       }
     })
 
     // 4) Mirror incoming edges: external→selected
     allEdges.forEach((edge) => {
-      const Lorig = edge.leftGraphNode.innerNode.id
-      const Rorig = edge.rightGraphNode.innerNode.id
+      const Lorig = edge.leftGraphNode.nodeId
+      const Rorig = edge.rightGraphNode.nodeId
       const Rclone = idMap[Rorig]
 
       // if the ORIGINAL right‐node was selected, but its left‐node was NOT,
       // we want to wire that same left→clone connection
       if (!idMap[Lorig] && Rclone) {
-        connect(Lorig, edge.outputIndex, Rclone.innerNode.id, edge.inputIndex)
+        connect(Lorig, edge.outputIndex, Rclone.nodeId, edge.inputIndex)
       }
     })
 
@@ -207,9 +207,7 @@ const useGraphInternal = defineStore('graph', () => {
 
   const fromModel: (model: GraphModel) => void = (model: GraphModel) => {
     clear()
-    model.nodes
-      .map((v) => createFromNodeModel(v))
-      .forEach((v) => (nodeMap.value[v.innerNode.id] = v))
+    model.nodes.map((v) => createFromNodeModel(v)).forEach((v) => (nodeMap.value[v.nodeId] = v))
 
     const newEdges = model.edges.map((v) => createFromEdgeModel(v))
     edges.value = newEdges
@@ -223,7 +221,7 @@ const useGraphInternal = defineStore('graph', () => {
       })
   }
 
-  const createFromNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (
+  const createFromNodeModel: (model: GraphNodeModel) => IGraphNodeWrapper = (
     model: GraphNodeModel,
   ) => {
     const activator = activators.getFromPath(model.path)
@@ -232,7 +230,7 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     const graphNode = activator.activate(model.id)
-    const wrapper = reactive(new GraphNodeWrapper(graphNode)) as GraphNodeWrapper
+    const wrapper = reactive<IGraphNodeWrapper>(new GraphNodeWrapper(graphNode))
     wrapper.xy = { x: model.x, y: model.y }
     if (model.width) wrapper.width = model.width
     if (model.height) wrapper.height = model.height
@@ -247,9 +245,9 @@ const useGraphInternal = defineStore('graph', () => {
     return wrapper
   }
 
-  const addNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (model: GraphNodeModel) => {
+  const addNodeModel: (model: GraphNodeModel) => IGraphNodeWrapper = (model: GraphNodeModel) => {
     const wrapper = createFromNodeModel(model)
-    nodeMap.value[wrapper.innerNode.id] = wrapper
+    nodeMap.value[wrapper.nodeId] = wrapper
     return wrapper
   }
 
@@ -365,7 +363,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     const state = internalGraph.toModel()
     try {
       const edges = [...internalGraph.edges.filter((v) => ids.includes(v.id))]
-      edges.forEach((v) => internalGraph.removeEdge(v.rightGraphNode.innerNode.id, v.inputIndex))
+      edges.forEach((v) => internalGraph.removeEdge(v.rightGraphNode.nodeId, v.inputIndex))
       history.commit(internalGraph.toModel())
     } catch {
       internalGraph.fromModel(state)

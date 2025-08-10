@@ -7,25 +7,42 @@ import {
   GraphNodeInputString,
   GraphNodeInputUnknown,
   type GraphNodeInput,
+  type IGraphNodeInput,
 } from './graph-node-input'
 import { type JsonObject, type JsonValue } from './models/json-value'
 import { Subscription } from './subscription'
 import type { Unsubscriber } from './unsubscriber'
 
-export abstract class GraphNodeOutput {
-  public abstract targetInputs: Set<GraphNodeInput>
+export interface IGraphNodeOutput {
+  readonly index: number
+  readonly description: string
+  readonly graphNodeId: string
+
+  connectTo: (input: IGraphNodeInput) => void
+}
+
+export abstract class GraphNodeOutput implements IGraphNodeOutput {
+  public abstract targetInputs: Set<IGraphNodeInput>
+
+  public get graphNodeId() {
+    return this.graphNode.id
+  }
 
   constructor(
-    public graphNode: GraphNode,
+    protected readonly graphNode: GraphNode,
     public index: number,
     public description: string,
   ) {}
 
-  public connectTo(graphNodeInput: GraphNodeInput) {
-    graphNodeInput.connectTo(this)
+  public connectTo(graphNodeInput: IGraphNodeInput) {
+    // will throw an error when cyclical subscription is detected.
+    const subscription = this.onSubscribe(graphNodeInput)
+
+    // subscription succesful, replace the existing subscription
+    graphNodeInput.replaceConnection(subscription)
   }
 
-  public abstract onSubscribe(graphNodeInput: GraphNodeInput): Unsubscriber
+  public abstract onSubscribe(graphNodeInput: IGraphNodeInput): Unsubscriber
 
   public trySubscribe(graphNodeId: string): void {
     this.targetInputs.forEach((observer) => {
