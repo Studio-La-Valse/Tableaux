@@ -12,37 +12,76 @@ type CycleOptions = {
   yieldEvery?: number // default: 10_000
 }
 
+function toAbortError(): Error {
+  try {
+    return new DOMException('The operation was aborted.', 'AbortError')
+  } catch {
+    const e = new Error('The operation was aborted.')
+    e.name = 'AbortError'
+    return e
+  }
+}
+
+function nextTick(signal?: AbortSignal): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    if (signal?.aborted) return reject(toAbortError())
+    const onAbort = () => {
+      cleanup()
+      reject(toAbortError())
+    }
+    const timeout = setTimeout(() => {
+      cleanup()
+      resolve()
+    }, 0)
+    const cleanup = () => {
+      clearTimeout(timeout)
+      signal?.removeEventListener('abort', onAbort)
+    }
+    signal?.addEventListener('abort', onAbort, { once: true })
+  })
+}
+
 export class InputIteratorsAsync {
   constructor(public readonly options: CycleOptions = {}) {}
 
-  public toAbortError(): Error {
-    try {
-      return new DOMException('The operation was aborted.', 'AbortError')
-    } catch {
-      const e = new Error('The operation was aborted.')
-      e.name = 'AbortError'
-      return e
+  /**
+   * Async generator that yields a number as part of a range.
+   * Yields to the UI periodically and supports abort via AbortSignal.
+   */
+  public async *createRange(start: number, stop: number, step: number) {
+    const { signal, yieldEvery = 10_000 } = this.options
+
+    for (let i = start; i < stop; i += step) {
+      if (signal?.aborted) throw toAbortError()
+      if (i !== 0 && i % yieldEvery === 0) {
+        await nextTick(signal)
+      }
+
+      yield i
     }
   }
 
-  public nextTick(signal?: AbortSignal): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      if (signal?.aborted) return reject(this.toAbortError())
-      const onAbort = () => {
-        cleanup()
-        reject(this.toAbortError())
+  /**
+   * Async generator that yields tuples, cycling each input to match the longest length.
+   * Throws if any payload is empty.
+   * Yields to the UI periodically and supports abort via AbortSignal.
+   */
+  public async *createGenerator<Input extends GraphNodeInputType<unknown>>(
+    input: Input
+  ): AsyncGenerator<InputOf<Input>> {
+    const { signal, yieldEvery = 10_000 } = this.options
+
+    for (let i = 0; i < input.payloadLength; i++) {
+      if (signal?.aborted) throw toAbortError()
+      if (i !== 0 && i % yieldEvery === 0) {
+        await nextTick(signal)
       }
-      const timeout = setTimeout(() => {
-        cleanup()
-        resolve()
-      }, 0)
-      const cleanup = () => {
-        clearTimeout(timeout)
-        signal?.removeEventListener('abort', onAbort)
-      }
-      signal?.addEventListener('abort', onAbort, { once: true })
-    })
+
+      const value = input.payload[i] as InputOf<Input>
+      yield value
+    }
   }
+
 
   /**
    * Async generator that yields tuples, cycling each input to match the longest length.
@@ -63,9 +102,9 @@ export class InputIteratorsAsync {
     }
 
     for (let i = 0; i < maxLen; i++) {
-      if (signal?.aborted) throw this.toAbortError()
+      if (signal?.aborted) throw toAbortError()
       if (i !== 0 && i % yieldEvery === 0) {
-        await this.nextTick(signal)
+        await nextTick(signal)
       }
 
       const row = inputs.map((node) => node.payload[i % node.payload.length]) as RowOf<Inputs>
@@ -94,9 +133,9 @@ export class InputIteratorsAsync {
     }
 
     for (let i = 0; i < maxLen; i++) {
-      if (signal?.aborted) throw this.toAbortError()
+      if (signal?.aborted) throw toAbortError()
       if (i !== 0 && i % yieldEvery === 0) {
-        await this.nextTick(signal)
+        await nextTick(signal)
       }
 
       const row = inputs.map((node) => node.payload[i % node.payload.length]) as RowOf<Inputs>
@@ -126,9 +165,9 @@ export class InputIteratorsAsync {
     }
 
     for (let i = 0; i < maxLen; i++) {
-      if (signal?.aborted) throw this.toAbortError()
+      if (signal?.aborted) throw toAbortError()
       if (i !== 0 && i % yieldEvery === 0) {
-        await this.nextTick(signal)
+        await nextTick(signal)
       }
 
       const row = inputs.map((node) => {
@@ -157,9 +196,9 @@ export class InputIteratorsAsync {
     }
 
     for (let i = 0; i < minLen; i++) {
-      if (signal?.aborted) throw this.toAbortError()
+      if (signal?.aborted) throw toAbortError()
       if (i !== 0 && i % yieldEvery === 0) {
-        await this.nextTick(signal)
+        await nextTick(signal)
       }
 
       const row = inputs.map((node) => node.payload[i]) as RowOf<Inputs>
@@ -188,14 +227,14 @@ export class InputIteratorsAsync {
       combos = combos.flatMap((tuple) => node.payload.map((value) => [...tuple, value]))
 
       // Optional: yield between layers to keep UI alive
-      await this.nextTick(signal)
-      if (signal?.aborted) throw this.toAbortError()
+      await nextTick(signal)
+      if (signal?.aborted) throw toAbortError()
     }
 
     for (let i = 0; i < combos.length; i++) {
-      if (signal?.aborted) throw this.toAbortError()
+      if (signal?.aborted) throw toAbortError()
       if (i !== 0 && i % yieldEvery === 0) {
-        await this.nextTick(signal)
+        await nextTick(signal)
       }
 
       yield combos[i] as RowOf<Inputs>

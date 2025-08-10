@@ -22,12 +22,12 @@ export class Buffer extends GraphNode {
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const [length] = inputIterators.singletonOnly(this.inputLength)
 
-    for (const v of this.inputValues.payload) {
+    for await (const [v] of inputIterators.cycleValues(this.inputValues)) {
       this.data.buffer.push(v)
-    }
 
-    while (this.data.buffer.length && this.data.buffer.length > length) {
-      this.data.buffer.shift()
+      while (this.data.buffer.length && this.data.buffer.length > length) {
+        this.data.buffer.shift()
+      }
     }
 
     for (const v of this.data.buffer) {

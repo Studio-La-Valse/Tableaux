@@ -1,3 +1,4 @@
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNode } from '../../core/graph-node'
 import type { GraphNodeInputType } from '../../core/graph-node-input'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
@@ -15,9 +16,9 @@ export class Merge extends GraphNode {
     this.output = this.registerUnkownOutput('Values')
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for (const param of this.params) {
-      for (const value of param.payload) {
+      for await (const value of inputIterators.createGenerator(param)) {
         this.output.next(value)
       }
     }

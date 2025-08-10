@@ -227,6 +227,22 @@ export abstract class GraphNodeCore {
   protected abstract solve(iterators: InputIteratorsAsync): Promise<void>
 
   /**
+   * Recompute the node
+   */
+  public recompute(): void {
+    this.arm()
+    this.complete()
+  }
+
+  /**
+   * Abort the current calculation of the node
+   */
+  public abort(): void {
+    if (!this._controller) return
+    this._controller.abort()
+  }
+
+  /**
    * Virtual method to define what happens when a component is destroyed.
    */
   public onDestroy(): void {

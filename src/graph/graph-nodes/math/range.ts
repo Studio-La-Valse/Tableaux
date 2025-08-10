@@ -26,8 +26,8 @@ export class Range extends GraphNode {
       throw new Error(msg)
     }
 
-    for (let index = start; index < stop; index += step) {
-      this.output.next(index)
+    for await (const i of inputIterators.createRange(start, stop, step)) {
+      this.output.next(i)
     }
   }
 }

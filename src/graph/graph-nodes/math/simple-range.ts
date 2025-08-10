@@ -17,8 +17,8 @@ export class SimpleRange extends GraphNode {
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const [stop] = inputIterators.singletonOnly(this.input)
 
-    for (let index = 0; index < stop; index++) {
-      this.output.next(index)
+    for await (const i of inputIterators.createRange(0, stop, 1)) {
+      this.output.next(i)
     }
   }
 }
