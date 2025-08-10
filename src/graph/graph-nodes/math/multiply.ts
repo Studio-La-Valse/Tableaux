@@ -1,7 +1,7 @@
 import { GraphNode } from '../../core/graph-node'
 import type { GraphNodeInputType } from '../../core/graph-node-input'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Math', 'Multiply')
@@ -16,10 +16,10 @@ export class Multiply extends GraphNode {
     this.output = this.registerNumberOutput('Result')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(...this.params)
-      .map((values) => values.reduce((p, c) => p * c))
-      .forEach((v) => this.output.next(v))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const values of inputIterators.cycleValues(...this.params)) {
+      const v = values.reduce((p, c) => p * c)
+      this.output.next(v)
+    }
   }
 }

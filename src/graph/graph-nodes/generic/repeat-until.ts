@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Generic', 'Repeat Until')
@@ -16,7 +16,7 @@ export class RepeatUntil extends GraphNode {
     this.output = this.registerUnkownOutput('Values')
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const signalLength = this.input1.payloadLength
 
     const [targetLength] = inputIterators.singletonOnly(this.input2)

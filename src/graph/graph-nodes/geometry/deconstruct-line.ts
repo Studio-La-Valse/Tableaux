@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { type XY } from '@/geometry/xy'
 import { deconstruct } from '@/geometry/line'
@@ -25,8 +25,8 @@ export class DeconstructLine extends GraphNode {
     this.outputCenter = this.registerObjectOutput<XY>('Center')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.inputLine).forEach(([_geom]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_geom] of inputIterators.cycleValues(this.inputLine)) {
       const geom = assertIsShape(_geom)
 
       if (!isOfShapeKind(geom, ['line', 'arc', 'elliptical-arc'])) {
@@ -41,6 +41,6 @@ export class DeconstructLine extends GraphNode {
       this.outputCenter.next(center)
       this.outputEnd.next(end)
       this.outputLength.next(length)
-    })
+    }
   }
 }

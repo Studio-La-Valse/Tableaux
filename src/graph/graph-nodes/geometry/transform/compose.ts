@@ -1,5 +1,5 @@
 import { GraphNode } from '@/graph/core/graph-node'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 import {
   assertIsTransformationMatrix,
@@ -19,11 +19,12 @@ export class Compose extends GraphNode {
     this.output = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(...this.inputParams)
-      .map((values) => values.map((v) => assertIsTransformationMatrix(v)))
-      .map((values) => values.reduce((acc, next) => compose(acc, next)))
-      .forEach((v) => this.output.next(v))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const values of inputIterators.cycleValues(...this.inputParams)) {
+      values
+        .map(() => values.map((v) => assertIsTransformationMatrix(v)))
+        .map((values) => values.reduce((acc, next) => compose(acc, next)))
+        .forEach((v) => this.output.next(v))
+    }
   }
 }

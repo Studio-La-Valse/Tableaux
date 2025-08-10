@@ -1,6 +1,6 @@
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import type { MidiMessage } from '@/midi/midi-message'
 import { parse } from '@/midi/midi-message'
 
@@ -106,7 +106,7 @@ export default class MidiListener extends GraphNode {
     }
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const [active] = inputIterators.singletonOnly(this.inputActive)
 
     if (active && !this.midiAccess) {

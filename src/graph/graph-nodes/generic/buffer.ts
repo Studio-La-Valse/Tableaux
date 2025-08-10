@@ -1,6 +1,6 @@
 import type { JsonValue } from '@/graph/core/models/json-value'
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Generic', 'Buffer')
@@ -19,7 +19,7 @@ export class Buffer extends GraphNode {
     this.output = this.registerUnkownOutput('Values')
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const [length] = inputIterators.singletonOnly(this.inputLength)
 
     for (const v of this.inputValues.payload) {

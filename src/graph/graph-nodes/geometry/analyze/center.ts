@@ -1,6 +1,6 @@
 import { isXY, type XY } from '@/geometry/xy'
 import { GraphNode } from '@/graph/core/graph-node'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 import { assertIsCurveLike, getCenter } from '@/geometry/curve-like'
 
@@ -16,8 +16,8 @@ export class Center extends GraphNode {
     this.outputCenter = this.registerObjectOutput<XY>('Center')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.inputGeometry).forEach(([_geom]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_geom] of inputIterators.cycleValues(this.inputGeometry)) {
       let center: XY
 
       if (isXY(_geom)) {
@@ -28,6 +28,6 @@ export class Center extends GraphNode {
       }
 
       this.outputCenter.next(center)
-    })
+    }
   }
 }

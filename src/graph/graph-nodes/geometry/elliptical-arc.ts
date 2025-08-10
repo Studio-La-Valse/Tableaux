@@ -1,6 +1,6 @@
 import { createEllipticalArc, type EllipticalArc as ellipticalArc } from '@/geometry/elliptical-arc'
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { assertIsXY } from '@/geometry/xy'
 
@@ -27,14 +27,19 @@ export class EllipticalArc extends GraphNode {
     this.outputCircle = this.registerObjectOutput<ellipticalArc>('Circle')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.input1, this.input2, this.input3, this.input4, this.input5, this.input6)
-      .forEach(([_xy, radiusx, radiusy, start, end, clockwise]) => {
-        const xy = assertIsXY(_xy)
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_xy, radiusx, radiusy, start, end, clockwise] of inputIterators.cycleValues(
+      this.input1,
+      this.input2,
+      this.input3,
+      this.input4,
+      this.input5,
+      this.input6,
+    )) {
+      const xy = assertIsXY(_xy)
 
-        const arc = createEllipticalArc(xy, { x: radiusx, y: radiusy }, start, end, clockwise)
-        this.outputCircle.next(arc)
-      })
+      const arc = createEllipticalArc(xy, { x: radiusx, y: radiusy }, start, end, clockwise)
+      this.outputCircle.next(arc)
+    }
   }
 }

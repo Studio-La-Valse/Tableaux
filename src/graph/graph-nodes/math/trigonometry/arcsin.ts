@@ -1,4 +1,4 @@
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -14,10 +14,10 @@ export class Arcsin extends GraphNode {
     this.output = this.registerNumberOutput('Angle (Radians)')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.input)
-      .map(([value]) => Math.asin(value))
-      .forEach((result) => this.output.next(result))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [value] of inputIterators.cycleValues(this.input)) {
+      const result = Math.asin(value)
+      this.output.next(result)
+    }
   }
 }

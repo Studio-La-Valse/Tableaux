@@ -1,5 +1,5 @@
 import { GraphNode } from '@/graph/core/graph-node'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 import type { XY } from '@/geometry/xy'
 import { assertIsCurveLike, dividen } from '@/geometry/curve-like'
@@ -20,12 +20,12 @@ export class Translate extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<XY>('Translated Geometry')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.inputGeometry, this.inputN).forEach(([_geom, n]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_geom, n] of inputIterators.cycleValues(this.inputGeometry, this.inputN)) {
       const geom = assertIsCurveLike(_geom)
       const result = dividen(geom, n)
 
       result.forEach((v) => this.outputGeometry.next(v))
-    })
+    }
   }
 }

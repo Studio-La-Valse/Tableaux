@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { assertIsXY, deconstruct } from '@/geometry/xy'
 
@@ -23,8 +23,8 @@ export class DeconstructXY extends GraphNode {
     this.outputAngle = this.registerNumberOutput('Angle (Radians)')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.inputXY).forEach(([_xy]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_xy] of inputIterators.cycleValues(this.inputXY)) {
       const xy = assertIsXY(_xy)
 
       const { x, y, magnitude, angle } = deconstruct(xy)
@@ -33,6 +33,6 @@ export class DeconstructXY extends GraphNode {
       this.outputY.next(y)
       this.outputMagnitude.next(magnitude)
       this.outputAngle.next(angle)
-    })
+    }
   }
 }

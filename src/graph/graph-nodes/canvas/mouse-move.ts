@@ -1,4 +1,4 @@
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 import { assertIsXY, type XY } from '@/geometry/xy'
@@ -26,7 +26,7 @@ export class MouseMove extends GraphNode {
     }
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const [setActive] = inputIterators.singletonOnly(this.active)
     this.data.active = setActive
 

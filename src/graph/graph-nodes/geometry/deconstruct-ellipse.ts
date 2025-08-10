@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/geometry/xy'
 import { deconstruct as deconstructEllipse } from '@/geometry/ellipse'
@@ -29,27 +29,21 @@ export class DeconstructEllipse extends GraphNode {
     this.outputCircumference = this.registerNumberOutput('Circumference')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.inputCircle)
-      .map((v) => v.map((w) => assertIsShape(w)))
-      .map((v) =>
-        v.map((w) => {
-          if (!isOfShapeKind(w, ['circle', 'ellipse'])) {
-            throw new Error(`Unknown geometry type, expected 'circle' or 'ellipse', got ${w.kind}`)
-          }
-          return w
-        }),
-      )
-      .forEach(([geom]) => {
-        const { origin, radiusX, radiusY, rotation, area, circumference } = deconstructEllipse(geom)
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [circle] of inputIterators.cycleValues(this.inputCircle)) {
+      const shape = assertIsShape(circle)
+      if (!isOfShapeKind(shape, ['circle', 'ellipse'])) {
+        throw new Error(`Unknown geometry type, expected 'circle' or 'ellipse', got ${shape.kind}`)
+      }
 
-        this.outputOrigin.next(origin)
-        this.outputRadiusX.next(radiusX)
-        this.outputRadiusY.next(radiusY)
-        this.outputRotation.next(rotation)
-        this.outputArea.next(area)
-        this.outputCircumference.next(circumference)
-      })
+      const { origin, radiusX, radiusY, rotation, area, circumference } = deconstructEllipse(shape)
+
+      this.outputOrigin.next(origin)
+      this.outputRadiusX.next(radiusX)
+      this.outputRadiusY.next(radiusY)
+      this.outputRotation.next(rotation)
+      this.outputArea.next(area)
+      this.outputCircumference.next(circumference)
+    }
   }
 }
