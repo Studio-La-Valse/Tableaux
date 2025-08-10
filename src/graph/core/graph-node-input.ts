@@ -2,17 +2,13 @@ import { nanoid } from 'nanoid'
 import type { GraphNode } from './graph-node'
 import type { JsonObject, JsonValue } from './models/json-value'
 import { type Unsubscriber } from './unsubscriber'
-import type { IGraphNodeOutput } from './graph-node-output'
 
 export interface IGraphNodeInput {
-  readonly subscription: Unsubscriber | undefined
-  readonly armed: boolean
   readonly index: number
   readonly description: string
   readonly graphNodeId: string
 
   replaceConnection: (subscription: Unsubscriber | undefined) => void
-  connectTo: (output: IGraphNodeOutput) => void
   onTrySubscribeParent: (id: string) => void
   onArm: () => void
   onCompleted: () => void
@@ -24,9 +20,6 @@ export abstract class GraphNodeInput implements IGraphNodeInput {
     return this._subscription
   }
   private _id: string
-  public get id() {
-    return this._id
-  }
 
   public get graphNodeId() {
     return this.graphNode.id
@@ -52,14 +45,6 @@ export abstract class GraphNodeInput implements IGraphNodeInput {
 
   // used for params type input.
   public abstract repeat(): GraphNodeInput
-
-  public connectTo(graphNodeOutput: IGraphNodeOutput) {
-    // will throw an error when cyclical subscription is detected.
-    const subscription = graphNodeOutput.onSubscribe(this)
-
-    // subscription succesful, replace the existing subscription
-    this.replaceConnection(subscription)
-  }
 
   public replaceConnection(subscription?: Unsubscriber | undefined) {
     this._subscription?.unsubscribe()

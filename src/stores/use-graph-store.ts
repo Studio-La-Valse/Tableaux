@@ -31,7 +31,7 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     const graphNode = activator.activate(id)
-    const wrapper = reactive(new GraphNodeWrapper(graphNode))
+    const wrapper = reactive<IGraphNodeWrapper>(new GraphNodeWrapper(graphNode))
     wrapper.xy = { x: position.x, y: position.y }
     wrapper.innerNode.onInitialize()
     if (wrapper.innerNode.inputs.length == 0) {
@@ -230,7 +230,7 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     const graphNode = activator.activate(model.id)
-    const wrapper = reactive(new GraphNodeWrapper(graphNode))
+    const wrapper = reactive<IGraphNodeWrapper>(new GraphNodeWrapper(graphNode))
     wrapper.xy = { x: model.x, y: model.y }
     if (model.width) wrapper.width = model.width
     if (model.height) wrapper.height = model.height

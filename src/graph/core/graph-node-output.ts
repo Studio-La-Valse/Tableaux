@@ -19,7 +19,6 @@ export interface IGraphNodeOutput {
   readonly graphNodeId: string
 
   connectTo: (input: IGraphNodeInput) => void
-  onSubscribe: (input: IGraphNodeInput) => Unsubscriber
 }
 
 export abstract class GraphNodeOutput implements IGraphNodeOutput {
@@ -36,7 +35,11 @@ export abstract class GraphNodeOutput implements IGraphNodeOutput {
   ) {}
 
   public connectTo(graphNodeInput: IGraphNodeInput) {
-    graphNodeInput.connectTo(this)
+    // will throw an error when cyclical subscription is detected.
+    const subscription = this.onSubscribe(graphNodeInput)
+
+    // subscription succesful, replace the existing subscription
+    graphNodeInput.replaceConnection(subscription)
   }
 
   public abstract onSubscribe(graphNodeInput: IGraphNodeInput): Unsubscriber

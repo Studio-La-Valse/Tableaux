@@ -26,16 +26,11 @@ import {
 import type { JsonObject } from './models/json-value'
 
 export interface IGraphNode {
-  readonly id: string
-  readonly path: string[]
-
   readonly inputs: IGraphNodeInput[]
   readonly outputs: IGraphNodeOutput[]
 
   readonly errorMessage: string
   readonly componentState: ComponentState
-
-  readonly data: JsonObject
 
   onInitialize: () => void
   arm: () => void
