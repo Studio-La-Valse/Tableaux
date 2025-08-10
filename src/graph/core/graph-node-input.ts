@@ -1,15 +1,36 @@
 import { nanoid } from 'nanoid'
 import type { GraphNode } from './graph-node'
-import type { GraphNodeOutput } from './graph-node-output'
 import type { JsonObject, JsonValue } from './models/json-value'
 import { type Unsubscriber } from './unsubscriber'
+import type { IGraphNodeOutput } from './graph-node-output'
 
-export abstract class GraphNodeInput {
+export interface IGraphNodeInput {
+  readonly subscription: Unsubscriber | undefined
+  readonly armed: boolean
+  readonly index: number
+  readonly description: string
+  readonly graphNodeId: string
+
+  replaceConnection: (subscription: Unsubscriber | undefined) => void
+  connectTo: (output: IGraphNodeOutput) => void
+  onTrySubscribeParent: (id: string) => void
+  onArm: () => void
+  onCompleted: () => void
+}
+
+export abstract class GraphNodeInput implements IGraphNodeInput {
   private _subscription: Unsubscriber | undefined
   public get subscription() {
     return this._subscription
   }
-  private id: string
+  private _id: string
+  public get id() {
+    return this._id
+  }
+
+  public get graphNodeId() {
+    return this.graphNode.id
+  }
 
   protected _armed: boolean = true
   public get armed() {
@@ -19,20 +40,20 @@ export abstract class GraphNodeInput {
   public abstract get payloadLength(): number
 
   public get index() {
-    return this.graphNode.inputs.findIndex((v) => v.id == this.id)
+    return this.graphNode.inputs.findIndex((v) => v._id == this._id)
   }
 
   constructor(
-    public graphNode: GraphNode,
+    protected readonly graphNode: GraphNode,
     public description: string,
   ) {
-    this.id = nanoid(11)
+    this._id = nanoid(11)
   }
 
   // used for params type input.
   public abstract repeat(): GraphNodeInput
 
-  public connectTo(graphNodeOutput: GraphNodeOutput) {
+  public connectTo(graphNodeOutput: IGraphNodeOutput) {
     // will throw an error when cyclical subscription is detected.
     const subscription = graphNodeOutput.onSubscribe(this)
 

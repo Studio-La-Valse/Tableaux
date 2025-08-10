@@ -11,7 +11,7 @@
 
       <div class="inputs">
         <GraphNodeInputRenderer v-for="(input, index) in graphNode.innerNode.inputs" :key="'input-' + index"
-          :input="input" :positionY="getRelativePosition(input).y" :graphNode="graphNode.innerNode" />
+          :input="input" :positionY="getRelativePosition(input).y" :graphNode="graphNode" />
       </div>
 
       <div class="outputs">
@@ -36,17 +36,17 @@ import GraphNodeOutputRenderer from "./GraphNodeOutputRenderer.vue";
 
 import { useGraphNodeSelectionStore } from "@/stores/use-graph-node-selection-store";
 
-import type { GraphNode } from "@/graph/core/graph-node";
-import type { GraphNodeWrapper } from "@/graph/core/graph-node-wrapper";
-import { GraphNodeInput } from "@/graph/core/graph-node-input";
-import { GraphNodeOutput } from "@/graph/core/graph-node-output";
+import type { IGraphNodeWrapper } from "@/graph/core/graph-node-wrapper";
+import { GraphNodeInput, type IGraphNodeInput } from "@/graph/core/graph-node-input";
+import { type IGraphNodeOutput } from "@/graph/core/graph-node-output";
 import { useGraphNodePanelStore } from "@/stores/use-graph-node-panel-store";
+import type { IGraphNode } from "@/graph/core/graph-node";
 
 const { isSelected } = useGraphNodeSelectionStore()
 const { getPanel } = useGraphNodePanelStore()
 
 const props = defineProps<{
-  graphNode: GraphNodeWrapper,
+  graphNode: IGraphNodeWrapper,
   panelStyle: StyleValue
 }>();
 
@@ -96,11 +96,11 @@ const contentStyle = computed<StyleValue>(() => ({
   height: props.graphNode.height + 'px'
 }))
 
-const getGraphNodePanel = (node: GraphNode): Component => {
+const getGraphNodePanel = (node: IGraphNode): Component => {
   return getPanel(node);
 };
 
-const getRelativePosition = (handle: GraphNodeInput | GraphNodeOutput) => {
+const getRelativePosition = (handle: IGraphNodeInput | IGraphNodeOutput) => {
   const x = handle instanceof GraphNodeInput ? props.graphNode.xy.x : props.graphNode.xy.x + props.graphNode.width;
   const number = handle instanceof GraphNodeInput ? props.graphNode.innerNode.inputs.length : props.graphNode.innerNode.outputs.length;
   const y = props.graphNode.calculateHandleHeight(handle.index, number);

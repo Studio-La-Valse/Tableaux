@@ -6,12 +6,12 @@ import { GraphEdge } from '@/graph/core/graph-edge'
 import type { GraphNodeModel } from '@/graph/core/models/graph-node-model'
 import type { GraphModel } from '@/graph/core/models/graph-model'
 import type { GraphEdgeModel } from '@/graph/core/models/graph-edge-model'
-import { GraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
+import { type IGraphNodeWrapper, GraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 import { useGraphHistoryStore } from './use-graph-history-store'
 import { nanoid } from 'nanoid'
 
 const useGraphInternal = defineStore('graph', () => {
-  const nodeMap: Ref<Record<string, GraphNodeWrapper>> = ref({})
+  const nodeMap: Ref<Record<string, IGraphNodeWrapper>> = ref({})
   const nodes = computed(() => [...Object.values(nodeMap.value)])
   const edges: Ref<GraphEdge[]> = ref([])
 
@@ -31,7 +31,7 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     const graphNode = activator.activate(id)
-    const wrapper = reactive(new GraphNodeWrapper(graphNode)) as GraphNodeWrapper
+    const wrapper = reactive(new GraphNodeWrapper(graphNode))
     wrapper.xy = { x: position.x, y: position.y }
     wrapper.innerNode.onInitialize()
     if (wrapper.innerNode.inputs.length == 0) {
@@ -114,7 +114,7 @@ const useGraphInternal = defineStore('graph', () => {
   }
 
   const insertInput = (graphNodeId: string, index: number) => {
-    const node = getNode(graphNodeId).innerNode
+    const node = getNode(graphNodeId)
     node.insertInput(index)
 
     // adding input succesful, but maybe edges need to be moved.
@@ -128,7 +128,7 @@ const useGraphInternal = defineStore('graph', () => {
   }
 
   const removeInput = (graphNodeId: string, index: number) => {
-    const node = getNode(graphNodeId).innerNode
+    const node = getNode(graphNodeId)
     node.removeInput(index)
 
     // removing input succesful, but maybe edges need to be moved.
@@ -141,13 +141,13 @@ const useGraphInternal = defineStore('graph', () => {
       })
   }
 
-  const duplicate = (nodeIds: string[], pasteEvents: number): GraphNodeWrapper[] => {
+  const duplicate = (nodeIds: string[], pasteEvents: number): IGraphNodeWrapper[] => {
     // 1) grab originals & snapshot the current edges
     const originals = nodeIds.map(getNode)
     const allEdges = [...edges.value] // snapshot so we don't iterate newly created edges
 
     // 2) clone each node & build origId→clone map
-    const idMap: Record<string, GraphNodeWrapper> = {}
+    const idMap: Record<string, IGraphNodeWrapper> = {}
     const clones = originals.map((orig) => {
       const newId = nanoid(11)
       const model = orig.toModel()
@@ -223,7 +223,7 @@ const useGraphInternal = defineStore('graph', () => {
       })
   }
 
-  const createFromNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (
+  const createFromNodeModel: (model: GraphNodeModel) => IGraphNodeWrapper = (
     model: GraphNodeModel,
   ) => {
     const activator = activators.getFromPath(model.path)
@@ -232,7 +232,7 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     const graphNode = activator.activate(model.id)
-    const wrapper = reactive(new GraphNodeWrapper(graphNode)) as GraphNodeWrapper
+    const wrapper = reactive(new GraphNodeWrapper(graphNode))
     wrapper.xy = { x: model.x, y: model.y }
     if (model.width) wrapper.width = model.width
     if (model.height) wrapper.height = model.height
@@ -247,7 +247,7 @@ const useGraphInternal = defineStore('graph', () => {
     return wrapper
   }
 
-  const addNodeModel: (model: GraphNodeModel) => GraphNodeWrapper = (model: GraphNodeModel) => {
+  const addNodeModel: (model: GraphNodeModel) => IGraphNodeWrapper = (model: GraphNodeModel) => {
     const wrapper = createFromNodeModel(model)
     nodeMap.value[wrapper.innerNode.id] = wrapper
     return wrapper

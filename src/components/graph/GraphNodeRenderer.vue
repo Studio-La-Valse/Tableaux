@@ -9,13 +9,13 @@ import { computed, type StyleValue } from "vue";
 import PanelRenderer from "./PanelRenderer.vue";
 import { useNodeSelectionAndDrag } from "@/composables/use-node-selection-and-drag";
 import { type XY } from "@/geometry/xy";
-import type { GraphNodeWrapper } from "@/graph/core/graph-node-wrapper";
+import type { IGraphNodeWrapper } from "@/graph/core/graph-node-wrapper";
 
-const props = defineProps<{ graphNode: GraphNodeWrapper }>();
+const props = defineProps<{ graphNode: IGraphNodeWrapper }>();
 const { onMouseDown } = useNodeSelectionAndDrag();
 
 const emit = defineEmits<{
-  (e: 'updatePosition', graphNode: GraphNodeWrapper, pos: XY): void
+  (e: 'updatePosition', graphNode: IGraphNodeWrapper, pos: XY): void
 }>();
 
 const localPos = computed<XY>({

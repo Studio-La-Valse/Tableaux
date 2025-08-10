@@ -18,16 +18,16 @@
 
 <script setup lang="ts">
 import HandleRenderer from '@/components/graph/HandleRenderer.vue';
-import type { GraphNodeInput } from '@/graph/core/graph-node-input';
+import type { IGraphNodeInput } from '@/graph/core/graph-node-input';
 import { useEdgeDrag } from '@/composables/use-edge-drag';
 import { useGraphStore } from '@/stores/use-graph-store';
 import { useCanvasTransform } from '@/composables/use-canvas-transform';
 import { computed } from 'vue';
-import type { GraphNode } from '@/graph/core/graph-node';
+import type { IGraphNodeWrapper } from '@/graph/core/graph-node-wrapper';
 
 const props = defineProps<{
-  graphNode: GraphNode;
-  input: GraphNodeInput;
+  graphNode: IGraphNodeWrapper;
+  input: IGraphNodeInput;
   positionY: number;
 }>();
 
@@ -38,7 +38,7 @@ const graph = useGraphStore();
 const { finishConnect } = useEdgeDrag();
 const { connect } = useGraphStore();
 const handleMouseUp = (e: MouseEvent) => {
-  const prototype = finishConnect(props.input.graphNode.id, props.input.index, e)
+  const prototype = finishConnect(props.input.graphNodeId, props.input.index, e)
   if (prototype) {
     connect(
       prototype.fromNodeId,
@@ -50,15 +50,15 @@ const handleMouseUp = (e: MouseEvent) => {
 }
 
 const removerClick = () => {
-  graph.removeInput(props.graphNode.id, props.input.index)
+  graph.removeInput(props.graphNode.innerNode.id, props.input.index)
 }
 
 const adderClick = () => {
-  graph.insertInput(props.graphNode.id, props.input.index + 1)
+  graph.insertInput(props.graphNode.innerNode.id, props.input.index + 1)
 }
 
 const prependerClick = () => {
-  graph.insertInput(props.graphNode.id, props.input.index)
+  graph.insertInput(props.graphNode.innerNode.id, props.input.index)
 }
 </script>
 

@@ -1,3 +1,4 @@
+import type { ComponentState } from './component-state'
 import { CannotRemoveLastParamError } from './errors/cannot-remove-last-param-error'
 import { CannotRemoveSubscribedParamError } from './errors/cannot-remove-subscribed-param-error'
 import { GraphNodeAlreadyInitializedError } from './errors/graph-node-already-initialized-error'
@@ -12,6 +13,7 @@ import {
   GraphNodeInputString,
   GraphNodeInputUnknown,
   GraphNodeInput,
+  type IGraphNodeInput,
 } from './graph-node-input'
 import {
   GraphNodeOutputBoolean,
@@ -19,14 +21,33 @@ import {
   GraphNodeOutputObject,
   GraphNodeOutputString,
   GraphNodeOutputUnknown,
+  type IGraphNodeOutput,
 } from './graph-node-output'
 import type { JsonObject } from './models/json-value'
+
+export interface IGraphNode {
+  readonly id: string
+  readonly path: string[]
+
+  readonly inputs: IGraphNodeInput[]
+  readonly outputs: IGraphNodeOutput[]
+
+  readonly errorMessage: string
+  readonly componentState: ComponentState
+
+  readonly data: JsonObject
+
+  onInitialize: () => void
+  arm: () => void
+  complete: () => void
+  onDestroy: () => void
+}
 
 /**
  * GraphNode is the public-facing interface for individual nodes in a graph.
  * Handles input/output registration.
  */
-export abstract class GraphNode extends GraphNodeCore {
+export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
   constructor(
     public readonly id: string,
     public readonly path: string[],
