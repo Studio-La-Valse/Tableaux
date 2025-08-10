@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Generic', 'Dispatch')
@@ -18,14 +18,14 @@ export class Dispatch extends GraphNode {
     this.output2 = this.registerUnkownOutput('Values (True)')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.input1, this.input2).map(([_switch, value]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_switch, value] of inputIterators.cycleValues(this.input1, this.input2)) {
       // true is right, false is left
       if (_switch) {
         this.output2.next(value)
       } else {
         this.output1.next(value)
       }
-    })
+    }
   }
 }

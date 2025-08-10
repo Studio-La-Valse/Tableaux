@@ -1,5 +1,5 @@
 import { GraphNode } from '@/graph/core/graph-node'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 import { type XY } from '@/geometry/xy'
 import { assertIsTransformationMatrix } from '@/geometry/transformation-matrix'
@@ -25,8 +25,8 @@ export class Decompose extends GraphNode {
     this.outputSkew = this.registerObjectOutput<XY>('Skew')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.input).forEach(([_geom]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_geom] of inputIterators.cycleValues(this.input)) {
       const matrix = assertIsTransformationMatrix(_geom)
       const { translation, rotation, scale, skew } = decomposeMatrix(matrix)
 
@@ -34,6 +34,6 @@ export class Decompose extends GraphNode {
       this.outputRotation.next(rotation)
       this.outputScale.next(scale)
       this.outputSkew.next(skew)
-    })
+    }
   }
 }

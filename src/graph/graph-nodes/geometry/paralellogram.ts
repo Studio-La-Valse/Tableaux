@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { assertAreXY } from '@/geometry/xy'
 import { type Parallelogram as parallelogram, createParallelogram } from '@/geometry/parallelogram'
@@ -21,13 +21,15 @@ export class Parallelogram extends GraphNode {
     this.outputRect = this.registerObjectOutput<parallelogram>('Rectangle')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.bottomLeft, this.topLeft, this.topRight)
-      .forEach(([_bottomLeft, _topLeft, _topRight]) => {
-        const [bottomLeft, topLeft, topRight] = assertAreXY(_bottomLeft, _topLeft, _topRight)
-        const rectangle = createParallelogram(bottomLeft, topLeft, topRight)
-        this.outputRect.next(rectangle)
-      })
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_bottomLeft, _topLeft, _topRight] of inputIterators.cycleValues(
+      this.bottomLeft,
+      this.topLeft,
+      this.topRight,
+    )) {
+      const [bottomLeft, topLeft, topRight] = assertAreXY(_bottomLeft, _topLeft, _topRight)
+      const rectangle = createParallelogram(bottomLeft, topLeft, topRight)
+      this.outputRect.next(rectangle)
+    }
   }
 }

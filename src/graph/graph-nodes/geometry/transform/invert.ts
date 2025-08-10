@@ -1,5 +1,5 @@
 import { GraphNode } from '@/graph/core/graph-node'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 import {
   assertIsTransformationMatrix,
@@ -19,11 +19,11 @@ export class Invert extends GraphNode {
     this.outputTransform = this.registerObjectOutput<TransformationMatrix>('Inverted Matrix')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.inputTransform).forEach(([_transform]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_transform] of inputIterators.cycleValues(this.inputTransform)) {
       const matrix2d = assertIsTransformationMatrix(_transform)
       const inverted = invert(matrix2d)
       this.outputTransform.next(inverted)
-    })
+    }
   }
 }

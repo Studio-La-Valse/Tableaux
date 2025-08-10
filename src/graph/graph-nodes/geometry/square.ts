@@ -1,6 +1,6 @@
 import { createSquare } from '@/geometry/square'
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { type Square as square } from '@/geometry/square'
 import { assertIsXY } from '@/geometry/xy'
@@ -20,11 +20,14 @@ export class Square extends GraphNode {
     this.outputSquare = this.registerObjectOutput<square>('Square')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.inputTopLeft, this.inputSize).forEach(([_topLeft, size]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_topLeft, size] of inputIterators.cycleValues(
+      this.inputTopLeft,
+      this.inputSize,
+    )) {
       const topLeft = assertIsXY(_topLeft)
       const rectangle = createSquare(topLeft, size)
       this.outputSquare.next(rectangle)
-    })
+    }
   }
 }

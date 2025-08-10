@@ -35,6 +35,8 @@ export interface IGraphNode {
   onInitialize: () => void
   arm: () => void
   complete: () => void
+  recompute: () => void
+  abort: () => void
   onDestroy: () => void
 }
 

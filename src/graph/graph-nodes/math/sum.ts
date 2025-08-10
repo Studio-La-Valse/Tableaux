@@ -1,3 +1,4 @@
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNode } from '../../core/graph-node'
 import type { GraphNodeInputNumber } from '../../core/graph-node-input'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
@@ -15,8 +16,13 @@ export class Sum extends GraphNode {
     this.output = this.registerNumberOutput('Sum')
   }
 
-  protected async solve(): Promise<void> {
-    const sum = this.input.payload.reduce((p, n) => p + n, 0)
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    let sum = 0
+
+    for await (const v of inputIterators.createGenerator(this.input)) {
+      sum += v
+    }
+
     this.output.next(sum)
   }
 }

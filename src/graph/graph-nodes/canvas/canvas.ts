@@ -2,6 +2,7 @@ import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 import { assertIsShape, type Shape } from '@/geometry/shape'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 
 @GraphNodeType('Canvas', 'Canvas')
 export class Canvas extends GraphNode {
@@ -27,8 +28,12 @@ export class Canvas extends GraphNode {
     super.arm()
   }
 
-  protected async solve(): Promise<void> {
-    this.elementStore?.setElements(this.input.payload.map((v) => assertIsShape(v)))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    const arr: Shape[] = []
+    for await (const [v] of inputIterators.cycleValues(this.input)) {
+      arr.push(assertIsShape(v))
+    }
+    this.elementStore?.setElements(arr)
     this.elementStore?.redraw()
   }
 

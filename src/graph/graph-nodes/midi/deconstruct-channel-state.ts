@@ -1,6 +1,6 @@
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { inputIterators } from '@/graph/core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { isMidiChannelState } from '@/midi/midi-state'
 
 @GraphNodeType('MIDI', 'Deconstruct Channel State')
@@ -32,7 +32,7 @@ export default class DeconstructChannelState extends GraphNode {
     this.outputPitchBend = this.registerNumberOutput('Pitch Bend')
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     inputIterators.singletonOnly(this.inputState).map((state) => {
       if (!isMidiChannelState(state)) {
         throw new Error('Provided value is not a MIDI channel state.')

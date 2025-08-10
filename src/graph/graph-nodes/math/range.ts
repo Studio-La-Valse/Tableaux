@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Math', 'Range')
@@ -18,7 +18,7 @@ export class Range extends GraphNode {
     this.output = this.registerNumberOutput('Values')
   }
 
-  protected async solve(): Promise<void> {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const [start, stop, step] = inputIterators.singletonOnly(this.input1, this.input2, this.input3)
 
     if (step <= 0) {
@@ -26,8 +26,8 @@ export class Range extends GraphNode {
       throw new Error(msg)
     }
 
-    for (let index = start; index < stop; index += step) {
-      this.output.next(index)
+    for await (const i of inputIterators.createRange(start, stop, step)) {
+      this.output.next(i)
     }
   }
 }

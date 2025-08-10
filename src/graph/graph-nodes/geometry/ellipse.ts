@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { assertIsXY } from '@/geometry/xy'
 import { createEllipse, type Ellipse as ellipse } from '@/geometry/ellipse'
@@ -21,12 +21,16 @@ export class Ellipse extends GraphNode {
     this.output = this.registerObjectOutput<ellipse>('Circle')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.input1, this.input2, this.input3).forEach(([_xy, x, y]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_xy, x, y] of inputIterators.cycleValues(
+      this.input1,
+      this.input2,
+      this.input3,
+    )) {
       const xy = assertIsXY(_xy)
 
       const ellipse = createEllipse(xy, { x, y })
       this.output.next(ellipse)
-    })
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { assertIsXY } from '@/geometry/xy'
 import { createRectangle, type Rectangle as rect } from '@/geometry/rectangle'
@@ -21,13 +21,15 @@ export class Rectangle extends GraphNode {
     this.outputRect = this.registerObjectOutput<rect>('Rectangle')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.inputTopLeft, this.inputWidth, this.inputHeight)
-      .forEach(([_topLeft, width, height]) => {
-        const topLeft = assertIsXY(_topLeft)
-        const rectangle = createRectangle(topLeft, width, height)
-        this.outputRect.next(rectangle)
-      })
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_topLeft, width, height] of inputIterators.cycleValues(
+      this.inputTopLeft,
+      this.inputWidth,
+      this.inputHeight,
+    )) {
+      const topLeft = assertIsXY(_topLeft)
+      const rectangle = createRectangle(topLeft, width, height)
+      this.outputRect.next(rectangle)
+    }
   }
 }

@@ -1,3 +1,4 @@
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 
@@ -13,7 +14,14 @@ export class All extends GraphNode {
     this.output = this.registerBooleanOutput('All')
   }
 
-  protected async solve(): Promise<void> {
-    this.output.next(this.input1.payload.every((v) => v))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    let res = true
+    for await (const v of inputIterators.createGenerator(this.input1)) {
+      if (!v) {
+        res = false
+        break
+      }
+    }
+    this.output.next(res)
   }
 }

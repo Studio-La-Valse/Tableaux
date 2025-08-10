@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { type XY as xy } from '@/geometry/xy'
 
@@ -17,10 +17,9 @@ export class XY extends GraphNode {
     this.output = this.registerObjectOutput<xy>('XY')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.input1, this.input2)
-      .map(([x, y]) => ({ x, y }))
-      .forEach((v) => this.output.next(v))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [x, y] of inputIterators.cycleValues(this.input1, this.input2)) {
+      this.output.next({ x, y })
+    }
   }
 }

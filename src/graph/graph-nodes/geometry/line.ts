@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { assertIsXY } from '@/geometry/xy'
 import { createLine, type Line as line } from '@/geometry/line'
@@ -18,14 +18,12 @@ export class Line extends GraphNode {
     this.output = this.registerObjectOutput<line>('Line')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.input1, this.input2)
-      .map(([_start, _end]) => {
-        const start = assertIsXY(_start)
-        const end = assertIsXY(_end)
-        return createLine(start, end)
-      })
-      .forEach((v) => this.output.next(v))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_start, _end] of inputIterators.cycleValues(this.input1, this.input2)) {
+      const start = assertIsXY(_start)
+      const end = assertIsXY(_end)
+      const v = createLine(start, end)
+      this.output.next(v)
+    }
   }
 }

@@ -1,8 +1,8 @@
 import { assertIsXY } from '@/geometry/xy'
 import { GraphNode } from '../../../core/graph-node'
-import { inputIterators } from '../../../core/input-iterators'
 import { GraphNodeType } from '../../decorators'
 import { createRotation, type TransformationMatrix } from '@/geometry/transformation-matrix'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 
 @GraphNodeType('Geometry', 'Transform', 'Create Rotation')
 export class CreateRotation extends GraphNode {
@@ -20,11 +20,11 @@ export class CreateRotation extends GraphNode {
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators.cycleValues(this.origin, this.angle).forEach(([_origin, angle]) => {
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [_origin, angle] of inputIterators.cycleValues(this.origin, this.angle)) {
       const origin = assertIsXY(_origin)
       const rotated = createRotation(origin, angle)
       this.outputGeometry.next(rotated)
-    })
+    }
   }
 }

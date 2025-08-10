@@ -1,5 +1,5 @@
 import { GraphNode } from '../../core/graph-node'
-import { inputIterators } from '../../core/input-iterators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Math', 'Greater Than Or Equal')
@@ -16,10 +16,10 @@ export class GreaterThanOrEqual extends GraphNode {
     this.output = this.registerBooleanOutput('Result')
   }
 
-  protected async solve(): Promise<void> {
-    inputIterators
-      .cycleValues(this.input1, this.input2)
-      .map(([a, b]) => a >= b)
-      .forEach((result) => this.output.next(result))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const [a, b] of inputIterators.cycleValues(this.input1, this.input2)) {
+      const result = a >= b
+      this.output.next(result)
+    }
   }
 }

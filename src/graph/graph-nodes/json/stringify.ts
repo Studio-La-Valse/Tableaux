@@ -1,3 +1,4 @@
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 
@@ -13,7 +14,10 @@ export class Stringify extends GraphNode {
     this.output = this.registerStringOutput('String')
   }
 
-  protected async solve(): Promise<void> {
-    this.input.payload.forEach((v) => this.output.next(JSON.stringify(v)))
+  protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
+    for await (const v of inputIterators.createGenerator(this.input)) {
+      const res = JSON.stringify(v)
+      this.output.next(res)
+    }
   }
 }
