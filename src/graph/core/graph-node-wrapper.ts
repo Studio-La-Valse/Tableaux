@@ -5,6 +5,7 @@ import type { GraphNode, IGraphNode } from './graph-node'
 import type { IGraphNodeInput } from './graph-node-input'
 
 export interface IGraphNodeWrapper {
+  readonly nodeId: string
   readonly version: string
   readonly minHeight: number
   readonly minWidth: number
@@ -33,6 +34,9 @@ export class GraphNodeWrapper implements IGraphNodeWrapper {
   private _handlePad = 30
 
   public readonly version
+  public get nodeId() {
+    return this.innerNode.id
+  }
 
   public xy: XY = { x: 0, y: 0 }
 

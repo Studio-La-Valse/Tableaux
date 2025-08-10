@@ -75,9 +75,9 @@ export function useSelectionArea() {
       })
       .forEach((node) => {
         if (mode === 'add' || mode === 'default') {
-          nodeSelectionStore.selectNode(node.innerNode.id)
+          nodeSelectionStore.selectNode(node.nodeId)
         } else if (mode === 'subtract') {
-          nodeSelectionStore.unselectNode(node.innerNode.id)
+          nodeSelectionStore.unselectNode(node.nodeId)
         }
       })
   }

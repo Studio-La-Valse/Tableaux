@@ -50,15 +50,15 @@ const handleMouseUp = (e: MouseEvent) => {
 }
 
 const removerClick = () => {
-  graph.removeInput(props.graphNode.innerNode.id, props.input.index)
+  graph.removeInput(props.graphNode.nodeId, props.input.index)
 }
 
 const adderClick = () => {
-  graph.insertInput(props.graphNode.innerNode.id, props.input.index + 1)
+  graph.insertInput(props.graphNode.nodeId, props.input.index + 1)
 }
 
 const prependerClick = () => {
-  graph.insertInput(props.graphNode.innerNode.id, props.input.index)
+  graph.insertInput(props.graphNode.nodeId, props.input.index)
 }
 </script>
 

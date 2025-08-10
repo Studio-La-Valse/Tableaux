@@ -29,7 +29,7 @@ export const useCopyPaste = () => {
       // set the selectoin to the new nodes
       selection.clearSelection()
       newNodes.forEach((e) => {
-        selection.selectNode(e.innerNode.id)
+        selection.selectNode(e.nodeId)
       })
     }
   }

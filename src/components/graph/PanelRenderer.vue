@@ -81,7 +81,7 @@ const shadowColor = computed(() => {
 })
 
 // Determines visual styling based on whether the node is selected.
-const _isSelected = computed(() => isSelected(props.graphNode.innerNode.id));
+const _isSelected = computed(() => isSelected(props.graphNode.nodeId));
 
 const borderStyle = computed(() => ({
   '--gradient-border': borderColor.value,
