@@ -76,7 +76,7 @@ const useGraphInternal = defineStore('graph', () => {
     outputIndex: number,
     rightNodeId: string,
     inputIndex: number,
-  ) => {
+  ): GraphEdge | undefined => {
     // we need to remove the existing edge after succesfull subscription, but dont call removeEdge because it will close the connection
     const existingEdge = edges.value.findIndex(
       (e) => e.rightGraphNode.nodeId == rightNodeId && e.inputIndex == inputIndex,
@@ -85,7 +85,18 @@ const useGraphInternal = defineStore('graph', () => {
     const leftNode = getNode(leftNodeId)
     const rightNode = getNode(rightNodeId)
 
-    leftNode.innerNode.outputs[outputIndex].connectTo(rightNode.innerNode.inputs[inputIndex])
+    const output = leftNode.innerNode.outputs[outputIndex]
+    const input = rightNode.innerNode.inputs[inputIndex]
+
+    try {
+      input.connectTo(output)
+    } catch {
+      return undefined
+    }
+
+    input.arm()
+    if (leftNode.innerNode.componentState === 'complete') input.complete()
+
     const edge = new GraphEdge(leftNode, outputIndex, rightNode, inputIndex)
     edges.value.push(edge)
 
@@ -108,8 +119,8 @@ const useGraphInternal = defineStore('graph', () => {
 
     const rightNode = getNode(rightNodeId)
     const input = rightNode.innerNode.inputs[inputIndex]
-    input.replaceConnection(undefined)
-    rightNode.innerNode.arm()
+    input.unsubscribe()
+    input.arm()
     edges.value.splice(existingEdge, 1)
   }
 
@@ -154,7 +165,8 @@ const useGraphInternal = defineStore('graph', () => {
       model.id = newId
       model.x += 10 * pasteEvents
       model.y += 10 * pasteEvents
-      const copy = addNodeModel(model)
+      addNodeModel(model)
+      const copy = findNode(model.id)
       idMap[orig.nodeId] = copy
       return copy
     })
@@ -207,10 +219,9 @@ const useGraphInternal = defineStore('graph', () => {
 
   const fromModel: (model: GraphModel) => void = (model: GraphModel) => {
     clear()
-    model.nodes.map((v) => createFromNodeModel(v)).forEach((v) => (nodeMap.value[v.nodeId] = v))
 
-    const newEdges = model.edges.map((v) => createFromEdgeModel(v))
-    edges.value = newEdges
+    model.nodes.forEach((v) => addNodeModel(v))
+    model.edges.forEach((v) => addEdgeModel(v))
 
     nodes.value
       .map((v) => v.innerNode)
@@ -221,9 +232,7 @@ const useGraphInternal = defineStore('graph', () => {
       })
   }
 
-  const createFromNodeModel: (model: GraphNodeModel) => IGraphNodeWrapper = (
-    model: GraphNodeModel,
-  ) => {
+  const addNodeModel: (model: GraphNodeModel) => void = (model: GraphNodeModel) => {
     const activator = activators.getFromPath(model.path)
     if (activator == undefined) {
       throw new Error()
@@ -242,33 +251,16 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     graphNode.onInitialize()
-    return wrapper
-  }
-
-  const addNodeModel: (model: GraphNodeModel) => IGraphNodeWrapper = (model: GraphNodeModel) => {
-    const wrapper = createFromNodeModel(model)
     nodeMap.value[wrapper.nodeId] = wrapper
-    return wrapper
   }
 
-  const createFromEdgeModel: (model: GraphEdgeModel) => GraphEdge = (model: GraphEdgeModel) => {
+  const addEdgeModel: (model: GraphEdgeModel) => void = (model: GraphEdgeModel) => {
     const rightNodeId = model.rightId
     const inputIndex = model.input
     const leftNodeId = model.leftId
     const outputIndex = model.output
 
-    const leftNode = getNode(leftNodeId)
-    const rightNode = getNode(rightNodeId)
-
-    leftNode.innerNode.outputs[outputIndex].connectTo(rightNode.innerNode.inputs[inputIndex])
-    const edge = new GraphEdge(leftNode, outputIndex, rightNode, inputIndex)
-    return edge
-  }
-
-  const addEdgeModel: (model: GraphEdgeModel) => GraphEdge = (model: GraphEdgeModel) => {
-    const edge = createFromEdgeModel(model)
-    edges.value.push(edge)
-    return edge
+    connect(leftNodeId, outputIndex, rightNodeId, inputIndex)
   }
 
   return {
@@ -291,8 +283,6 @@ const useGraphInternal = defineStore('graph', () => {
 
     toModel,
     fromModel,
-    addNodeModel,
-    addEdgeModel,
   }
 })
 

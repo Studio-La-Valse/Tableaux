@@ -18,7 +18,7 @@ export class At extends GraphNode {
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const index of inputIterators.createGenerator(this.input2)) {
-      const v = this.input.payload[index]
+      const v = this.input.peek(index)
       this.output.next(v)
     }
   }

@@ -1,11 +1,11 @@
 import { ObserverAlreadySubscribedError } from './errors/already-subscribed-error'
-import type { GraphNodeInput } from './graph-node-input'
+import type { IGraphNodeInput } from './graph-node-input'
 import type { Unsubscriber } from './unsubscriber'
 
 export class Subscription implements Unsubscriber {
   constructor(
-    private inputs: Set<GraphNodeInput>,
-    private observer: GraphNodeInput,
+    private inputs: Set<IGraphNodeInput>,
+    private observer: IGraphNodeInput,
   ) {}
 
   public unsubscribe(): void {
@@ -13,15 +13,15 @@ export class Subscription implements Unsubscriber {
   }
 
   public static subscribeOrThrow(
-    alreadyConnectedInputs: Set<GraphNodeInput>,
-    graphNodeOutput: GraphNodeInput,
+    alreadyConnectedInputs: Set<IGraphNodeInput>,
+    graphNodeOutput: IGraphNodeInput,
   ): Unsubscriber {
     if (!alreadyConnectedInputs.add(graphNodeOutput)) {
       throw new ObserverAlreadySubscribedError()
     }
 
     try {
-      graphNodeOutput.onTrySubscribeSelf()
+      graphNodeOutput.trySubscribeSelf()
     } catch (err) {
       alreadyConnectedInputs.delete(graphNodeOutput)
       throw err
