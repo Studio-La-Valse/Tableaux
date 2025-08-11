@@ -10,7 +10,7 @@ export class Not extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerNumberInput('Values')
+    this.input = this.registerBooleanInput('Values')
     this.output = this.registerBooleanOutput('Inverted')
   }
 

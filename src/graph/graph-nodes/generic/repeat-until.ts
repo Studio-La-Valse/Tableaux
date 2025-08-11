@@ -22,7 +22,7 @@ export class RepeatUntil extends GraphNode {
     const [targetLength] = inputIterators.singletonOnly(this.input2)
 
     for await (const index of inputIterators.createRange(0, targetLength, 1)) {
-      const element = this.input1.payload[index % signalLength]
+      const element = this.input1.peek(index % signalLength)
       this.output.next(element)
     }
   }

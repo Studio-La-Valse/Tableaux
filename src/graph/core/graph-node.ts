@@ -120,7 +120,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
     return this._stringParams
   }
 
-  private _objectParams: GraphNodeInputObject<JsonObject>[] | undefined
+  private _objectParams: GraphNodeInputObject[] | undefined
   public registerObjectInputParams(description: string) {
     this.assertNotInitialized()
     this.assertParamsHasNotBeenSet()
@@ -178,7 +178,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
       return false
     }
     const toRemove = this.inputs[index]
-    if (toRemove.subscription) {
+    if (toRemove.isSubscribed) {
       return false
     }
 
@@ -196,7 +196,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
     const indexInParams = index - originIndex
 
     const newInput = origin.repeat()
-    newInput.onArm()
+    newInput.arm()
 
     this._params.splice(indexInParams, 0, newInput)
     this._inputs.splice(index, 0, newInput)
@@ -216,7 +216,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
     }
 
     const toRemove = this._params[index]
-    if (toRemove.subscription) {
+    if (toRemove.isSubscribed) {
       throw new CannotRemoveSubscribedParamError(index)
     }
 
@@ -278,11 +278,11 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
     return input
   }
 
-  public registerObjectInput(description: string): GraphNodeInputObject<JsonObject> {
+  public registerObjectInput(description: string): GraphNodeInputObject {
     this.assertNotInitialized()
     this.assertParamsHasNotBeenSet()
 
-    const input = new GraphNodeInputObject<JsonObject>(this, description)
+    const input = new GraphNodeInputObject(this, description)
     this._inputs.push(input)
     return input
   }

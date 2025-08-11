@@ -1,52 +1,50 @@
-import { InvalidObserverTypeError } from './errors/invalid-observer-type-error'
 import type { GraphNode } from './graph-node'
-import {
-  GraphNodeInputBoolean,
-  GraphNodeInputNumber,
-  GraphNodeInputObject,
-  GraphNodeInputString,
-  GraphNodeInputUnknown,
-  type GraphNodeInput,
-  type IGraphNodeInput,
-} from './graph-node-input'
+import { type IGraphNodeInput } from './graph-node-input'
 import { type JsonObject, type JsonValue } from './models/json-value'
 import { Subscription } from './subscription'
 import type { Unsubscriber } from './unsubscriber'
 
+export const providerTypes = ['boolean', 'number', 'string', 'object', 'unknown'] as const
+export type ProviderType = (typeof providerTypes)[number]
+
 export interface IGraphNodeOutput {
+  readonly provides: ProviderType[]
+  readonly payloadLength: number
+
   readonly index: number
   readonly description: string
   readonly graphNodeId: string
 
-  connectTo: (input: IGraphNodeInput) => void
+  acceptIncoming: (input: IGraphNodeInput) => Unsubscriber
 }
 
 export abstract class GraphNodeOutput implements IGraphNodeOutput {
-  public abstract targetInputs: Set<IGraphNodeInput>
+  public targetInputs: Set<IGraphNodeInput> = new Set()
 
   public get graphNodeId() {
     return this.graphNode.id
   }
 
+  public abstract provides: ProviderType[]
+  public abstract payloadLength: number
+
   constructor(
-    protected readonly graphNode: GraphNode,
-    public index: number,
-    public description: string,
+    private readonly graphNode: GraphNode,
+    public readonly index: number,
+    public readonly description: string,
   ) {}
 
-  public connectTo(graphNodeInput: IGraphNodeInput) {
-    // will throw an error when cyclical subscription is detected.
-    const subscription = this.onSubscribe(graphNodeInput)
-
-    // subscription succesful, replace the existing subscription
-    graphNodeInput.replaceConnection(subscription)
+  public acceptIncoming(graphNodeInput: IGraphNodeInput) {
+    // Create the subscription
+    // Will add the input to the provided set
+    // Will throw an exception if unsuccesfull
+    const subscription = Subscription.subscribeOrThrow(this.targetInputs, graphNodeInput)
+    return subscription
   }
-
-  public abstract onSubscribe(graphNodeInput: IGraphNodeInput): Unsubscriber
 
   public trySubscribe(graphNodeId: string): void {
     this.targetInputs.forEach((observer) => {
-      observer.onTrySubscribeParent(graphNodeId)
+      observer.trySubscribeParent(graphNodeId)
     })
   }
 
@@ -54,7 +52,7 @@ export abstract class GraphNodeOutput implements IGraphNodeOutput {
 
   public complete(): void {
     this.targetInputs.forEach((input) => {
-      input.onCompleted()
+      input.complete()
     })
   }
 }
@@ -65,544 +63,158 @@ export abstract class GraphNodeOutputType<T> extends GraphNodeOutput {
   public override arm(): void {
     this.payload.length = 0
     this.targetInputs.forEach((observer) => {
-      observer.onArm()
+      observer.arm()
     })
   }
 
   public next(value: T): void {
     this.payload.push(value)
   }
-}
 
-export class GraphNodeOutputBoolean extends GraphNodeOutputType<boolean> {
-  private numberInputs: Set<GraphNodeInputNumber> = new Set<GraphNodeInputNumber>()
-  private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
-  private unknownInputs: Set<GraphNodeInputUnknown> = new Set<GraphNodeInputUnknown>()
-  private booleanInputs: Set<GraphNodeInputBoolean> = new Set<GraphNodeInputBoolean>()
-
-  public get targetInputs(): Set<GraphNodeInput> {
-    return new Set<GraphNodeInput>([
-      ...this.numberInputs,
-      ...this.stringInputs,
-      ...this.unknownInputs,
-      ...this.booleanInputs,
-    ])
-  }
-
-  public onSubscribe(graphNodeInput: GraphNodeInput): Unsubscriber {
-    if (graphNodeInput instanceof GraphNodeInputNumber) {
-      return this.onSubscribeNumber(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputString) {
-      return this.onSubscribeString(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputUnknown) {
-      return this.onSubscribeUnknown(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputBoolean) {
-      return this.onSubscribeBoolean(graphNodeInput)
-    }
-
-    throw new InvalidObserverTypeError()
-  }
-
-  public onSubscribeBoolean(graphNodeInput: GraphNodeInputBoolean): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.booleanInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
-  }
-
-  public onSubscribeNumber(graphNodeInput: GraphNodeInputNumber): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.numberInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value ? 1 : 0)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
-  }
-
-  public onSubscribeString(graphNodeInput: GraphNodeInputString): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.stringInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value.toString())
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
-  }
-
-  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnknown): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.unknownInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
-  }
-
-  public complete(): void {
-    for (const value of this.payload) {
-      this.booleanInputs.forEach((e) => {
-        e.onNext(value)
-      })
-
-      this.numberInputs.forEach((e) => {
-        e.onNext(value ? 1 : 0)
-      })
-
-      this.stringInputs.forEach((e) => {
-        e.onNext(value.toString())
-      })
-
-      this.unknownInputs.forEach((e) => {
-        e.onNext(value)
-      })
-    }
-
-    super.complete()
+  public get payloadLength(): number {
+    return this.payload.length
   }
 }
 
-export class GraphNodeOutputNumber extends GraphNodeOutputType<number> {
-  private numberInputs: Set<GraphNodeInputNumber> = new Set<GraphNodeInputNumber>()
-  private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
-  private unknownInputs: Set<GraphNodeInputUnknown> = new Set<GraphNodeInputUnknown>()
+export abstract class ProvidesBoolean extends GraphNodeOutput {
+  abstract provideBoolean(index: number): boolean
+}
 
-  public get targetInputs(): Set<GraphNodeInput> {
-    return new Set<GraphNodeInput>([
-      ...this.numberInputs,
-      ...this.stringInputs,
-      ...this.unknownInputs,
-    ])
+export function providesBoolean(obj: IGraphNodeOutput): obj is ProvidesBoolean {
+  return obj.provides.includes('boolean')
+}
+
+export abstract class ProvidesNumber extends GraphNodeOutput {
+  abstract provideNumber(index: number): number
+}
+
+export function providesNumber(obj: IGraphNodeOutput): obj is ProvidesNumber {
+  return obj.provides.includes('number')
+}
+
+export abstract class ProvidesString extends GraphNodeOutput {
+  abstract provideString(index: number): string
+}
+
+export function providesString(obj: IGraphNodeOutput): obj is ProvidesString {
+  return obj.provides.includes('string')
+}
+
+export abstract class ProvidesObject extends GraphNodeOutput {
+  abstract provideObject(index: number): JsonObject
+}
+
+export function providesObject(obj: IGraphNodeOutput): obj is ProvidesObject {
+  return obj.provides.includes('object')
+}
+
+export abstract class ProvidesUnknown extends GraphNodeOutput {
+  abstract provideUnknown(index: number): JsonValue
+}
+
+export function providesUnknown(obj: IGraphNodeOutput): obj is ProvidesUnknown {
+  return obj.provides.includes('unknown')
+}
+
+export class GraphNodeOutputBoolean
+  extends GraphNodeOutputType<boolean>
+  implements ProvidesBoolean, ProvidesNumber, ProvidesString, ProvidesUnknown
+{
+  override provides = ['boolean', 'number', 'string', 'unknown'] as ProviderType[]
+
+  public provideBoolean(index: number): boolean {
+    return this.payload[index]
   }
 
-  public onSubscribe(graphNodeInput: GraphNodeInput): Unsubscriber {
-    if (graphNodeInput instanceof GraphNodeInputNumber) {
-      return this.onSubscribeNumber(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputString) {
-      return this.onSubscribeString(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputUnknown) {
-      return this.onSubscribeUnknown(graphNodeInput)
-    }
-
-    throw new InvalidObserverTypeError()
+  public provideNumber(index: number): number {
+    return this.payload[index] ? 1 : 0
   }
 
-  public onSubscribeNumber(graphNodeInput: GraphNodeInputNumber): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.numberInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
+  public provideString(index: number): string {
+    return String(this.payload[index])
   }
 
-  public onSubscribeString(graphNodeInput: GraphNodeInputString): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.stringInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value.toString())
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
-  }
-
-  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnknown): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.unknownInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
-  }
-
-  public complete(): void {
-    for (const value of this.payload) {
-      this.numberInputs.forEach((e) => {
-        e.onNext(value)
-      })
-
-      this.stringInputs.forEach((e) => {
-        e.onNext(value.toString())
-      })
-
-      this.unknownInputs.forEach((e) => {
-        e.onNext(value)
-      })
-    }
-
-    super.complete()
+  public provideUnknown(index: number): JsonValue {
+    return this.payload[index]
   }
 }
 
-export class GraphNodeOutputString extends GraphNodeOutputType<string> {
-  private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
-  private unknownInputs: Set<GraphNodeInputUnknown> = new Set<GraphNodeInputUnknown>()
+export class GraphNodeOutputNumber
+  extends GraphNodeOutputType<number>
+  implements ProvidesNumber, ProvidesString, ProvidesUnknown
+{
+  override provides = ['number', 'string', 'unknown'] as ProviderType[]
 
-  public get targetInputs(): Set<GraphNodeInput> {
-    return new Set<GraphNodeInput>([...this.stringInputs, ...this.unknownInputs])
+  public provideNumber(index: number): number {
+    return this.payload[index]
   }
 
-  public onSubscribe(graphNodeInput: GraphNodeInput): Unsubscriber {
-    if (graphNodeInput instanceof GraphNodeInputString) {
-      return this.onSubscribeString(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputUnknown) {
-      return this.onSubscribeUnknown(graphNodeInput)
-    }
-
-    throw new InvalidObserverTypeError()
+  public provideString(index: number): string {
+    return String(this.payload[index])
   }
 
-  public onSubscribeString(graphNodeInput: GraphNodeInputString): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.stringInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value.toString())
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
-  }
-
-  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnknown): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.unknownInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
-  }
-
-  public complete(): void {
-    for (const value of this.payload) {
-      this.stringInputs.forEach((e) => {
-        e.onNext(value.toString())
-      })
-
-      this.unknownInputs.forEach((e) => {
-        e.onNext(value)
-      })
-    }
-
-    super.complete()
+  public provideUnknown(index: number): JsonValue {
+    return this.payload[index]
   }
 }
 
-export class GraphNodeOutputObject<T extends JsonObject> extends GraphNodeOutputType<T> {
-  private stringInputs: Set<GraphNodeInputString> = new Set<GraphNodeInputString>()
-  private objectInputs: Set<GraphNodeInputObject<T>> = new Set<GraphNodeInputObject<T>>()
-  private unknownInputs: Set<GraphNodeInputUnknown> = new Set<GraphNodeInputUnknown>()
+export class GraphNodeOutputString
+  extends GraphNodeOutputType<string>
+  implements ProvidesString, ProvidesUnknown
+{
+  override provides = ['string', 'unknown'] as ProviderType[]
 
-  public get targetInputs(): Set<GraphNodeInput> {
-    return new Set<GraphNodeInput>([
-      ...this.stringInputs,
-      ...this.objectInputs,
-      ...this.unknownInputs,
-    ])
+  public provideString(index: number): string {
+    return this.payload[index]
   }
 
-  public onSubscribe(graphNodeInput: GraphNodeInput): Unsubscriber {
-    if (graphNodeInput instanceof GraphNodeInputString) {
-      return this.onSubscribeString(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputObject) {
-      return this.onSubscribeObject(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputUnknown) {
-      return this.onSubscribeUnknown(graphNodeInput)
-    }
-
-    throw new InvalidObserverTypeError()
-  }
-
-  public onSubscribeString(graphNodeInput: GraphNodeInputString): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.stringInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(JSON.stringify(value))
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
-  }
-
-  public onSubscribeObject(graphNodeInput: GraphNodeInputObject<T>): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.objectInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
-  }
-
-  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnknown): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.unknownInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
-  }
-
-  public complete(): void {
-    for (const value of this.payload) {
-      this.stringInputs.forEach((e) => {
-        e.onNext(JSON.stringify(value))
-      })
-
-      this.objectInputs.forEach((e) => {
-        e.onNext(value)
-      })
-
-      this.unknownInputs.forEach((e) => {
-        e.onNext(value)
-      })
-    }
-
-    super.complete()
+  public provideUnknown(index: number): JsonValue {
+    return this.payload[index]
   }
 }
 
-export class GraphNodeOutputUnknown extends GraphNodeOutputType<JsonValue> {
-  private numberInputs = new Set<GraphNodeInputNumber>()
-  private stringInputs = new Set<GraphNodeInputString>()
-  private booleanInputs = new Set<GraphNodeInputBoolean>()
-  private objectInputs = new Set<GraphNodeInputObject<JsonObject>>()
-  private unknownInputs = new Set<GraphNodeInputUnknown>()
+export class GraphNodeOutputObject<T extends JsonObject>
+  extends GraphNodeOutputType<T>
+  implements ProvidesString, ProvidesObject, ProvidesUnknown
+{
+  override provides = ['string', 'object', 'unknown'] as ProviderType[]
 
-  public get targetInputs(): Set<GraphNodeInput> {
-    return new Set<GraphNodeInput>([
-      ...this.numberInputs,
-      ...this.stringInputs,
-      ...this.booleanInputs,
-      ...this.objectInputs,
-      ...this.unknownInputs,
-    ])
+  public provideString(index: number): string {
+    return JSON.stringify(this.payload[index])
   }
 
-  public onSubscribe(graphNodeInput: GraphNodeInput): Unsubscriber {
-    if (graphNodeInput instanceof GraphNodeInputNumber) {
-      return this.onSubscribeNumber(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputString) {
-      return this.onSubscribeString(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputBoolean) {
-      return this.onSubscribeBoolean(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputObject) {
-      return this.onSubscribeObject(graphNodeInput)
-    }
-
-    if (graphNodeInput instanceof GraphNodeInputUnknown) {
-      return this.onSubscribeUnknown(graphNodeInput)
-    }
-
-    throw new InvalidObserverTypeError()
+  public provideObject(index: number): JsonObject {
+    return this.payload[index]
   }
 
-  public onSubscribeBoolean(graphNodeInput: GraphNodeInputBoolean): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.booleanInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value as boolean)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
+  public provideUnknown(index: number): JsonValue {
+    return this.payload[index]
   }
-  public onSubscribeNumber(graphNodeInput: GraphNodeInputNumber): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.numberInputs, graphNodeInput)
+}
 
-    graphNodeInput.onArm()
+export class GraphNodeOutputUnknown
+  extends GraphNodeOutputType<JsonValue>
+  implements ProvidesBoolean, ProvidesNumber, ProvidesString, ProvidesObject, ProvidesUnknown
+{
+  override provides = ['boolean', 'number', 'string', 'object', 'unknown'] as ProviderType[]
 
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value as number)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
+  public provideBoolean(index: number): boolean {
+    return this.payload[index] as boolean
   }
 
-  public onSubscribeString(graphNodeInput: GraphNodeInputString): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.stringInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(this.unkownToString(value))
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
+  public provideNumber(index: number): number {
+    return this.payload[index] as number
   }
 
-  public onSubscribeObject(graphNodeInput: GraphNodeInputObject<JsonObject>): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.objectInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value as JsonObject)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
+  public provideString(index: number): string {
+    return this.payload[index] as string
   }
 
-  public onSubscribeUnknown(graphNodeInput: GraphNodeInputUnknown): Unsubscriber {
-    const subscription = Subscription.subscribeOrThrow(this.unknownInputs, graphNodeInput)
-
-    graphNodeInput.onArm()
-
-    this.payload.forEach((value) => {
-      graphNodeInput.onNext(value)
-    })
-
-    if (this.graphNode.componentState == 'complete') {
-      graphNodeInput.onCompleted()
-    }
-
-    return subscription
+  public provideObject(index: number): JsonObject {
+    return this.payload[index] as JsonObject
   }
 
-  private unkownToString(value: unknown): string {
-    const res = value instanceof Object ? JSON.stringify(value) : (value as string)
-    return res
-  }
-
-  public complete(): void {
-    for (const value of this.payload) {
-      this.booleanInputs.forEach((e) => {
-        e.onNext(value as boolean)
-      })
-
-      this.numberInputs.forEach((e) => {
-        e.onNext(value as number)
-      })
-
-      this.stringInputs.forEach((e) => {
-        e.onNext(this.unkownToString(value))
-      })
-
-      this.objectInputs.forEach((e) => {
-        e.onNext(value as JsonObject)
-      })
-
-      this.unknownInputs.forEach((e) => {
-        e.onNext(value)
-      })
-    }
-
-    super.complete()
+  public provideUnknown(index: number): JsonValue {
+    return this.payload[index]
   }
 }
