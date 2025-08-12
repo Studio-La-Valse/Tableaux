@@ -13,15 +13,13 @@ export class Line extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerObjectInput('Start')
-    this.input2 = this.registerObjectInput('End')
+    this.input1 = this.registerObjectInput('Start').validate(assertIsXY)
+    this.input2 = this.registerObjectInput('End').validate(assertIsXY)
     this.output = this.registerObjectOutput<line>('Line')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_start, _end] of inputIterators.cycleValues(this.input1, this.input2)) {
-      const start = assertIsXY(_start)
-      const end = assertIsXY(_end)
+    for await (const [start, end] of inputIterators.cycleValues(this.input1, this.input2)) {
       const v = createLine(start, end)
       this.output.next(v)
     }

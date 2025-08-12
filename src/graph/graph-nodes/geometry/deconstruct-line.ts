@@ -17,7 +17,16 @@ export class DeconstructLine extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputLine = this.registerObjectInput('Line')
+    this.inputLine = this.registerObjectInput('Line').validate((v) => {
+      const geom = assertIsShape(v)
+
+      if (!isOfShapeKind(geom, ['line', 'arc', 'elliptical-arc'])) {
+        throw new Error(
+          `Unknown geometry type, expected 'line', 'arc' or 'elliptical-arc', got ${geom.kind}`,
+        )
+      }
+      return geom
+    })
 
     this.outputStart = this.registerObjectOutput<XY>('Start')
     this.outputEnd = this.registerObjectOutput<XY>('End')
@@ -26,15 +35,7 @@ export class DeconstructLine extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom] of inputIterators.cycleValues(this.inputLine)) {
-      const geom = assertIsShape(_geom)
-
-      if (!isOfShapeKind(geom, ['line', 'arc', 'elliptical-arc'])) {
-        throw new Error(
-          `Unknown geometry type, expected 'line', 'arc' or 'elliptical-arc', got ${geom.kind}`,
-        )
-      }
-
+    for await (const [geom] of inputIterators.cycleValues(this.inputLine)) {
       const { start, middle: center, end, length } = deconstruct(geom)
 
       this.outputStart.next(start)

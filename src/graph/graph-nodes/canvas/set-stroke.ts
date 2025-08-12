@@ -16,22 +16,19 @@ export class SetStroke extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
-    this.color = this.registerObjectInput('Color')
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsShape)
+    this.color = this.registerObjectInput('Color').validate(assertIsColorARGB)
     this.strokeWidth = this.registerNumberInput('Stroke Width')
 
     this.outputGeometry = this.registerObjectOutput<Shape & Stroke>('Geometry with stroke')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom, _stroke, strokeWidth] of inputIterators.cycleValues(
+    for await (const [geom, stroke, strokeWidth] of inputIterators.cycleValues(
       this.inputGeometry,
       this.color,
       this.strokeWidth,
     )) {
-      const geom = assertIsShape(_geom)
-      const stroke = assertIsColorARGB(_stroke)
-
       const withStroke = {
         ...geom,
         stroke,

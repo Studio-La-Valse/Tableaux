@@ -19,7 +19,13 @@ export class DeconstructEllipse extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputCircle = this.registerObjectInput('Circle')
+    this.inputCircle = this.registerObjectInput('Circle').validate((v) => {
+      const shape = assertIsShape(v)
+      if (!isOfShapeKind(shape, ['circle', 'ellipse'])) {
+        throw new Error(`Unknown geometry type, expected 'circle' or 'ellipse', got ${shape.kind}`)
+      }
+      return shape
+    })
 
     this.outputOrigin = this.registerObjectOutput<xy>('Origin')
     this.outputRadiusX = this.registerNumberOutput('Radius X')
@@ -30,12 +36,7 @@ export class DeconstructEllipse extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [circle] of inputIterators.cycleValues(this.inputCircle)) {
-      const shape = assertIsShape(circle)
-      if (!isOfShapeKind(shape, ['circle', 'ellipse'])) {
-        throw new Error(`Unknown geometry type, expected 'circle' or 'ellipse', got ${shape.kind}`)
-      }
-
+    for await (const [shape] of inputIterators.cycleValues(this.inputCircle)) {
       const { origin, radiusX, radiusY, rotation, area, circumference } = deconstructEllipse(shape)
 
       this.outputOrigin.next(origin)

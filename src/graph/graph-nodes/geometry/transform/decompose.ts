@@ -17,7 +17,9 @@ export class Decompose extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerObjectInput('Transformation Matrix')
+    this.input = this.registerObjectInput('Transformation Matrix').validate(
+      assertIsTransformationMatrix,
+    )
 
     this.outputTranslation = this.registerObjectOutput<XY>('Translation')
     this.outputRotation = this.registerNumberOutput('Rotation')
@@ -26,8 +28,7 @@ export class Decompose extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom] of inputIterators.cycleValues(this.input)) {
-      const matrix = assertIsTransformationMatrix(_geom)
+    for await (const [matrix] of inputIterators.cycleValues(this.input)) {
       const { translation, rotation, scale, skew } = decomposeMatrix(matrix)
 
       this.outputTranslation.next(translation)

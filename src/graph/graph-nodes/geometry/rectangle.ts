@@ -14,7 +14,7 @@ export class Rectangle extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputTopLeft = this.registerObjectInput('TopLeft')
+    this.inputTopLeft = this.registerObjectInput('TopLeft').validate(assertIsXY)
     this.inputWidth = this.registerNumberInput('Width')
     this.inputHeight = this.registerNumberInput('Height')
 
@@ -22,12 +22,11 @@ export class Rectangle extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_topLeft, width, height] of inputIterators.cycleValues(
+    for await (const [topLeft, width, height] of inputIterators.cycleValues(
       this.inputTopLeft,
       this.inputWidth,
       this.inputHeight,
     )) {
-      const topLeft = assertIsXY(_topLeft)
       const rectangle = createRectangle(topLeft, width, height)
       this.outputRect.next(rectangle)
     }

@@ -15,21 +15,19 @@ export class SetRotation extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
-    this.origin = this.registerObjectInput('Origin')
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsGeometry)
+    this.origin = this.registerObjectInput('Origin').validate(assertIsXY)
     this.angle = this.registerNumberInput('Angle (Radians)')
 
     this.outputGeometry = this.registerObjectOutput<Geometry>('Rotated Geometry')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom, _origin, angle] of inputIterators.cycleValues(
+    for await (const [geom, origin, angle] of inputIterators.cycleValues(
       this.inputGeometry,
       this.origin,
       this.angle,
     )) {
-      const geom = assertIsGeometry(_geom)
-      const origin = assertIsXY(_origin)
       const rotated = rotate(geom, origin, angle)
       this.outputGeometry.next(rotated)
     }

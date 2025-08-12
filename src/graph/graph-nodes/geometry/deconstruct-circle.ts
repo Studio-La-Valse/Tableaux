@@ -18,7 +18,15 @@ export class DeconstructCircle extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputCircle = this.registerObjectInput('Circle')
+    this.inputCircle = this.registerObjectInput('Circle').validate((v) => {
+      const geom = assertIsShape(v)
+
+      if (!isOfShapeKind(geom, ['circle'])) {
+        throw new Error(`Unknown geometry type, expected 'circle', got ${geom.kind}`)
+      }
+
+      return geom
+    })
 
     this.outputOrigin = this.registerObjectOutput<XY>('Origin')
     this.outputRadius = this.registerNumberOutput('Radius')
@@ -28,13 +36,7 @@ export class DeconstructCircle extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom] of inputIterators.cycleValues(this.inputCircle)) {
-      const geom = assertIsShape(_geom)
-
-      if (!isOfShapeKind(geom, ['circle'])) {
-        throw new Error(`Unknown geometry type, expected 'circle', got ${geom.kind}`)
-      }
-
+    for await (const [geom] of inputIterators.cycleValues(this.inputCircle)) {
       const { origin, radius, rotation, area, circumference } = deconstruct(geom)
 
       this.outputOrigin.next(origin)

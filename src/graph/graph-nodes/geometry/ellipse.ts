@@ -14,7 +14,7 @@ export class Ellipse extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerObjectInput('XY')
+    this.input1 = this.registerObjectInput('XY').validate((v) => assertIsXY(v))
     this.input2 = this.registerNumberInput('Radius X')
     this.input3 = this.registerNumberInput('Radius Y')
 
@@ -22,13 +22,11 @@ export class Ellipse extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_xy, x, y] of inputIterators.cycleValues(
+    for await (const [xy, x, y] of inputIterators.cycleValues(
       this.input1,
       this.input2,
       this.input3,
     )) {
-      const xy = assertIsXY(_xy)
-
       const ellipse = createEllipse(xy, { x, y })
       this.output.next(ellipse)
     }

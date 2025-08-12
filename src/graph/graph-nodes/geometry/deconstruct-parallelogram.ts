@@ -23,7 +23,16 @@ export class DeconstructParallelogram extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputShape = this.registerObjectInput('Shape')
+    this.inputShape = this.registerObjectInput('Shape').validate((v) => {
+      const geom = assertIsShape(v)
+
+      if (!isOfShapeKind(geom, ['parallelogram', 'rectangle', 'square'])) {
+        throw new Error(
+          `Unsupported shape kind, expected 'parallelogram', 'rectangle' or 'circle', got: ${geom.kind}`,
+        )
+      }
+      return geom
+    })
 
     this.topLeft = this.registerObjectOutput<xy>('Origin')
     this.topRight = this.registerObjectOutput<xy>('Origin')
@@ -38,15 +47,7 @@ export class DeconstructParallelogram extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_shape] of inputIterators.cycleValues(this.inputShape)) {
-      const geom = assertIsShape(_shape)
-
-      if (!isOfShapeKind(geom, ['parallelogram', 'rectangle', 'square'])) {
-        throw new Error(
-          `Unsupported shape kind, expected 'parallelogram', 'rectangle' or 'circle', got: ${geom.kind}`,
-        )
-      }
-
+    for await (const [geom] of inputIterators.cycleValues(this.inputShape)) {
       const {
         topLeft,
         topRight,

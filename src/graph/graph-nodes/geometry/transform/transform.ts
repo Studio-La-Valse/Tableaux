@@ -14,20 +14,20 @@ export class Transform extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
-    this.inputTransform = this.registerObjectInput('Transformation')
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsGeometry)
+    this.inputTransform = this.registerObjectInput('Transformation').validate(
+      assertIsTransformationMatrix,
+    )
 
     this.outputGeometry = this.registerObjectOutput<Geometry>('Translated Geometry')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom, _transform] of inputIterators.cycleValues(
+    for await (const [geom, transform] of inputIterators.cycleValues(
       this.inputGeometry,
       this.inputTransform,
     )) {
-      const geom = assertIsGeometry(_geom)
-      const matrix2d = assertIsTransformationMatrix(_transform)
-      const transformed = setTransform(geom, matrix2d)
+      const transformed = setTransform(geom, transform)
       this.outputGeometry.next(transformed)
     }
   }

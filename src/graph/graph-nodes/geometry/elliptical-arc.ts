@@ -17,7 +17,7 @@ export class EllipticalArc extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerObjectInput('XY')
+    this.input1 = this.registerObjectInput('XY').validate(assertIsXY)
     this.input2 = this.registerNumberInput('Radius X')
     this.input3 = this.registerNumberInput('Radius Y')
     this.input4 = this.registerNumberInput('Start Angle')
@@ -28,7 +28,7 @@ export class EllipticalArc extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_xy, radiusx, radiusy, start, end, clockwise] of inputIterators.cycleValues(
+    for await (const [xy, radiusx, radiusy, start, end, clockwise] of inputIterators.cycleValues(
       this.input1,
       this.input2,
       this.input3,
@@ -36,8 +36,6 @@ export class EllipticalArc extends GraphNode {
       this.input5,
       this.input6,
     )) {
-      const xy = assertIsXY(_xy)
-
       const arc = createEllipticalArc(xy, { x: radiusx, y: radiusy }, start, end, clockwise)
       this.outputCircle.next(arc)
     }

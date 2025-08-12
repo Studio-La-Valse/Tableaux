@@ -22,7 +22,7 @@ export class SetTextFormat extends GraphNode {
     super(id, path)
 
     this.asConst = [
-      this.registerObjectInput('Text'),
+      this.registerObjectInput('Text').validate(assertIsTextShape),
       this.registerStringInput('Alignment'),
       this.registerStringInput('Baseline'),
       this.registerStringInput('Direction'),
@@ -37,8 +37,6 @@ export class SetTextFormat extends GraphNode {
     for await (const [text, alignment, baseline, direction] of inputIterators.cycleValues(
       ...this.asConst,
     )) {
-      const geom = assertIsTextShape(text)
-
       if (!textAlignments.includes(alignment as AlignmentKind)) {
         throw new Error('Provided alignment is not valid.')
       }
@@ -52,7 +50,7 @@ export class SetTextFormat extends GraphNode {
       }
 
       const withFormat = {
-        ...geom,
+        ...text,
         align: alignment as AlignmentKind,
         baseline: baseline as BaselineKind,
         direction: direction as DirectionKind,

@@ -15,20 +15,14 @@ export class SetFill extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
-    this.color = this.registerObjectInput('Color')
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsShape)
+    this.color = this.registerObjectInput('Color').validate(assertIsColorARGB)
 
     this.outputGeometry = this.registerObjectOutput<Shape & Fill>('Geometry with fill')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom, _fill] of inputIterators.cycleValues(
-      this.inputGeometry,
-      this.color,
-    )) {
-      const geom = assertIsShape(_geom)
-      const fill = assertIsColorARGB(_fill)
-
+    for await (const [geom, fill] of inputIterators.cycleValues(this.inputGeometry, this.color)) {
       const withFill = {
         ...geom,
         fill,

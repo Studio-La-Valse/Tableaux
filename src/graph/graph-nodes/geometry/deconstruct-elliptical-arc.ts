@@ -23,7 +23,16 @@ export class DeconstructEllipticalArc extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputCircle = this.registerObjectInput('Elliptical Arc')
+    this.inputCircle = this.registerObjectInput('Elliptical Arc').validate((v) => {
+      const geom = assertIsShape(v)
+
+      if (!isOfShapeKind(geom, ['arc', 'circle', 'elliptical-arc', 'ellipse'])) {
+        throw new Error(
+          `Unknown geometry type, expected 'arc', 'elliptical-arc', 'ellipse' or 'circle', got ${geom.kind}`,
+        )
+      }
+      return geom
+    })
 
     this.origin = this.registerObjectOutput<XY>('Origin')
     this.radii = this.registerObjectOutput<XY>('Radii')
@@ -38,15 +47,7 @@ export class DeconstructEllipticalArc extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom] of inputIterators.cycleValues(this.inputCircle)) {
-      const geom = assertIsShape(_geom)
-
-      if (!isOfShapeKind(geom, ['arc', 'circle', 'elliptical-arc', 'ellipse'])) {
-        throw new Error(
-          `Unknown geometry type, expected 'arc', 'elliptical-arc', 'ellipse' or 'circle', got ${geom.kind}`,
-        )
-      }
-
+    for await (const [geom] of inputIterators.cycleValues(this.inputCircle)) {
       const {
         origin,
         radii,

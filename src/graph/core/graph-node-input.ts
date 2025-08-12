@@ -19,6 +19,8 @@ import {
 import { InvalidObserverTypeError } from './errors/invalid-observer-type-error'
 
 export interface IGraphNodeInput {
+  readonly id: string
+  readonly armed: boolean
   readonly index: number
   readonly description: string
   readonly graphNodeId: string
@@ -38,25 +40,32 @@ export interface IGraphNodeInputType<T> extends IGraphNodeInput {
 }
 
 export abstract class GraphNodeInput implements IGraphNodeInput {
-  private _id: string
-  protected _armed: boolean = true
-
   public abstract readonly isSubscribed: boolean
   public abstract readonly payloadLength: number
+
+  private _id: string
+  public get id() {
+    return this._id
+  }
+
+  protected _armed: boolean = true
+  public get armed() {
+    return this._armed
+  }
 
   public get graphNodeId() {
     return this.graphNode.id
   }
 
-  public abstract readonly armed: boolean;
-
   public get index() {
-    return this.graphNode.inputs.findIndex((v) => v._id == this._id)
+    const index = this.graphNode.inputs.findIndex((v) => v.id == this.id)
+    if (index === -1) throw new Error('This input was not found in its parent graph node.')
+    return index
   }
 
   constructor(
-    protected readonly graphNode: GraphNode,
-    public description: string,
+    public readonly graphNode: GraphNode,
+    public readonly description: string,
   ) {
     this._id = nanoid(11)
   }
@@ -113,7 +122,6 @@ export abstract class GraphNodeInputSubscriptionType<
   public get armed() {
     return this._armed || this.subscription === undefined
   }
-
 
   public get payloadLength(): number {
     if (!this.subscription) {
@@ -226,6 +234,77 @@ export class GraphNodeInputObject extends GraphNodeInputSubscriptionType<
       throw new Error('Input cannot peek because it is not subscribed.')
     }
     return this.subscription.graphNodeOutput.provideObject(index)
+  }
+
+  public validate<T extends JsonObject>(validator: (o: JsonObject) => T) {
+    return new GraphNodeInputValidatedObject<T>(this, validator)
+  }
+}
+
+export class GraphNodeInputValidatedObject<T extends JsonObject> extends GraphNodeInputObject {
+  public get id() {
+    return this.originalInput.id
+  }
+
+  public get armed() {
+    return this.originalInput.armed
+  }
+
+  public get graphNodeId() {
+    return this.originalInput.graphNodeId
+  }
+
+  public get index() {
+    return this.originalInput.index
+  }
+
+  public get isSubscribed() {
+    return this.originalInput.isSubscribed
+  }
+
+  public get payloadLength() {
+    return this.originalInput.payloadLength
+  }
+
+  constructor(
+    private readonly originalInput: GraphNodeInputObject,
+    private readonly validator: (o: JsonObject) => T,
+  ) {
+    super(originalInput.graphNode, originalInput.description)
+  }
+
+  public connectTo(graphNodeOuput: IGraphNodeOutput) {
+    return this.originalInput.connectTo(graphNodeOuput)
+  }
+
+  public unsubscribe() {
+    return this.originalInput.unsubscribe()
+  }
+
+  public trySubscribeSelf() {
+    return this.originalInput.trySubscribeSelf()
+  }
+
+  public trySubscribeParent(componentId: string) {
+    return this.originalInput.trySubscribeParent(componentId)
+  }
+
+  public arm() {
+    return this.originalInput.arm()
+  }
+
+  public complete() {
+    return this.originalInput.complete()
+  }
+
+  public repeat(): GraphNodeInputValidatedObject<T> {
+    return new GraphNodeInputValidatedObject(this, this.validator)
+  }
+
+  public peek(index: number): T {
+    const originalValue = this.originalInput.peek(index)
+    const validated = this.validator(originalValue)
+    return validated
   }
 }
 

@@ -12,17 +12,18 @@ export default class ChannelState extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputState = this.registerObjectInput('State')
+    this.inputState = this.registerObjectInput('State').validate((v) => {
+      if (!isMidiState(v)) {
+        throw new Error('Provided value is not a midi state.')
+      }
+      return v
+    })
     this.inputChannel = this.registerNumberInput('Channel')
     this.outputState = this.registerObjectOutput<MidiChannelState>('MIDI State')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const [state, channel] = inputIterators.singletonOnly(this.inputState, this.inputChannel)
-
-    if (!isMidiState(state)) {
-      throw new Error('Provided value is not a midi state.')
-    }
 
     const channelState = getChannelState(state, channel)
     this.outputState.next(channelState)

@@ -16,17 +16,18 @@ export class BoundingBox extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
+    this.inputGeometry = this.registerObjectInput('Geometry').validate((v) => {
+      const valid = isSurfaceLike(v) || isCurveLike(v)
+      if (!valid) {
+        throw new Error('Provided geometry is not surface like or curve like')
+      }
+      return v
+    })
     this.outputBox = this.registerObjectOutput<AxisAlignedBoundingBox>('Bounding Box')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [geom] of inputIterators.cycleValues(this.inputGeometry)) {
-      const valid = isSurfaceLike(geom) || isCurveLike(geom)
-      if (!valid) {
-        throw new Error('Provided geometry is not surface like or curve like')
-      }
-
       const aabb = getAxisAlignedBoundingBox(geom)
       this.outputBox.next(aabb)
     }

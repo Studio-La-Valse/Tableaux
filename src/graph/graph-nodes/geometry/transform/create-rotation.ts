@@ -14,15 +14,14 @@ export class CreateRotation extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.origin = this.registerObjectInput('Origin')
+    this.origin = this.registerObjectInput('Origin').validate(assertIsXY)
     this.angle = this.registerNumberInput('Angle (Radians)')
 
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_origin, angle] of inputIterators.cycleValues(this.origin, this.angle)) {
-      const origin = assertIsXY(_origin)
+    for await (const [origin, angle] of inputIterators.cycleValues(this.origin, this.angle)) {
       const rotated = createRotation(origin, angle)
       this.outputGeometry.next(rotated)
     }

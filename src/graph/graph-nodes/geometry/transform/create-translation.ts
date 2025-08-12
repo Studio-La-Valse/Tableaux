@@ -13,14 +13,13 @@ export class CreateTranslation extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputOffset = this.registerObjectInput('Offset')
+    this.inputOffset = this.registerObjectInput('Offset').validate(assertIsXY)
 
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_offset] of inputIterators.cycleValues(this.inputOffset)) {
-      const xy = assertIsXY(_offset)
+    for await (const [xy] of inputIterators.cycleValues(this.inputOffset)) {
       const moved = createTranslation(xy)
       this.outputGeometry.next(moved)
     }

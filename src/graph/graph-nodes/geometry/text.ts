@@ -16,7 +16,7 @@ export class Text extends GraphNode {
     super(id, path)
 
     this.inputText = this.registerStringInput('Text')
-    this.inputOrigin = this.registerObjectInput('Origin')
+    this.inputOrigin = this.registerObjectInput('Origin').validate(assertIsXY)
     this.inputFontFamily = this.registerStringInput('Font Family')
     this.inputFontSize = this.registerNumberInput('Font Size')
     this.outputText = this.registerObjectOutput<TextShape>('Text')
@@ -28,7 +28,7 @@ export class Text extends GraphNode {
       this.inputFontFamily,
       this.inputFontSize,
     )) {
-      const v = createText(t, assertIsXY(o), ff, fs)
+      const v = createText(t, o, ff, fs)
       this.outputText.next(v)
     }
   }

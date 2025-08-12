@@ -15,21 +15,19 @@ export class ScaleGeometry extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
-    this.inputCenter = this.registerObjectInput('Center')
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsGeometry)
+    this.inputCenter = this.registerObjectInput('Center').validate(assertIsXY)
     this.inputFactor = this.registerNumberInput('Scale Factor X')
 
     this.outputGeometry = this.registerObjectOutput<Geometry>('Scaled Geometry')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom, _origin, factor] of inputIterators.cycleValues(
+    for await (const [geom, origin, factor] of inputIterators.cycleValues(
       this.inputGeometry,
       this.inputCenter,
       this.inputFactor,
     )) {
-      const geom = assertIsGeometry(_geom)
-      const origin = assertIsXY(_origin)
       const scaled = scaleUniform(geom, origin, factor)
       this.outputGeometry.next(scaled)
     }

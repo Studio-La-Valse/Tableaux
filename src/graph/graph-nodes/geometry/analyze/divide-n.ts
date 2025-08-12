@@ -14,15 +14,14 @@ export class Translate extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsCurveLike)
     this.inputN = this.registerNumberInput('Number')
 
     this.outputGeometry = this.registerObjectOutput<XY>('Translated Geometry')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom, n] of inputIterators.cycleValues(this.inputGeometry, this.inputN)) {
-      const geom = assertIsCurveLike(_geom)
+    for await (const [geom, n] of inputIterators.cycleValues(this.inputGeometry, this.inputN)) {
       const result = dividen(geom, n)
 
       result.forEach((v) => this.outputGeometry.next(v))
