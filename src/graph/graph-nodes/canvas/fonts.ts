@@ -1,5 +1,6 @@
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
+import type { Font } from '@/geometry/font'
 
 @GraphNodeType('Canvas', 'Fonts')
 export class Fonts extends GraphNode {
@@ -8,7 +9,7 @@ export class Fonts extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.fonts = this.registerStringOutput('Fonts')
+    this.fonts = this.registerObjectOutput<Font>('Fonts')
   }
 
   public onInitialize(): void {
@@ -21,8 +22,8 @@ export class Fonts extends GraphNode {
   }
 }
 
-async function find(): Promise<Set<string>> {
-  const result = new Set<string>()
+async function find(): Promise<Set<Font>> {
+  const result = new Set<Font>()
 
   // SSR safety
   if (typeof window === 'undefined' || typeof document === 'undefined') {
@@ -43,7 +44,6 @@ async function find(): Promise<Set<string>> {
       // Attempt to enumerate local fonts (may prompt the user)
       const fonts = await window.queryLocalFonts()
       fonts
-        .map((fontData) => fontData.fullName ?? fontData.postscriptName ?? fontData.family ?? null)
         .filter((v) => v !== null)
         .forEach((v) => result.add(v))
 
@@ -76,8 +76,8 @@ async function queryLocalFontsPermissionSafe(): Promise<PermissionState | 'unkno
 // 1) Emit any fonts known to the page via CSS Font Loading API (document.fonts)
 // 2) Detect presence of common system fonts with width-measurement
 // 3) If still empty, emit generic families as a last resort
-function loadFallbackFonts(): Set<string> {
-  const emitted = new Set<string>()
+function loadFallbackFonts(): Set<Font> {
+  const emitted = new Set<Font>()
 
   // 1) Fonts already known/loaded in the page (FontFaceSet)
   const set = document?.fonts as FontFaceSet | undefined
@@ -87,10 +87,8 @@ function loadFallbackFonts(): Set<string> {
       for (const ff of set as unknown as Iterable<FontFace>) {
         const fam = ff?.family
         if (typeof fam === 'string') {
-          const clean = fam.replace(/["']/g, '').trim()
-          if (clean && !emitted.has(clean)) {
-            emitted.add(clean)
-          }
+          const family = fam.replace(/["']/g, '').trim()
+          emitted.add({family})
         }
       }
     } catch {
@@ -131,14 +129,12 @@ function loadFallbackFonts(): Set<string> {
 
   const detected = detectInstalledFonts(commonCandidates)
   for (const name of detected) {
-    if (!emitted.has(name)) {
-      emitted.add(name)
-    }
+    emitted.add(name)
   }
 
   // 3) Minimal safe list if we still have nothing
   if (emitted.size === 0) {
-    for (const generic of [
+    for (const family of [
       'system-ui',
       'sans-serif',
       'serif',
@@ -149,7 +145,7 @@ function loadFallbackFonts(): Set<string> {
       'math',
       'fangsong',
     ]) {
-      emitted.add(generic)
+      emitted.add({family})
     }
   }
 
@@ -157,7 +153,7 @@ function loadFallbackFonts(): Set<string> {
 }
 
 // Width-measurement detection of system fonts against base families
-function detectInstalledFonts(candidates: string[]): string[] {
+function detectInstalledFonts(candidates: string[]): Font[] {
   if (typeof document === 'undefined' || !document.body) return []
 
   const testString = 'mmmmmmmmmmlliWWWWW' // mix of narrow/wide glyphs
@@ -183,11 +179,11 @@ function detectInstalledFonts(candidates: string[]): string[] {
     baseWidths.set(base, span.getBoundingClientRect().width)
   }
 
-  const available: string[] = []
-  for (const candidate of candidates) {
+  const available: Font[] = []
+  for (const family of candidates) {
     let isAvailable = false
     for (const base of bases) {
-      span.style.fontFamily = `"${candidate}", ${base}`
+      span.style.fontFamily = `"${family}", ${base}`
       const width = span.getBoundingClientRect().width
       // Heuristic: if width differs from the base family, the candidate likely applied.
       if (Math.abs(width - (baseWidths.get(base) ?? 0)) > 0.1) {
@@ -195,7 +191,7 @@ function detectInstalledFonts(candidates: string[]): string[] {
         break
       }
     }
-    if (isAvailable) available.push(candidate)
+    if (isAvailable) available.push({family})
   }
 
   span.remove()

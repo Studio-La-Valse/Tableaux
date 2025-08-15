@@ -1,4 +1,4 @@
-import type { Shape } from '@/geometry/shape'
+import { isOfShapeKind, type Shape } from '@/geometry/shape'
 import type { Arc } from '../geometry/arc'
 import { IDENTITY_ORIGIN, IDENTITY_RADIUS, type Circle } from '../geometry/circle'
 import { formatCSSRGBA } from '../geometry/color-rgb'
@@ -6,12 +6,14 @@ import type { Ellipse } from '../geometry/ellipse'
 import type { EllipticalArc } from '../geometry/elliptical-arc'
 import { hasFill } from '../geometry/fill'
 import { IDENTITY_END, IDENTITY_START, type Line } from '../geometry/line'
-import type { Parallelogram } from '../geometry/parallelogram'
-import { type Rectangle } from '../geometry/rectangle'
+import { type Parallelogram } from '../geometry/parallelogram'
+import { deconstruct as deconstructRectangle, type Rectangle } from '../geometry/rectangle'
 import { IDENTITY_BR, IDENTITY_TL, type Square } from '../geometry/square'
 import { hasStroke } from '../geometry/stroke'
 import type { TextShape } from '@/geometry/text-shape'
 import { hasAlignment, hasBaseLine, hasDirection } from '@/geometry/text-format-options'
+import { hasRoundCorners, type RoundCorners } from '@/geometry/round-corners'
+import { decomposeMatrix } from '@/geometry/decomposed-transformation-matrix'
 
 export class BitmapPainter {
   constructor(private ctx: CanvasRenderingContext2D) {}
@@ -68,6 +70,12 @@ export class BitmapPainter {
   }
 
   public DrawRectangle(element: Square | Rectangle | Parallelogram): this {
+    if (hasRoundCorners(element)) {
+      if (isOfShapeKind(element, ['parallelogram']))
+        throw new Error('Cannot draw a parallogram with round corners.')
+      return this.DrawRectangleRoundCorners(element)
+    }
+
     const { a, b, c, d, e, f } = element.transformation
 
     this.ctx.save()
@@ -79,7 +87,33 @@ export class BitmapPainter {
       IDENTITY_BR.x - IDENTITY_TL.x,
       IDENTITY_BR.y - IDENTITY_TL.y,
     )
+
     this.ctx.restore()
+    this.setFill(element)
+    this.setStroke(element)
+
+    return this
+  }
+
+  public DrawRectangleRoundCorners(element: (Square | Rectangle) & RoundCorners): this {
+    const { translation, rotation } = decomposeMatrix(element.transformation)
+
+    this.ctx.save()
+
+    this.ctx.translate(translation.x, translation.y)
+    this.ctx.rotate(rotation)
+
+    const { width, height } = deconstructRectangle(element)
+
+    this.ctx.roundRect(0, 0, width, height, [
+      element.topLeft ?? 0,
+      element.topRight ?? 0,
+      element.bottomRight ?? 0,
+      element.bottomLeft ?? 0,
+    ])
+
+    this.ctx.restore()
+
     this.setFill(element)
     this.setStroke(element)
 
@@ -131,7 +165,7 @@ export class BitmapPainter {
     }
 
     if (hasBaseLine(element)) {
-      this.ctx.textBaseline = element.baseLine
+      this.ctx.textBaseline = element.baseline
     }
 
     if (hasDirection(element)) {
@@ -141,11 +175,12 @@ export class BitmapPainter {
     this.ctx.setTransform(a, b, c, d, e, f)
 
     if (fill) {
-      this.setFill(element)
+      this.ctx.fillStyle = formatCSSRGBA(element.fill)
       this.ctx.fillText(element.text, 0, 0)
     }
     if (stroke) {
-      this.setStroke(element)
+      this.ctx.strokeStyle = formatCSSRGBA(element.stroke)
+      this.ctx.lineWidth = element.strokeWidth
       this.ctx.strokeText(element.text, 0, 0)
     }
 

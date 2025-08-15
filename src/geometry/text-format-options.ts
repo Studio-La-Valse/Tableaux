@@ -26,7 +26,7 @@ export const textBaselines = [
 export type BaselineKind = (typeof textBaselines)[number]
 
 export type TextBaseline = {
-  baseLine: BaselineKind
+  baseline: BaselineKind
 }
 
 export function hasBaseLine(value: object): value is TextBaseline {

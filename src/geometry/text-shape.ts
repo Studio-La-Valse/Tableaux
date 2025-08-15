@@ -14,6 +14,7 @@ export type TextShape = BaseShape & {
   kind: 'text'
   text: string
   fontFamily: string
+  fontStyle: string
   fontSize: number
 }
 
@@ -42,6 +43,7 @@ export const createText = (
   origin: XY,
   fontFamily: string,
   fontSize: number,
+  fontStyle: string
 ): TextShape => {
   const transformation: TransformationMatrix = {
     a: 1, // scale X
@@ -52,7 +54,7 @@ export const createText = (
     f: origin.y, // translate Y
   }
 
-  return { kind: 'text', transformation, text, fontFamily, fontSize }
+  return { kind: 'text', transformation, text, fontFamily, fontStyle, fontSize }
 }
 
 export function translate(text: TextShape, delta: XY): TextShape {
