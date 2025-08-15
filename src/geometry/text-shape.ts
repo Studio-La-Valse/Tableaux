@@ -1,3 +1,4 @@
+import type { Font } from './font'
 import type { BaseShape } from './shape'
 import {
   compose,
@@ -13,7 +14,7 @@ import type { XY } from './xy'
 export type TextShape = BaseShape & {
   kind: 'text'
   text: string
-  fontFamily: string
+  fontFamily: Font
   fontSize: number
 }
 
@@ -40,9 +41,8 @@ export function assertIsTextShape(value: unknown): TextShape {
 export const createText = (
   text: string,
   origin: XY,
-  fontFamily: string,
-  fontSize: number,
-): TextShape => {
+  fontFamily: Font,
+  fontSize: number): TextShape => {
   const transformation: TransformationMatrix = {
     a: 1, // scale X
     b: 0,

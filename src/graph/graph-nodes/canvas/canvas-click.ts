@@ -1,6 +1,6 @@
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { assertIsXY, type XY } from '@/geometry/xy'
+import { type XY } from '@/geometry/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 
 @GraphNodeType('Canvas', 'Canvas Click')
@@ -32,7 +32,6 @@ export class CanvasClick extends GraphNode {
 
     if (!this.data.value) return
 
-    const point = assertIsXY(this.data.value)
-    this.output.next(point)
+    this.output.next(this.data.value)
   }
 }

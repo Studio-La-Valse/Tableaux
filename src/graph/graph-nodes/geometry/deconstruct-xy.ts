@@ -15,7 +15,7 @@ export class DeconstructXY extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputXY = this.registerObjectInput('XY')
+    this.inputXY = this.registerObjectInput('XY').validate(assertIsXY)
 
     this.outputX = this.registerNumberOutput('X')
     this.outputY = this.registerNumberOutput('Y')
@@ -24,9 +24,7 @@ export class DeconstructXY extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_xy] of inputIterators.cycleValues(this.inputXY)) {
-      const xy = assertIsXY(_xy)
-
+    for await (const [xy] of inputIterators.cycleValues(this.inputXY)) {
       const { x, y, magnitude, angle } = deconstruct(xy)
 
       this.outputX.next(x)

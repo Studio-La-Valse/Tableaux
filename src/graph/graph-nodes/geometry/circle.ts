@@ -13,16 +13,14 @@ export class Circle extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerObjectInput('XY')
+    this.input1 = this.registerObjectInput('XY').validate(assertIsXY)
     this.input2 = this.registerNumberInput('Radius')
 
     this.outputCircle = this.registerObjectOutput<circle>('Circle')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_xy, radius] of inputIterators.cycleValues(this.input1, this.input2)) {
-      const xy = assertIsXY(_xy)
-
+    for await (const [xy, radius] of inputIterators.cycleValues(this.input1, this.input2)) {
       const circle = createCircle(xy, radius)
       this.outputCircle.next(circle)
     }

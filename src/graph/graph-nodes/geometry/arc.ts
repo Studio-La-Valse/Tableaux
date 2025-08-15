@@ -16,7 +16,7 @@ export class Arc extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input1 = this.registerObjectInput('XY')
+    this.input1 = this.registerObjectInput('XY').validate(assertIsXY)
     this.input2 = this.registerNumberInput('Radius')
     this.input3 = this.registerNumberInput('Start Angle')
     this.input4 = this.registerNumberInput('End Angle')
@@ -26,15 +26,13 @@ export class Arc extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_xy, radius, start, end, clockwise] of inputIterators.cycleValues(
+    for await (const [xy, radius, start, end, clockwise] of inputIterators.cycleValues(
       this.input1,
       this.input2,
       this.input3,
       this.input4,
       this.input5,
     )) {
-      const xy = assertIsXY(_xy)
-
       const arc = createArc(xy, radius, start, end, clockwise)
       this.outputCircle.next(arc)
     }

@@ -11,13 +11,12 @@ export class ColorToHex extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerObjectInput('Color')
+    this.input = this.registerObjectInput('Color').validate((v) => assertIsColorARGB(v))
     this.output1 = this.registerStringOutput('Hex Value')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_argb] of inputIterators.cycleValues(this.input)) {
-      const argb = assertIsColorARGB(_argb)
+    for await (const [argb] of inputIterators.cycleValues(this.input)) {
       const hex = toColorHex(argb)
       this.output1.next(hex)
     }

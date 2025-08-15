@@ -14,18 +14,17 @@ export class Square extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputTopLeft = this.registerObjectInput('TopLeft')
+    this.inputTopLeft = this.registerObjectInput('TopLeft').validate(assertIsXY)
     this.inputSize = this.registerNumberInput('Size')
 
     this.outputSquare = this.registerObjectOutput<square>('Square')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_topLeft, size] of inputIterators.cycleValues(
+    for await (const [topLeft, size] of inputIterators.cycleValues(
       this.inputTopLeft,
       this.inputSize,
     )) {
-      const topLeft = assertIsXY(_topLeft)
       const rectangle = createSquare(topLeft, size)
       this.outputSquare.next(rectangle)
     }

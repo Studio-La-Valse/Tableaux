@@ -12,7 +12,7 @@ export class Canvas extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.input = this.registerObjectInput('Drawable Elements')
+    this.input = this.registerObjectInput('Drawable Elements').validate(assertIsShape)
     this.elementStore = null
   }
 
@@ -31,7 +31,7 @@ export class Canvas extends GraphNode {
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const arr: Shape[] = []
     for await (const [v] of inputIterators.cycleValues(this.input)) {
-      arr.push(assertIsShape(v))
+      arr.push(v)
     }
     this.elementStore?.setElements(arr)
     this.elementStore?.redraw()

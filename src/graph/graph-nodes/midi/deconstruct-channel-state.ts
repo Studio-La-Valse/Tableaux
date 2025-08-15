@@ -16,7 +16,12 @@ export default class DeconstructChannelState extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputState = this.registerObjectInput('State')
+    this.inputState = this.registerObjectInput('State').validate((v) => {
+      if (!isMidiChannelState(v)) {
+        throw new Error('Provided value is not a MIDI channel state.')
+      }
+      return v
+    })
 
     this.outputNoteVelocities = this.registerObjectOutput<{ note: number; velocity: number }>(
       'Note Velocities',
@@ -34,10 +39,6 @@ export default class DeconstructChannelState extends GraphNode {
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     inputIterators.singletonOnly(this.inputState).map((state) => {
-      if (!isMidiChannelState(state)) {
-        throw new Error('Provided value is not a MIDI channel state.')
-      }
-
       // Emit notes and velocities
       for (const [note, velocity] of Object.entries(state.notes)) {
         this.outputNoteVelocities.next({ note: Number(note), velocity })

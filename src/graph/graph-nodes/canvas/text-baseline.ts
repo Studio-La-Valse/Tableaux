@@ -22,7 +22,7 @@ export class TextBaseline extends GraphNode {
   }
 
   protected async solve(): Promise<void> {
-    this.top.next('start')
+    this.top.next('top')
     this.hanging.next('hanging')
     this.middle.next('middle')
     this.alphabetic.next('alphabetic')

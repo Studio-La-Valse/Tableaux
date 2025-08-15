@@ -1,7 +1,7 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { assertIsXY, type XY } from '@/geometry/xy'
+import { type XY } from '@/geometry/xy'
 
 @GraphNodeType('Canvas', 'Mouse Move')
 export class MouseMove extends GraphNode {
@@ -33,7 +33,6 @@ export class MouseMove extends GraphNode {
     if (!setActive) return
     if (!this.data.value) return
 
-    const point = assertIsXY(this.data.value)
-    this.output.next(point)
+    this.output.next(this.data.value)
   }
 }

@@ -24,7 +24,16 @@ export class DeconstructRectangle extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputShape = this.registerObjectInput('Shape')
+    this.inputShape = this.registerObjectInput('Shape').validate((v) => {
+      const geom = assertIsShape(v)
+
+      if (!isOfShapeKind(geom, ['rectangle', 'square'])) {
+        throw new Error(
+          `Unsupported shape kind, expected 'rectangle' or 'square', got: ${geom.kind}`,
+        )
+      }
+      return geom
+    })
 
     this.topLeft = this.registerObjectOutput<xy>('Top Left')
     this.topRight = this.registerObjectOutput<xy>('Top Right')
@@ -40,15 +49,7 @@ export class DeconstructRectangle extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [shape] of inputIterators.cycleValues(this.inputShape)) {
-      const geom = assertIsShape(shape)
-
-      if (!isOfShapeKind(geom, ['rectangle', 'square'])) {
-        throw new Error(
-          `Unsupported shape kind, expected 'rectangle' or 'square', got: ${geom.kind}`,
-        )
-      }
-
+    for await (const [geom] of inputIterators.cycleValues(this.inputShape)) {
       const {
         topLeft,
         topRight,

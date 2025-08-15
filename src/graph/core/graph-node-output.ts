@@ -207,7 +207,7 @@ export class GraphNodeOutputUnknown
   }
 
   public provideString(index: number): string {
-    return this.payload[index] as string
+    return JSON.stringify(this.payload[index])
   }
 
   public provideObject(index: number): JsonObject {

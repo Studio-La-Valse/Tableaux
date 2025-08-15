@@ -22,7 +22,14 @@ export class DeconstrucSquare extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputShape = this.registerObjectInput('Shape')
+    this.inputShape = this.registerObjectInput('Shape').validate((v) => {
+      const geom = assertIsShape(v)
+
+      if (!isOfShapeKind(geom, ['square'])) {
+        throw new Error(`Unsupported shape kind: ${geom.kind}`)
+      }
+      return geom
+    })
 
     this.topLeft = this.registerObjectOutput<XY>('Origin')
     this.topRight = this.registerObjectOutput<XY>('Origin')
@@ -36,13 +43,7 @@ export class DeconstrucSquare extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [shape] of inputIterators.cycleValues(this.inputShape)) {
-      const geom = assertIsShape(shape)
-
-      if (!isOfShapeKind(geom, ['square'])) {
-        throw new Error(`Unsupported shape kind: ${geom.kind}`)
-      }
-
+    for await (const [geom] of inputIterators.cycleValues(this.inputShape)) {
       const {
         topLeft,
         topRight,

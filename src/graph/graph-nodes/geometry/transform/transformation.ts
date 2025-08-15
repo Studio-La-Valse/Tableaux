@@ -13,14 +13,13 @@ export class Transformation extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsShape)
 
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Translated Geometry')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom] of inputIterators.cycleValues(this.inputGeometry)) {
-      const geom = assertIsShape(_geom)
+    for await (const [geom] of inputIterators.cycleValues(this.inputGeometry)) {
       this.outputGeometry.next(geom.transformation)
     }
   }

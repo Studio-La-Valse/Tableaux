@@ -14,18 +14,17 @@ export class CreateSkew extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputCenter = this.registerObjectInput('Center')
+    this.inputCenter = this.registerObjectInput('Center').validate(assertIsXY)
     this.inputFactor = this.registerNumberInput('Skew Factor')
 
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_origin, factor] of inputIterators.cycleValues(
+    for await (const [origin, factor] of inputIterators.cycleValues(
       this.inputCenter,
       this.inputFactor,
     )) {
-      const origin = assertIsXY(_origin)
       const skewed = createSkew(origin, { x: factor, y: 0 })
       this.outputGeometry.next(skewed)
     }

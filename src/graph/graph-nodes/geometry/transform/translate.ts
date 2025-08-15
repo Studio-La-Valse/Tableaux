@@ -14,20 +14,18 @@ export class Translate extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputGeometry = this.registerObjectInput('Geometry')
-    this.inputOffset = this.registerObjectInput('Offset')
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsGeometry)
+    this.inputOffset = this.registerObjectInput('Offset').validate(assertIsXY)
 
     this.outputGeometry = this.registerObjectOutput<Geometry>('Translated Geometry')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [_geom, _offset] of inputIterators.cycleValues(
+    for await (const [geom, offset] of inputIterators.cycleValues(
       this.inputGeometry,
       this.inputOffset,
     )) {
-      const geom = assertIsGeometry(_geom)
-      const xy = assertIsXY(_offset)
-      const moved = translate(geom, xy)
+      const moved = translate(geom, offset)
       this.outputGeometry.next(moved)
     }
   }

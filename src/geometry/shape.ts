@@ -44,3 +44,14 @@ export function assertIsShape(value: unknown): Shape {
 
   return value
 }
+
+export function assertIsOfShapeKind<K extends Shape['kind']>(
+  geom: Shape,
+  allowedKinds: K[],
+): Extract<Shape, { kind: K }> {
+  if (!allowedKinds.includes(geom.kind as K)) {
+    throw new Error(`Provided shape is not of kind [${allowedKinds.join(', ')}]`)
+  }
+
+  return geom as Extract<Shape, { kind: K }>
+}
