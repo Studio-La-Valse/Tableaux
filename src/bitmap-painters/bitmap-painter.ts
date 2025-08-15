@@ -16,7 +16,7 @@ import { hasRoundCorners, type RoundCorners } from '@/geometry/round-corners'
 import { decomposeMatrix } from '@/geometry/decomposed-transformation-matrix'
 
 export class BitmapPainter {
-  constructor(private ctx: CanvasRenderingContext2D) {}
+  constructor(private ctx: CanvasRenderingContext2D) { }
 
   public Init(width: number, height: number): BitmapPainter {
     this.ctx.save()
@@ -158,7 +158,8 @@ export class BitmapPainter {
     const { a, b, c, d, e, f } = element.transformation
 
     this.ctx.save()
-    this.ctx.font = `${element.fontSize}px ${element.fontFamily}`
+    const fontName = `${element.fontFamily.style?.toLocaleLowerCase()} ${element.fontSize}px ${element.fontFamily.postscriptName ?? element.fontFamily.fullName ?? element.fontFamily.family}`
+    this.ctx.font = fontName
 
     if (hasAlignment(element)) {
       this.ctx.textAlign = element.align

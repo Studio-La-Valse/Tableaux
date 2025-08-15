@@ -1,49 +1,29 @@
 import { GraphNode } from '../../core/graph-node'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
-import { type XY } from '@/geometry/xy'
-import { deconstruct } from '@/geometry/circle'
-import { assertIsShape, isOfShapeKind } from '@/geometry/shape'
+import { assertIsFont } from '@/geometry/font'
 
 @GraphNodeType('Canvas', 'Deconstruct Font')
 export class DeconstructFont extends GraphNode {
   private inputFont
 
-  private outputOrigin
-  private outputRadius
-  private outputRotation
-  private outputArea
-  private outputCircumference
+  private outputFamily
+  private outputStyle
 
   constructor(id: string, path: string[]) {
     super(id, path)
 
-    this.inputFont = this.registerObjectInput('Circle').validate((v) => {
-      const geom = assertIsShape(v)
+    this.inputFont = this.registerObjectInput('Font').validate(assertIsFont)
 
-      if (!isOfShapeKind(geom, ['circle'])) {
-        throw new Error(`Unknown geometry type, expected 'circle', got ${geom.kind}`)
-      }
-
-      return geom
-    })
-
-    this.outputOrigin = this.registerObjectOutput<XY>('Origin')
-    this.outputRadius = this.registerNumberOutput('Radius')
-    this.outputRotation = this.registerNumberOutput('Rotation')
-    this.outputArea = this.registerNumberOutput('Area')
-    this.outputCircumference = this.registerNumberOutput('Circumference')
+    this.outputFamily = this.registerStringOutput('Family')
+    this.outputStyle = this.registerStringOutput('Style')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [geom] of inputIterators.cycleValues(this.inputFont)) {
-      const { origin, radius, rotation, area, circumference } = deconstruct(geom)
+    for await (const [font] of inputIterators.cycleValues(this.inputFont)) {
 
-      this.outputOrigin.next(origin)
-      this.outputRadius.next(radius)
-      this.outputRotation.next(rotation)
-      this.outputArea.next(area)
-      this.outputCircumference.next(circumference)
+      this.outputFamily.next(font.family)
+      this.outputStyle.next(font.style ?? "")
     }
   }
 }
