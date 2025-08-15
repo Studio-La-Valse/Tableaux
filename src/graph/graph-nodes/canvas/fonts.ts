@@ -17,7 +17,10 @@ export class Fonts extends GraphNode {
   }
 
   protected async solve(): Promise<void> {
-    let result = await find()
+    let result: Font[] = []
+    if (result.length === 0) {
+      result = await find()
+    }
 
     if (result.length === 0) {
       result = loadDocumentFonts()
@@ -56,11 +59,24 @@ async function find(): Promise<Font[]> {
 
       // Attempt to enumerate local fonts (may prompt the user)
       const fonts = await window.queryLocalFonts()
-      fonts
-        .forEach((v) => {
-          if (v?.family === undefined) return
-          result.push({ family: v.family, fullName: v.fullName, postscriptName: v.postscriptName, style: v.style })
+     fonts .map((v) => {
+        const style = v.style === 'regular' ? undefined : v.style
+        return {
+          family: v.family,
+          fullName: v.fullName,
+          postscriptName: v.postscriptName,
+          style
+        }
+      })
+      .forEach((v) => {
+        if (!v.family) return
+        result.push({
+          family: v.family,
+          fullName: v.fullName,
+          postscriptName: v.postscriptName,
+          style: v.style,
         })
+      })
 
       return result.filter((v) => isInstalled(v))
     } catch {
@@ -113,6 +129,8 @@ function loadDocumentFonts(): Font[] {
 function loadCommonCandidates(): Font[] {
   const result: Font[] = []
 
+  const commonStyles: (string | undefined)[] = [undefined, 'Bold', 'Italic']
+
   // 2) Detect common system fonts heuristically
   const commonCandidates = [
     'Arial',
@@ -144,8 +162,10 @@ function loadCommonCandidates(): Font[] {
     'Didot',
   ]
 
-  for (const family in commonCandidates) {
-    result.push({ family })
+  for (const family of commonCandidates) {
+    for (const style of commonStyles) {
+      result.push({ family, style })
+    }
   }
 
   return result.filter((v) => isInstalled(v))
@@ -156,7 +176,6 @@ function loadCommonCandidates(): Font[] {
 // 2) Detect presence of common system fonts with width-measurement
 // 3) If still empty, emit generic families as a last resort
 function loadFallbackFonts(): Font[] {
-
   const result: Font[] = []
 
   for (const family of [
@@ -185,5 +204,6 @@ function isInstalled(font: Font): boolean {
   const format = formatCtx(font, 16)
   ctx.font = format
 
-  return ctx.font == format
+  const annoyingDefaultFallback = '10px sans-serif'
+  return ctx.font != annoyingDefaultFallback
 }

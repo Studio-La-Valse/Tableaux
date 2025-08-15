@@ -1,8 +1,9 @@
 <template>
   <ResizablePanel :graph-node-id="props.graphNode.id">
     <div class="text-input-wrapper">
-      <textarea readonly class="text-input" :value="graphNode.values.map((t, i) => `${i}: ${t}` ).join('\n')" @mousedown.stop @mousemove.stop
-        @mouseup.stop @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop></textarea>
+      <textarea readonly class="text-input" :value="graphNode.values.map((t, i) => `${i}: ${t}`).join('\n')"
+        @mousedown.stop @mousemove.stop @mouseup.stop @wheel.stop @touchstart.stop @touchmove.stop
+        @touchend.stop></textarea>
     </div>
   </ResizablePanel>
 </template>
@@ -25,8 +26,13 @@ const props = defineProps<{
 }
 
 .text-input {
-  text-align: center;
-  white-space: pre-wrap;
+  text-align: left;
+  /* center-aligned + no wrap can look odd */
+  white-space: pre;
+  /* preserve spaces/tabs, no wrap */
+  overflow-x: auto;
+  /* scroll only when needed */
+  overflow-y: auto;
   width: 100%;
   height: 100%;
   resize: none;
@@ -35,8 +41,8 @@ const props = defineProps<{
   border: 1px solid var(--color-border-hover);
   border-radius: 5px;
   box-sizing: border-box;
-  overflow-y: auto;
 }
+
 
 /* (Optional) Custom scrollbar styling for WebKit browsers */
 .text-input::-webkit-scrollbar {

@@ -16,13 +16,15 @@ export function isFont(value: unknown): value is Font {
 
 export function assertIsFont(value: unknown): Font {
   if (!isFont(value)) {
-    throw new Error("Provided value is not a font.")
+    throw new Error('Provided value is not a font.')
   }
 
   return value
 }
 
 export function formatCtx(value: Font, size: number): string {
-  const fontName = `${value.style?.toLocaleLowerCase()} ${size}px ${value.postscriptName ?? value.fullName ?? value.family}`
+  // notice the space if present, or no space if not
+  const style = value.style ? `${value.style.toLocaleLowerCase()} ` : ""
+  const fontName = `${style}${size}px ${value.family}`
   return fontName
 }

@@ -14,17 +14,18 @@ import type { TextShape } from '@/geometry/text-shape'
 import { hasAlignment, hasBaseLine, hasDirection } from '@/geometry/text-format-options'
 import { hasRoundCorners, type RoundCorners } from '@/geometry/round-corners'
 import { decomposeMatrix } from '@/geometry/decomposed-transformation-matrix'
+import { formatCtx } from '@/geometry/font'
 
 export class BitmapPainter {
-  constructor(private ctx: CanvasRenderingContext2D) { }
+  constructor(private ctx: CanvasRenderingContext2D) {}
 
   public Init(width: number, height: number): BitmapPainter {
-    this.ctx.save()
-
     this.ctx.imageSmoothingEnabled = false
 
     this.resetTransform()
+
     this.ctx.clearRect(0, 0, width, height)
+    this.ctx.save()
 
     return this
   }
@@ -59,12 +60,16 @@ export class BitmapPainter {
     const { a, b, c, d, e, f } = element.transformation
 
     this.ctx.save()
+
     this.ctx.setTransform(a, b, c, d, e, f)
+
     this.ctx.beginPath()
     this.ctx.moveTo(IDENTITY_START.x, IDENTITY_START.y)
     this.ctx.lineTo(IDENTITY_END.x, IDENTITY_END.y)
-    this.ctx.restore()
+
     this.setStroke(element)
+
+    this.ctx.restore()
 
     return this
   }
@@ -88,9 +93,10 @@ export class BitmapPainter {
       IDENTITY_BR.y - IDENTITY_TL.y,
     )
 
-    this.ctx.restore()
     this.setFill(element)
     this.setStroke(element)
+
+    this.ctx.restore()
 
     return this
   }
@@ -104,7 +110,7 @@ export class BitmapPainter {
     this.ctx.rotate(rotation)
 
     const { width, height } = deconstructRectangle(element)
-
+    this.ctx.beginPath()
     this.ctx.roundRect(0, 0, width, height, [
       element.topLeft ?? 0,
       element.topRight ?? 0,
@@ -112,10 +118,10 @@ export class BitmapPainter {
       element.bottomLeft ?? 0,
     ])
 
-    this.ctx.restore()
-
     this.setFill(element)
     this.setStroke(element)
+
+    this.ctx.restore()
 
     return this
   }
@@ -143,9 +149,11 @@ export class BitmapPainter {
       end,
       counterClockwise,
     )
-    this.ctx.restore()
+
     this.setFill(element)
     this.setStroke(element)
+
+    this.ctx.restore()
 
     return this
   }
@@ -158,7 +166,7 @@ export class BitmapPainter {
     const { a, b, c, d, e, f } = element.transformation
 
     this.ctx.save()
-    const fontName = `${element.fontFamily.style?.toLocaleLowerCase()} ${element.fontSize}px ${element.fontFamily.postscriptName ?? element.fontFamily.fullName ?? element.fontFamily.family}`
+    const fontName = formatCtx(element.fontFamily, element.fontSize)
     this.ctx.font = fontName
 
     if (hasAlignment(element)) {
