@@ -1,7 +1,7 @@
 import { GraphNode } from '../../core/graph-node'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
-import { assertIsTextShape, type TextShape } from '@/geometry/text-shape'
+import { assertIsTextShape, type TextShape } from '@/bitmap-painters/text-shape'
 import {
   textAlignments,
   textBaselines,
@@ -10,9 +10,9 @@ import {
   type BaselineKind,
   type DirectionKind,
   type TextFormatOptions,
-} from '@/geometry/text-format-options'
+} from '@/bitmap-painters/text-format-options'
 
-@GraphNodeType('Geometry', 'Set Text Format')
+@GraphNodeType('Canvas', 'Set Text Format')
 export class SetTextFormat extends GraphNode {
   private asConst
 

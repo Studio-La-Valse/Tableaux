@@ -1,6 +1,6 @@
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { formatCtx, type Font } from '@/geometry/font'
+import { formatCtx, type Font } from '@/bitmap-painters/font'
 
 @GraphNodeType('Canvas', 'Fonts')
 export class Fonts extends GraphNode {

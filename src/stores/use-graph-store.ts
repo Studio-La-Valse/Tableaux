@@ -235,7 +235,7 @@ const useGraphInternal = defineStore('graph', () => {
   const addNodeModel: (model: GraphNodeModel) => void = (model: GraphNodeModel) => {
     const activator = activators.getFromPath(model.path)
     if (activator == undefined) {
-      throw new Error()
+      throw new Error(`Cannot find node with path: ${model.path}`)
     }
 
     const graphNode = activator.activate(model.id)
@@ -393,8 +393,14 @@ export const useGraphStore = defineStore('graph-with-history', () => {
   }
 
   const fromModel = (model: GraphModel) => {
-    internalGraph.fromModel(model)
-    history.init(model)
+    const state = internalGraph.toModel()
+    try {
+      internalGraph.fromModel(model)
+      history.init(model)
+    } catch (e) {
+      internalGraph.fromModel(state)
+      throw e
+    }
   }
 
   const toModel = () => internalGraph.toModel()

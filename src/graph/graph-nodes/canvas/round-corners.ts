@@ -3,10 +3,10 @@ import { GraphNodeType } from '../decorators'
 import { assertIsOfShapeKind, assertIsShape } from '@/geometry/shape'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import type { Rectangle } from '@/geometry/rectangle'
-import type { RoundCorners as roundCorners } from '@/geometry/round-corners'
+import type { RoundCorners as roundCorners } from '@/bitmap-painters/round-corners'
 import type { Square } from '@/geometry/square'
 
-@GraphNodeType('Geometry', 'Round Corners')
+@GraphNodeType('Canvas', 'Round Corners')
 export class RoundCorners extends GraphNode {
   private inputGeometry
   private topLeft

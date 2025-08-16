@@ -1,5 +1,5 @@
-import { type ColorRGB } from './color'
-import { isColorRGB } from './color-rgb'
+import { type ColorRGB } from '@/geometry/color'
+import { isColorRGB } from '@/geometry/color-rgb'
 
 export type Fill = { fill: ColorRGB }
 

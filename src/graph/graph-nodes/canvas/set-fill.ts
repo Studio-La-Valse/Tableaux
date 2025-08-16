@@ -1,11 +1,11 @@
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 import { assertIsShape, type Shape } from '@/geometry/shape'
-import type { Fill } from '@/geometry/fill'
+import type { Fill } from '@/bitmap-painters/fill'
 import { assertIsColorARGB } from '@/geometry/color-rgb'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 
-@GraphNodeType('Geometry', 'Set Fill')
+@GraphNodeType('Canvas', 'Set Fill')
 export class SetFill extends GraphNode {
   private inputGeometry
   private color

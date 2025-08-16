@@ -23,9 +23,10 @@ export class Canvas extends GraphNode {
   }
 
   public arm(): void {
-    this.elementStore?.setElements([])
-
     super.arm()
+
+    this.elementStore?.setElements([])
+    this.elementStore?.redraw()
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

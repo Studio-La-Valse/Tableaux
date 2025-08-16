@@ -1,0 +1,20 @@
+import { GraphNode } from '@/graph/core/graph-node'
+import { GraphNodeType } from '../decorators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+
+@GraphNodeType('Math', 'Floor')
+export class Floor extends GraphNode {
+  private numbers
+  private output
+  constructor(id: string, path: string[]) {
+    super(id, path)
+    this.numbers = this.registerNumberInput('Numbers')
+    this.output = this.registerNumberOutput('Floor')
+  }
+
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
+    for await (const n of iterators.createGenerator(this.numbers)) {
+      this.output.next(Math.floor(n))
+    }
+  }
+}

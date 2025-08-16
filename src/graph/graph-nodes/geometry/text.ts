@@ -1,9 +1,9 @@
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
-import { createText, type TextShape } from '@/geometry/text-shape'
+import { createText, type TextShape } from '@/bitmap-painters/text-shape'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { assertIsXY } from '@/geometry/xy'
-import { assertIsFont } from '@/geometry/font'
+import { assertIsFont } from '@/bitmap-painters/font'
 
 @GraphNodeType('Geometry', 'Text')
 export class Text extends GraphNode {

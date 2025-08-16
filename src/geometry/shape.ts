@@ -1,5 +1,5 @@
 import { isTransformationMatrix, type TransformationMatrix } from './transformation-matrix'
-import type { TextShape } from './text-shape'
+import type { TextShape } from '../bitmap-painters/text-shape'
 import { curveKinds, type CurveLike } from './curve-like'
 import { surfaceKinds, type SurfaceLike } from './surface-like'
 

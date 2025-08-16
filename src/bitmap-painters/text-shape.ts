@@ -1,5 +1,5 @@
 import type { Font } from './font'
-import type { BaseShape } from './shape'
+import type { BaseShape } from '../geometry/shape'
 import {
   compose,
   createRotation,
@@ -8,8 +8,8 @@ import {
   createTranslation,
   isTransformationMatrix,
   type TransformationMatrix,
-} from './transformation-matrix'
-import type { XY } from './xy'
+} from '../geometry/transformation-matrix'
+import type { XY } from '../geometry/xy'
 
 export type TextShape = BaseShape & {
   kind: 'text'
@@ -42,7 +42,8 @@ export const createText = (
   text: string,
   origin: XY,
   fontFamily: Font,
-  fontSize: number): TextShape => {
+  fontSize: number,
+): TextShape => {
   const transformation: TransformationMatrix = {
     a: 1, // scale X
     b: 0,

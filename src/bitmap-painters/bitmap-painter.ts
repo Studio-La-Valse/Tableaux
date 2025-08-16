@@ -4,17 +4,18 @@ import { IDENTITY_ORIGIN, IDENTITY_RADIUS, type Circle } from '../geometry/circl
 import { formatCSSRGBA } from '../geometry/color-rgb'
 import type { Ellipse } from '../geometry/ellipse'
 import type { EllipticalArc } from '../geometry/elliptical-arc'
-import { hasFill } from '../geometry/fill'
+import { hasFill } from '@/bitmap-painters/fill'
 import { IDENTITY_END, IDENTITY_START, type Line } from '../geometry/line'
 import { type Parallelogram } from '../geometry/parallelogram'
 import { deconstruct as deconstructRectangle, type Rectangle } from '../geometry/rectangle'
 import { IDENTITY_BR, IDENTITY_TL, type Square } from '../geometry/square'
-import { hasStroke } from '../geometry/stroke'
-import type { TextShape } from '@/geometry/text-shape'
-import { hasAlignment, hasBaseLine, hasDirection } from '@/geometry/text-format-options'
-import { hasRoundCorners, type RoundCorners } from '@/geometry/round-corners'
+import { hasStroke } from '@/bitmap-painters/stroke'
+import type { TextShape } from '@/bitmap-painters/text-shape'
+import { hasAlignment, hasBaseLine, hasDirection } from '@/bitmap-painters/text-format-options'
+import { hasRoundCorners, type RoundCorners } from '@/bitmap-painters/round-corners'
 import { decomposeMatrix } from '@/geometry/decomposed-transformation-matrix'
-import { formatCtx } from '@/geometry/font'
+import { formatCtx } from '@/bitmap-painters/font'
+import { formatCtxFilter, hasFilter } from './filter'
 
 export class BitmapPainter {
   constructor(private ctx: CanvasRenderingContext2D) {}
@@ -62,6 +63,7 @@ export class BitmapPainter {
     this.ctx.save()
 
     this.ctx.setTransform(a, b, c, d, e, f)
+    this.applyEffect(element)
 
     this.ctx.beginPath()
     this.ctx.moveTo(IDENTITY_START.x, IDENTITY_START.y)
@@ -85,6 +87,8 @@ export class BitmapPainter {
 
     this.ctx.save()
     this.ctx.setTransform(a, b, c, d, e, f)
+    this.applyEffect(element)
+
     this.ctx.beginPath()
     this.ctx.rect(
       IDENTITY_TL.x,
@@ -108,6 +112,7 @@ export class BitmapPainter {
 
     this.ctx.translate(translation.x, translation.y)
     this.ctx.rotate(rotation)
+    this.applyEffect(element)
 
     const { width, height } = deconstructRectangle(element)
     this.ctx.beginPath()
@@ -140,6 +145,8 @@ export class BitmapPainter {
     }
     this.ctx.save()
     this.ctx.setTransform(a, b, c, d, e, f)
+    this.applyEffect(element)
+
     this.ctx.beginPath()
     this.ctx.arc(
       IDENTITY_ORIGIN.x,
@@ -182,6 +189,7 @@ export class BitmapPainter {
     }
 
     this.ctx.setTransform(a, b, c, d, e, f)
+    this.applyEffect(element)
 
     if (fill) {
       this.ctx.fillStyle = formatCSSRGBA(element.fill)
@@ -198,19 +206,26 @@ export class BitmapPainter {
     return this
   }
 
-  public setFill(element: object) {
+  public setFill(element: Shape) {
     if (!hasFill(element)) return
 
     this.ctx.fillStyle = formatCSSRGBA(element.fill)
     this.ctx.fill()
   }
 
-  public setStroke(element: object) {
+  public setStroke(element: Shape) {
     if (!hasStroke(element)) return
 
     this.ctx.strokeStyle = formatCSSRGBA(element.stroke)
     this.ctx.lineWidth = element.strokeWidth
     this.ctx.stroke()
+  }
+
+  public applyEffect(element: Shape) {
+    if (!hasFilter(element)) return
+
+    const filter = formatCtxFilter(element)
+    this.ctx.filter = filter
   }
 
   public resetTransform() {
