@@ -3,9 +3,9 @@ import { GraphNode } from '../../core/graph-node'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNodeType } from '../decorators'
 import { assertIsShape, type Shape } from '@/geometry/shape'
-import type { Stroke } from '@/geometry/stroke'
+import type { Stroke } from '@/bitmap-painters/stroke'
 
-@GraphNodeType('Geometry', 'Set Stroke')
+@GraphNodeType('Canvas', 'Set Stroke')
 export class SetStroke extends GraphNode {
   private inputGeometry
   private color

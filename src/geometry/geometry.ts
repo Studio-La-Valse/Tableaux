@@ -84,7 +84,7 @@ import {
   scaleUniform as scaleUniformText,
   skew as skewText,
   type TextShape,
-} from './text-shape'
+} from '../bitmap-painters/text-shape'
 
 import { compose, type TransformationMatrix } from './transformation-matrix'
 import { isShape, type Shape } from './shape'
