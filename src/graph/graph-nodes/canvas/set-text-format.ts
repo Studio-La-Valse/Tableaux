@@ -23,9 +23,9 @@ export class SetTextFormat extends GraphNode {
 
     this.asConst = [
       this.registerObjectInput('Text').validate(assertIsTextShape),
-      this.registerStringInput('Alignment'),
-      this.registerStringInput('Baseline'),
-      this.registerStringInput('Direction'),
+      this.registerStringInput('Alignment', ['start']),
+      this.registerStringInput('Baseline', ['alphabetic']),
+      this.registerStringInput('Direction', ['inherit']),
     ] as const
 
     this.outputGeometry = this.registerObjectOutput<TextShape & Partial<TextFormatOptions>>(

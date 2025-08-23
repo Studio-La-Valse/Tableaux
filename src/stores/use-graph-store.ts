@@ -34,10 +34,8 @@ const useGraphInternal = defineStore('graph', () => {
     const wrapper = reactive<IGraphNodeWrapper>(new GraphNodeWrapper(graphNode))
     wrapper.xy = { x: position.x, y: position.y }
     wrapper.innerNode.onInitialize()
-    if (wrapper.innerNode.inputs.length == 0) {
-      wrapper.innerNode.arm()
-      wrapper.innerNode.complete()
-    }
+    wrapper.innerNode.arm()
+    wrapper.innerNode.complete()
 
     nodeMap.value[id] = wrapper
     return wrapper
@@ -121,6 +119,7 @@ const useGraphInternal = defineStore('graph', () => {
     const input = rightNode.innerNode.inputs[inputIndex]
     input.unsubscribe()
     input.arm()
+    input.complete()
     edges.value.splice(existingEdge, 1)
   }
 

@@ -23,7 +23,7 @@ import {
   GraphNodeOutputUnknown,
   type IGraphNodeOutput,
 } from './graph-node-output'
-import type { JsonObject } from './models/json-value'
+import type { JsonObject, JsonValue } from './models/json-value'
 
 export interface IGraphNode {
   readonly inputs: IGraphNodeInput[]
@@ -251,47 +251,47 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
 
   // --- Input Registration ---
 
-  public registerBooleanInput(description: string): GraphNodeInputBoolean {
+  public registerBooleanInput(description: string, defaultPayload?: boolean[]): GraphNodeInputBoolean {
     this.assertNotInitialized()
     this.assertParamsHasNotBeenSet()
 
-    const input = new GraphNodeInputBoolean(this, description)
+    const input = new GraphNodeInputBoolean(this, description, defaultPayload)
     this._inputs.push(input)
     return input
   }
 
-  public registerNumberInput(description: string): GraphNodeInputNumber {
+  public registerNumberInput(description: string, defaultPayload?: number[]): GraphNodeInputNumber {
     this.assertNotInitialized()
     this.assertParamsHasNotBeenSet()
 
-    const input = new GraphNodeInputNumber(this, description)
+    const input = new GraphNodeInputNumber(this, description, defaultPayload)
     this._inputs.push(input)
     return input
   }
 
-  public registerStringInput(description: string): GraphNodeInputString {
+  public registerStringInput(description: string, defaultPayload?: string[]): GraphNodeInputString {
     this.assertNotInitialized()
     this.assertParamsHasNotBeenSet()
 
-    const input = new GraphNodeInputString(this, description)
+    const input = new GraphNodeInputString(this, description, defaultPayload)
     this._inputs.push(input)
     return input
   }
 
-  public registerObjectInput(description: string): GraphNodeInputObject {
+  public registerObjectInput(description: string, defaultPayload?: JsonObject[]): GraphNodeInputObject {
     this.assertNotInitialized()
     this.assertParamsHasNotBeenSet()
 
-    const input = new GraphNodeInputObject(this, description)
+    const input = new GraphNodeInputObject(this, description, defaultPayload)
     this._inputs.push(input)
     return input
   }
 
-  public registerUnkownInput(description: string): GraphNodeInputUnknown {
+  public registerUnkownInput(description: string, defaultPayload?: JsonValue[]): GraphNodeInputUnknown {
     this.assertNotInitialized()
     this.assertParamsHasNotBeenSet()
 
-    const input = new GraphNodeInputUnknown(this, description)
+    const input = new GraphNodeInputUnknown(this, description, defaultPayload)
     this._inputs.push(input)
     return input
   }

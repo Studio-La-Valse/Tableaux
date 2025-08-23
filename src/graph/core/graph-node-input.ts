@@ -49,9 +49,7 @@ export abstract class GraphNodeInput implements IGraphNodeInput {
   }
 
   protected _armed: boolean = true
-  public get armed() {
-    return this._armed
-  }
+  public abstract get armed(): boolean;
 
   public get graphNodeId() {
     return this.graphNode.id
@@ -93,9 +91,6 @@ export abstract class GraphNodeInput implements IGraphNodeInput {
   }
 
   public complete(): void {
-    // cannot complete yet, we are not subscribed!
-    if (!this.isSubscribed) return
-
     this._armed = false
     this.graphNode.complete()
   }
@@ -115,20 +110,43 @@ export abstract class GraphNodeInputSubscriptionType<
   TOutput extends GraphNodeOutput,
 > extends GraphNodeInputType<T> {
   protected subscription: { graphNodeOutput: TOutput; subscription: Unsubscriber } | undefined
+
   public get isSubscribed() {
     return this.subscription !== undefined
   }
 
-  public get armed() {
-    return this._armed || this.subscription === undefined
+  public get armed(): boolean {
+    if (!this.isSubscribed) {
+      if (this.defaultPayload) {
+        return false
+      }
+
+      return true
+    }
+
+    return this._armed
   }
 
   public get payloadLength(): number {
     if (!this.subscription) {
-      throw new Error('Input cannot peek because it is not subscribed.')
+      if (this.defaultPayload) {
+        return this.defaultPayload.length
+      }
+
+      throw new Error(
+        'Input cannot peek because it is not subscribed and does not have a default payload.',
+      )
     }
 
     return this.subscription.graphNodeOutput.payloadLength
+  }
+
+  constructor(
+    graphNode: GraphNode,
+    description: string,
+    public readonly defaultPayload?: T[] | undefined,
+  ) {
+    super(graphNode, description)
   }
 
   public connectToOutput(graphNodeOutput: TOutput) {
@@ -152,7 +170,9 @@ export class GraphNodeInputBoolean extends GraphNodeInputSubscriptionType<
   ProvidesBoolean
 > {
   public repeat(): GraphNodeInputType<boolean> {
-    return new GraphNodeInputBoolean(this.graphNode, this.description)
+    return new GraphNodeInputBoolean(this.graphNode, this.description, [
+      ...(this.defaultPayload ?? []),
+    ])
   }
 
   public connectTo(graphNodeOutput: IGraphNodeOutput) {
@@ -165,6 +185,10 @@ export class GraphNodeInputBoolean extends GraphNodeInputSubscriptionType<
 
   public peek(index: number): boolean {
     if (!this.subscription) {
+      if (this.defaultPayload) {
+        return this.defaultPayload[index]
+      }
+
       throw new Error('Input cannot peek because it is not subscribed.')
     }
     return this.subscription.graphNodeOutput.provideBoolean(index)
@@ -173,7 +197,9 @@ export class GraphNodeInputBoolean extends GraphNodeInputSubscriptionType<
 
 export class GraphNodeInputNumber extends GraphNodeInputSubscriptionType<number, ProvidesNumber> {
   public repeat(): GraphNodeInputType<number> {
-    return new GraphNodeInputNumber(this.graphNode, this.description)
+    return new GraphNodeInputNumber(this.graphNode, this.description, [
+      ...(this.defaultPayload ?? []),
+    ])
   }
 
   public connectTo(graphNodeOutput: IGraphNodeOutput) {
@@ -186,6 +212,10 @@ export class GraphNodeInputNumber extends GraphNodeInputSubscriptionType<number,
 
   public peek(index: number): number {
     if (!this.subscription) {
+      if (this.defaultPayload) {
+        return this.defaultPayload[index]
+      }
+
       throw new Error('Input cannot peek because it is not subscribed.')
     }
     return this.subscription.graphNodeOutput.provideNumber(index)
@@ -194,7 +224,9 @@ export class GraphNodeInputNumber extends GraphNodeInputSubscriptionType<number,
 
 export class GraphNodeInputString extends GraphNodeInputSubscriptionType<string, ProvidesString> {
   public repeat(): GraphNodeInputType<string> {
-    return new GraphNodeInputString(this.graphNode, this.description)
+    return new GraphNodeInputString(this.graphNode, this.description, [
+      ...(this.defaultPayload ?? []),
+    ])
   }
 
   public connectTo(graphNodeOutput: IGraphNodeOutput) {
@@ -207,6 +239,10 @@ export class GraphNodeInputString extends GraphNodeInputSubscriptionType<string,
 
   public peek(index: number): string {
     if (!this.subscription) {
+      if (this.defaultPayload) {
+        return this.defaultPayload[index]
+      }
+
       throw new Error('Input cannot peek because it is not subscribed.')
     }
     return this.subscription.graphNodeOutput.provideString(index)
@@ -218,7 +254,9 @@ export class GraphNodeInputObject extends GraphNodeInputSubscriptionType<
   ProvidesObject
 > {
   public repeat(): GraphNodeInputType<JsonObject> {
-    return new GraphNodeInputObject(this.graphNode, this.description)
+    return new GraphNodeInputObject(this.graphNode, this.description, [
+      ...(this.defaultPayload ?? []),
+    ])
   }
 
   public connectTo(graphNodeOutput: IGraphNodeOutput) {
@@ -231,6 +269,10 @@ export class GraphNodeInputObject extends GraphNodeInputSubscriptionType<
 
   public peek(index: number): JsonObject {
     if (!this.subscription) {
+      if (this.defaultPayload) {
+        return this.defaultPayload[index]
+      }
+
       throw new Error('Input cannot peek because it is not subscribed.')
     }
     return this.subscription.graphNodeOutput.provideObject(index)
@@ -270,7 +312,9 @@ export class GraphNodeInputValidatedObject<T extends JsonObject> extends GraphNo
     private readonly originalInput: GraphNodeInputObject,
     private readonly validator: (o: JsonObject) => T,
   ) {
-    super(originalInput.graphNode, originalInput.description)
+    super(originalInput.graphNode, originalInput.description, [
+      ...(originalInput.defaultPayload ?? []),
+    ])
   }
 
   public connectTo(graphNodeOuput: IGraphNodeOutput) {
@@ -313,7 +357,9 @@ export class GraphNodeInputUnknown extends GraphNodeInputSubscriptionType<
   ProvidesUnknown
 > {
   public repeat(): GraphNodeInputType<JsonValue> {
-    return new GraphNodeInputUnknown(this.graphNode, this.description)
+    return new GraphNodeInputUnknown(this.graphNode, this.description, [
+      ...(this.defaultPayload ?? []),
+    ])
   }
 
   public connectTo(graphNodeOutput: IGraphNodeOutput) {
@@ -326,6 +372,10 @@ export class GraphNodeInputUnknown extends GraphNodeInputSubscriptionType<
 
   public peek(index: number): JsonValue {
     if (!this.subscription) {
+      if (this.defaultPayload) {
+        return this.defaultPayload[index]
+      }
+
       throw new Error('Input cannot peek because it is not subscribed.')
     }
     return this.subscription.graphNodeOutput.provideUnknown(index)
