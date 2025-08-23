@@ -147,6 +147,10 @@ export abstract class GraphNodeInputSubscriptionType<
     public readonly defaultPayload?: T[] | undefined,
   ) {
     super(graphNode, description)
+
+    if (defaultPayload && defaultPayload.length == 0) {
+      throw new Error("A zero length default graph node input payload is not allowed.")
+    }
   }
 
   public connectToOutput(graphNodeOutput: TOutput) {
