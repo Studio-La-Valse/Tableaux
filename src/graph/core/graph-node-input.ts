@@ -170,9 +170,9 @@ export class GraphNodeInputBoolean extends GraphNodeInputSubscriptionType<
   ProvidesBoolean
 > {
   public repeat(): GraphNodeInputType<boolean> {
-    return new GraphNodeInputBoolean(this.graphNode, this.description, [
-      ...(this.defaultPayload ?? []),
-    ])
+    return new GraphNodeInputBoolean(this.graphNode, this.description, this.defaultPayload ? [
+      ...(this.defaultPayload)
+    ] : undefined)
   }
 
   public connectTo(graphNodeOutput: IGraphNodeOutput) {
@@ -197,9 +197,9 @@ export class GraphNodeInputBoolean extends GraphNodeInputSubscriptionType<
 
 export class GraphNodeInputNumber extends GraphNodeInputSubscriptionType<number, ProvidesNumber> {
   public repeat(): GraphNodeInputType<number> {
-    return new GraphNodeInputNumber(this.graphNode, this.description, [
-      ...(this.defaultPayload ?? []),
-    ])
+    return new GraphNodeInputNumber(this.graphNode, this.description, this.defaultPayload ? [
+      ...(this.defaultPayload)
+    ] : undefined)
   }
 
   public connectTo(graphNodeOutput: IGraphNodeOutput) {
@@ -224,9 +224,9 @@ export class GraphNodeInputNumber extends GraphNodeInputSubscriptionType<number,
 
 export class GraphNodeInputString extends GraphNodeInputSubscriptionType<string, ProvidesString> {
   public repeat(): GraphNodeInputType<string> {
-    return new GraphNodeInputString(this.graphNode, this.description, [
-      ...(this.defaultPayload ?? []),
-    ])
+    return new GraphNodeInputString(this.graphNode, this.description, this.defaultPayload ? [
+      ...(this.defaultPayload)
+    ] : undefined)
   }
 
   public connectTo(graphNodeOutput: IGraphNodeOutput) {
@@ -254,9 +254,9 @@ export class GraphNodeInputObject extends GraphNodeInputSubscriptionType<
   ProvidesObject
 > {
   public repeat(): GraphNodeInputType<JsonObject> {
-    return new GraphNodeInputObject(this.graphNode, this.description, [
-      ...(this.defaultPayload ?? []),
-    ])
+    return new GraphNodeInputObject(this.graphNode, this.description, this.defaultPayload ? [
+      ...(this.defaultPayload)
+    ] : undefined)
   }
 
   public connectTo(graphNodeOutput: IGraphNodeOutput) {
@@ -312,9 +312,9 @@ export class GraphNodeInputValidatedObject<T extends JsonObject> extends GraphNo
     private readonly originalInput: GraphNodeInputObject,
     private readonly validator: (o: JsonObject) => T,
   ) {
-    super(originalInput.graphNode, originalInput.description, [
-      ...(originalInput.defaultPayload ?? []),
-    ])
+    super(originalInput.graphNode, originalInput.description, originalInput.defaultPayload ? [
+      ...(originalInput.defaultPayload)
+    ] : undefined)
   }
 
   public connectTo(graphNodeOuput: IGraphNodeOutput) {
@@ -357,9 +357,9 @@ export class GraphNodeInputUnknown extends GraphNodeInputSubscriptionType<
   ProvidesUnknown
 > {
   public repeat(): GraphNodeInputType<JsonValue> {
-    return new GraphNodeInputUnknown(this.graphNode, this.description, [
-      ...(this.defaultPayload ?? []),
-    ])
+    return new GraphNodeInputUnknown(this.graphNode, this.description, this.defaultPayload ? [
+      ...(this.defaultPayload)
+    ] : undefined)
   }
 
   public connectTo(graphNodeOutput: IGraphNodeOutput) {
