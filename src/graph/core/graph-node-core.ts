@@ -16,7 +16,15 @@ export abstract class GraphNodeCore {
   public errorMessage: string = ''
 
   // Current component state of the node
-  public componentState: ComponentState
+  public get componentState(): ComponentState {
+    if (this.inputs.some((v) => v.armed)) return 'armed'
+
+    if (this._controller) return 'working'
+
+    if (this.errorMessage) return 'error'
+
+    return 'complete'
+  }
 
   // Internal input connections
   protected _inputs: GraphNodeInput[] = []
@@ -65,9 +73,7 @@ export abstract class GraphNodeCore {
   constructor(
     public id: string,
     public path: string[],
-  ) {
-    this.componentState = 'armed'
-  }
+  ) {}
 
   /**
    * Subscribes each output to this node's ID (self-subscription).
@@ -103,8 +109,10 @@ export abstract class GraphNodeCore {
    */
   public arm(): void {
     this.errorMessage = ''
-    this.componentState = 'armed'
-    this.outputs.forEach((output) => output.arm())
+
+    if (this.inputs.some((v) => v.armed)) {
+      this.outputs.forEach((output) => output.arm())
+    }
   }
 
   /**
@@ -141,7 +149,6 @@ export abstract class GraphNodeCore {
 
     // Reset transient errors and move to "working".
     this.errorMessage = ''
-    this.componentState = 'working'
 
     // If a run is already in progress, request a rerun and cancel the current one.
     // abort() is idempotent; calling it multiple times is safe.
@@ -172,9 +179,6 @@ export abstract class GraphNodeCore {
     // Kick off the async solve, passing the signal for cancellation.
     this.solve(iterators)
       .then(() => {
-        // Only mark complete if we were not aborted during/after solve.
-        this.componentState = 'complete'
-
         // Complete outputs
         for (const o of this.outputs) {
           try {
@@ -215,8 +219,6 @@ export abstract class GraphNodeCore {
    * @param error
    */
   private setError(error: unknown) {
-    this.componentState = 'error'
-
     const _error = error instanceof Error ? error : new Error(String(error))
     this.errorMessage = _error.message
   }
