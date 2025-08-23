@@ -12,10 +12,10 @@ import { IDENTITY_BR, IDENTITY_TL, type Square } from '../geometry/square'
 import { hasStroke } from '@/bitmap-painters/stroke'
 import type { TextShape } from '@/bitmap-painters/text-shape'
 import { hasAlignment, hasBaseLine, hasDirection } from '@/bitmap-painters/text-format-options'
-import { hasRoundCorners, type RoundCorners } from '@/bitmap-painters/round-corners'
 import { decomposeMatrix } from '@/geometry/decomposed-transformation-matrix'
 import { formatCtx } from '@/bitmap-painters/font'
 import { formatCtxFilter, hasFilter } from './filter'
+import { hasRoundCorners } from './round-corners'
 
 export class BitmapPainter {
   constructor(private ctx: CanvasRenderingContext2D) {}
@@ -77,12 +77,40 @@ export class BitmapPainter {
   }
 
   public DrawRectangle(element: Square | Rectangle | Parallelogram): this {
-    if (hasRoundCorners(element)) {
-      if (isOfShapeKind(element, ['parallelogram']))
-        throw new Error('Cannot draw a parallogram with round corners.')
-      return this.DrawRectangleRoundCorners(element)
+    if (isOfShapeKind(element, ['parallelogram'])) {
+      return this.DrawParallelogram(element)
     }
 
+    const { translation, rotation } = decomposeMatrix(element.transformation)
+
+    this.ctx.save()
+
+    this.ctx.translate(translation.x, translation.y)
+    this.ctx.rotate(rotation)
+    this.applyEffect(element)
+
+    const { width, height } = deconstructRectangle(element)
+    this.ctx.beginPath()
+    if (hasRoundCorners(element)) {
+      this.ctx.roundRect(0, 0, width, height, [
+        element.topLeft ?? 0,
+        element.topRight ?? 0,
+        element.bottomRight ?? 0,
+        element.bottomLeft ?? 0,
+      ])
+    } else {
+      this.ctx.rect(0, 0, width, height)
+    }
+
+    this.setFill(element)
+    this.setStroke(element)
+
+    this.ctx.restore()
+
+    return this
+  }
+
+  public DrawParallelogram(element: Parallelogram): this {
     const { a, b, c, d, e, f } = element.transformation
 
     this.ctx.save()
@@ -96,32 +124,6 @@ export class BitmapPainter {
       IDENTITY_BR.x - IDENTITY_TL.x,
       IDENTITY_BR.y - IDENTITY_TL.y,
     )
-
-    this.setFill(element)
-    this.setStroke(element)
-
-    this.ctx.restore()
-
-    return this
-  }
-
-  public DrawRectangleRoundCorners(element: (Square | Rectangle) & RoundCorners): this {
-    const { translation, rotation } = decomposeMatrix(element.transformation)
-
-    this.ctx.save()
-
-    this.ctx.translate(translation.x, translation.y)
-    this.ctx.rotate(rotation)
-    this.applyEffect(element)
-
-    const { width, height } = deconstructRectangle(element)
-    this.ctx.beginPath()
-    this.ctx.roundRect(0, 0, width, height, [
-      element.topLeft ?? 0,
-      element.topRight ?? 0,
-      element.bottomRight ?? 0,
-      element.bottomLeft ?? 0,
-    ])
 
     this.setFill(element)
     this.setStroke(element)
