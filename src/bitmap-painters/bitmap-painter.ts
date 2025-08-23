@@ -18,46 +18,50 @@ import { formatCtxFilter, hasFilter } from './filter'
 import { hasRoundCorners } from './round-corners'
 
 export class BitmapPainter {
-  constructor(private ctx: CanvasRenderingContext2D) {}
 
-  public Init(width: number, height: number): BitmapPainter {
-    this.ctx.imageSmoothingEnabled = false
+  constructor(private ctx: CanvasRenderingContext2D) {
 
-    this.resetTransform()
-
-    this.ctx.clearRect(0, 0, width, height)
-    this.ctx.save()
-
-    return this
   }
 
-  public DrawElements(elements: Iterable<Shape | TextShape>): BitmapPainter {
-    for (const element of elements) {
-      this.DrawElement(element)
+  public static init(canvasRef: HTMLCanvasElement, width: number, height: number): BitmapPainter {
+    // We set the dimensions here in case of drawing to the preview canvasses,
+    //  their size is not set when updating the viewport of the design canvas.
+    canvasRef.width = width
+    canvasRef.height = height
+
+    const ctx = canvasRef.getContext("2d")!
+    if (!ctx) {
+      throw new Error("A 2d context could not be created from an HTML Canvas Element.")
     }
 
-    return this
+    ctx.imageSmoothingEnabled = false
+    ctx.clearRect(0, 0, width, height)
+    ctx.setTransform(1, 0, 0, 1, 0, 0)
+    ctx.save()
+
+    const painter = new BitmapPainter(ctx)
+    return painter
   }
 
-  public DrawElement(element: Shape | TextShape): BitmapPainter {
+  public draw(element: Shape | TextShape): BitmapPainter {
     switch (element.kind) {
       case 'arc':
       case 'elliptical-arc':
       case 'circle':
       case 'ellipse':
-        return this.DrawCircle(element)
+        return this.drawCircle(element)
       case 'line':
-        return this.DrawLine(element)
+        return this.drawLine(element)
       case 'rectangle':
       case 'square':
       case 'parallelogram':
-        return this.DrawRectangle(element)
+        return this.drawRectangle(element)
       case 'text':
         return this.drawText(element)
     }
   }
 
-  public DrawLine(element: Line): this {
+  private drawLine(element: Line): this {
     const { a, b, c, d, e, f } = element.transformation
 
     this.ctx.save()
@@ -76,9 +80,9 @@ export class BitmapPainter {
     return this
   }
 
-  public DrawRectangle(element: Square | Rectangle | Parallelogram): this {
+  private drawRectangle(element: Square | Rectangle | Parallelogram): this {
     if (isOfShapeKind(element, ['parallelogram'])) {
-      return this.DrawParallelogram(element)
+      return this.drawParallelogram(element)
     }
 
     const { translation, rotation } = decomposeMatrix(element.transformation)
@@ -110,7 +114,7 @@ export class BitmapPainter {
     return this
   }
 
-  public DrawParallelogram(element: Parallelogram): this {
+  public drawParallelogram(element: Parallelogram): this {
     const { a, b, c, d, e, f } = element.transformation
 
     this.ctx.save()
@@ -133,7 +137,7 @@ export class BitmapPainter {
     return this
   }
 
-  public DrawCircle(element: Arc | EllipticalArc | Circle | Ellipse): this {
+  private drawCircle(element: Arc | EllipticalArc | Circle | Ellipse): this {
     const { a, b, c, d, e, f } = element.transformation
     let start = 0
     let end = Math.PI * 2
@@ -167,7 +171,7 @@ export class BitmapPainter {
     return this
   }
 
-  public drawText(element: TextShape) {
+  private drawText(element: TextShape) {
     const fill = hasFill(element)
     const stroke = hasStroke(element)
     if (!fill && !stroke) return this
@@ -208,14 +212,14 @@ export class BitmapPainter {
     return this
   }
 
-  public setFill(element: Shape) {
+  private setFill(element: Shape) {
     if (!hasFill(element)) return
 
     this.ctx.fillStyle = formatCSSRGBA(element.fill)
     this.ctx.fill()
   }
 
-  public setStroke(element: Shape) {
+  private setStroke(element: Shape) {
     if (!hasStroke(element)) return
 
     this.ctx.strokeStyle = formatCSSRGBA(element.stroke)
@@ -223,18 +227,18 @@ export class BitmapPainter {
     this.ctx.stroke()
   }
 
-  public applyEffect(element: Shape) {
+  private applyEffect(element: Shape) {
     if (!hasFilter(element)) return
 
     const filter = formatCtxFilter(element)
     this.ctx.filter = filter
   }
 
-  public resetTransform() {
+  private resetTransform() {
     this.ctx.setTransform(1, 0, 0, 1, 0, 0)
   }
 
-  public Finish(): BitmapPainter {
+  public finish(): BitmapPainter {
     this.ctx.restore()
     return this
   }

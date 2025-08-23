@@ -4,6 +4,7 @@ import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { assertIsShape } from '@/geometry/shape'
 import PreviewPanel from '@/components/graph/Panels/PreviewPanel.vue'
 import { BitmapPainter } from '@/bitmap-painters/bitmap-painter'
+import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 
 @GraphNodeType('Geometry', 'Preview')
 @GraphNodePanel(PreviewPanel)
@@ -22,23 +23,40 @@ export class Preview extends GraphNode {
     this.canvas = canvas
   }
 
+  override arm(): void {
+    super.arm()
+
+    // The first arm may fail because a canvas may be set after initialization. No problem.
+    this.getPainter()?.finish()
+  }
+
   protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
-    if (!this.canvas) {
-      return await Promise.reject("Canvas has not been set.")
+    const painter = this.getPainter()
+    if (!painter) {
+      throw new Error("An HTMLCanvasElement has not been provided to this preview node.")
     }
-
-    const ctx = this.canvas.getContext("2d")
-    if (!ctx) {
-      return await Promise.reject("Cannot create 2d context from canvas.")
-    }
-
-    const painter = new BitmapPainter(ctx)
-    painter.Init(this.canvas.width, this.canvas.height)
 
     for await (const e of iterators.createGenerator(this.input)) {
-      painter.DrawElement(e)
+      painter.draw(e)
     }
 
-    painter.Finish()
+    painter.finish()
+  }
+
+  public onDestroy(): void {
+    super.onDestroy()
+
+    // Same as arm, no problem if painter couldn't be initialized.
+    this.getPainter()?.finish()
+  }
+
+  private getPainter(): BitmapPainter | null {
+    const { dimensions } = useDesignCanvasStore()
+    if (!this.canvas) {
+      return null
+    }
+
+    const painter = BitmapPainter.init(this.canvas, dimensions.x, dimensions.y)
+    return painter
   }
 }

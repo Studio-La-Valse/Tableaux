@@ -81,6 +81,7 @@ onBeforeUnmount(() => ro.disconnect())
   width: 100%;
   height: 100%;
   min-height: 0;
+  padding: 5px;
   overflow: hidden;
 }
 
@@ -92,21 +93,5 @@ onBeforeUnmount(() => ro.disconnect())
   display: block;
   box-sizing: border-box;
   background-color: black;
-}
-
-/* (Optional) Custom scrollbar styling for WebKit browsers */
-.text-input::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  cursor: grab;
-}
-
-.text-input::-webkit-scrollbar-thumb {
-  background-color: var(--color-text);
-  border-radius: 4px;
-}
-
-.text-input::-webkit-scrollbar-thumb:active {
-  cursor: grabbing;
 }
 </style>
