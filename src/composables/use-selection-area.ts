@@ -4,6 +4,7 @@ import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-st
 import { useGraphStore } from '@/stores/use-graph-store'
 import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useEdgeDrag } from './use-edge-drag'
+import { useEdgeReconnect } from './use-edge-reconnect'
 
 type mode = 'default' | 'add' | 'subtract'
 
@@ -13,10 +14,12 @@ export function useSelectionArea() {
   const canvasRefStore = useGraphCanvasStore()
   const graphStore = useGraphStore()
   const edgeDrag = useEdgeDrag()
+  const edgeReconnect = useEdgeReconnect()
 
   function onMouseDown(e: MouseEvent) {
     if (e.button !== 0) return
     if (edgeDrag.tempEdge.value) return
+    if (edgeReconnect.tempEdges.value.length) return
 
     e.preventDefault()
     e.stopPropagation()

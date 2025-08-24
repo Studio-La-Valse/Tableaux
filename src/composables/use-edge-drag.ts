@@ -22,6 +22,21 @@ export function useEdgeDrag() {
   const { clientToCanvas } = useGraphCanvasStore()
   const { close } = useContextMenuStore()
 
+  function startConnect(fromNodeId: string, fromOutputIndex: number, e: MouseEvent) {
+    if (e.button !== 0) return
+    e.stopPropagation()
+    e.preventDefault()
+
+    close()
+
+    const { x, y } = clientToCanvas(e)
+    tempEdge.value = { fromNodeId, fromOutputIndex, currentX: x, currentY: y }
+
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mousedown', onGlobalClick)
+    window.addEventListener('keyup', onKeyUp)
+  }
+
   // update preview line end coords
   function onMouseMove(e: MouseEvent) {
     if (!tempEdge.value) return
@@ -41,20 +56,6 @@ export function useEdgeDrag() {
   // cancel on Escape key
   function onKeyUp(e: KeyboardEvent) {
     if (e.key === 'Escape') cancelConnect()
-  }
-
-  function startConnect(fromNodeId: string, fromOutputIndex: number, e: MouseEvent) {
-    if (e.button !== 0) return
-    e.stopPropagation()
-
-    close()
-
-    const { x, y } = clientToCanvas(e)
-    tempEdge.value = { fromNodeId, fromOutputIndex, currentX: x, currentY: y }
-
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mousedown', onGlobalClick)
-    window.addEventListener('keyup', onKeyUp)
   }
 
   function finishConnect(

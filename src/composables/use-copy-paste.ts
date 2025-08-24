@@ -13,14 +13,14 @@ export const useCopyPaste = () => {
 
   const onKeyDown = (evt: KeyboardEvent) => {
     // Copy
-    if (evt.ctrlKey && evt.key.toLowerCase() === 'c') {
+    if ((evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === 'c') {
       clipboard.length = 0
       clipboard.push(...selection.selectedNodes)
       pasteEvents = 0
     }
 
     // Paste
-    if (evt.ctrlKey && evt.key.toLowerCase() === 'v' && clipboard.length) {
+    if ((evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === 'v' && clipboard.length) {
       pasteEvents += 1
 
       // duplicate the nodes

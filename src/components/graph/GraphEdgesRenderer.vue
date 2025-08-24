@@ -7,6 +7,14 @@
     <!-- Temporary (drag) edge -->
     <GraphEdgePathRenderer v-if="tempEdge" class="temp-edge-svg" :x1="startX" :y1="startY" :x2="tempEdge.currentX"
       :y2="tempEdge.currentY" :stroke="'grey'" :stroke-width="1" />
+
+    <!-- Temporary (reconnect) edges -->
+    <div v-for="tempReconnect in tempEdges" :key="tempReconnect.toNodeId">
+      <GraphEdgePathRenderer class="temp-edge-svg" :x1="tempReconnect.currentX" :y1="tempReconnect.currentY"
+        :x2="endX(tempReconnect.toNodeId)" :y2="endY(tempReconnect.toNodeId, tempReconnect.toInputIndex)"
+        :stroke="'grey'" :stroke-width="1" />
+    </div>
+
   </div>
 </template>
 
@@ -16,6 +24,7 @@ import GraphEdgeRenderer from './GraphEdgeRenderer.vue';
 import { useGraphStore } from '@/stores/use-graph-store';
 import { useEdgeDrag } from '@/composables/use-edge-drag';
 import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
+import { useEdgeReconnect } from '@/composables/use-edge-reconnect';
 
 // Get your permanent edges from the graph store.
 const graph = useGraphStore();
@@ -23,6 +32,9 @@ const graph = useGraphStore();
 // Get the reactive temporary edge state
 const edgeDrag = useEdgeDrag();
 const tempEdge = edgeDrag.tempEdge;
+
+const edgeReconnect = useEdgeReconnect()
+const tempEdges = edgeReconnect.tempEdges
 
 // Compute the starting point from the source node
 const startX = computed(() => {
@@ -45,6 +57,15 @@ const startY = computed(() => {
   }
   return 0;
 });
+
+const endX = (targetNodeId: string) => {
+  return graph.getNode(targetNodeId).xy.x
+}
+
+const endY = (targetNodeId: string, targetInputIndex: number) => {
+  const node = graph.getNode(targetNodeId)
+  return node.calculateHandleCoordinate(targetInputIndex, node.innerNode.inputs.length)
+}
 
 </script>
 

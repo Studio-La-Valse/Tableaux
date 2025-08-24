@@ -21,6 +21,10 @@ export class Preview extends GraphNode {
 
   public setCanvas(canvas: HTMLCanvasElement | null) {
     this.canvas = canvas
+    if (canvas) {
+      this.arm()
+      this.complete()
+    }
   }
 
   override arm(): void {
@@ -32,9 +36,7 @@ export class Preview extends GraphNode {
 
   protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
     const painter = this.getPainter()
-    if (!painter) {
-      throw new Error("An HTMLCanvasElement has not been provided to this preview node.")
-    }
+    if (!painter) return
 
     for await (const e of iterators.createGenerator(this.input)) {
       painter.draw(e)
