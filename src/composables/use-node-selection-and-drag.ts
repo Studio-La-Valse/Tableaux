@@ -7,12 +7,14 @@ import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store'
 import { useContextMenuStore } from '@/stores/use-context-menu-store'
 import { useEdgeDrag } from './use-edge-drag'
 import type { IGraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
+import { useEdgeReconnect } from './use-edge-reconnect'
 
 export function useNodeSelectionAndDrag() {
   const selectionStore = useGraphNodeSelectionStore()
   const edgeSelectionStore = useEdgeSelectionStore()
   const menu = useContextMenuStore()
   const edgeDrag = useEdgeDrag()
+  const edgeReconnect = useEdgeReconnect()
 
   const { clientToCanvas } = useGraphCanvasStore()
   const graph = useGraphStore()
@@ -36,6 +38,7 @@ export function useNodeSelectionAndDrag() {
     // but still need to close and cancel menu and edge drag.
     menu.close()
     edgeDrag.cancelConnect()
+    edgeReconnect.clear()
     edgeSelectionStore.deselectAll()
 
     // ——— selection logic ———

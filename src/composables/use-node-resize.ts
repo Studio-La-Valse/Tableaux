@@ -3,6 +3,7 @@ import { useGraphStore } from '@/stores/use-graph-store'
 import { onUnmounted, type Ref } from 'vue'
 import { useEdgeDrag } from './use-edge-drag'
 import { useContextMenuStore } from '@/stores/use-context-menu-store'
+import { useEdgeReconnect } from './use-edge-reconnect'
 
 // Define a simple XY interface.
 interface XY {
@@ -20,6 +21,7 @@ interface XY {
 export function useNodeResize(width: Ref<number>, height: Ref<number>) {
   const { clientToCanvas } = useGraphCanvasStore()
   const edgeDrag = useEdgeDrag()
+  const edgeReconnect = useEdgeReconnect()
   const menu = useContextMenuStore()
   const graph = useGraphStore()
 
@@ -39,6 +41,7 @@ export function useNodeResize(width: Ref<number>, height: Ref<number>) {
 
     // we prevented default behavior but need to stop other stuff.
     edgeDrag.cancelConnect()
+    edgeReconnect.clear()
     menu.close()
 
     // Record the initial pointer position in logical coordinates.

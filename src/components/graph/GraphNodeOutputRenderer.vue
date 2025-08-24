@@ -11,6 +11,7 @@
 import { useEdgeDrag } from '@/composables/use-edge-drag';
 import HandleRenderer from './HandleRenderer.vue';
 import type { IGraphNodeOutput } from '@/graph/core/graph-node-output';
+import { useEdgeReconnect } from '@/composables/use-edge-reconnect';
 
 const props = defineProps<{
   output: IGraphNodeOutput;
@@ -18,10 +19,23 @@ const props = defineProps<{
 }>();
 
 const { startConnect } = useEdgeDrag();
+const { tempEdges, startReconnect, finishReconnect } = useEdgeReconnect();
 
 function handleMouseDown(e: MouseEvent) {
-  // Start the drag using the node's id and the output index.
-  startConnect(props.output.graphNodeId, props.output.index, e);
+  const fromId = props.output.graphNodeId
+  const outputIndex = props.output.index
+
+  if (tempEdges.value.length) {
+    // Finish the reconnect has heighest priority
+    finishReconnect(fromId, outputIndex, e)
+  }
+  else if (e.ctrlKey || e.metaKey) {
+    // Start the reconnect of existing edges
+    startReconnect(fromId, outputIndex, e)
+  } else {
+    // Start the drag using the node's id and the output index.
+    startConnect(fromId, outputIndex, e);
+  }
 }
 </script>
 
