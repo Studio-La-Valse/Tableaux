@@ -1,19 +1,19 @@
 import { ref, onUnmounted } from 'vue'
 import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useContextMenuStore } from '@/stores/use-context-menu-store'
+import { useGraphStore } from '@/stores/use-graph-store'
+import type { GraphEdgePrototype } from '@/graph/core/graph-edge'
+
+export type EdgeDirection = 'forward' | 'reverse'
 
 export interface TempEdgeData {
-  fromNodeId: string
-  fromOutputIndex: number
+  direction: EdgeDirection
+  fromNodeId?: string
+  fromOutputIndex?: number
+  toNodeId?: string
+  toInputIndex?: number
   currentX: number
   currentY: number
-}
-
-export interface GraphEdgePrototype {
-  fromNodeId: string
-  fromOutputIndex: number
-  toNodeId: string
-  toInputIndex: number
 }
 
 const tempEdge = ref<TempEdgeData | null>(null)
@@ -21,8 +21,16 @@ const tempEdge = ref<TempEdgeData | null>(null)
 export function useEdgeDrag() {
   const { clientToCanvas } = useGraphCanvasStore()
   const { close } = useContextMenuStore()
-
-  function startConnect(fromNodeId: string, fromOutputIndex: number, e: MouseEvent) {
+  const { connect } = useGraphStore()
+  /**
+   * Start connecting from an OUTPUT (forward) or from an INPUT (reverse)
+   */
+  function startConnect(
+    direction: EdgeDirection,
+    nodeId: string,
+    portIndex: number,
+    e: MouseEvent,
+  ) {
     if (e.button !== 0) return
     e.stopPropagation()
     e.preventDefault()
@@ -30,14 +38,30 @@ export function useEdgeDrag() {
     close()
 
     const { x, y } = clientToCanvas(e)
-    tempEdge.value = { fromNodeId, fromOutputIndex, currentX: x, currentY: y }
+
+    if (direction === 'forward') {
+      tempEdge.value = {
+        direction,
+        fromNodeId: nodeId,
+        fromOutputIndex: portIndex,
+        currentX: x,
+        currentY: y,
+      }
+    } else {
+      tempEdge.value = {
+        direction,
+        toNodeId: nodeId,
+        toInputIndex: portIndex,
+        currentX: x,
+        currentY: y,
+      }
+    }
 
     window.addEventListener('mousemove', onMouseMove)
     window.addEventListener('mousedown', onGlobalClick)
     window.addEventListener('keyup', onKeyUp)
   }
 
-  // update preview line end coords
   function onMouseMove(e: MouseEvent) {
     if (!tempEdge.value) return
     const pos = clientToCanvas(e)
@@ -45,40 +69,50 @@ export function useEdgeDrag() {
     tempEdge.value.currentY = pos.y
   }
 
-  // cancel if clicking anywhere else (left-click but not on an input)
   function onGlobalClick(e: MouseEvent) {
     if (e.button !== 0) return
-    // let finishEdgeConnect handle clicks on inputs;
-    // here we cancel on any other left-click
     cancelConnect()
   }
 
-  // cancel on Escape key
   function onKeyUp(e: KeyboardEvent) {
     if (e.key === 'Escape') cancelConnect()
   }
 
-  function finishConnect(
-    toNodeId: string,
-    toInputIndex: number,
-    e: MouseEvent,
-  ): GraphEdgePrototype | null {
-    if (e.button !== 0 || !tempEdge.value) return null
+  /**
+   * Finish connecting — the clicked port type depends on the starting direction
+   */
+  function finishConnect(nodeId: string, portIndex: number, e: MouseEvent): void {
+    if (e.button !== 0 || !tempEdge.value) return
     e.stopPropagation()
     e.preventDefault()
 
-    const edge: GraphEdgePrototype = {
-      fromNodeId: tempEdge.value.fromNodeId,
-      fromOutputIndex: tempEdge.value.fromOutputIndex,
-      toNodeId,
-      toInputIndex,
+    let edge: GraphEdgePrototype
+
+    if (tempEdge.value.direction === 'forward') {
+      // Started from output → now clicked input
+      edge = {
+        fromNodeId: tempEdge.value.fromNodeId!,
+        fromOutputIndex: tempEdge.value.fromOutputIndex!,
+        toNodeId: nodeId,
+        toInputIndex: portIndex,
+      }
+    } else {
+      // Started from input → now clicked output
+      edge = {
+        fromNodeId: nodeId,
+        fromOutputIndex: portIndex,
+        toNodeId: tempEdge.value.toNodeId!,
+        toInputIndex: tempEdge.value.toInputIndex!,
+      }
     }
 
-    // allow to connect multiple.
-    if (e.shiftKey) return edge
+    if (edge) {
+      connect([edge])
+    }
 
-    cancelConnect()
-    return edge
+    if (!e.shiftKey) {
+      cancelConnect()
+    }
   }
 
   function cancelConnect() {
@@ -88,7 +122,6 @@ export function useEdgeDrag() {
     window.removeEventListener('keyup', onKeyUp)
   }
 
-  // Clean up if component unmounts mid-connect
   onUnmounted(() => {
     cancelConnect()
   })

@@ -42,9 +42,6 @@ export const useEdgeReconnect = () => {
 
     if (tempEdges.value.length == 0) return
 
-    const ids = [...tempEdges.value.map((v) => v.edgeId)]
-    removeEdges(ids)
-
     window.addEventListener('mousemove', onMouseMove)
     window.addEventListener('mousedown', onGlobalClick)
     window.addEventListener('keyup', onKeyUp)
@@ -68,6 +65,9 @@ export const useEdgeReconnect = () => {
     ev.preventDefault()
     ev.stopPropagation()
 
+    const ids = [...tempEdges.value.map((v) => v.edgeId)]
+    removeEdges(ids)
+
     clear()
   }
 
@@ -84,9 +84,15 @@ export const useEdgeReconnect = () => {
     ev.stopPropagation()
     ev.preventDefault()
 
-    tempEdges.value.forEach((v) => {
-      connect(fromNodeId, fromOutputIndex, v.toNodeId, v.toInputIndex)
+    const prototypes = tempEdges.value.map((v) => {
+      return {
+        fromNodeId,
+        fromOutputIndex,
+        toNodeId: v.toNodeId,
+        toInputIndex: v.toInputIndex,
+      }
     })
+    connect(prototypes)
 
     clear()
   }

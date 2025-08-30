@@ -24,3 +24,10 @@ export class GraphEdge {
     }
   }
 }
+
+export interface GraphEdgePrototype {
+  fromNodeId: string
+  fromOutputIndex: number
+  toNodeId: string
+  toInputIndex: number
+}

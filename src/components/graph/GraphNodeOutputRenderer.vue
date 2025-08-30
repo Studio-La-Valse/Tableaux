@@ -18,7 +18,7 @@ const props = defineProps<{
   positionY: number;
 }>();
 
-const { startConnect } = useEdgeDrag();
+const { startConnect, finishConnect, tempEdge } = useEdgeDrag();
 const { tempEdges, startReconnect, finishReconnect } = useEdgeReconnect();
 
 function handleMouseDown(e: MouseEvent) {
@@ -29,12 +29,15 @@ function handleMouseDown(e: MouseEvent) {
     // Finish the reconnect has heighest priority
     finishReconnect(fromId, outputIndex, e)
   }
+  else if (tempEdge.value) {
+    finishConnect(fromId, outputIndex, e)
+  }
   else if (e.ctrlKey || e.metaKey) {
     // Start the reconnect of existing edges
     startReconnect(fromId, outputIndex, e)
   } else {
     // Start the drag using the node's id and the output index.
-    startConnect(fromId, outputIndex, e);
+    startConnect('forward', fromId, outputIndex, e);
   }
 }
 </script>
