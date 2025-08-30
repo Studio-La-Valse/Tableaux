@@ -2,7 +2,7 @@ import type { XY } from '@/geometry/xy'
 import { defineStore } from 'pinia'
 import { computed, reactive, ref, type Ref } from 'vue'
 import { useGraphNodeActivatorStore } from './use-graph-node-activator-store'
-import { GraphEdge } from '@/graph/core/graph-edge'
+import { GraphEdge, type GraphEdgePrototype } from '@/graph/core/graph-edge'
 import type { GraphNodeModel } from '@/graph/core/models/graph-node-model'
 import type { GraphModel } from '@/graph/core/models/graph-model'
 import type { GraphEdgeModel } from '@/graph/core/models/graph-edge-model'
@@ -297,7 +297,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     const state = internalGraph.toModel()
     try {
       internalGraph.clear()
-      history.commit(internalGraph.toModel())
+      commit()
     } catch {
       internalGraph.fromModel(state)
     }
@@ -307,7 +307,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     const state = internalGraph.toModel()
     try {
       internalGraph.addNode(nodePath, position, id)
-      history.commit(internalGraph.toModel())
+      commit()
     } catch {
       internalGraph.fromModel(state)
     }
@@ -323,22 +323,19 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     const state = internalGraph.toModel()
     try {
       ids.forEach((id) => internalGraph.removeNode(id))
-      history.commit(internalGraph.toModel())
+      commit()
     } catch {
       internalGraph.fromModel(state)
     }
   }
 
-  const connect = (
-    leftNodeId: string,
-    outputIndex: number,
-    rightNodeId: string,
-    inputIndex: number,
-  ) => {
+  const connect = (edges: GraphEdgePrototype[]) => {
     const state = internalGraph.toModel()
     try {
-      internalGraph.connect(leftNodeId, outputIndex, rightNodeId, inputIndex)
-      history.commit(internalGraph.toModel())
+      edges.forEach((v) => {
+        internalGraph.connect(v.fromNodeId, v.fromOutputIndex, v.toNodeId, v.toInputIndex)
+      })
+      commit()
     } catch {
       internalGraph.fromModel(state)
     }
@@ -353,7 +350,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     try {
       const edges = [...internalGraph.edges.filter((v) => ids.includes(v.id))]
       edges.forEach((v) => internalGraph.removeEdge(v.rightGraphNode.nodeId, v.inputIndex))
-      history.commit(internalGraph.toModel())
+      commit()
     } catch {
       internalGraph.fromModel(state)
     }
@@ -363,7 +360,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     const state = internalGraph.toModel()
     try {
       internalGraph.insertInput(graphNodeId, index)
-      history.commit(internalGraph.toModel())
+      commit()
     } catch {
       internalGraph.fromModel(state)
     }
@@ -373,7 +370,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     const state = internalGraph.toModel()
     try {
       internalGraph.removeInput(graphNodeId, index)
-      history.commit(internalGraph.toModel())
+      commit()
     } catch {
       internalGraph.fromModel(state)
     }
@@ -383,7 +380,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     const state = internalGraph.toModel()
     try {
       const result = internalGraph.duplicate(nodeIds, pasteEvents)
-      history.commit(internalGraph.toModel())
+      commit()
       return result
     } catch (e) {
       internalGraph.fromModel(state)

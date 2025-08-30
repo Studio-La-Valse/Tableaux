@@ -1,84 +1,115 @@
-<!-- src/components/GraphEdgesRenderer.vue -->
 <template>
   <div class="edges-container">
     <!-- Permanent edges -->
-    <GraphEdgeRenderer v-for="edge in graph.edges" :key="edge.id" :edge="edge" />
+    <GraphEdgeRenderer
+      v-for="edge in graph.edges"
+      :key="edge.id"
+      :edge="edge"
+    />
 
     <!-- Temporary (drag) edge -->
-    <GraphEdgePathRenderer v-if="tempEdge" class="temp-edge-svg" :x1="startX" :y1="startY" :x2="tempEdge.currentX"
-      :y2="tempEdge.currentY" :stroke="'grey'" :stroke-width="1" />
+    <GraphEdgePathRenderer
+      v-if="tempEdge"
+      class="temp-edge-svg"
+      :x1="dragStart.x"
+      :y1="dragStart.y"
+      :x2="dragEnd.x"
+      :y2="dragEnd.y"
+      stroke="grey"
+      :stroke-width="1"
+    />
 
     <!-- Temporary (reconnect) edges -->
     <div v-for="tempReconnect in tempEdges" :key="tempReconnect.toNodeId">
-      <GraphEdgePathRenderer class="temp-edge-svg" :x1="tempReconnect.currentX" :y1="tempReconnect.currentY"
-        :x2="endX(tempReconnect.toNodeId)" :y2="endY(tempReconnect.toNodeId, tempReconnect.toInputIndex)"
-        :stroke="'grey'" :stroke-width="1" />
+      <GraphEdgePathRenderer
+        class="temp-edge-svg"
+        :x1="tempReconnect.currentX"
+        :y1="tempReconnect.currentY"
+        :x2="endX(tempReconnect.toNodeId)"
+        :y2="endY(tempReconnect.toNodeId, tempReconnect.toInputIndex)"
+        stroke="grey"
+        :stroke-width="1"
+      />
     </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import GraphEdgeRenderer from './GraphEdgeRenderer.vue';
-import { useGraphStore } from '@/stores/use-graph-store';
-import { useEdgeDrag } from '@/composables/use-edge-drag';
-import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
-import { useEdgeReconnect } from '@/composables/use-edge-reconnect';
+import { computed } from 'vue'
+import GraphEdgeRenderer from './GraphEdgeRenderer.vue'
+import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue'
+import { useGraphStore } from '@/stores/use-graph-store'
+import { useEdgeDrag } from '@/composables/use-edge-drag' // your new unified composable
+import { useEdgeReconnect } from '@/composables/use-edge-reconnect'
 
-// Get your permanent edges from the graph store.
-const graph = useGraphStore();
-
-// Get the reactive temporary edge state
-const edgeDrag = useEdgeDrag();
-const tempEdge = edgeDrag.tempEdge;
+const graph = useGraphStore()
+const { tempEdge } = useEdgeDrag()
 
 const edgeReconnect = useEdgeReconnect()
 const tempEdges = edgeReconnect.tempEdges
 
-// Compute the starting point from the source node
-const startX = computed(() => {
-  if (tempEdge.value) {
-    const node = graph.getNode(tempEdge.value.fromNodeId);
-    if (node) {
-      // Assume the output handle is at the right edge with an extra offset.
-      return node.xy.x + (node.width ?? 150);
-    }
-  }
-  return 0;
-});
-
-const startY = computed(() => {
-  if (tempEdge.value) {
-    const node = graph.getNode(tempEdge.value.fromNodeId);
-    if (node) {
-      return node.calculateHandleCoordinate(tempEdge.value.fromOutputIndex, node.innerNode.outputs.length);
-    }
-  }
-  return 0;
-});
-
-const endX = (targetNodeId: string) => {
-  return graph.getNode(targetNodeId).xy.x
+// Helpers to get port coordinates
+function getOutputX(nodeId: string) {
+  const node = graph.getNode(nodeId)
+  return node.xy.x + (node.width ?? 150)
+}
+function getOutputY(nodeId: string, outputIndex: number) {
+  const node = graph.getNode(nodeId)
+  return node.calculateHandleCoordinate(outputIndex, node.innerNode.outputs.length)
+}
+function getInputX(nodeId: string) {
+  return graph.getNode(nodeId).xy.x
+}
+function getInputY(nodeId: string, inputIndex: number) {
+  const node = graph.getNode(nodeId)
+  return node.calculateHandleCoordinate(inputIndex, node.innerNode.inputs.length)
 }
 
-const endY = (targetNodeId: string, targetInputIndex: number) => {
-  const node = graph.getNode(targetNodeId)
-  return node.calculateHandleCoordinate(targetInputIndex, node.innerNode.inputs.length)
-}
+// Compute drag start/end points based on direction
+const dragStart = computed(() => {
+  if (!tempEdge.value) return { x: 0, y: 0 }
+  if (tempEdge.value.direction === 'forward') {
+    return {
+      x: getOutputX(tempEdge.value.fromNodeId!),
+      y: getOutputY(tempEdge.value.fromNodeId!, tempEdge.value.fromOutputIndex!)
+    }
+  } else {
+    return {
+      x: tempEdge.value.currentX,
+      y: tempEdge.value.currentY
+    }
+  }
+})
 
+const dragEnd = computed(() => {
+  if (!tempEdge.value) return { x: 0, y: 0 }
+  if (tempEdge.value.direction === 'forward') {
+    return {
+      x: tempEdge.value.currentX,
+      y: tempEdge.value.currentY
+    }
+  } else {
+    return {
+      x: getInputX(tempEdge.value.toNodeId!),
+      y: getInputY(tempEdge.value.toNodeId!, tempEdge.value.toInputIndex!)
+    }
+  }
+})
+
+// Still used for tempEdges (plural)
+const endX = (targetNodeId: string) => getInputX(targetNodeId)
+const endY = (targetNodeId: string, targetInputIndex: number) =>
+  getInputY(targetNodeId, targetInputIndex)
 </script>
 
 <style scoped>
 .edges-container {
-  /* Ensure this container is rendered as a child of your .canvas-content element. */
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  /* so that edges do not block pointer events */
 }
 
 .temp-edge-svg {

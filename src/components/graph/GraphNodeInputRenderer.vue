@@ -34,31 +34,28 @@ const props = defineProps<{
 const canvasTransform = useCanvasTransform()
 const scale = computed(() => canvasTransform.scale.value)
 
-const graph = useGraphStore();
-const { finishConnect } = useEdgeDrag();
-const { connect } = useGraphStore();
+const { removeInput, insertInput } = useGraphStore();
+const { startConnect, finishConnect, tempEdge } = useEdgeDrag();
+
 const handleMouseUp = (e: MouseEvent) => {
-  const prototype = finishConnect(props.input.graphNodeId, props.input.index, e)
-  if (prototype) {
-    connect(
-      prototype.fromNodeId,
-      prototype.fromOutputIndex,
-      prototype.toNodeId,
-      prototype.toInputIndex
-    )
+  if (tempEdge.value) {
+    finishConnect(props.input.graphNodeId, props.input.index, e)
+  }
+  else {
+    startConnect('reverse', props.input.graphNodeId, props.input.index, e)
   }
 }
 
 const removerClick = () => {
-  graph.removeInput(props.graphNode.nodeId, props.input.index)
+  removeInput(props.graphNode.nodeId, props.input.index)
 }
 
 const adderClick = () => {
-  graph.insertInput(props.graphNode.nodeId, props.input.index + 1)
+  insertInput(props.graphNode.nodeId, props.input.index + 1)
 }
 
 const prependerClick = () => {
-  graph.insertInput(props.graphNode.nodeId, props.input.index)
+  insertInput(props.graphNode.nodeId, props.input.index)
 }
 </script>
 

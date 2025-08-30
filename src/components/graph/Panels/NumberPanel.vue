@@ -2,8 +2,8 @@
   <ResizablePanel :graph-node-id="graphNode.id">
     <div class="number-input-wrapper">
       <input ref="inputRef" class="number-input" type="number" :value="props.graphNode.data.value"
-        @keydown="handleKeyDown" @input="handleInput" @mousedown.stop @mousemove.stop @mouseup.stop @wheel.stop
-        @touchstart.stop @touchmove.stop @touchend.stop />
+        @keydown="handleKeyDown" @input="handleInput" @mousedown.stop @mousemove.stop @mouseup.stop="handleMouseUp"
+        @wheel.stop @touchstart.stop @touchmove.stop @touchend.stop />
     </div>
 
   </ResizablePanel>
@@ -23,13 +23,22 @@ const props = defineProps<{
 
 const inputRef = ref<HTMLTextAreaElement | null>(null);
 
+let changed = false
 const handleInput = (e: Event) => {
   const target = e.target as HTMLInputElement
   const numValue = Number(target.value)
   if (isNaN(numValue)) return
 
   props.graphNode.onChange(numValue)
-  graph.commit()
+  changed = true
+}
+
+const handleMouseUp = () => {
+  if (changed) {
+    graph.commit()
+  }
+
+  changed = false
 }
 
 const handleClickOutside = (event: MouseEvent) => {

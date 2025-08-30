@@ -24,11 +24,12 @@ const props = defineProps<{
 
 const textInputRef = ref<HTMLTextAreaElement | null>(null);
 
+let changed = false
 const handleInput = (event: Event) => {
   const target = event.target as HTMLTextAreaElement
   const value = target.value
   props.graphNode.onChange(value)
-  graph.commit()
+  changed = true
 }
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -37,6 +38,11 @@ const handleClickOutside = (event: MouseEvent) => {
     !textInputRef.value.contains(event.target as Node)
   ) {
     textInputRef.value.blur();
+    if (changed) {
+      graph.commit()
+    }
+
+    changed = false
   }
 }
 
