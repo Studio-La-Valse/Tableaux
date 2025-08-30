@@ -95,7 +95,7 @@ export class InputIteratorsAsync {
     const lengths = inputs.map((i) => i.payloadLength)
     const maxLen = Math.max(...lengths)
 
-    if (inputs.length >= 2 && lengths.some((len) => len === 0)) {
+    if (inputs.length >= 2 && maxLen > 0 && lengths.some((len) => len === 0)) {
       throw new Error(
         `cycleInputsValues: all payloads must be non-empty. Got lengths=[${lengths.join(',')}]`,
       )
