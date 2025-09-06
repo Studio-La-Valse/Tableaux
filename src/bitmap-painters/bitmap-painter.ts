@@ -5,7 +5,7 @@ import { formatCSSRGBA } from '../geometry/color-rgb'
 import type { Ellipse } from '../geometry/ellipse'
 import type { EllipticalArc } from '../geometry/elliptical-arc'
 import { hasFill } from '@/bitmap-painters/fill'
-import { IDENTITY_END, IDENTITY_START, type Line } from '../geometry/line'
+import { deconstruct, type Line } from '../geometry/line'
 import { type Parallelogram } from '../geometry/parallelogram'
 import { deconstruct as deconstructRectangle, type Rectangle } from '../geometry/rectangle'
 import { IDENTITY_BR, IDENTITY_TL, type Square } from '../geometry/square'
@@ -18,10 +18,7 @@ import { formatCtxFilter, hasFilter } from './filter'
 import { hasRoundCorners } from './round-corners'
 
 export class BitmapPainter {
-
-  constructor(private ctx: CanvasRenderingContext2D) {
-
-  }
+  constructor(private ctx: CanvasRenderingContext2D) {}
 
   public static init(canvasRef: HTMLCanvasElement, width: number, height: number): BitmapPainter {
     // We set the dimensions here in case of drawing to the preview canvasses,
@@ -29,9 +26,9 @@ export class BitmapPainter {
     canvasRef.width = width
     canvasRef.height = height
 
-    const ctx = canvasRef.getContext("2d")!
+    const ctx = canvasRef.getContext('2d')!
     if (!ctx) {
-      throw new Error("A 2d context could not be created from an HTML Canvas Element.")
+      throw new Error('A 2d context could not be created from an HTML Canvas Element.')
     }
 
     ctx.imageSmoothingEnabled = false
@@ -62,16 +59,15 @@ export class BitmapPainter {
   }
 
   private drawLine(element: Line): this {
-    const { a, b, c, d, e, f } = element.transformation
+    const { start, end } = deconstruct(element)
 
     this.ctx.save()
 
-    this.ctx.setTransform(a, b, c, d, e, f)
     this.applyEffect(element)
 
     this.ctx.beginPath()
-    this.ctx.moveTo(IDENTITY_START.x, IDENTITY_START.y)
-    this.ctx.lineTo(IDENTITY_END.x, IDENTITY_END.y)
+    this.ctx.moveTo(start.x, start.y)
+    this.ctx.lineTo(end.x, end.y)
 
     this.setStroke(element)
 

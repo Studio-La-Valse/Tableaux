@@ -7,6 +7,7 @@ import { GraphNodeType } from '../decorators'
 export class Buffer extends GraphNode {
   private inputValues
   private inputLength
+  private inputReset
   private output
 
   public override data: { buffer: JsonValue[] } = { buffer: [] }
@@ -16,11 +17,16 @@ export class Buffer extends GraphNode {
 
     this.inputValues = this.registerUnkownInput('Input')
     this.inputLength = this.registerNumberInput('Length')
+    this.inputReset = this.registerBooleanInput('Reset')
     this.output = this.registerUnkownOutput('Values')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    const [length] = inputIterators.singletonOnly(this.inputLength)
+    const [length, reset] = inputIterators.singletonOnly(this.inputLength, this.inputReset)
+
+    if (reset) {
+      this.data.buffer.length = 0
+    }
 
     for await (const [v] of inputIterators.cycleValues(this.inputValues)) {
       this.data.buffer.push(v)

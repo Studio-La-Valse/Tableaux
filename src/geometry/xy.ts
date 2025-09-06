@@ -43,6 +43,34 @@ export function applyMatrix(p: XY, m: TransformationMatrix): XY {
   }
 }
 
+export function fromAngleAndLength(angle: number, length: number): XY {
+  const x = length * Math.cos(angle)
+  const y = length * Math.sin(angle)
+  return { x, y }
+}
+
+export function normalize(xy: XY): XY {
+  const { x: inX, y: inY } = xy
+  const length = Math.sqrt(inX * inX + inY * inY)
+
+  let x = 0
+  let y = 0
+
+  if (length > 0) {
+    x = inX / length
+    y = inY / length
+  }
+
+  return { x, y }
+}
+
+export function multiply(xy: XY, factor: number): XY {
+  const { x: inX, y: inY } = xy
+  const x = inX * factor
+  const y = inY * factor
+  return { x, y }
+}
+
 export type DeconstructedXY = {
   x: number
   y: number
