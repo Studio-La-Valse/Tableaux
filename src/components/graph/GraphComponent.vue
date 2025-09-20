@@ -1,7 +1,7 @@
 <template>
   <div class="page">
 
-    <GraphControls />
+    <GraphControls @toggle-controls="showControls = !showControls" />
 
     <div ref="viewportRef" class="canvas-container" @contextmenu.prevent @dblclick.prevent="onCanvasDblClick"
       @mousedown="onMouseDown" @wheel="canvasTransform.onWheel">
@@ -14,7 +14,7 @@
 
       <ActivatorTree />
 
-      <EmitterFormComponent />
+      <ControlsComponent v-if="showControls"/>
     </div>
   </div>
 
@@ -37,7 +37,7 @@ import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-st
 import { useSelectionAreaStore } from '@/stores/use-selection-area-store';
 import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store';
 import { useGraphStore } from '@/stores/use-graph-store';
-import EmitterFormComponent from './EmitterForm/EmitterFormComponent.vue';
+import ControlsComponent from '../controls/ControlsComponent.vue';
 
 const selectionArea = useSelectionArea();
 const selectionAreaStore = useSelectionAreaStore();
@@ -50,6 +50,8 @@ const canvasStore = useGraphCanvasStore()
 
 const viewportRef = ref<HTMLElement | null>(null);
 const canvasRef = ref<HTMLElement | null>(null);
+
+const showControls = ref(false)
 
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({

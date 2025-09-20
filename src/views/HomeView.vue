@@ -45,7 +45,7 @@
 import { ref } from 'vue'
 import { Panel, PanelGroup, PanelResizeHandle } from 'vue-resizable-panels'
 import GraphCanvas from '@/components/graph/GraphComponent.vue'
-import CanvasComponent from '@/components/design/CanvasComponent.vue'
+import CanvasComponent from '@/components/canvas/CanvasComponent.vue'
 import { lastError } from '@/stores/use-error-log-store'
 
 const direction = ref<'horizontal' | 'vertical'>('horizontal')
@@ -94,19 +94,30 @@ function navigateToGithub() {
 
 /* Horizontal handles */
 :deep(.gutter-horizontal) {
-  width: 6px;
-  /* hit area */
-  background: var(--color-border-hover);
+  width: 2px;
+  background-color: var(--color-border-hover);
   cursor: col-resize;
+}
+
+:deep(.gutter-horizontal:hover::before) {
+  height: 4px;
 }
 
 /* Vertical handles */
 :deep(.gutter-vertical) {
-  height: 6px;
-  background: var(--color-border-hover);
+  height: 2px;
+  background-color: var(--color-border-hover);
   cursor: row-resize;
 }
 
+:deep(.gutter-horizontal:hover::before) {
+  height: 4px;
+}
+
+:deep(.gutter-horizontal:hover),
+:deep(.gutter-vertical:hover) {
+  background-color: var(--color-accent);
+}
 
 .panel-content {
   flex: 1;
@@ -117,7 +128,6 @@ function navigateToGithub() {
 
 /* Gutters */
 .gutter {
-  background-color: var(--color-border-hover);
   flex-shrink: 0;
 }
 

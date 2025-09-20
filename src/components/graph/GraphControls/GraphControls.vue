@@ -1,97 +1,121 @@
 <template>
   <div class="canvas-toolbar">
     <div class="button-group">
-      <button type="button" @click="undo" :disabled="!hasUndo" title="Undo">
-        ⏮️
-      </button>
-      <button type="button" @click="redo" :disabled="!hasRedo" title="Redo">
-        ⏭️
-      </button>
-      <button type="button" @click="save" title="Save">
-        💾
-      </button>
-      <button type="button" @click="load" title="Load">
-        📂
-      </button>
+      <button type="button" @click="toggleControls" title="Controls">🛠</button>
+      <button type="button" @click="undo" :disabled="!hasUndo" title="Undo">⏮️</button>
+      <button type="button" @click="redo" :disabled="!hasRedo" title="Redo">⏭️</button>
+      <button type="button" @click="save" title="Save">💾</button>
+      <button type="button" @click="load" title="Load">📂</button>
+      <button type="button" @click="newDocument" title="New">📄</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useGraphHistoryStore } from '@/stores/use-graph-history-store';
-import { useGraphStore } from '@/stores/use-graph-store';
-import { storeToRefs } from 'pinia';
+import { storeToRefs } from 'pinia'
+import { useGraphHistoryStore } from '@/stores/use-graph-history-store'
+import { useGraphStore } from '@/stores/use-graph-store'
+import { ref } from 'vue'
 
 const history = useGraphHistoryStore()
 const { hasUndo, hasRedo } = storeToRefs(history)
-const { toModel, fromModel, undo, redo, } = useGraphStore()
 
-const save = async () => {
-  const model = toModel()
-  const modelString = JSON.stringify(model, null, 2)
-  await saveToFile('graph-model.json', modelString)
+const { init, toModel, fromModel, undo, redo } = useGraphStore()
+
+const lastSavedModel = ref(toModel())
+const hasUnsavedChanges = () => {
+  return JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel())
 }
 
-const load = async () => {
-  const fileContent = await loadFromFile()
-  if (!fileContent) return
+const emit = defineEmits<{
+  (e: 'toggle-controls'): void
+}>()
 
-  // Parse and use the loaded content
-  const model = JSON.parse(fileContent)
-  fromModel(model)
-}
+const toggleControls = () => emit('toggle-controls')
 
+/** --- File I/O helpers --- */
 const saveToFile = async (filename: string, content: string) => {
   try {
     const opts: SaveFilePickerOptions = {
-      types: [
-        {
-          description: 'JSON File',
-          accept: { 'application/json': ['.json'] }
-        }
-      ],
+      types: [{ description: 'JSON File', accept: { 'application/json': ['.json'] } }],
       suggestedName: filename
     }
-
-    // Show save file picker dialog
     const handle = await window.showSaveFilePicker(opts)
-
-    // Create writable stream and write content
     const writable = await handle.createWritable()
     await writable.write(content)
     await writable.close()
+    return true
   } catch (err) {
-    if ((err as Error).name === 'AbortError') return
-    alert('Failed to save file:' + err)
+    if ((err as Error).name === 'AbortError') return false
+    alert('Failed to save file: ' + err)
+    return false
   }
 }
 
 const loadFromFile = async () => {
   try {
-    // Show open file picker
     const [fileHandle] = await window.showOpenFilePicker({
-      types: [
-        {
-          description: 'JSON File',
-          accept: { 'application/json': ['.json'] }
-        }
-      ],
+      types: [{ description: 'JSON File', accept: { 'application/json': ['.json'] } }],
       multiple: false
     })
-
-    // Get file and read its contents
     const file = await fileHandle.getFile()
-    const contents = await file.text()
-    return contents
+    return await file.text()
   } catch (err) {
-    if ((err as Error).name === 'AbortError') return
-    alert('Failed to load file:' + err)
+    if ((err as Error).name !== 'AbortError') {
+      alert('Failed to load file: ' + err)
+    }
   }
 }
 
+/** --- Core actions --- */
+const save = async () => {
+  const modelString = JSON.stringify(toModel(), null, 2)
+  const saved = await saveToFile('graph-model.json', modelString)
+  if (saved) {
+    lastSavedModel.value = toModel()
+  }
+  return saved
+}
+
+const loadModel = async () => {
+  const fileContent = await loadFromFile()
+  if (!fileContent) return
+  init()
+  fromModel(JSON.parse(fileContent))
+  lastSavedModel.value = toModel()
+}
+
+/** --- Unsaved changes guard --- */
+const confirmUnsavedChanges = async (proceed: () => void) => {
+  if (!hasUnsavedChanges()) return proceed()
+
+  const saveFirst = window.confirm(
+    'You have unsaved changes.\n\nWould you like to save before continuing?\n\nPress OK to save, Cancel to choose another action.'
+  )
+
+  if (saveFirst) {
+    const saved = await save()
+    if (saved) proceed()
+    return
+  }
+
+  const ignore = window.confirm(
+    'Do you want to ignore unsaved changes and continue anyway?'
+  )
+  if (ignore) proceed()
+}
+
+/** --- Public handlers --- */
+const load = async () => confirmUnsavedChanges(loadModel)
+const newDocument = async () => {
+  await confirmUnsavedChanges(() => {
+    init()
+    lastSavedModel.value = toModel()
+  })
+}
 </script>
 
-<style lang="css" scoped>
+<style scoped>
 .canvas-toolbar {
   display: flex;
   align-items: center;
@@ -99,86 +123,21 @@ const loadFromFile = async () => {
   padding: 0.5rem 1rem;
   background: var(--color-background-mute);
   border-bottom: 1px solid var(--color-border);
-
-  /* temp width hack */
   overflow-x: auto;
   white-space: nowrap;
-
   height: 80px;
 }
 
-.field-group {
-  display: flex;
-  flex-direction: column;
-  width: 150px;
-  color: var(--color-text);
-}
-
-.field-group label {
-  font-size: 0.75rem;
-  color: var(--color-text);
-  margin-bottom: 4px;
-}
-
-.field-group select,
-.field-group input {
-  font-size: 0.9rem;
-  padding: 6px 8px;
-  background: var(--color-background-soft);
-  color: var(--color-text);
-  border: 1px solid var(--color-border-hover);
-  border-radius: 4px;
-}
-
-/* lock-ratio area */
-.lock-group {
-  align-items: flex-start;
-  width: auto;
-}
-
-.lock-header {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.lock-header button {
-  font-size: 1.2rem;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-}
-
-.lock-header button:hover {
-  background: var(--color-border);
-  transition: background 0.5s;
-}
-
-.ratio-display {
-  font-size: 0.9rem;
-  color: var(--color-text);
-  min-width: 3em;
-  text-align: right;
-}
-
-/* flip & fullscreen */
 .button-group {
   margin-left: auto;
   display: flex;
   align-items: center;
-  /* centers buttons vertically */
   gap: 0.5rem;
-  font-size: inherit;
 }
 
-/* full control of size and alignment */
 .button-group button {
   width: 50px;
-  /* set to whatever you prefer */
   height: 50px;
-  /* or any other height */
   font-size: 1.2rem;
   background: var(--color-background-soft);
   color: var(--color-text);
@@ -191,7 +150,6 @@ const loadFromFile = async () => {
   justify-content: center;
 }
 
-/* optional hover/click effect */
 .button-group button:hover {
   background: var(--color-background-soft);
 }
@@ -205,13 +163,5 @@ const loadFromFile = async () => {
   color: #d0d0d0;
   cursor: not-allowed;
   opacity: 0.7;
-}
-
-/* focus ring */
-.field-group select:focus,
-.field-group input:focus {
-  outline: none;
-  border-color: #6094f0;
-  box-shadow: 0 0 0 2px rgba(96, 148, 240, 0.3);
 }
 </style>
