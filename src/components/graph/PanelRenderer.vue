@@ -2,7 +2,7 @@
   <div class="background" :style="[borderStyle, panelStyle]" :title="graphNode.innerNode.errorMessage || ''">
     <!-- Title -->
     <div class="title">
-      <p>{{ graphNode.nodePath[graphNode.nodePath.length - 1] }}</p>
+      <p>{{ graphNode.innerNode.data.name || graphNode.nodePath[graphNode.nodePath.length - 1] }}</p>
     </div>
 
     <!-- Main Content Panel -->

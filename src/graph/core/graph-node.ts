@@ -32,6 +32,8 @@ export interface IGraphNode {
   readonly errorMessage: string
   readonly componentState: ComponentState
 
+  readonly data: JsonObject
+
   onInitialize: () => void
   arm: () => void
   complete: () => void

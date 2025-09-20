@@ -288,10 +288,14 @@ const useGraphInternal = defineStore('graph', () => {
 export const useGraphStore = defineStore('graph-with-history', () => {
   const internalGraph = useGraphInternal()
   const history = useGraphHistoryStore()
-  history.init(internalGraph.toModel())
 
   const nodes = computed(() => internalGraph.nodes)
   const edges = computed(() => internalGraph.edges)
+
+  const init = () => {
+    internalGraph.clear()
+    history.init(internalGraph.toModel())
+  }
 
   const clear = () => {
     const state = internalGraph.toModel()
@@ -417,6 +421,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
   }
 
   return {
+    init,
     clear,
 
     nodes,

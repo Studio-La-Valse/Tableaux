@@ -12,7 +12,7 @@
       <div v-show="!collapsed" class="form-body">
         <PanelGroup direction="horizontal" class="emitter-panels">
           <!-- Name column -->
-          <Panel :min-size="10">
+          <Panel :default-size="40" :min-size="10">
             <div class="column name-column">
               <div v-for="emitter in emitters" :key="emitter.id" class="emitter-row name-cell">
                 <input type="text" :placeholder="emitter.id" :value="emitter.data.name"
@@ -27,7 +27,7 @@
           </PanelResizeHandle>
 
           <!-- Value column -->
-          <Panel :min-size="10">
+          <Panel :default-size="60" :min-size="10">
             <div class="column value-column">
               <div v-for="emitter in emitters" :key="emitter.id" class="emitter-row value-cell">
                 <!-- text -->
@@ -180,15 +180,15 @@ onBeforeUnmount(() => {
   position: absolute;
   right: 10px;
   top: 10px;
-  width: 560px;
-  background: #1f1f1f;
-  border: 1px solid #333;
+  width: 300px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 8px;
   box-sizing: border-box;
   z-index: 1000;
   pointer-events: auto;
-  color: #e9e9e9;
+  color: var(--color-text);
 }
 
 /* Header and also collapse */
@@ -197,8 +197,8 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   align-items: center;
   padding: 4px 8px;
-  background: #222;
-  border-bottom: 1px solid #333;
+  background: var(--color-background-soft);
+  border-bottom: 1px solid var(--color-border);
   cursor: pointer;
   user-select: none;
 }
@@ -266,9 +266,9 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
   padding: 6px 8px;
   border-radius: 4px;
-  border: 1px solid #3a3a3a;
-  background: #151515;
-  color: #e9e9e9;
+  border: 1px solid var(--color-border);
+  background: var(--color-background-mute);
+  color: var(--color-text);
 }
 
 .value-cell input[type="checkbox"] {
@@ -283,9 +283,9 @@ onBeforeUnmount(() => {
   appearance: none;
 
   /* Custom look */
-  border: 1px solid #3a3a3a;
+  border: 1px solid var(--color-textborder);
   border-radius: 4px;
-  background: #151515;
+  background: var(--color-background);
   cursor: pointer;
 
   display: flex;
@@ -295,12 +295,12 @@ onBeforeUnmount(() => {
 }
 
 .value-cell input[type="checkbox"]:checked {
-  background: #3a3a3a;
+  background: var(--color-background-soft);
 }
 
 .value-cell input[type="checkbox"]::after {
   content: "✓";
-  color: #e9e9e9;
+  color: var(--color-text);
   font-size: 16px;
   display: none;
 }
@@ -335,11 +335,11 @@ onBeforeUnmount(() => {
   left: 50%;
   width: 2px;
   transform: translateX(-50%);
-  background: #3a3a3a;
+  background: var(--color-border);
   border-radius: 1px;
 }
 
 .handle-grip:hover::before {
-  background: #5a5a5a;
+  background: var(--color-accent);
 }
 </style>
