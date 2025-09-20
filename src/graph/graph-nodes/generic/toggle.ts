@@ -1,26 +1,18 @@
 import TogglePanel from '@/components/graph/Panels/TogglePanel.vue'
-import { GraphNode } from '../../core/graph-node'
 import { GraphNodePanel, GraphNodeType } from '../decorators'
+import { Emitter, type EmitterKind } from '@/graph/core/emitter'
 
 @GraphNodeType('Generic', 'Toggle')
 @GraphNodePanel(TogglePanel)
-export class Toggle extends GraphNode {
+export class Toggle extends Emitter<boolean> {
   private output
 
-  public override data: { value: boolean } = { value: false }
+  override type: EmitterKind = 'toggle'
 
   constructor(id: string, path: string[]) {
-    super(id, path)
+    super(id, path, false)
 
     this.output = this.registerBooleanOutput('Value')
-  }
-
-  public onChange(newValue: boolean): void {
-    if (newValue === this.data.value) return
-
-    this.arm()
-    this.data.value = newValue
-    this.complete()
   }
 
   protected async solve(): Promise<void> {

@@ -1,25 +1,19 @@
 import TextPanel from '@/components/graph/Panels/TextEmitter.vue'
-import { GraphNode } from '../../core/graph-node'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
 import { GraphNodePanel, GraphNodeType } from '../decorators'
+import { Emitter } from '@/graph/core/emitter'
 
 @GraphNodeType('Text', 'Text Emitter')
 @GraphNodePanel(TextPanel)
-export class TextEmitter extends GraphNode {
+export class TextEmitter extends Emitter<string> {
+  public override type: 'number' | 'text' = 'text'
+
   private output: GraphNodeOutputType<string>
 
-  public override data: { value: string } = { value: 'Hello, world!' }
-
   constructor(id: string, path: string[]) {
-    super(id, path)
+    super(id, path, 'Hello, world!')
 
     this.output = this.registerStringOutput('Text')
-  }
-
-  public onChange(newValue: string): void {
-    this.arm()
-    this.data.value = newValue
-    this.complete()
   }
 
   protected async solve(): Promise<void> {

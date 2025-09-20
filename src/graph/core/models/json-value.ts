@@ -1,4 +1,4 @@
-export type JsonPrimitive = string | number | boolean | null
+export type JsonPrimitive = string | number | boolean
 
 export type JsonArray = JsonValue[]
 
