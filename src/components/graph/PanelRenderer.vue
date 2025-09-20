@@ -7,7 +7,7 @@
 
     <!-- Main Content Panel -->
     <div class="content" :style="contentStyle">
-      <component :is="getGraphNodePanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
+      <component :is="getPanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
 
       <div class="inputs">
         <GraphNodeInputRenderer v-for="(input, index) in graphNode.innerNode.inputs" :key="'input-' + index"
@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, type Component, type StyleValue } from "vue";
+import { computed, type StyleValue } from "vue";
 
 import GraphNodeInputRenderer from "./GraphNodeInputRenderer.vue";
 import GraphNodeOutputRenderer from "./GraphNodeOutputRenderer.vue";
@@ -40,7 +40,6 @@ import type { IGraphNodeWrapper } from "@/graph/core/graph-node-wrapper";
 import { GraphNodeInput, type IGraphNodeInput } from "@/graph/core/graph-node-input";
 import { type IGraphNodeOutput } from "@/graph/core/graph-node-output";
 import { useGraphNodePanelStore } from "@/stores/use-graph-node-panel-store";
-import type { IGraphNode } from "@/graph/core/graph-node";
 
 const { isSelected } = useGraphNodeSelectionStore()
 const { getPanel } = useGraphNodePanelStore()
@@ -95,10 +94,6 @@ const contentStyle = computed<StyleValue>(() => ({
   width: props.graphNode.width + 'px',
   height: props.graphNode.height + 'px'
 }))
-
-const getGraphNodePanel = (node: IGraphNode): Component => {
-  return getPanel(node);
-};
 
 const getRelativePosition = (handle: IGraphNodeInput | IGraphNodeOutput) => {
   const x = handle instanceof GraphNodeInput ? props.graphNode.xy.x : props.graphNode.xy.x + props.graphNode.width;

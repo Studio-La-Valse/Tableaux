@@ -3,7 +3,7 @@ import type { GraphNodeOutputType } from '../../../core/graph-node-output'
 import { GraphNodeType } from '../../decorators'
 
 @GraphNodeType('Math', 'Trigonometry', 'Pi')
-export class NumberEmitter extends GraphNode {
+export class Pi extends GraphNode {
   private readonly output: GraphNodeOutputType<number>
 
   constructor(id: string, path: string[]) {

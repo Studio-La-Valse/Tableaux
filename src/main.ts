@@ -11,6 +11,7 @@ import { useGraphNodeActivatorStore } from '@/stores/use-graph-node-activator-st
 
 import { graphNodeTypes } from '@/graph/graph-nodes/decorators'
 import { useGraphNodePanelStore } from './stores/use-graph-node-panel-store'
+import { useEmitterInputStore } from './stores/use-emitter-input-store'
 import.meta.glob('@/graph/graph-nodes/**/*.ts', { eager: true })
 
 const app = createApp(App)
@@ -37,12 +38,17 @@ app.use(createPinia())
 
 const { register } = useGraphNodeActivatorStore()
 const { registerPanel } = useGraphNodePanelStore()
+const { registerInput } = useEmitterInputStore()
 
 for (const { category, ctor } of graphNodeTypes) {
   register(category, (id, path) => new ctor(id, path))
 
   if (ctor.__graphNodePanel) {
     registerPanel(ctor, ctor.__graphNodePanel);
+  }
+
+  if (ctor.__emitterInput) {
+    registerInput(ctor, ctor.__emitterInput)
   }
 }
 

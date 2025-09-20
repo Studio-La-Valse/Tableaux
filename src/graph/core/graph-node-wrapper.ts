@@ -8,7 +8,7 @@ export interface IGraphNodeWrapper {
   readonly nodeId: string
   readonly nodePath: string[]
 
-  readonly version: string
+  readonly instanceId: string
   readonly minHeight: number
   readonly minWidth: number
 
@@ -35,7 +35,7 @@ export class GraphNodeWrapper implements IGraphNodeWrapper {
   private _handlePadStartStop = 20
   private _handlePad = 30
 
-  public readonly version
+  public readonly instanceId
   public get nodeId() {
     return this.innerNode.id
   }
@@ -76,7 +76,7 @@ export class GraphNodeWrapper implements IGraphNodeWrapper {
   }
 
   constructor(public readonly innerNode: GraphNode) {
-    this.version = nanoid(11)
+    this.instanceId = nanoid(11)
   }
 
   public toModel(): GraphNodeModel {

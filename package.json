@@ -17,8 +17,8 @@
     "nanoid": "^5.1.5",
     "pinia": "^3.0.2",
     "reflect-metadata": "^0.2.2",
-    "split.js": "^1.6.5",
     "vue": "^3.5.13",
+    "vue-resizable-panels": "^0.0.1",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {

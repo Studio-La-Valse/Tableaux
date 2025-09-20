@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed } from 'vue';
 import { useGraphStore } from '@/stores/use-graph-store';
 import type { Toggle } from '@/graph/graph-nodes/generic/toggle';
 
@@ -20,10 +20,9 @@ const props = defineProps<{
   graphNode: Toggle
 }>()
 
-const pressed = ref(false);
+const pressed = computed(() => props.graphNode.data.value);
 
 const setPressed = (state: boolean) => {
-  pressed.value = state;
   props.graphNode.onChange(state);
   graph.commit();
 }

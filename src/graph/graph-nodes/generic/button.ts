@@ -1,26 +1,18 @@
-import { GraphNode } from '../../core/graph-node'
+import { Emitter, type EmitterKind } from '@/graph/core/emitter'
 import { GraphNodePanel, GraphNodeType } from '../decorators'
 import ButtonPanel from '@/components/graph/Panels/ButtonPanel.vue'
 
 @GraphNodeType('Generic', 'Button')
 @GraphNodePanel(ButtonPanel)
-export class Button extends GraphNode {
+export class Button extends Emitter<boolean> {
   private output
 
-  public override data: { value: boolean } = { value: false }
+  override type: EmitterKind = 'button'
 
   constructor(id: string, path: string[]) {
-    super(id, path)
+    super(id, path, false)
 
     this.output = this.registerBooleanOutput('Value')
-  }
-
-  public onChange(newValue: boolean): void {
-    if (newValue === this.data.value) return
-
-    this.arm()
-    this.data.value = newValue
-    this.complete()
   }
 
   protected async solve(): Promise<void> {

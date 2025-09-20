@@ -13,8 +13,8 @@ export default class FrameGenerator extends GraphNode {
     lastFrame: number
     active: boolean
     delay: number
-    rafId: number | null
     lastTimestamp: number
+    rafId?: number
   }
 
   constructor(id: string, path: string[]) {
@@ -29,7 +29,6 @@ export default class FrameGenerator extends GraphNode {
       lastFrame: 0,
       active: false,
       delay: 16,
-      rafId: null,
       lastTimestamp: 0,
     }
   }
@@ -61,9 +60,9 @@ export default class FrameGenerator extends GraphNode {
   private reset(): void {
     this.data.active = false
 
-    if (this.data.rafId !== null) {
+    if (this.data.rafId) {
       cancelAnimationFrame(this.data.rafId)
-      this.data.rafId = null
+      this.data.rafId = undefined
     }
   }
 
