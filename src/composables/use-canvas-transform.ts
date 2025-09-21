@@ -19,6 +19,7 @@ interface Options {
 // Pan & zoom state
 const scale = ref<number>(1)
 const position = ref<Position>({ x: 0, y: 0 })
+const canvasSize = ref<Size>({ width: 300, height: 300 })
 
 const style = computed(() => ({
   transform: `translate(${position.value.x}px, ${position.value.y}px) scale(${scale.value})`,
@@ -34,7 +35,6 @@ export function useCanvasTransform(options: Options = {}) {
   const { viewportRef, clientToViewport } = useGraphCanvasStore()
 
   // Track container’s pixel size (for correct zoom centering)
-  const canvasSize = ref<Size>({ width: 300, height: 300 })
   function updateCanvasSize() {
     if (!viewportRef.value) return
     canvasSize.value = {
@@ -118,6 +118,7 @@ export function useCanvasTransform(options: Options = {}) {
     position,
     scale,
     style,
+    canvasSize,
     isDragging,
 
     // event handlers

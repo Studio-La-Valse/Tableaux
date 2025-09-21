@@ -51,7 +51,7 @@ const canvasStore = useGraphCanvasStore()
 const viewportRef = ref<HTMLElement | null>(null);
 const canvasRef = ref<HTMLElement | null>(null);
 
-const showControls = ref(false)
+const showControls = ref(true)
 
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({

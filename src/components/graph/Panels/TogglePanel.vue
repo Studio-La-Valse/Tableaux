@@ -1,12 +1,11 @@
 <template>
-  <div class="toggle-icon" @click="toggleValue" :title="isActive ? 'On' : 'Off'">
-    {{ isActive ? '✔' : '✖' }}
+  <div class="toggle-icon" @click="toggleValue">
+    {{ props.graphNode.data.value ? '✔' : '✖' }}
   </div>
 </template>
 
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useGraphStore } from '@/stores/use-graph-store';
 import type { Toggle } from '@/graph/graph-nodes/generic/toggle';
 
@@ -16,10 +15,8 @@ const props = defineProps<{
   graphNode: Toggle
 }>()
 
-const isActive = computed(() => props.graphNode.data.value);
-
 const toggleValue = () => {
-  props.graphNode.onChange(!isActive.value);
+  props.graphNode.onChange(!props.graphNode.data.value);
   graph.commit();
 }
 </script>

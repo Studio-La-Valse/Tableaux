@@ -1,2 +1,52 @@
 @import './base.css';
 
+input[type="range"] {
+  background: transparent; /* let us style the track */
+  cursor: pointer;
+
+  /* Remove default appearance */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Track styling (WebKit) */
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 5px;
+  background: var(--color-border);
+  border-radius: 2px;
+}
+
+/* Thumb styling (WebKit) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: none;
+  margin-top: -5px; /* centers thumb on track */
+  cursor: pointer;
+}
+
+/* Track styling (Firefox) */
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  background: var(--color-accent);
+  border-radius: 3px;
+}
+
+/* Thumb styling (Firefox) */
+input[type="range"]::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover,
+input[type="range"]::-moz-range-thumb:hover {
+  background: color-mix(in srgb, var(--color-accent) 80%, white);
+}
