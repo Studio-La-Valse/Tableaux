@@ -1,6 +1,8 @@
 <template>
   <div class="canvas-toolbar">
     <div class="button-group">
+      <button type="button" @click="zoomAll" :disabled="!nodes.length" title="Zoom Selected">🌐</button>
+      <button type="button" @click="zoomSelected" :disabled="!selectedNodes.size" title="Zoom Selected">🖼️</button>
       <button type="button" @click="toggleControls" title="Controls">🛠</button>
       <button type="button" @click="undo" :disabled="!hasUndo" title="Undo">⏮️</button>
       <button type="button" @click="redo" :disabled="!hasRedo" title="Redo">⏭️</button>
@@ -16,15 +18,24 @@ import { storeToRefs } from 'pinia'
 import { useGraphHistoryStore } from '@/stores/use-graph-history-store'
 import { useGraphStore } from '@/stores/use-graph-store'
 import { ref } from 'vue'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
+import { useZoomToNodes } from '@/composables/use-zoom-to-nodes'
 
 const history = useGraphHistoryStore()
 const { hasUndo, hasRedo } = storeToRefs(history)
 
-const { init, toModel, fromModel, undo, redo } = useGraphStore()
+const graphStore = useGraphStore()
+const { init, toModel, fromModel, undo, redo } = graphStore
+const { nodes } = storeToRefs(graphStore)
+
+const selectionStore = useGraphNodeSelectionStore()
+const { selectedNodes } = storeToRefs(selectionStore)
+
+const { zoomToNodes } = useZoomToNodes()
 
 const lastSavedModel = ref(toModel())
 const hasUnsavedChanges = () => {
-  return JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel())
+  return hasUndo || hasRedo || JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel())
 }
 
 const emit = defineEmits<{
@@ -113,6 +124,24 @@ const newDocument = async () => {
     lastSavedModel.value = toModel()
   })
 }
+
+/** --- Zoom to selected --- */
+const zoomSelected = () => {
+  const selectedIds = selectedNodes.value
+  if (!selectedIds.size) return
+
+  zoomToNodes(selectedIds)
+}
+
+
+/** --- Zoom to all --- */
+const zoomAll = () => {
+  const selectedIds = nodes.value.map((v) => v.nodeId)
+  if (!selectedIds.length) return
+
+  zoomToNodes(selectedIds)
+}
+
 </script>
 
 <style scoped>

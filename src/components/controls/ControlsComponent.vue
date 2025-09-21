@@ -1,186 +1,80 @@
 <template>
-  <div class="emitter-form" ref="wrapperRef" @mousedown.stop>
+  <div class="emitter-form" @mousedown.stop @scroll.stop :style="{ width: width + 'px' }">
+
+
     <!-- Header with collapse toggle -->
-    <div class="form-header" @click="collapsed = !collapsed">
+    <div class="form-header">
       <span class="form-title">Emitters</span>
-      <span class="collapse-icon" :class="{ collapsed }">
-        ▶
-      </span>
+
+      <div class="header-actions">
+        <button class="show-hidden-button" type="button" @click.stop="showHidden = !showHidden">
+          {{ showHidden ? '👀' : '🙈' }}
+        </button>
+        <span class="collapse-icon" :class="{ collapsed }" @click.stop="collapsed = !collapsed">
+          ▶
+        </span>
+      </div>
     </div>
 
-    <transition name="collapse">
-      <div v-show="!collapsed" class="form-body">
-        <PanelGroup direction="horizontal" class="emitter-panels">
-          <!-- Name column -->
-          <Panel :default-size="40" :min-size="10">
-            <div class="column name-column">
-              <div v-for="emitter in emitters" :key="emitter.id" class="emitter-row name-cell">
-                <input type="text" :placeholder="emitter.id" :value="emitter.data.name"
-                  @input="handleNameInputFor(emitter, $event)" @keydown="handleKeyDown" @mousedown.stop />
-              </div>
-            </div>
-          </Panel>
-
-          <!-- Handle -->
-          <PanelResizeHandle with-handle class="resize-handle">
-            <div class="handle-grip"></div>
-          </PanelResizeHandle>
-
-          <!-- Value column -->
-          <Panel :default-size="60" :min-size="10">
-            <div class="column value-column">
-              <div v-for="emitter in emitters" :key="emitter.id" class="emitter-row value-cell">
-                <!-- text -->
-                <input v-if="emitter.type === 'text'" type="text" :value="(emitter.data.value as string)"
-                  @input="handleValueInputFor(emitter, emitter.type, $event)" @keydown="handleKeyDown"
-                  @mousedown.stop />
-
-                <!-- number -->
-                <input v-else-if="emitter.type === 'number'" type="number" :value="(emitter.data.value as number)"
-                  @input="handleValueInputFor(emitter, emitter.type, $event)" @keydown="handleKeyDown"
-                  @mousedown.stop />
-
-                <!-- toggle (boolean) -->
-                <input v-else-if="emitter.type === 'toggle'" type="checkbox" :checked="(emitter.data.value as boolean)"
-                  @change="handleValueInputFor(emitter, emitter.type, $event)" @mousedown.stop />
-
-                <!-- button -->
-                <button v-else-if="emitter.type === 'button'" type="button"
-                  :class="['momentary-btn', { active: pressedId === emitter.id }]"
-                  @mousedown.stop="onButtonDown(emitter)" @touchstart.stop.prevent="onButtonTouchStart(emitter)">
-                  {{ emitter.data.value ? 'pressed' : 'released' }}
-                </button>
-
-                <!-- range -->
-                <input v-else-if="emitter.type === 'range'" type="range" :value="(emitter.data.value as number)"
-                  @input="handleValueInputFor(emitter, emitter.type, $event)" @mousedown.stop />
-              </div>
-            </div>
-          </Panel>
-        </PanelGroup>
-      </div>
-    </transition>
 
 
+    <div class="scroll-area">
+
+      <transition name="collapse">
+        <div v-show="!collapsed" class="form-body">
+          <ControlsList :show-hidden="showHidden" />
+        </div>
+      </transition>
+
+    </div>
+
+    <!-- Resize thumb -->
+    <div class="resize-thumb" @mousedown.prevent="startResize"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
-import { Emitter } from '@/graph/core/emitter'
-import type { JsonValue } from '@/graph/core/models/json-value'
-import { useGraphStore } from '@/stores/use-graph-store'
-import { storeToRefs } from 'pinia'
-import { PanelGroup, Panel, PanelResizeHandle } from 'vue-resizable-panels'
+import { ref } from 'vue'
+import ControlsList from './ControlsList.vue'
 
-const graphStore = useGraphStore()
-const graph = storeToRefs(graphStore)
-
-const wrapperRef = ref<HTMLElement | null>(null)
-let changed = false
-
-// Track which button emitter is currently pressed (momentary)
-const pressedId = ref<string | null>(null)
 const collapsed = ref(false)
+const showHidden = ref(false)
 
-const emitters = computed(() =>
-  graph.nodes.value
-    .filter(v => v.innerNode instanceof Emitter)
-    .map(v => v.innerNode as Emitter<JsonValue>)
-)
+// --- Resizing state ---
+const width = ref(300)   // initial width
+let resizing = false
+let startX = 0
+let startWidth = 0
 
-// --- Field input handlers ---
-const handleNameInputFor = (graphNode: Emitter<JsonValue>, event: Event) => {
-  graphNode.assignName((event.target as HTMLInputElement).value)
-  changed = true
+const startResize = (e: MouseEvent) => {
+  resizing = true
+  startX = e.clientX
+  startWidth = width.value
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseup', stopResize)
 }
 
-const handleValueInputFor = (
-  graphNode: Emitter<JsonValue>,
-  type: string,
-  event: Event
-) => {
-  const target = event.target as HTMLInputElement
-  let value: JsonValue
-
-  if (type === 'number' || type === 'range') {
-    value = target.valueAsNumber
-  } else if (type === 'toggle') {
-    value = target.checked
-  } else {
-    value = target.value
-  }
-
-  graphNode.onChange(value)
-  changed = true
+const onMouseMove = (e: MouseEvent) => {
+  if (!resizing) return
+  // Horizontal: anchored right, so drag left increases width, drag right decreases
+  width.value = Math.max(200, startWidth - (e.clientX - startX))
 }
 
-// --- Button: momentary behavior ---
-const onButtonDown = (graphNode: Emitter<JsonValue>) => {
-  pressedId.value = graphNode.id
-  graphNode.onChange(true)
-  // listen for release anywhere
-  window.addEventListener('mouseup', onGlobalButtonRelease, { once: true, capture: true })
-  window.addEventListener('touchend', onGlobalButtonRelease, { once: true, capture: true })
-  window.addEventListener('touchcancel', onGlobalButtonRelease, { once: true, capture: true })
+const stopResize = () => {
+  resizing = false
+  document.removeEventListener('mousemove', onMouseMove)
+  document.removeEventListener('mouseup', stopResize)
 }
-
-const onButtonTouchStart = (graphNode: Emitter<JsonValue>) => {
-  pressedId.value = graphNode.id
-  graphNode.onChange(true)
-  window.addEventListener('mouseup', onGlobalButtonRelease, { once: true, capture: true })
-  window.addEventListener('touchend', onGlobalButtonRelease, { once: true, capture: true })
-  window.addEventListener('touchcancel', onGlobalButtonRelease, { once: true, capture: true })
-}
-
-const onGlobalButtonRelease = () => {
-  if (!pressedId.value) return
-  const e = emitters.value.find(x => x.id === pressedId.value)
-  if (e) {
-    e.onChange(false)
-    graphStore.commit()
-  }
-  pressedId.value = null
-  changed = false
-}
-
-// --- Commit on outside click ---
-const handleClickOutside = (event: MouseEvent) => {
-  if (wrapperRef.value && !wrapperRef.value.contains(event.target as Node)) {
-    // Blur all focusable inputs inside the form
-    const inputs = wrapperRef.value.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
-      'input, textarea, select, button'
-    )
-    inputs.forEach(el => el.blur())
-
-    if (changed) {
-      graphStore.commit()
-    }
-    changed = false
-  }
-}
-
-// --- Escape key blur ---
-const handleKeyDown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape') {
-    (event.target as HTMLElement).blur()
-  }
-}
-
-onMounted(() => {
-  document.addEventListener('mousedown', handleClickOutside, { capture: true })
-})
-onBeforeUnmount(() => {
-  document.removeEventListener('mousedown', handleClickOutside, { capture: true })
-})
 </script>
 
 <style scoped>
 .emitter-form {
   position: absolute;
-  right: 10px;
-  top: 10px;
-  width: 300px;
+  top: 5px;
+  right: 5px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 200px);
   background: var(--color-background);
   border: 1px solid var(--color-border);
   border-radius: 6px;
@@ -191,16 +85,45 @@ onBeforeUnmount(() => {
   color: var(--color-text);
 }
 
-/* Header and also collapse */
+.scroll-area {
+  flex: 1;
+  overflow: auto;
+}
+
 .form-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 4px 8px;
   background: var(--color-background-soft);
-  border-bottom: 1px solid var(--color-border);
-  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
   user-select: none;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* space between eye and arrow */
+}
+
+.show-hidden-button {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  font-size: 1rem; /* match icon size */
+  line-height: 1;
+  cursor: pointer;
+}
+
+.collapse-icon {
+  display: inline-block;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.collapse-icon.collapsed {
+  transform: rotate(-90deg);
 }
 
 .form-title {
@@ -240,106 +163,25 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-.emitter-panels {
-  position: relative;
-  isolation: isolate;
+
+.resize-thumb {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  cursor: nesw-resize;
+  z-index: 20;
 }
 
-.column {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.emitter-row {
-  display: flex;
-  align-items: center;
-  padding: 2px;
-}
-
-.name-cell input,
-.value-cell input[type="text"],
-.value-cell input[type="number"],
-.value-cell input[type="range"],
-.value-cell button {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 6px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--color-border);
-  background: var(--color-background-mute);
-  color: var(--color-text);
-}
-
-.value-cell input[type="checkbox"] {
-  /* Match height and width to other inputs */
-  width: 100%;
-  height: 28px;
-  /* same as your text/number input height */
-  box-sizing: border-box;
-
-  /* Remove native appearance so we can style it */
-  -webkit-appearance: none;
-  appearance: none;
-
-  /* Custom look */
-  border: 1px solid var(--color-textborder);
-  border-radius: 4px;
-  background: var(--color-background);
-  cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-}
-
-.value-cell input[type="checkbox"]:checked {
-  background: var(--color-background-soft);
-}
-
-.value-cell input[type="checkbox"]::after {
-  content: "✓";
-  color: var(--color-text);
-  font-size: 16px;
-  display: none;
-}
-
-.value-cell input[type="checkbox"]:checked::after {
-  display: block;
-}
-
-.resize-handle {
-  position: relative;
-  z-index: 10;
-  pointer-events: auto !important;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  background: transparent;
-  cursor: col-resize;
-}
-
-.handle-grip {
-  width: 8px;
-  margin: 0 -2px;
-  background: transparent;
-  position: relative;
-}
-
-.handle-grip::before {
+.resize-thumb::after {
   content: '';
   position: absolute;
-  top: 6px;
-  bottom: 6px;
-  left: 50%;
-  width: 2px;
-  transform: translateX(-50%);
-  background: var(--color-border);
-  border-radius: 1px;
-}
-
-.handle-grip:hover::before {
-  background: var(--color-accent);
+  left: 2px;
+  bottom: 2px;
+  width: 10px;
+  height: 10px;
+  border-left: 2px solid var(--color-border);
+  border-bottom: 2px solid var(--color-border);
 }
 </style>

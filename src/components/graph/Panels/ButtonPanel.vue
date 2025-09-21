@@ -3,14 +3,12 @@
     class="press-button"
     @mousedown="setPressed(true)"
     @mouseup="setPressed(false)"
-    :title="pressed ? 'Pressed' : 'Unpressed'"
   >
-    {{ pressed ? '🟩' : '⭕' }}
+    {{ graphNode.data.value ? '🟩' : '⭕' }}
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useGraphStore } from '@/stores/use-graph-store';
 import type { Toggle } from '@/graph/graph-nodes/generic/toggle';
 
@@ -19,8 +17,6 @@ const graph = useGraphStore();
 const props = defineProps<{
   graphNode: Toggle
 }>()
-
-const pressed = computed(() => props.graphNode.data.value);
 
 const setPressed = (state: boolean) => {
   props.graphNode.onChange(state);
