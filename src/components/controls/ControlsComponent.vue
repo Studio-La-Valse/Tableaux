@@ -1,31 +1,27 @@
 <template>
   <div class="emitter-form" @mousedown.stop @scroll.stop :style="{ width: width + 'px' }">
-
-
     <!-- Header with collapse toggle -->
     <div class="form-header">
       <span class="form-title">Emitters</span>
 
       <div class="header-actions">
-        <button class="show-hidden-button" type="button" @click.stop="showHidden = !showHidden">
-          {{ showHidden ? '👀' : '🙈' }}
+        <button class="show-hidden-button" type="button" @click.stop="showHidden = !showHidden"
+          :title="showHidden ? 'Hide hidden' : 'Show hidden'">
+          <component :is="showHidden ? EyeIcon : EyeSlashIcon" class="icon" />
         </button>
-        <span class="collapse-icon" :class="{ collapsed }" @click.stop="collapsed = !collapsed">
-          ▶
-        </span>
+
+        <button @click.stop="collapsed = !collapsed">
+          <ChevronRightIcon class="collapse-icon icon" :class="{ collapsed }" />
+        </button>
       </div>
     </div>
 
-
-
     <div class="scroll-area">
-
       <transition name="collapse">
         <div v-show="!collapsed" class="form-body">
           <ControlsList :show-hidden="showHidden" />
         </div>
       </transition>
-
     </div>
 
     <!-- Resize thumb -->
@@ -37,11 +33,14 @@
 import { ref } from 'vue'
 import ControlsList from './ControlsList.vue'
 
+// Heroicons (outline)
+import { EyeIcon, EyeSlashIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
+
 const collapsed = ref(false)
 const showHidden = ref(false)
 
 // --- Resizing state ---
-const width = ref(300)   // initial width
+const width = ref(300)
 let resizing = false
 let startX = 0
 let startWidth = 0
@@ -56,7 +55,6 @@ const startResize = (e: MouseEvent) => {
 
 const onMouseMove = (e: MouseEvent) => {
   if (!resizing) return
-  // Horizontal: anchored right, so drag left increases width, drag right decreases
   width.value = Math.max(200, startWidth - (e.clientX - startX))
 }
 
@@ -104,26 +102,38 @@ const stopResize = () => {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 6px; /* space between eye and arrow */
+  gap: 6px;
+  /* space between eye and arrow */
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  stroke: var(--color-text);
 }
 
 .show-hidden-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   background-color: transparent;
   padding: 0;
   border: none;
-  font-size: 1rem; /* match icon size */
+  font-size: 1rem;
   line-height: 1;
   cursor: pointer;
 }
 
 .collapse-icon {
-  display: inline-block;
+  display: flex;
+  align-items: center;
   transition: transform 0.2s ease;
   cursor: pointer;
+  transform: rotate(90deg);
 }
 
 .collapse-icon.collapsed {
-  transform: rotate(-90deg);
+  transform: rotate(0deg);
 }
 
 .form-title {

@@ -1,25 +1,68 @@
 <template>
   <div class="canvas-toolbar">
     <div class="button-group">
-      <button type="button" @click="zoomAll" :disabled="!nodes.length" title="Zoom Selected">🌐</button>
-      <button type="button" @click="zoomSelected" :disabled="!selectedNodes.size" title="Zoom Selected">🖼️</button>
-      <button type="button" @click="toggleControls" title="Controls">🛠</button>
-      <button type="button" @click="undo" :disabled="!hasUndo" title="Undo">⏮️</button>
-      <button type="button" @click="redo" :disabled="!hasRedo" title="Redo">⏭️</button>
-      <button type="button" @click="save" title="Save">💾</button>
-      <button type="button" @click="load" title="Load">📂</button>
-      <button type="button" @click="newDocument" title="New">📄</button>
+      <button type="button" @click="zoomAll" :disabled="!nodes.length" title="Zoom All">
+        <DocumentMagnifyingGlassIcon class="icon" />
+      </button>
+
+      <button type="button" @click="zoomSelected" :disabled="!selectedNodes.size" title="Zoom Selected">
+        <MagnifyingGlassIcon class="icon" />
+      </button>
+
+      <button type="button" @click="toggleControls" title="Toggle Controls">
+        <AdjustmentsHorizontalIcon class="icon" />
+      </button>
+
+      <button type="button" @click="undo" :disabled="!hasUndo" title="Undo">
+        <ArrowUturnLeftIcon class="icon" />
+      </button>
+
+      <button type="button" @click="redo" :disabled="!hasRedo" title="Redo">
+        <ArrowUturnRightIcon class="icon" />
+      </button>
+
+      <button type="button" @click="save" title="Save">
+        <ArrowDownOnSquareIcon class="icon" />
+      </button>
+
+      <button type="button" @click="load" title="Load">
+        <FolderOpenIcon class="icon" />
+      </button>
+
+      <button type="button" @click="newDocument" title="New Document">
+        <DocumentIcon class="icon" />
+      </button>
     </div>
   </div>
+  <Teleport to="body">
+    <UnsavedChangesModal
+      v-if="showUnsavedModal"
+      @save="onSave"
+      @discard="onDiscard"
+      @cancel="onCancel"
+    />
+  </Teleport>
 </template>
 
 <script setup lang="ts">
+import {
+  DocumentMagnifyingGlassIcon,
+  MagnifyingGlassIcon,
+  AdjustmentsHorizontalIcon,
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+  ArrowDownOnSquareIcon,
+  FolderOpenIcon,
+  DocumentIcon
+} from '@heroicons/vue/24/outline'
+
 import { storeToRefs } from 'pinia'
 import { useGraphHistoryStore } from '@/stores/use-graph-history-store'
 import { useGraphStore } from '@/stores/use-graph-store'
 import { ref } from 'vue'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { useZoomToNodes } from '@/composables/use-zoom-to-nodes'
+import UnsavedChangesModal from './UnsavedChangesModal.vue'
 
 const history = useGraphHistoryStore()
 const { hasUndo, hasRedo } = storeToRefs(history)
@@ -34,15 +77,39 @@ const { selectedNodes } = storeToRefs(selectionStore)
 const { zoomToNodes } = useZoomToNodes()
 
 const lastSavedModel = ref(toModel())
-const hasUnsavedChanges = () => {
-  return hasUndo || hasRedo || JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel())
+const hasUnsavedChanges = () =>
+  hasRedo.value || JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel())
+
+const emit = defineEmits<{ (e: 'toggle-controls'): void }>()
+const toggleControls = () => emit('toggle-controls')
+
+/** --- Modal state --- */
+const showUnsavedModal = ref(false)
+let pendingAction: null | (() => void) = null
+
+const requestAction = (action: () => void) => {
+  if (hasUnsavedChanges()) {
+    pendingAction = action
+    showUnsavedModal.value = true
+  } else {
+    action()
+  }
 }
 
-const emit = defineEmits<{
-  (e: 'toggle-controls'): void
-}>()
-
-const toggleControls = () => emit('toggle-controls')
+const onSave = async () => {
+  const saved = await save()
+  if (saved && pendingAction) pendingAction()
+  closeModal()
+}
+const onDiscard = () => {
+  if (pendingAction) pendingAction()
+  closeModal()
+}
+const onCancel = () => closeModal()
+const closeModal = () => {
+  showUnsavedModal.value = false
+  pendingAction = null
+}
 
 /** --- File I/O helpers --- */
 const saveToFile = async (filename: string, content: string) => {
@@ -63,85 +130,47 @@ const saveToFile = async (filename: string, content: string) => {
   }
 }
 
-const loadFromFile = async () => {
+const save = async () => {
+  const modelString = JSON.stringify(toModel(), null, 2)
+  const saved = await saveToFile('graph-model.json', modelString)
+  if (saved) lastSavedModel.value = toModel()
+  return saved
+}
+
+/** --- Core actions --- */
+const load = () => requestAction(async () => {
   try {
     const [fileHandle] = await window.showOpenFilePicker({
       types: [{ description: 'JSON File', accept: { 'application/json': ['.json'] } }],
       multiple: false
     })
     const file = await fileHandle.getFile()
-    return await file.text()
+    const content = await file.text()
+    init()
+    fromModel(JSON.parse(content))
+    lastSavedModel.value = toModel()
   } catch (err) {
     if ((err as Error).name !== 'AbortError') {
       alert('Failed to load file: ' + err)
     }
   }
-}
+})
 
-/** --- Core actions --- */
-const save = async () => {
-  const modelString = JSON.stringify(toModel(), null, 2)
-  const saved = await saveToFile('graph-model.json', modelString)
-  if (saved) {
-    lastSavedModel.value = toModel()
-  }
-  return saved
-}
-
-const loadModel = async () => {
-  const fileContent = await loadFromFile()
-  if (!fileContent) return
+const newDocument = () => requestAction(() => {
   init()
-  fromModel(JSON.parse(fileContent))
   lastSavedModel.value = toModel()
-}
+})
 
-/** --- Unsaved changes guard --- */
-const confirmUnsavedChanges = async (proceed: () => void) => {
-  if (!hasUnsavedChanges()) return proceed()
-
-  const saveFirst = window.confirm(
-    'You have unsaved changes.\n\nWould you like to save before continuing?\n\nPress OK to save, Cancel to choose another action.'
-  )
-
-  if (saveFirst) {
-    const saved = await save()
-    if (saved) proceed()
-    return
-  }
-
-  const ignore = window.confirm(
-    'Do you want to ignore unsaved changes and continue anyway?'
-  )
-  if (ignore) proceed()
-}
-
-/** --- Public handlers --- */
-const load = async () => confirmUnsavedChanges(loadModel)
-const newDocument = async () => {
-  await confirmUnsavedChanges(() => {
-    init()
-    lastSavedModel.value = toModel()
-  })
-}
-
-/** --- Zoom to selected --- */
+/** --- Zoom --- */
 const zoomSelected = () => {
   const selectedIds = selectedNodes.value
-  if (!selectedIds.size) return
-
-  zoomToNodes(selectedIds)
+  if (selectedIds.size) zoomToNodes(selectedIds)
 }
 
-
-/** --- Zoom to all --- */
 const zoomAll = () => {
-  const selectedIds = nodes.value.map((v) => v.nodeId)
-  if (!selectedIds.length) return
-
-  zoomToNodes(selectedIds)
+  const allIds = nodes.value.map((v) => v.nodeId)
+  if (allIds.length) zoomToNodes(allIds)
 }
-
 </script>
 
 <style scoped>
@@ -192,5 +221,10 @@ const zoomAll = () => {
   color: #d0d0d0;
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
 }
 </style>

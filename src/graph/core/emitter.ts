@@ -1,7 +1,7 @@
 import { GraphNode } from './graph-node'
 import type { JsonValue } from './models/json-value';
 
-export const emitterKinds = ['number', 'text', 'toggle', 'button', 'range'] as const
+export const emitterKinds = ['number', 'text', 'toggle', 'button', 'range', 'color'] as const
 
 export type EmitterKind = (typeof emitterKinds)[number]
 
