@@ -1,29 +1,61 @@
 <template>
   <div class="canvas-toolbar">
     <div class="button-group">
-      <button type="button" @click="zoomAll" :disabled="!nodes.length" title="Zoom All">🌐</button>
+      <button type="button" @click="zoomAll" :disabled="!nodes.length" title="Zoom All">
+        <DocumentMagnifyingGlassIcon class="icon" />
+      </button>
 
-      <button type="button" @click="zoomSelected" :disabled="!selectedNodes.size" title="Zoom Selected">🖼️</button>
+      <button type="button" @click="zoomSelected" :disabled="!selectedNodes.size" title="Zoom Selected">
+        <MagnifyingGlassIcon class="icon" />
+      </button>
 
-      <button type="button" @click="toggleControls" title="Toggle Controls">🛠</button>
+      <button type="button" @click="toggleControls" title="Toggle Controls">
+        <AdjustmentsHorizontalIcon class="icon" />
+      </button>
 
-      <button type="button" @click="undo" :disabled="!hasUndo" title="Undo">⏮️</button>
+      <button type="button" @click="undo" :disabled="!hasUndo" title="Undo">
+        <ArrowUturnLeftIcon class="icon" />
+      </button>
 
-      <button type="button" @click="redo" :disabled="!hasRedo" title="Redo">⏭️</button>
+      <button type="button" @click="redo" :disabled="!hasRedo" title="Redo">
+        <ArrowUturnRightIcon class="icon" />
+      </button>
 
-      <button type="button" @click="save" title="Save">💾</button>
+      <button type="button" @click="save" title="Save">
+        <ArrowDownOnSquareIcon class="icon" />
+      </button>
 
-      <button type="button" @click="load" title="Load">📂</button>
+      <button type="button" @click="load" title="Load">
+        <FolderOpenIcon class="icon" />
+      </button>
 
-      <button type="button" @click="newDocument" title="New Document">📄</button>
+      <button type="button" @click="newDocument" title="New Document">
+        <DocumentIcon class="icon" />
+      </button>
     </div>
   </div>
   <Teleport to="body">
-    <UnsavedChangesModal v-if="showUnsavedModal" @save="onSave" @discard="onDiscard" @cancel="onCancel" />
+    <UnsavedChangesModal
+      v-if="showUnsavedModal"
+      @save="onSave"
+      @discard="onDiscard"
+      @cancel="onCancel"
+    />
   </Teleport>
 </template>
 
 <script setup lang="ts">
+import {
+  DocumentMagnifyingGlassIcon,
+  MagnifyingGlassIcon,
+  AdjustmentsHorizontalIcon,
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+  ArrowDownOnSquareIcon,
+  FolderOpenIcon,
+  DocumentIcon
+} from '@heroicons/vue/24/outline'
+
 import { storeToRefs } from 'pinia'
 import { useGraphHistoryStore } from '@/stores/use-graph-history-store'
 import { useGraphStore } from '@/stores/use-graph-store'
@@ -189,5 +221,10 @@ const zoomAll = () => {
   color: #d0d0d0;
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
 }
 </style>

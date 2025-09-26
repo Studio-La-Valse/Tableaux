@@ -159,7 +159,7 @@ const onGlobalButtonRelease = () => {
 
 // --- Commit on outside click ---
 const handleClickOutside = (event: MouseEvent) => {
-  if (wrapperRef.value && !wrapperRef.value.contains(event.target as Node)) {
+  if (wrapperRef.value && wrapperRef.value.contains && !wrapperRef.value.contains(event.target as Node)) {
     const inputs = wrapperRef.value.querySelectorAll<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >('input, textarea, select, button')
@@ -203,20 +203,23 @@ const toggleVisible = (emitter: Emitter<JsonValue>) => {
 <style scoped>
 .emitter-panels {
   display: grid;
-  grid-template-columns: subgrid; /* modern browsers */
+  grid-template-columns: subgrid;
+  /* modern browsers */
 }
 
 .column {
   display: grid;
-  grid-auto-rows: 1fr; /* every row same height in this column */
+  grid-auto-rows: 1fr;
+  /* every row same height in this column */
 }
 
 .emitter-row {
   display: flex;
-  align-items: stretch; /* make input/button fill height */
+  align-items: stretch;
+  /* make input/button fill height */
 }
 
-.emitter-row > * {
+.emitter-row>* {
   flex: 1;
   height: 24px;
 }
@@ -228,7 +231,8 @@ const toggleVisible = (emitter: Emitter<JsonValue>) => {
 
 .button-group {
   display: flex;
-  flex: 0 0 auto; /* fixed width, no shrinking */
+  flex: 0 0 auto;
+  /* fixed width, no shrinking */
   gap: 2px;
 }
 
@@ -281,7 +285,8 @@ const toggleVisible = (emitter: Emitter<JsonValue>) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px; /* for the symbol */
+  font-size: 16px;
+  /* for the symbol */
 }
 
 /* Default (unchecked) state shows ✕ */

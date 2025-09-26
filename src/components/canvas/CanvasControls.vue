@@ -37,14 +37,14 @@
         @input="onWidthInput(($event.target as HTMLInputElement).value)" />
     </div>
 
-    <!-- Lock ratio toggle + display -->
+    <!-- Lock ratio toggle -->
     <div class="field-group lock-group">
       <label>Lock Ratio</label>
       <div class="lock-header">
-        <button type="button" :class="{ locked: aspectLocked }" :aria-pressed="aspectLocked" @click="toggleLock" :title="aspectLocked
-          ? `Locked at ${displayRatio}`
-          : 'Unlock ratio control'">
-          {{ aspectLocked ? '🔒' : '🔓' }}
+        <button type="button" :class="{ locked: aspectLocked }" :aria-pressed="aspectLocked" @click="toggleLock"
+          :title="aspectLocked ? `Locked at ${displayRatio}` : 'Unlock ratio control'">
+          <LockClosedIcon v-if="aspectLocked" class="icon" />
+          <LockOpenIcon v-else class="icon" />
         </button>
         <span class="ratio-display">{{ displayRatio }}</span>
       </div>
@@ -60,17 +60,24 @@
     <!-- Flip & Full-screen buttons -->
     <div class="button-group">
       <button type="button" @click="onFlip" title="Swap Width ↔ Height">
-        🔄
+        <ArrowPathIcon class="icon" />
       </button>
 
       <button type="button" @click="onFullScreen" title="Toggle Full Screen">
-        ⛶
+        <ArrowsPointingOutIcon class="icon" />
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import {
+  LockClosedIcon,
+  LockOpenIcon,
+  ArrowPathIcon,
+  ArrowsPointingOutIcon
+} from '@heroicons/vue/24/outline'
+
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
 import { ref, toRefs, watch, computed } from 'vue'
 
@@ -365,7 +372,7 @@ watch(
   border: 1px solid var(--color-border-hover);
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: background-color 0.2s, transform 0.1s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -384,7 +391,13 @@ watch(
 .field-group select:focus,
 .field-group input:focus {
   outline: none;
-  border-color: #6094f0;
+  border-color: var(--color-accent);
   box-shadow: 0 0 0 2px var(--color-text);
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
 }
 </style>

@@ -10,21 +10,39 @@
     <div class="modal" ref="modalRef">
       <header class="modal-header">
         <h3 id="unsaved-title">Unsaved Changes</h3>
-        <button class="close-btn" @click="$emit('cancel')" aria-label="Close">✖</button>
+        <button class="close-btn" @click="$emit('cancel')" aria-label="Close">
+          <XMarkIcon class="icon" />
+        </button>
       </header>
 
       <p>You have unsaved changes. Save before continuing?</p>
 
       <div class="actions">
-        <button class="btn save" @click="$emit('save')">💾 Save</button>
-        <button class="btn discard" @click="$emit('discard')">🚫 Discard</button>
-        <button class="btn cancel" @click="$emit('cancel')">❌ Cancel</button>
+        <button class="btn save" @click="$emit('save')">
+          <ArrowDownTrayIcon class="icon" />
+          Save
+        </button>
+        <button class="btn discard" @click="$emit('discard')">
+          <NoSymbolIcon class="icon" />
+          Discard
+        </button>
+        <button class="btn cancel" @click="$emit('cancel')">
+          <XCircleIcon class="icon" />
+          Cancel
+        </button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import {
+  XMarkIcon,
+  ArrowDownTrayIcon,
+  XCircleIcon,
+  NoSymbolIcon
+} from '@heroicons/vue/24/outline'
+
 import { onMounted, ref } from 'vue'
 
 const modalRef = ref<HTMLElement | null>(null)
@@ -39,7 +57,7 @@ onMounted(() => {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -53,7 +71,7 @@ onMounted(() => {
   border-radius: 8px;
   max-width: 420px;
   width: 100%;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -97,7 +115,7 @@ onMounted(() => {
   background: var(--color-background-soft);
   color: var(--color-text);
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s, color 0.2s;
+  transition: background-color 0.2s, transform 0.1s, color 0.2s;
 }
 
 .btn:hover {
@@ -114,5 +132,16 @@ onMounted(() => {
 .btn.discard,
 .btn.cancel {
   border-color: var(--color-border-hover);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.actions .btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 </style>
