@@ -8,7 +8,7 @@
 
       <div class="header-actions">
         <button class="show-hidden-button" type="button" @click.stop="showHidden = !showHidden">
-          {{ showHidden ? '👀' : '🙈' }}
+          {{ showHidden ? 'showing hidden 👀' : 'hiding hidden 🙈' }}
         </button>
         <span class="collapse-icon" :class="{ collapsed }" @click.stop="collapsed = !collapsed">
           ▶

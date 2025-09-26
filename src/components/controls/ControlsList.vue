@@ -52,6 +52,10 @@
           <input v-else-if="emitter.type === 'range'" type="range" min="0" max="1" step="0.01"
             :value="(emitter.data.value as number)" @input="handleValueInputFor(emitter, emitter.type, $event)"
             @mousedown.stop @mouseup="commitIfChanged" />
+
+          <!-- color -->
+          <input v-else-if="emitter.type === 'color'" type="color" :value="(emitter.data.value as number)"
+            @input="handleValueInputFor(emitter, emitter.type, $event)" @keydown="handleKeyDown" @mousedown.stop />
         </div>
       </div>
     </Panel>
@@ -215,7 +219,7 @@ const toggleVisible = (emitter: Emitter<JsonValue>) => {
 
 .emitter-row>* {
   flex: 1;
-  height: 30px;
+  height: 24px;
 }
 
 .name-with-buttons {

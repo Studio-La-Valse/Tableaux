@@ -1,26 +1,20 @@
 import type { ColorARGB } from '@/geometry/color'
 import { isValidHexColor, toColorARGB } from '@/geometry/color-hex'
-import { GraphNode } from '../../../core/graph-node'
 import { GraphNodePanel, GraphNodeType } from '../../decorators'
 import ColorPickerPanel from '@/components/graph/Panels/ColorPickerPanel.vue'
+import { Emitter, type EmitterKind } from '@/graph/core/emitter'
 
 @GraphNodeType('Geometry', 'Color', 'Color Picker')
 @GraphNodePanel(ColorPickerPanel)
-export class ColorPicker extends GraphNode {
+export class ColorPicker extends Emitter<string> {
+  public type: EmitterKind = 'color'
+
   private output
 
-  public override data: { value: string } = { value: '#903c3c' }
-
   constructor(id: string, path: string[]) {
-    super(id, path)
+    super(id, path, '#903c3c')
 
     this.output = this.registerObjectOutput<ColorARGB>('Color')
-  }
-
-  public onChange(color: string): void {
-    this.arm()
-    this.data.value = color
-    this.complete()
   }
 
   protected async solve(): Promise<void> {
