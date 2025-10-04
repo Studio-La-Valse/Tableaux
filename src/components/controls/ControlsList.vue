@@ -1,32 +1,51 @@
 <template>
   <div class="controls-list" ref="wrapperRef">
-    <div v-for="emitter in emitters" :key="emitter.id" class="emitter-row">
-      <!-- Left: buttons + name -->
-      <div class="name-cell">
-        <div class="button-group">
-          <button type="button" class="ctrl-btn" @click="zoom(emitter)">
-            <MagnifyingGlassIcon class="icon" />
-          </button>
-          <button type="button" class="ctrl-btn" @click="toggleVisible(emitter)">
-            <component :is="emitter.data.hidden ? EyeSlashIcon : EyeIcon" class="icon" />
-          </button>
-        </div>
-        <input type="text" :placeholder="emitter.id" :value="emitter.data.name" @input="updateName(emitter, $event)"
-          @keydown="handleKeyDown" @mousedown.stop />
-      </div>
+    <draggable
+      :list="emitters"
+      item-key="id"
+      handle=".drag-handle"
+      @end="onDragEnd"
+    >
+      <template #item="{ element: emitter }">
+        <div class="emitter-row">
+          <!-- Left: buttons + name -->
+          <div class="name-cell">
+            <div class="button-group">
+              <div class="drag-handle">
+                <Bars3Icon class="icon" />
+              </div>
+              <button type="button" class="ctrl-btn" @click="zoom(emitter)">
+                <MagnifyingGlassIcon class="icon" />
+              </button>
+              <button type="button" class="ctrl-btn" @click="toggleVisible(emitter)">
+                <component :is="emitter.data.hidden ? EyeSlashIcon : EyeIcon" class="icon" />
+              </button>
+            </div>
+            <input
+              type="text"
+              :placeholder="emitter.id"
+              :value="emitter.data.name"
+              @input="updateName(emitter, $event)"
+              @keydown="handleKeyDown"
+              @mousedown.stop
+            />
+          </div>
 
-      <!-- Right: dynamic emitter component -->
-      <div class="value-cell">
-        <component :is="emitterComponents[emitter.type]" :graph-node="emitter" />
-      </div>
-    </div>
+          <!-- Right: dynamic emitter component -->
+          <div class="value-cell">
+            <component :is="emitterComponents[emitter.type]" :graph-node="emitter" />
+          </div>
+        </div>
+      </template>
+    </draggable>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, onMounted, onBeforeUnmount, type Component } from 'vue'
 import { storeToRefs } from 'pinia'
-import { MagnifyingGlassIcon, EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
+import draggable from 'vuedraggable'
+import { MagnifyingGlassIcon, EyeIcon, EyeSlashIcon, Bars3Icon } from '@heroicons/vue/24/solid'
 
 import { Emitter } from '@/graph/core/emitter'
 import type { JsonValue } from '@/graph/core/models/json-value'
@@ -68,6 +87,7 @@ const emitters = computed(() =>
     .filter(v => v.innerNode instanceof Emitter)
     .map(v => v.innerNode as Emitter<JsonValue>)
     .filter(e => props.showHidden || !e.data.hidden)
+    .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0))
 )
 
 // --- Input handlers ---
@@ -111,6 +131,15 @@ const zoom = (emitter: Emitter<JsonValue>) => {
 const toggleVisible = (emitter: Emitter<JsonValue>) => {
   emitter.data.hidden = !emitter.data.hidden
 }
+
+// --- Order drag drop logic ---
+const onDragEnd = () => {
+  emitters.value.forEach((emitter, index) => {
+    emitter.data.order = index
+  })
+  graphStore.commit() // persist the new order
+}
+
 </script>
 
 <style scoped>
@@ -135,7 +164,8 @@ const toggleVisible = (emitter: Emitter<JsonValue>) => {
 .value-cell {
   flex: 1 1 0;
   display: flex;
-  align-items: stretch; /* children fill vertical space */
+  align-items: stretch;
+  /* children fill vertical space */
   gap: 4px;
   min-width: 0;
   height: 100%;
@@ -162,8 +192,20 @@ const toggleVisible = (emitter: Emitter<JsonValue>) => {
   cursor: pointer;
   box-sizing: border-box;
 }
+
 .ctrl-btn:hover {
   background-color: var(--color-background-mute);
+}
+
+.drag-handle {
+  width: 32px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor:row-resize;
+  box-sizing: border-box;
 }
 
 /* Text input and textarea stretch to fill row */
@@ -179,7 +221,8 @@ const toggleVisible = (emitter: Emitter<JsonValue>) => {
   color: var(--color-text);
   box-sizing: border-box;
   line-height: 1.4;
-  resize: none;          /* keep consistent height */
+  resize: none;
+  /* keep consistent height */
 }
 
 /* Icons scale nicely inside buttons */
@@ -189,5 +232,4 @@ const toggleVisible = (emitter: Emitter<JsonValue>) => {
   color: var(--color-text);
   pointer-events: none;
 }
-
 </style>

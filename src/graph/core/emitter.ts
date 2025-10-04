@@ -8,7 +8,7 @@ export type EmitterKind = (typeof emitterKinds)[number]
 export abstract class Emitter<T extends JsonValue> extends GraphNode {
   public abstract type: EmitterKind
 
-  public override data: { value: T; name: string, hidden: boolean }
+  public override data: { value: T; name: string, hidden: boolean, order?: number }
 
   constructor(id: string, path: string[], defaultValue: T) {
     super(id, path)
