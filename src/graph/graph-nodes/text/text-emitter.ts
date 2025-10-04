@@ -1,4 +1,4 @@
-import TextPanel from '@/components/graph/Panels/TextEmitter.vue'
+import TextPanel from '@/components/graph/Panels/TextPanel.vue'
 import type { GraphNodeOutputType } from '../../core/graph-node-output'
 import { GraphNodePanel, GraphNodeType } from '../decorators'
 import { Emitter } from '@/graph/core/emitter'

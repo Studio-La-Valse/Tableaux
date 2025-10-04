@@ -1,21 +1,33 @@
 <template>
   <div class="page">
 
-    <GraphControls @toggle-controls="showControls = !showControls" />
+    <GraphControls />
 
-    <div ref="viewportRef" class="canvas-container" @contextmenu.prevent @dblclick.prevent="onCanvasDblClick"
-      @mousedown="onMouseDown" @wheel="canvasTransform.onWheel">
+    <PanelGroup direction="horizontal">
+      <Panel>
+        <div ref="viewportRef" class="canvas-container" @contextmenu.prevent @dblclick.prevent="onCanvasDblClick"
+          @mousedown="onMouseDown" @wheel="canvasTransform.onWheel">
 
-      <div ref="canvasRef" class="canvas-content" :style="contentStyle">
-        <GraphRenderer />
+          <div ref="canvasRef" class="canvas-content" :style="contentStyle">
+            <GraphRenderer />
 
-        <SelectionBorder />
-      </div>
+            <SelectionBorder />
+          </div>
 
-      <ActivatorTree />
+          <Teleport to="body">
+            <ActivatorTree />
+          </Teleport>
+        </div>
+      </Panel>
 
-      <ControlsComponent v-if="showControls"/>
-    </div>
+      <PanelResizeHandle class="gutter"/>
+
+      <Panel>
+          <ControlsComponent/>
+      </Panel>
+    </PanelGroup>
+
+
   </div>
 
 </template>
@@ -38,6 +50,7 @@ import { useSelectionAreaStore } from '@/stores/use-selection-area-store';
 import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store';
 import { useGraphStore } from '@/stores/use-graph-store';
 import ControlsComponent from '../controls/ControlsComponent.vue';
+import { PanelGroup, PanelResizeHandle, Panel } from 'vue-resizable-panels';
 
 const selectionArea = useSelectionArea();
 const selectionAreaStore = useSelectionAreaStore();
@@ -50,8 +63,6 @@ const canvasStore = useGraphCanvasStore()
 
 const viewportRef = ref<HTMLElement | null>(null);
 const canvasRef = ref<HTMLElement | null>(null);
-
-const showControls = ref(true)
 
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({
@@ -106,7 +117,30 @@ onUnmounted(() => {
 .canvas-container {
   flex: 1;
   min-height: 0;
+  width: 100%;
+  height: 100%;
   position: relative;
   overflow: hidden;
+}
+
+/* Gutters */
+.gutter {
+  flex-shrink: 0;
+}
+
+/* Horizontal handles */
+:deep(.gutter) {
+  width: 2px;
+  background-color: var(--color-border-hover);
+  cursor: col-resize;
+}
+
+:deep(.gutter:hover){
+  background-color: var(--color-accent);
+}
+
+:deep(.PanelGroup[direction='horizontal'] .gutter) {
+  cursor: col-resize;
+  width: 4px;
 }
 </style>

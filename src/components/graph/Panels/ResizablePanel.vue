@@ -52,6 +52,7 @@ const { initResize } = useNodeResize(width, height);
   /* Flex layout helps with centering */
   display: flex;
   flex-direction: column;
+  padding: 8px;
 }
 
 /* Resizer styling remains unchanged */

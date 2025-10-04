@@ -1,5 +1,5 @@
 <template>
-  <div class="emitter-form" @mousedown.stop @scroll.stop :style="{ width: width + 'px' }">
+  <div class="emitter-form" >
     <!-- Header with collapse toggle -->
     <div class="form-header">
       <span class="form-title">Emitters</span>
@@ -9,23 +9,12 @@
           :title="showHidden ? 'Hide hidden' : 'Show hidden'">
           <component :is="showHidden ? EyeIcon : EyeSlashIcon" class="icon" />
         </button>
-
-        <button @click.stop="collapsed = !collapsed">
-          <ChevronRightIcon class="collapse-icon icon" :class="{ collapsed }" />
-        </button>
       </div>
     </div>
 
     <div class="scroll-area">
-      <transition name="collapse">
-        <div v-show="!collapsed" class="form-body">
-          <ControlsList :show-hidden="showHidden" />
-        </div>
-      </transition>
+      <ControlsList :show-hidden="showHidden" />
     </div>
-
-    <!-- Resize thumb -->
-    <div class="resize-thumb" @mousedown.prevent="startResize"></div>
   </div>
 </template>
 
@@ -34,58 +23,22 @@ import { ref } from 'vue'
 import ControlsList from './ControlsList.vue'
 
 // Heroicons (outline)
-import { EyeIcon, EyeSlashIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
 
-const collapsed = ref(false)
 const showHidden = ref(false)
-
-// --- Resizing state ---
-const width = ref(300)
-let resizing = false
-let startX = 0
-let startWidth = 0
-
-const startResize = (e: MouseEvent) => {
-  resizing = true
-  startX = e.clientX
-  startWidth = width.value
-  document.addEventListener('mousemove', onMouseMove)
-  document.addEventListener('mouseup', stopResize)
-}
-
-const onMouseMove = (e: MouseEvent) => {
-  if (!resizing) return
-  width.value = Math.max(200, startWidth - (e.clientX - startX))
-}
-
-const stopResize = () => {
-  resizing = false
-  document.removeEventListener('mousemove', onMouseMove)
-  document.removeEventListener('mouseup', stopResize)
-}
 </script>
 
 <style scoped>
 .emitter-form {
-  position: absolute;
-  top: 5px;
-  right: 5px;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 200px);
+  height: 100%;
   background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
   padding: 8px;
   box-sizing: border-box;
   z-index: 1000;
   pointer-events: auto;
   color: var(--color-text);
-}
-
-.scroll-area {
-  flex: 1;
-  overflow: auto;
 }
 
 .form-header {
@@ -169,11 +122,6 @@ const stopResize = () => {
   opacity: 1;
 }
 
-.form-body {
-  overflow: hidden;
-}
-
-
 .resize-thumb {
   position: absolute;
   bottom: 0;
@@ -193,5 +141,9 @@ const stopResize = () => {
   height: 10px;
   border-left: 2px solid var(--color-border);
   border-bottom: 2px solid var(--color-border);
+}
+
+.scroll-area {
+  overflow-y: auto;
 }
 </style>

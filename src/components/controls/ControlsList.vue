@@ -1,185 +1,98 @@
 <template>
-  <PanelGroup direction="horizontal" class="emitter-panels" ref="wrapperRef">
-
-    <!-- New control buttons column -->
-    <Panel :default-size="40" :min-size="10">
-      <div class="column">
-        <div v-for="emitter in emitters" :key="emitter.id" class="emitter-row name-with-buttons name-cell">
-          <div class="button-group">
-            <button type="button" class="ctrl-btn" @click="zoom(emitter)">
-              <MagnifyingGlassIcon class="icon" />
-            </button>
-            <button type="button" class="ctrl-btn" @click="toggleVisible(emitter)">
-              <component :is="emitter.data.hidden ? EyeSlashIcon : EyeIcon" class="icon" />
-            </button>
-          </div>
-          <input type="text" :placeholder="emitter.id" :value="emitter.data.name"
-            @input="handleNameInputFor(emitter, $event)" @keydown="handleKeyDown" @mousedown.stop />
-        </div>
-      </div>
-    </Panel>
-
-    <!-- Handle -->
-    <PanelResizeHandle with-handle class="resize-handle">
-      <div class="handle-grip"></div>
-    </PanelResizeHandle>
-
-    <!-- Value column -->
-    <Panel :default-size="60" :min-size="10">
-      <div class="column">
-        <div v-for="emitter in emitters" :key="emitter.id" class="emitter-row value-cell">
-          <!-- text -->
-          <input v-if="emitter.type === 'text'" type="text" :value="(emitter.data.value as string)"
-            @input="handleValueInputFor(emitter, emitter.type, $event)" @keydown="handleKeyDown" @mousedown.stop />
-
-          <!-- number -->
-          <input v-else-if="emitter.type === 'number'" type="number" :value="(emitter.data.value as number)"
-            @input="handleValueInputFor(emitter, emitter.type, $event)" @keydown="handleKeyDown" @mousedown.stop />
-
-          <!-- toggle (boolean) -->
-          <input v-else-if="emitter.type === 'toggle'" type="checkbox" :checked="(emitter.data.value as boolean)"
-            @change="handleValueInputFor(emitter, emitter.type, $event)" @mousedown.stop />
-
-          <!-- button -->
-          <button v-else-if="emitter.type === 'button'" type="button"
-            :class="['momentary-btn', { active: pressedId === emitter.id }]" @mousedown.stop="onButtonDown(emitter)"
-            @touchstart.stop.prevent="onButtonTouchStart(emitter)">
-            <component :is="emitter.data.value ? CheckCircleIcon : XCircleIcon" class="icon" />
+  <div class="controls-list" ref="wrapperRef">
+    <div v-for="emitter in emitters" :key="emitter.id" class="emitter-row">
+      <!-- Left: buttons + name -->
+      <div class="name-cell">
+        <div class="button-group">
+          <button type="button" class="ctrl-btn" @click="zoom(emitter)">
+            <MagnifyingGlassIcon class="icon" />
           </button>
-
-          <!-- range -->
-          <input v-else-if="emitter.type === 'range'" type="range" min="0" max="1" step="0.01"
-            :value="(emitter.data.value as number)" @input="handleValueInputFor(emitter, emitter.type, $event)"
-            @mousedown.stop @mouseup="commitIfChanged" />
-
-          <!-- color -->
-          <input v-else-if="emitter.type === 'color'" type="color" :value="(emitter.data.value as number)"
-            @input="handleValueInputFor(emitter, emitter.type, $event)" @keydown="handleKeyDown" @mousedown.stop />
+          <button type="button" class="ctrl-btn" @click="toggleVisible(emitter)">
+            <component :is="emitter.data.hidden ? EyeSlashIcon : EyeIcon" class="icon" />
+          </button>
         </div>
+        <input type="text" :placeholder="emitter.id" :value="emitter.data.name" @input="updateName(emitter, $event)"
+          @keydown="handleKeyDown" @mousedown.stop />
       </div>
-    </Panel>
-  </PanelGroup>
+
+      <!-- Right: dynamic emitter component -->
+      <div class="value-cell">
+        <component :is="emitterComponents[emitter.type]" :graph-node="emitter" />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import {
-  MagnifyingGlassIcon,
-  EyeIcon,
-  EyeSlashIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-} from '@heroicons/vue/24/solid'
+import { computed, ref, onMounted, onBeforeUnmount, type Component } from 'vue'
+import { storeToRefs } from 'pinia'
+import { MagnifyingGlassIcon, EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
 
-import { PanelGroup, Panel, PanelResizeHandle } from 'vue-resizable-panels'
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { Emitter } from '@/graph/core/emitter'
 import type { JsonValue } from '@/graph/core/models/json-value'
 import { useGraphStore } from '@/stores/use-graph-store'
-import { storeToRefs } from 'pinia'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { useZoomToNodes } from '@/composables/use-zoom-to-nodes'
+
+// Emitter components
+import ButtonEmitter from '../emitters/ButtonEmitter.vue'
+import ToggleEmitter from '../emitters/ToggleEmitter.vue'
+import NumberEmitter from '../emitters/NumberEmitter.vue'
+import TextEmitter from '../emitters/TextEmitter.vue'
+import RangeEmitter from '../emitters/RangeEmitter.vue'
+import ColorEmitter from '../emitters/ColorEmitter.vue'
 
 const props = defineProps<{ showHidden: boolean }>()
 
 const { selectNode } = useGraphNodeSelectionStore()
 const { zoomToNodes } = useZoomToNodes()
-
 const graphStore = useGraphStore()
 const graph = storeToRefs(graphStore)
-
-const emitters = computed(() =>
-  props.showHidden
-    ? graph.nodes.value
-      .filter(v => v.innerNode instanceof Emitter)
-      .map(v => v.innerNode as Emitter<JsonValue>)
-    : graph.nodes.value
-      .filter(v => v.innerNode instanceof Emitter && !v.innerNode.data.hidden)
-      .map(v => v.innerNode as Emitter<JsonValue>)
-)
 
 const wrapperRef = ref<HTMLElement | null>(null)
 let changed = false
 
-// Track which button emitter is currently pressed (momentary)
-const pressedId = ref<string | null>(null)
+// Map emitter types to components
+const emitterComponents: Record<string, Component> = {
+  text: TextEmitter,
+  number: NumberEmitter,
+  toggle: ToggleEmitter,
+  button: ButtonEmitter,
+  range: RangeEmitter,
+  color: ColorEmitter,
+}
 
-// --- Field input handlers ---
-const handleNameInputFor = (graphNode: Emitter<JsonValue>, event: Event) => {
+// Filter emitters based on visibility
+const emitters = computed(() =>
+  graph.nodes.value
+    .filter(v => v.innerNode instanceof Emitter)
+    .map(v => v.innerNode as Emitter<JsonValue>)
+    .filter(e => props.showHidden || !e.data.hidden)
+)
+
+// --- Input handlers ---
+const updateName = (graphNode: Emitter<JsonValue>, event: Event) => {
   graphNode.assignName((event.target as HTMLInputElement).value)
   changed = true
 }
 
-const handleValueInputFor = (
-  graphNode: Emitter<JsonValue>,
-  type: string,
-  event: Event
-) => {
-  const target = event.target as HTMLInputElement
-  let value: JsonValue
-
-  if (type === 'number' || type === 'range') {
-    value = target.valueAsNumber
-  } else if (type === 'toggle') {
-    value = target.checked
-  } else {
-    value = target.value
-  }
-
-  graphNode.onChange(value)
-  changed = true
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Escape') (event.target as HTMLElement).blur()
 }
 
-// --- Button: momentary behavior ---
-const onButtonDown = (graphNode: Emitter<JsonValue>) => {
-  pressedId.value = graphNode.id
-  graphNode.onChange(true)
-  window.addEventListener('mouseup', onGlobalButtonRelease, { once: true, capture: true })
-  window.addEventListener('touchend', onGlobalButtonRelease, { once: true, capture: true })
-  window.addEventListener('touchcancel', onGlobalButtonRelease, { once: true, capture: true })
-}
-
-const onButtonTouchStart = (graphNode: Emitter<JsonValue>) => {
-  pressedId.value = graphNode.id
-  graphNode.onChange(true)
-  window.addEventListener('mouseup', onGlobalButtonRelease, { once: true, capture: true })
-  window.addEventListener('touchend', onGlobalButtonRelease, { once: true, capture: true })
-  window.addEventListener('touchcancel', onGlobalButtonRelease, { once: true, capture: true })
-}
-
-const onGlobalButtonRelease = () => {
-  if (!pressedId.value) return
-  const e = emitters.value.find(x => x.id === pressedId.value)
-  if (e) {
-    e.onChange(false)
-    graphStore.commit()
-  }
-  pressedId.value = null
-  changed = false
-}
-
-// --- Commit on outside click ---
+// --- Commit changes on outside click ---
 const handleClickOutside = (event: MouseEvent) => {
-  if (wrapperRef.value && wrapperRef.value.contains && !wrapperRef.value.contains(event.target as Node)) {
-    const inputs = wrapperRef.value.querySelectorAll<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >('input, textarea, select, button')
-    inputs.forEach(el => el.blur())
+  if (wrapperRef.value && !wrapperRef.value.contains(event.target as Node)) {
+    wrapperRef.value
+      .querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('input, textarea, select, button')
+      .forEach(el => el.blur())
     commitIfChanged()
   }
 }
 
 const commitIfChanged = () => {
-  if (changed) {
-    graphStore.commit()
-  }
+  if (changed) graphStore.commit()
   changed = false
-}
-
-// --- Escape key blur ---
-const handleKeyDown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape') {
-    (event.target as HTMLElement).blur()
-  }
 }
 
 onMounted(() => {
@@ -201,155 +114,81 @@ const toggleVisible = (emitter: Emitter<JsonValue>) => {
 </script>
 
 <style scoped>
-.emitter-panels {
-  display: grid;
-  grid-template-columns: subgrid;
-  /* modern browsers */
-}
-
-.column {
-  display: grid;
-  grid-auto-rows: 1fr;
-  /* every row same height in this column */
+.controls-list {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 100%;
 }
 
 .emitter-row {
   display: flex;
-  align-items: stretch;
-  /* make input/button fill height */
-}
-
-.emitter-row>* {
-  flex: 1;
-  height: 24px;
-}
-
-.name-with-buttons {
-  display: flex;
   align-items: center;
+  gap: 8px;
+  height: 32px;
+  min-height: 32px;
+  box-sizing: border-box;
 }
 
+/* Left and right halves stretch to row height */
+.name-cell,
+.value-cell {
+  flex: 1 1 0;
+  display: flex;
+  align-items: stretch; /* children fill vertical space */
+  gap: 4px;
+  min-width: 0;
+  height: 100%;
+}
+
+/* Button group stays compact but fills row height */
 .button-group {
   display: flex;
-  flex: 0 0 auto;
-  /* fixed width, no shrinking */
-  gap: 2px;
+  gap: 4px;
+  height: 100%;
 }
 
+/* Control buttons: square, full-height */
 .ctrl-btn {
-  width: 24px;
-  height: 24px;
-  padding: 0;
+  width: 32px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
   background-color: var(--color-background);
-  border-radius: 2px;
+  border-radius: 4px;
   border: 1px solid var(--color-border);
   cursor: pointer;
+  box-sizing: border-box;
 }
-
 .ctrl-btn:hover {
   background-color: var(--color-background-mute);
 }
 
+/* Text input and textarea stretch to fill row */
+.name-cell input[type="text"],
+.value-cell .text-input {
+  flex: 1 1 auto;
+  height: 100%;
+  min-width: 0;
+  padding: 0 6px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  box-sizing: border-box;
+  line-height: 1.4;
+  resize: none;          /* keep consistent height */
+  overflow-y: hidden;    /* no scrollbars in 40px row */
+}
+
+/* Icons scale nicely inside buttons */
 .icon {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   color: var(--color-text);
   pointer-events: none;
 }
 
-.name-cell input,
-.value-cell input[type="text"],
-.value-cell input[type="number"],
-.value-cell input[type="range"],
-.value-cell button {
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 4px;
-  border: 1px solid var(--color-border);
-  background: var(--color-background);
-  color: var(--color-text);
-}
-
-.value-cell input[type="checkbox"] {
-  width: 100%;
-  box-sizing: border-box;
-  -webkit-appearance: none;
-  appearance: none;
-  border: 1px solid var(--color-textborder);
-  border-radius: 4px;
-  background: var(--color-background);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  /* for the symbol */
-}
-
-/* Default (unchecked) state shows ✕ */
-.value-cell input[type="checkbox"]::after {
-  content: "✕";
-  color: var(--color-text);
-}
-
-/* Checked state shows ✓ */
-.value-cell input[type="checkbox"]:checked::after {
-  content: "✓";
-}
-
-/* Optional: background change when checked */
-.value-cell input[type="checkbox"]:checked {
-  background: var(--color-background-soft);
-}
-
-.momentary-btn {
-  border: 1px solid var(--color-border);
-  background: var(--color-background);
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.momentary-btn.active {
-  background: var(--color-background-soft);
-  border-color: var(--color-accent);
-}
-
-.resize-handle {
-  position: relative;
-  z-index: 10;
-  pointer-events: auto !important;
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-  background: transparent;
-  cursor: col-resize;
-}
-
-.handle-grip {
-  width: 8px;
-  margin: 0 -2px;
-  background: transparent;
-  position: relative;
-}
-
-.handle-grip::before {
-  content: '';
-  position: absolute;
-  top: 6px;
-  bottom: 6px;
-  left: 50%;
-  width: 2px;
-  transform: translateX(-50%);
-  background: var(--color-border);
-  border-radius: 1px;
-}
-
-.handle-grip:hover::before {
-  background: var(--color-accent);
-}
 </style>

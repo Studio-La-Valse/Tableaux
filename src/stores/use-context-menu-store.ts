@@ -22,9 +22,10 @@ export const useContextMenuStore = defineStore('contextMenu', () => {
 
     visible.value = true
 
-    const viewPortCoords = canvasTransform.clientToViewport(event)
-    xViewPort.value = viewPortCoords.x
-    yViewport.value = viewPortCoords.y
+    // We transport the context menu to body, so no transformation needed
+    // If we dont want this, use canvasTransform.clientToViewport(event)
+    xViewPort.value = event.clientX
+    yViewport.value = event.clientY
 
     const canvasCoords = canvasTransform.clientToCanvas(event)
     xCanvas.value = canvasCoords.x

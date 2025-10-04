@@ -9,10 +9,6 @@
         <MagnifyingGlassIcon class="icon" />
       </button>
 
-      <button type="button" @click="toggleControls" title="Toggle Controls">
-        <AdjustmentsHorizontalIcon class="icon" />
-      </button>
-
       <button type="button" @click="undo" :disabled="!hasUndo" title="Undo">
         <ArrowUturnLeftIcon class="icon" />
       </button>
@@ -48,7 +44,6 @@
 import {
   DocumentMagnifyingGlassIcon,
   MagnifyingGlassIcon,
-  AdjustmentsHorizontalIcon,
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
   ArrowDownOnSquareIcon,
@@ -79,9 +74,6 @@ const { zoomToNodes } = useZoomToNodes()
 const lastSavedModel = ref(toModel())
 const hasUnsavedChanges = () =>
   hasRedo.value || JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel())
-
-const emit = defineEmits<{ (e: 'toggle-controls'): void }>()
-const toggleControls = () => emit('toggle-controls')
 
 /** --- Modal state --- */
 const showUnsavedModal = ref(false)
