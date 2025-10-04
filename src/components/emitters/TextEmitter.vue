@@ -83,6 +83,12 @@
     border-radius: 4px;
     border: 1px solid var(--color-border);
     background: var(--color-background);
+    color: var(--color-text);
     resize: none;
+  }
+
+  .text-input:focus {
+    outline: none;
+    border: 2px solid var(--color-accent);
   }
 </style>

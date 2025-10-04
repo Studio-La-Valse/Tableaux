@@ -85,6 +85,13 @@
     border-radius: 4px;
     border: 1px solid var(--color-border);
     background: var(--color-background);
+    color: var(--color-text);
     resize: none;
+  }
+
+  .number-input:focus {
+    outline: none;
+    border: 2px solid var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
   }
 </style>

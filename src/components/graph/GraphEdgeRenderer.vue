@@ -12,11 +12,10 @@
     :y1="start.y"
     :x2="end.x"
     :y2="end.y"
-    stroke="var(--color-text)"
     :stroke-opacity="0"
-    :stroke-width="10"
-    :callback="handleClick"
-    pointer-events="all"
+    :stroke-width="15"
+    :pointer-events="'stroke'"
+    @click="handleClick"
   />
 </template>
 

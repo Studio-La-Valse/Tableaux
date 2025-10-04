@@ -7,13 +7,6 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
 import { logError } from '@/stores/use-error-log-store';
-import { useGraphNodeActivatorStore } from '@/stores/use-graph-node-activator-store';
-
-import { graphNodeTypes } from '@/graph/graph-nodes/decorators';
-import { useGraphNodePanelStore } from './stores/use-graph-node-panel-store';
-import { useEmitterInputStore } from './stores/use-emitter-input-store';
-import { useGraphStore } from './stores/use-graph-store';
-import.meta.glob('@/graph/graph-nodes/**/*.ts', { eager: true });
 
 const app = createApp(App);
 
@@ -36,24 +29,5 @@ window.addEventListener('error', (event) => {
 app.use(router);
 
 app.use(createPinia());
-
-const { init } = useGraphStore();
-const { register } = useGraphNodeActivatorStore();
-const { registerPanel } = useGraphNodePanelStore();
-const { registerInput } = useEmitterInputStore();
-
-for (const { category, ctor } of graphNodeTypes) {
-  register(category, (id, path) => new ctor(id, path));
-
-  if (ctor.__graphNodePanel) {
-    registerPanel(ctor, ctor.__graphNodePanel);
-  }
-
-  if (ctor.__emitterInput) {
-    registerInput(ctor, ctor.__emitterInput);
-  }
-}
-
-init();
 
 app.mount('#app');

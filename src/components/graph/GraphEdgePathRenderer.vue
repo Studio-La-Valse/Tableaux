@@ -7,13 +7,13 @@
       :stroke-opacity="strokeOpacity"
       :pointer-events="pointerEvents"
       fill="none"
-      @click="onClick"
+      @click="(ev) => emit('click', ev)"
     />
   </svg>
 </template>
 
 <script setup lang="ts">
-  import { computed, type PropType, type StyleValue } from 'vue';
+  import { computed, type StyleValue } from 'vue';
 
   const props = defineProps({
     x1: {
@@ -45,17 +45,11 @@
       type: String,
       default: 'none',
     },
-    callback: {
-      type: Function as PropType<(ev: MouseEvent) => void>,
-      required: false,
-    },
   });
 
-  const onClick = (ev: MouseEvent) => {
-    if (props.callback) {
-      props.callback(ev);
-    }
-  };
+  const emit = defineEmits<{
+    (e: 'click', ev: MouseEvent): void;
+  }>();
 
   // Use a fixed padding so that it’s easier to click the edge.
   const padding = 10;

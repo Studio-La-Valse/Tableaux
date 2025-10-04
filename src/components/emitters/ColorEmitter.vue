@@ -70,4 +70,9 @@
     background: var(--color-background);
     resize: none;
   }
+
+  .color-input:focus {
+    outline: none;
+    border: 2px solid var(--color-accent);
+  }
 </style>

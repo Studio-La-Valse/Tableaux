@@ -1,42 +1,46 @@
 import type { XY } from '@/geometry/xy';
-import { defineStore } from 'pinia';
-import { computed, onUnmounted, ref } from 'vue';
+import { defineStore, storeToRefs } from 'pinia';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useGraphStore } from './use-graph-store';
 import { CanvasClick } from '@/graph/graph-nodes/canvas/canvas-click';
 import { MouseMove } from '@/graph/graph-nodes/canvas/mouse-move';
 import { Viewport } from '@/graph/graph-nodes/canvas/viewport';
 import { KeyPress } from '@/graph/graph-nodes/canvas/key-press';
-
-const canvasRef = ref<HTMLCanvasElement | undefined>();
-const innerDimensions = ref<XY>({ x: 1920, y: 1080 });
+import { Canvas } from '@/graph/graph-nodes/canvas/canvas';
 
 export const useDesignCanvasStore = defineStore('canvas-props', () => {
-  const dimensions = computed(() => innerDimensions.value);
+  let initCounter = 0
+  const canvasRef = ref<HTMLCanvasElement | undefined>();
+  const dimensions = ref<XY>({ x: 1920, y: 1080 });
   const lastClick = ref<XY | undefined>();
   const graph = useGraphStore();
+  const { nodes } = storeToRefs(graph);
 
-  const setCanvas = (canvas: HTMLCanvasElement) => {
-    if (canvasRef.value) {
-      canvas.removeEventListener('click', click);
-      canvas.removeEventListener('mousemove', mousemove);
+  const attachCanvas = (canvas: HTMLCanvasElement) => {
+    canvasRef.value = canvas
+
+    canvasRef.value.addEventListener('click', click)
+    canvasRef.value.addEventListener('mousemove', mousemove)
+
+    // The very first time the canvas is attached, we dont need a redraw
+    // because that will happen because of the graph invalidation
+    if (initCounter > 0) {
+      redraw()
     }
 
+    initCounter ++;
+  }
+
+  onMounted(() => {
     window.addEventListener('keydown', keydown);
     window.addEventListener('keyup', keyup);
-
-    canvasRef.value = canvas;
-
-    canvas.addEventListener('click', click);
-    canvas.addEventListener('mousemove', mousemove);
-    window.addEventListener('keydown', keydown);
-    window.addEventListener('keyup', keyup);
-  };
+  });
 
   const click = (ev: MouseEvent) => {
     const point = clientToCanvas(ev);
     lastClick.value = point;
 
-    graph.nodes
+    nodes.value
       .map((v) => v.innerNode)
       .filter((v) => v instanceof CanvasClick)
       .forEach((v) => v.onChange(point));
@@ -46,7 +50,7 @@ export const useDesignCanvasStore = defineStore('canvas-props', () => {
     const point = clientToCanvas(ev);
     lastClick.value = point;
 
-    graph.nodes
+    nodes.value
       .map((v) => v.innerNode)
       .filter((v) => v instanceof MouseMove)
       .forEach((v) => v.onChange(point));
@@ -56,7 +60,7 @@ export const useDesignCanvasStore = defineStore('canvas-props', () => {
     if (ev.repeat) return;
     const key = ev.key;
 
-    graph.nodes
+    nodes.value
       .map((v) => v.innerNode)
       .filter((v) => v instanceof KeyPress)
       .forEach((v) => v.keyDown(key));
@@ -65,7 +69,7 @@ export const useDesignCanvasStore = defineStore('canvas-props', () => {
   const keyup = (ev: KeyboardEvent) => {
     const key = ev.key;
 
-    graph.nodes
+    nodes.value
       .map((v) => v.innerNode)
       .filter((v) => v instanceof KeyPress)
       .forEach((v) => v.keyUp(key));
@@ -89,16 +93,26 @@ export const useDesignCanvasStore = defineStore('canvas-props', () => {
   }
 
   const setDimensions = (_dimensions: XY) => {
-    innerDimensions.value = _dimensions;
+    dimensions.value = _dimensions;
 
     if (!canvasRef.value) {
       throw new Error('A canvas has not yet been set!');
     }
 
-    graph.nodes
+    nodes.value
       .map((v) => v.innerNode)
       .filter((v) => v instanceof Viewport)
       .forEach((v) => v.onChange(_dimensions));
+  };
+
+  const redraw = () => {
+    nodes.value
+      .map((v) => v.innerNode)
+      .filter((v) => v instanceof Canvas)
+      .forEach((v) => {
+        v.arm();
+        v.complete();
+      });
   };
 
   onUnmounted(() => {
@@ -108,5 +122,5 @@ export const useDesignCanvasStore = defineStore('canvas-props', () => {
     window.removeEventListener('keyup', keyup);
   });
 
-  return { dimensions, setDimensions, lastClick, setCanvas, canvasRef };
+  return { dimensions, setDimensions, lastClick, canvasRef, attachCanvas };
 });
