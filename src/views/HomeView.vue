@@ -72,6 +72,7 @@ function navigateToGithub() {
   overflow: hidden;
 }
 
+/* test comment */
 /* Split container fills all space above footer */
 .split-container {
   flex: 1;
