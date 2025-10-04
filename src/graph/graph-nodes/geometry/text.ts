@@ -1,36 +1,37 @@
-import { GraphNode } from '@/graph/core/graph-node'
-import { GraphNodeType } from '../decorators'
-import { createText, type TextShape } from '@/bitmap-painters/text-shape'
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsXY } from '@/geometry/xy'
-import { assertIsFont } from '@/bitmap-painters/font'
+import { GraphNode } from '@/graph/core/graph-node';
+import { GraphNodeType } from '../decorators';
+import { createText, type TextShape } from '@/bitmap-painters/text-shape';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import { assertIsXY } from '@/geometry/xy';
+import { assertIsFont } from '@/bitmap-painters/font';
 
 @GraphNodeType('Geometry', 'Text')
 export class Text extends GraphNode {
-  private inputText
-  private inputOrigin
-  private inputFontFamily
-  private inputFontSize
-  private outputText
+  private inputText;
+  private inputOrigin;
+  private inputFontFamily;
+  private inputFontSize;
+  private outputText;
 
   constructor(id: string, path: string[]) {
-    super(id, path)
+    super(id, path);
 
-    this.inputText = this.registerStringInput('Text')
-    this.inputOrigin = this.registerObjectInput('Origin').validate(assertIsXY)
-    this.inputFontFamily = this.registerObjectInput('Family').validate(assertIsFont)
-    this.inputFontSize = this.registerNumberInput('Size')
-    this.outputText = this.registerObjectOutput<TextShape>('Text')
+    this.inputText = this.registerStringInput('Text');
+    this.inputOrigin = this.registerObjectInput('Origin').validate(assertIsXY);
+    this.inputFontFamily =
+      this.registerObjectInput('Family').validate(assertIsFont);
+    this.inputFontSize = this.registerNumberInput('Size');
+    this.outputText = this.registerObjectOutput<TextShape>('Text');
   }
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [t, o, ff, si] of inputIterators.cycleValues(
       this.inputText,
       this.inputOrigin,
       this.inputFontFamily,
-      this.inputFontSize,
+      this.inputFontSize
     )) {
-      const v = createText(t, o, ff, si)
-      this.outputText.next(v)
+      const v = createText(t, o, ff, si);
+      this.outputText.next(v);
     }
   }
 }

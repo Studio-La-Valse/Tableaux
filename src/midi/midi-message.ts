@@ -1,96 +1,98 @@
 export type MidiMessageBase = {
-  timestamp: number
-  type: MessageKind
-}
+  timestamp: number;
+  type: MessageKind;
+};
 
 export type NoteOffMidiMessage = MidiMessageBase & {
-  type: 'noteOff'
-  channel: number
-  key: number
-  velocity: number
-}
+  type: 'noteOff';
+  channel: number;
+  key: number;
+  velocity: number;
+};
 
 export type NoteOnMidiMessage = MidiMessageBase & {
-  type: 'noteOn'
-  channel: number
-  key: number
-  velocity: number
-}
+  type: 'noteOn';
+  channel: number;
+  key: number;
+  velocity: number;
+};
 
 export type KeyPressureMidiMessage = MidiMessageBase & {
-  type: 'keyPressure'
-  channel: number
-  key: number
-  pressure: number
-}
+  type: 'keyPressure';
+  channel: number;
+  key: number;
+  pressure: number;
+};
 
 export type ControllerChangeBase = MidiMessageBase & {
-  channel: number
-  controllerNumber: number
-  controllerValue: number
-}
+  channel: number;
+  controllerNumber: number;
+  controllerValue: number;
+};
 
 export type ControllerChangeMidiMessage = ControllerChangeBase & {
-  type: 'controllerChange'
-}
+  type: 'controllerChange';
+};
 
 export type AllSoundOffControllerChangeMidiMessage = ControllerChangeBase & {
-  type: 'allSoundOffControllerChange'
-}
+  type: 'allSoundOffControllerChange';
+};
 
-export type ResetAllControllersControllerChangeMidiMessage = ControllerChangeBase & {
-  type: 'resetAllControllersControllerChange'
-}
+export type ResetAllControllersControllerChangeMidiMessage =
+  ControllerChangeBase & {
+    type: 'resetAllControllersControllerChange';
+  };
 
-export type LocalControlOffControllerChangeMidiMessage = ControllerChangeBase & {
-  type: 'localControlOffControllerChange'
-}
+export type LocalControlOffControllerChangeMidiMessage =
+  ControllerChangeBase & {
+    type: 'localControlOffControllerChange';
+  };
 
 export type LocalControlOnControllerChangeMidiMessage = ControllerChangeBase & {
-  type: 'localControlOnControllerChange'
-}
+  type: 'localControlOnControllerChange';
+};
 
 export type AllNotesOffControllerChangeMidiMessage = ControllerChangeBase & {
-  type: 'allNotesOffControllerChange'
-}
+  type: 'allNotesOffControllerChange';
+};
 
 export type OmniModeOffControllerChangeMidiMessage = ControllerChangeBase & {
-  type: 'omniModeOffControllerChange'
-}
+  type: 'omniModeOffControllerChange';
+};
 
 export type OmniModeOnControllerChangeMidiMessage = ControllerChangeBase & {
-  type: 'omniModeOnControllerChange'
-}
+  type: 'omniModeOnControllerChange';
+};
 
 export type MonoModeOnControllerChangeMidiMessage = ControllerChangeBase & {
-  type: 'monoModeOnControllerChange'
-}
+  type: 'monoModeOnControllerChange';
+};
 
 export type PolyModeOnControllerChangeMidiMessage = ControllerChangeBase & {
-  type: 'polyModeOnControllerChange'
-}
+  type: 'polyModeOnControllerChange';
+};
 
 export type ProgramChangeMidiMessage = MidiMessageBase & {
-  type: 'programChange'
-  channel: number
-  program: number
-}
+  type: 'programChange';
+  channel: number;
+  program: number;
+};
 
 export type ChannelPressureMidiMessage = MidiMessageBase & {
-  type: 'channelPressure'
-  channel: number
-  pressure: number
-}
+  type: 'channelPressure';
+  channel: number;
+  pressure: number;
+};
 
 export type PitchBendChangeMidiMessage = MidiMessageBase & {
-  type: 'pitchBendChange'
-  channel: number
-  pitchBend: number
-}
+  type: 'pitchBendChange';
+  channel: number;
+  pitchBend: number;
+};
 
 export type UnknownMidiMessage = MidiMessageBase & {
-  type: 'unknown'
-}
+  type: 'unknown';
+};
 
 export const messageKinds = [
   'noteOff',
@@ -110,12 +112,14 @@ export const messageKinds = [
   'channelPressure',
   'pitchBendChange',
   'unknown',
-] as const
+] as const;
 
-export type MessageKind = (typeof messageKinds)[number]
+export type MessageKind = (typeof messageKinds)[number];
 
 export function isMessageKind(value: unknown): value is MessageKind {
-  return typeof value === 'string' && messageKinds.includes(value as MessageKind)
+  return (
+    typeof value === 'string' && messageKinds.includes(value as MessageKind)
+  );
 }
 
 export type MidiMessage =
@@ -135,26 +139,31 @@ export type MidiMessage =
   | PolyModeOnControllerChangeMidiMessage
   | ProgramChangeMidiMessage
   | ChannelPressureMidiMessage
-  | PitchBendChangeMidiMessage
+  | PitchBendChangeMidiMessage;
 
 export function isMidiMessage(value: unknown): value is MidiMessage {
-  return typeof value === 'object' && value !== null && 'type' in value && isMessageKind(value.type)
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'type' in value &&
+    isMessageKind(value.type)
+  );
 }
 
 export function parse(event: MIDIMessageEvent): MidiMessage {
-  const data = event.data
+  const data = event.data;
   if (!data) {
-    throw new Error('Invalid midi message because it contains no data.')
+    throw new Error('Invalid midi message because it contains no data.');
   }
 
-  const timestamp = event.timeStamp
+  const timestamp = event.timeStamp;
   if (data.length < 2) {
     // no real MIDI data → unknown
-    return { type: 'unknown', timestamp }
+    return { type: 'unknown', timestamp };
   }
 
-  const status = data[0] & 0xf0
-  const channel = (data[0] & 0x0f) + 1
+  const status = data[0] & 0xf0;
+  const channel = (data[0] & 0x0f) + 1;
 
   switch (status) {
     // Note Off
@@ -165,7 +174,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
         channel,
         key: data[1] & 0x7f,
         velocity: data[2] & 0x7f,
-      }
+      };
 
     // Note On
     case 0x90:
@@ -175,7 +184,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
         channel,
         key: data[1] & 0x7f,
         velocity: data[2] & 0x7f,
-      }
+      };
 
     // Polyphonic Key Pressure
     case 0xa0:
@@ -185,12 +194,12 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
         channel,
         key: data[1] & 0x7f,
         pressure: data[2] & 0x7f,
-      }
+      };
 
     // Control Change (and all its sub-types)
     case 0xb0: {
-      const controllerNumber = data[1] & 0x7f
-      const controllerValue = data[2] & 0x7f
+      const controllerNumber = data[1] & 0x7f;
+      const controllerValue = data[2] & 0x7f;
 
       if (controllerNumber === 120 && controllerValue === 0) {
         return {
@@ -199,7 +208,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
           channel,
           controllerNumber,
           controllerValue,
-        }
+        };
       }
       if (controllerNumber === 121) {
         return {
@@ -208,7 +217,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
           channel,
           controllerNumber,
           controllerValue,
-        }
+        };
       }
       if (controllerNumber === 122) {
         if (controllerValue === 0) {
@@ -218,7 +227,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
             channel,
             controllerNumber,
             controllerValue,
-          }
+          };
         }
         return {
           type: 'localControlOnControllerChange',
@@ -226,7 +235,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
           channel,
           controllerNumber,
           controllerValue,
-        }
+        };
       }
       if (controllerNumber === 123 && controllerValue === 0) {
         return {
@@ -235,7 +244,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
           channel,
           controllerNumber,
           controllerValue,
-        }
+        };
       }
       if (controllerNumber === 124 && controllerValue === 0) {
         return {
@@ -244,7 +253,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
           channel,
           controllerNumber,
           controllerValue,
-        }
+        };
       }
       if (controllerNumber === 125 && controllerValue === 0) {
         return {
@@ -253,7 +262,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
           channel,
           controllerNumber,
           controllerValue,
-        }
+        };
       }
       if (controllerNumber === 126) {
         return {
@@ -262,7 +271,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
           channel,
           controllerNumber,
           controllerValue,
-        }
+        };
       }
       if (controllerNumber === 127) {
         return {
@@ -271,7 +280,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
           channel,
           controllerNumber,
           controllerValue,
-        }
+        };
       }
 
       return {
@@ -280,7 +289,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
         channel,
         controllerNumber,
         controllerValue,
-      }
+      };
     }
 
     // Program Change
@@ -290,7 +299,7 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
         timestamp,
         channel,
         program: data[1],
-      }
+      };
 
     // Channel Pressure
     case 0xd0:
@@ -299,21 +308,21 @@ export function parse(event: MIDIMessageEvent): MidiMessage {
         timestamp,
         channel,
         pressure: data[1] & 0x7f,
-      }
+      };
 
     // Pitch Bend Change
     case 0xe0: {
-      const msb = data[2] & 0x7f
-      const lsb = data[1] & 0x7f
+      const msb = data[2] & 0x7f;
+      const lsb = data[1] & 0x7f;
       return {
         type: 'pitchBendChange',
         timestamp,
         channel,
         pitchBend: (msb << 7) + lsb,
-      }
+      };
     }
 
     default:
-      throw new Error(`Message ${status} is undefined.`)
+      throw new Error(`Message ${status} is undefined.`);
   }
 }

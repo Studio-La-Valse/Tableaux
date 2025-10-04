@@ -1,3 +1,4 @@
-import type { componentStates } from "./component-states";
+import type { componentStates } from './component-states';
 
-export type ComponentState = (typeof componentStates)[keyof typeof componentStates]
+export type ComponentState =
+  (typeof componentStates)[keyof typeof componentStates];

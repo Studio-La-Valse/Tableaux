@@ -1,43 +1,60 @@
-import { isOfShapeKind, type Shape } from '@/geometry/shape'
-import type { Arc } from '../geometry/arc'
-import { IDENTITY_ORIGIN, IDENTITY_RADIUS, type Circle } from '../geometry/circle'
-import { formatCSSRGBA } from '../geometry/color-rgb'
-import type { Ellipse } from '../geometry/ellipse'
-import type { EllipticalArc } from '../geometry/elliptical-arc'
-import { hasFill } from '@/bitmap-painters/fill'
-import { deconstruct, type Line } from '../geometry/line'
-import { type Parallelogram } from '../geometry/parallelogram'
-import { deconstruct as deconstructRectangle, type Rectangle } from '../geometry/rectangle'
-import { IDENTITY_BR, IDENTITY_TL, type Square } from '../geometry/square'
-import { hasStroke } from '@/bitmap-painters/stroke'
-import type { TextShape } from '@/bitmap-painters/text-shape'
-import { hasAlignment, hasBaseLine, hasDirection } from '@/bitmap-painters/text-format-options'
-import { decomposeMatrix } from '@/geometry/decomposed-transformation-matrix'
-import { formatCtx } from '@/bitmap-painters/font'
-import { formatCtxFilter, hasFilter } from './filter'
-import { hasRoundCorners } from './round-corners'
+import { isOfShapeKind, type Shape } from '@/geometry/shape';
+import type { Arc } from '../geometry/arc';
+import {
+  IDENTITY_ORIGIN,
+  IDENTITY_RADIUS,
+  type Circle,
+} from '../geometry/circle';
+import { formatCSSRGBA } from '../geometry/color-rgb';
+import type { Ellipse } from '../geometry/ellipse';
+import type { EllipticalArc } from '../geometry/elliptical-arc';
+import { hasFill } from '@/bitmap-painters/fill';
+import { deconstruct, type Line } from '../geometry/line';
+import { type Parallelogram } from '../geometry/parallelogram';
+import {
+  deconstruct as deconstructRectangle,
+  type Rectangle,
+} from '../geometry/rectangle';
+import { IDENTITY_BR, IDENTITY_TL, type Square } from '../geometry/square';
+import { hasStroke } from '@/bitmap-painters/stroke';
+import type { TextShape } from '@/bitmap-painters/text-shape';
+import {
+  hasAlignment,
+  hasBaseLine,
+  hasDirection,
+} from '@/bitmap-painters/text-format-options';
+import { decomposeMatrix } from '@/geometry/decomposed-transformation-matrix';
+import { formatCtx } from '@/bitmap-painters/font';
+import { formatCtxFilter, hasFilter } from './filter';
+import { hasRoundCorners } from './round-corners';
 
 export class BitmapPainter {
   constructor(private ctx: CanvasRenderingContext2D) {}
 
-  public static init(canvasRef: HTMLCanvasElement, width: number, height: number): BitmapPainter {
+  public static init(
+    canvasRef: HTMLCanvasElement,
+    width: number,
+    height: number
+  ): BitmapPainter {
     // We set the dimensions here in case of drawing to the preview canvasses,
     //  their size is not set when updating the viewport of the design canvas.
-    canvasRef.width = width
-    canvasRef.height = height
+    canvasRef.width = width;
+    canvasRef.height = height;
 
-    const ctx = canvasRef.getContext('2d')!
+    const ctx = canvasRef.getContext('2d')!;
     if (!ctx) {
-      throw new Error('A 2d context could not be created from an HTML Canvas Element.')
+      throw new Error(
+        'A 2d context could not be created from an HTML Canvas Element.'
+      );
     }
 
-    ctx.imageSmoothingEnabled = false
-    ctx.clearRect(0, 0, width, height)
-    ctx.setTransform(1, 0, 0, 1, 0, 0)
-    ctx.save()
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, width, height);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.save();
 
-    const painter = new BitmapPainter(ctx)
-    return painter
+    const painter = new BitmapPainter(ctx);
+    return painter;
   }
 
   public draw(element: Shape | TextShape): BitmapPainter {
@@ -46,196 +63,196 @@ export class BitmapPainter {
       case 'elliptical-arc':
       case 'circle':
       case 'ellipse':
-        return this.drawCircle(element)
+        return this.drawCircle(element);
       case 'line':
-        return this.drawLine(element)
+        return this.drawLine(element);
       case 'rectangle':
       case 'square':
       case 'parallelogram':
-        return this.drawRectangle(element)
+        return this.drawRectangle(element);
       case 'text':
-        return this.drawText(element)
+        return this.drawText(element);
     }
   }
 
   private drawLine(element: Line): this {
-    const { start, end } = deconstruct(element)
+    const { start, end } = deconstruct(element);
 
-    this.ctx.save()
+    this.ctx.save();
 
-    this.applyEffect(element)
+    this.applyEffect(element);
 
-    this.ctx.beginPath()
-    this.ctx.moveTo(start.x, start.y)
-    this.ctx.lineTo(end.x, end.y)
+    this.ctx.beginPath();
+    this.ctx.moveTo(start.x, start.y);
+    this.ctx.lineTo(end.x, end.y);
 
-    this.setStroke(element)
+    this.setStroke(element);
 
-    this.ctx.restore()
+    this.ctx.restore();
 
-    return this
+    return this;
   }
 
   private drawRectangle(element: Square | Rectangle | Parallelogram): this {
     if (isOfShapeKind(element, ['parallelogram'])) {
-      return this.drawParallelogram(element)
+      return this.drawParallelogram(element);
     }
 
-    const { translation, rotation } = decomposeMatrix(element.transformation)
+    const { translation, rotation } = decomposeMatrix(element.transformation);
 
-    this.ctx.save()
+    this.ctx.save();
 
-    this.ctx.translate(translation.x, translation.y)
-    this.ctx.rotate(rotation)
-    this.applyEffect(element)
+    this.ctx.translate(translation.x, translation.y);
+    this.ctx.rotate(rotation);
+    this.applyEffect(element);
 
-    const { width, height } = deconstructRectangle(element)
-    this.ctx.beginPath()
+    const { width, height } = deconstructRectangle(element);
+    this.ctx.beginPath();
     if (hasRoundCorners(element)) {
       this.ctx.roundRect(0, 0, width, height, [
         element.topLeft ?? 0,
         element.topRight ?? 0,
         element.bottomRight ?? 0,
         element.bottomLeft ?? 0,
-      ])
+      ]);
     } else {
-      this.ctx.rect(0, 0, width, height)
+      this.ctx.rect(0, 0, width, height);
     }
 
-    this.setFill(element)
-    this.setStroke(element)
+    this.setFill(element);
+    this.setStroke(element);
 
-    this.ctx.restore()
+    this.ctx.restore();
 
-    return this
+    return this;
   }
 
   public drawParallelogram(element: Parallelogram): this {
-    const { a, b, c, d, e, f } = element.transformation
+    const { a, b, c, d, e, f } = element.transformation;
 
-    this.ctx.save()
-    this.ctx.setTransform(a, b, c, d, e, f)
-    this.applyEffect(element)
+    this.ctx.save();
+    this.ctx.setTransform(a, b, c, d, e, f);
+    this.applyEffect(element);
 
-    this.ctx.beginPath()
+    this.ctx.beginPath();
     this.ctx.rect(
       IDENTITY_TL.x,
       IDENTITY_TL.y,
       IDENTITY_BR.x - IDENTITY_TL.x,
-      IDENTITY_BR.y - IDENTITY_TL.y,
-    )
+      IDENTITY_BR.y - IDENTITY_TL.y
+    );
 
-    this.setFill(element)
-    this.setStroke(element)
+    this.setFill(element);
+    this.setStroke(element);
 
-    this.ctx.restore()
+    this.ctx.restore();
 
-    return this
+    return this;
   }
 
   private drawCircle(element: Arc | EllipticalArc | Circle | Ellipse): this {
-    const { a, b, c, d, e, f } = element.transformation
-    let start = 0
-    let end = Math.PI * 2
-    let counterClockwise = true
+    const { a, b, c, d, e, f } = element.transformation;
+    let start = 0;
+    let end = Math.PI * 2;
+    let counterClockwise = true;
     switch (element.kind) {
       case 'arc':
       case 'elliptical-arc':
-        start = element.startAngle
-        end = element.endAngle
-        counterClockwise = !(element.clockwise ?? false)
+        start = element.startAngle;
+        end = element.endAngle;
+        counterClockwise = !(element.clockwise ?? false);
     }
-    this.ctx.save()
-    this.ctx.setTransform(a, b, c, d, e, f)
-    this.applyEffect(element)
+    this.ctx.save();
+    this.ctx.setTransform(a, b, c, d, e, f);
+    this.applyEffect(element);
 
-    this.ctx.beginPath()
+    this.ctx.beginPath();
     this.ctx.arc(
       IDENTITY_ORIGIN.x,
       IDENTITY_ORIGIN.y,
       IDENTITY_RADIUS,
       start,
       end,
-      counterClockwise,
-    )
+      counterClockwise
+    );
 
-    this.setFill(element)
-    this.setStroke(element)
+    this.setFill(element);
+    this.setStroke(element);
 
-    this.ctx.restore()
+    this.ctx.restore();
 
-    return this
+    return this;
   }
 
   private drawText(element: TextShape) {
-    const fill = hasFill(element)
-    const stroke = hasStroke(element)
-    if (!fill && !stroke) return this
+    const fill = hasFill(element);
+    const stroke = hasStroke(element);
+    if (!fill && !stroke) return this;
 
-    const { a, b, c, d, e, f } = element.transformation
+    const { a, b, c, d, e, f } = element.transformation;
 
-    this.ctx.save()
-    const fontName = formatCtx(element.fontFamily, element.fontSize)
-    this.ctx.font = fontName
+    this.ctx.save();
+    const fontName = formatCtx(element.fontFamily, element.fontSize);
+    this.ctx.font = fontName;
 
     if (hasAlignment(element)) {
-      this.ctx.textAlign = element.align
+      this.ctx.textAlign = element.align;
     }
 
     if (hasBaseLine(element)) {
-      this.ctx.textBaseline = element.baseline
+      this.ctx.textBaseline = element.baseline;
     }
 
     if (hasDirection(element)) {
-      this.ctx.direction = element.direction
+      this.ctx.direction = element.direction;
     }
 
-    this.ctx.setTransform(a, b, c, d, e, f)
-    this.applyEffect(element)
+    this.ctx.setTransform(a, b, c, d, e, f);
+    this.applyEffect(element);
 
     if (fill) {
-      this.ctx.fillStyle = formatCSSRGBA(element.fill)
-      this.ctx.fillText(element.text, 0, 0)
+      this.ctx.fillStyle = formatCSSRGBA(element.fill);
+      this.ctx.fillText(element.text, 0, 0);
     }
     if (stroke) {
-      this.ctx.strokeStyle = formatCSSRGBA(element.stroke)
-      this.ctx.lineWidth = element.strokeWidth
-      this.ctx.strokeText(element.text, 0, 0)
+      this.ctx.strokeStyle = formatCSSRGBA(element.stroke);
+      this.ctx.lineWidth = element.strokeWidth;
+      this.ctx.strokeText(element.text, 0, 0);
     }
 
-    this.ctx.restore()
+    this.ctx.restore();
 
-    return this
+    return this;
   }
 
   private setFill(element: Shape) {
-    if (!hasFill(element)) return
+    if (!hasFill(element)) return;
 
-    this.ctx.fillStyle = formatCSSRGBA(element.fill)
-    this.ctx.fill()
+    this.ctx.fillStyle = formatCSSRGBA(element.fill);
+    this.ctx.fill();
   }
 
   private setStroke(element: Shape) {
-    if (!hasStroke(element)) return
+    if (!hasStroke(element)) return;
 
-    this.ctx.strokeStyle = formatCSSRGBA(element.stroke)
-    this.ctx.lineWidth = element.strokeWidth
-    this.ctx.stroke()
+    this.ctx.strokeStyle = formatCSSRGBA(element.stroke);
+    this.ctx.lineWidth = element.strokeWidth;
+    this.ctx.stroke();
   }
 
   private applyEffect(element: Shape) {
-    if (!hasFilter(element)) return
+    if (!hasFilter(element)) return;
 
-    const filter = formatCtxFilter(element)
-    this.ctx.filter = filter
+    const filter = formatCtxFilter(element);
+    this.ctx.filter = filter;
   }
 
   private resetTransform() {
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0)
+    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
   public finish(): BitmapPainter {
-    this.ctx.restore()
-    return this
+    this.ctx.restore();
+    return this;
   }
 }

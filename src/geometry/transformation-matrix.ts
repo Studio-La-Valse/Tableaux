@@ -1,15 +1,17 @@
-import { type XY } from './xy'
+import { type XY } from './xy';
 
 export type TransformationMatrix = {
-  a: number
-  b: number // scale + shear X
-  c: number
-  d: number // scale + shear Y
-  e: number
-  f: number // translation
-}
+  a: number;
+  b: number; // scale + shear X
+  c: number;
+  d: number; // scale + shear Y
+  e: number;
+  f: number; // translation
+};
 
-export function isTransformationMatrix(value: unknown): value is TransformationMatrix {
+export function isTransformationMatrix(
+  value: unknown
+): value is TransformationMatrix {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -25,15 +27,17 @@ export function isTransformationMatrix(value: unknown): value is TransformationM
     typeof value.e === 'number' &&
     'f' in value &&
     typeof value.f === 'number'
-  )
+  );
 }
 
-export function assertIsTransformationMatrix(value: unknown): TransformationMatrix {
+export function assertIsTransformationMatrix(
+  value: unknown
+): TransformationMatrix {
   if (!isTransformationMatrix(value)) {
-    throw new Error('Provided value is not a transformation matrix.')
+    throw new Error('Provided value is not a transformation matrix.');
   }
 
-  return value
+  return value;
 }
 
 export function identity() {
@@ -44,18 +48,18 @@ export function identity() {
     d: 1,
     e: 0,
     f: 0,
-  }
+  };
 }
 
 export function invert(m: TransformationMatrix): TransformationMatrix {
-  const { a, b, c, d, e, f } = m
+  const { a, b, c, d, e, f } = m;
 
   // Determinant of the 2×2 top‐left submatrix
-  const det = a * d - b * c
+  const det = a * d - b * c;
   if (det === 0) {
-    throw new Error('Cannot invert matrix: determinant is zero')
+    throw new Error('Cannot invert matrix: determinant is zero');
   }
-  const invDet = 1 / det
+  const invDet = 1 / det;
 
   return {
     // inverse of [ [a c], [b d] ] scaled by invDet
@@ -69,7 +73,7 @@ export function invert(m: TransformationMatrix): TransformationMatrix {
     // f' = (b * e - a * f) / det
     e: (c * f - d * e) * invDet,
     f: (b * e - a * f) * invDet,
-  }
+  };
 }
 
 export function createTranslation(delta: XY): TransformationMatrix {
@@ -80,13 +84,16 @@ export function createTranslation(delta: XY): TransformationMatrix {
     d: 1,
     e: delta.x,
     f: delta.y,
-  }
-  return matrix
+  };
+  return matrix;
 }
 
-export function createRotation(origin: XY, angle: number): TransformationMatrix {
-  const cos = Math.cos(angle)
-  const sin = Math.sin(angle)
+export function createRotation(
+  origin: XY,
+  angle: number
+): TransformationMatrix {
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
   return {
     a: cos,
     b: -sin,
@@ -94,7 +101,7 @@ export function createRotation(origin: XY, angle: number): TransformationMatrix 
     d: cos,
     e: origin.x - origin.x * cos - origin.y * sin,
     f: origin.y + origin.x * sin - origin.y * cos,
-  }
+  };
 }
 
 export function createScale(origin: XY, factor: XY): TransformationMatrix {
@@ -105,12 +112,12 @@ export function createScale(origin: XY, factor: XY): TransformationMatrix {
     d: factor.y,
     e: origin.x * (1 - factor.x),
     f: origin.y * (1 - factor.y),
-  }
+  };
 }
 
 export function createSkew(origin: XY, skew: XY): TransformationMatrix {
-  const skewX = Math.tan(skew.x)
-  const skewY = Math.tan(skew.y)
+  const skewX = Math.tan(skew.x);
+  const skewY = Math.tan(skew.y);
 
   return {
     a: 1,
@@ -119,10 +126,13 @@ export function createSkew(origin: XY, skew: XY): TransformationMatrix {
     d: 1,
     e: -origin.y * skewX,
     f: -origin.x * skewY,
-  }
+  };
 }
 
-export function compose(a: TransformationMatrix, b: TransformationMatrix): TransformationMatrix {
+export function compose(
+  a: TransformationMatrix,
+  b: TransformationMatrix
+): TransformationMatrix {
   return {
     a: a.a * b.a + a.c * b.b,
     b: a.b * b.a + a.d * b.b,
@@ -130,5 +140,5 @@ export function compose(a: TransformationMatrix, b: TransformationMatrix): Trans
     d: a.b * b.c + a.d * b.d,
     e: a.a * b.e + a.c * b.f + a.e,
     f: a.b * b.e + a.d * b.f + a.f,
-  }
+  };
 }

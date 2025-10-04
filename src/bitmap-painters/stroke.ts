@@ -1,7 +1,7 @@
-import type { ColorRGB } from '@/geometry/color'
-import { isColorRGB } from '@/geometry/color-rgb'
+import type { ColorRGB } from '@/geometry/color';
+import { isColorRGB } from '@/geometry/color-rgb';
 
-export type Stroke = { stroke: ColorRGB; strokeWidth: number }
+export type Stroke = { stroke: ColorRGB; strokeWidth: number };
 
 export function hasStroke(value: object): value is Stroke {
   return (
@@ -12,5 +12,5 @@ export function hasStroke(value: object): value is Stroke {
     isColorRGB(value.stroke) &&
     'strokeWidth' in value &&
     typeof value.strokeWidth === 'number'
-  )
+  );
 }

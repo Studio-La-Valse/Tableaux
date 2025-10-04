@@ -1,6 +1,9 @@
 <template>
   <div class="page" :style="style">
-    <CanvasControls v-model:zoomMode="zoomMode" @fullScreen="handleFullScreen" />
+    <CanvasControls
+      v-model:zoomMode="zoomMode"
+      @fullScreen="handleFullScreen"
+    />
 
     <div ref="canvasContainer" class="canvas-container">
       <DesignCanvas :zoomMode="zoomMode" />
@@ -9,70 +12,71 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, type StyleValue } from 'vue'
-import CanvasControls from './CanvasControls.vue'
-import DesignCanvas from './CanvasContainer.vue'
-import { useNodeSelectionAndDrag } from '@/composables/use-node-selection-and-drag'
-import { useCanvasTransform } from '@/composables/use-canvas-transform'
+  import { ref, onMounted, onUnmounted, computed, type StyleValue } from 'vue';
+  import CanvasControls from './CanvasControls.vue';
+  import DesignCanvas from './CanvasContainer.vue';
+  import { useNodeSelectionAndDrag } from '@/composables/use-node-selection-and-drag';
+  import { useCanvasTransform } from '@/composables/use-canvas-transform';
 
-const groupDrag = useNodeSelectionAndDrag()
-const canvasPan = useCanvasTransform()
+  const groupDrag = useNodeSelectionAndDrag();
+  const canvasPan = useCanvasTransform();
 
-const style = computed<StyleValue>(() => ({
-  pointerEvents: (groupDrag.dragging.value || canvasPan.isDragging.value) ? 'none' : 'all'
-}))
+  const style = computed<StyleValue>(() => ({
+    pointerEvents:
+      groupDrag.dragging.value || canvasPan.isDragging.value ? 'none' : 'all',
+  }));
 
-type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200'
+  type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200';
 
-const zoomMode = ref<ZoomMode>('fit')
+  const zoomMode = ref<ZoomMode>('fit');
 
-// keep track of what the zoom was before we forced Fit
-let previousZoom: ZoomMode = zoomMode.value;
+  // keep track of what the zoom was before we forced Fit
+  let previousZoom: ZoomMode = zoomMode.value;
 
-// DOM ref for the element we fullscreen
-const canvasContainer = ref<HTMLElement | null>(null)
+  // DOM ref for the element we fullscreen
+  const canvasContainer = ref<HTMLElement | null>(null);
 
-function handleFullScreen() {
-  if (!canvasContainer.value) return
+  function handleFullScreen() {
+    if (!canvasContainer.value) return;
 
-  // stash current zoom
-  previousZoom = zoomMode.value
+    // stash current zoom
+    previousZoom = zoomMode.value;
 
-  // force Fit mode
-  zoomMode.value = 'fit'
+    // force Fit mode
+    zoomMode.value = 'fit';
 
-  // request fullscreen
-  canvasContainer.value.requestFullscreen().catch(console.error)
-}
-
-// this runs on *every* fullscreen change
-function onFullScreenChange() {
-  // if we've *exited* fullscreen (element is null)
-  if (!document.fullscreenElement) {
-    zoomMode.value = previousZoom
+    // request fullscreen
+    canvasContainer.value.requestFullscreen().catch(console.error);
   }
-}
 
-onMounted(() => {
-  document.addEventListener('fullscreenchange', onFullScreenChange)
-})
+  // this runs on *every* fullscreen change
+  function onFullScreenChange() {
+    // if we've *exited* fullscreen (element is null)
+    if (!document.fullscreenElement) {
+      zoomMode.value = previousZoom;
+    }
+  }
 
-onUnmounted(() => {
-  document.removeEventListener('fullscreenchange', onFullScreenChange)
-})
+  onMounted(() => {
+    document.addEventListener('fullscreenchange', onFullScreenChange);
+  });
+
+  onUnmounted(() => {
+    document.removeEventListener('fullscreenchange', onFullScreenChange);
+  });
 </script>
 
 <style scoped>
-.page {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
+  .page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
 
-.canvas-container {
-  flex: 1;
-  min-height: 0;
-  position: relative;
-  overflow: hidden;
-}
+  .canvas-container {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+  }
 </style>

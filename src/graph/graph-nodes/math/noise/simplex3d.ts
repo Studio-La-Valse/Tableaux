@@ -1,28 +1,28 @@
-import { GraphNode } from '@/graph/core/graph-node'
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import Perlin from '@/noise/perlin'
-import { GraphNodeType } from '../../decorators'
+import { GraphNode } from '@/graph/core/graph-node';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import Perlin from '@/noise/perlin';
+import { GraphNodeType } from '../../decorators';
 
 @GraphNodeType('Math', 'Noise', 'Simplex 3d')
 export class Simplex3d extends GraphNode {
-  private input1
-  private input2
-  private input3
-  private inputScale
+  private input1;
+  private input2;
+  private input3;
+  private inputScale;
 
-  private output
+  private output;
 
-  private perlin
+  private perlin;
 
   constructor(id: string, path: string[]) {
-    super(id, path)
+    super(id, path);
 
-    this.input1 = this.registerNumberInput('X')
-    this.input2 = this.registerNumberInput('Y')
-    this.input3 = this.registerNumberInput('Z')
-    this.inputScale = this.registerNumberInput('Scale')
-    this.output = this.registerNumberOutput('Value')
-    this.perlin = new Perlin()
+    this.input1 = this.registerNumberInput('X');
+    this.input2 = this.registerNumberInput('Y');
+    this.input3 = this.registerNumberInput('Z');
+    this.inputScale = this.registerNumberInput('Scale');
+    this.output = this.registerNumberOutput('Value');
+    this.perlin = new Perlin();
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -30,10 +30,10 @@ export class Simplex3d extends GraphNode {
       this.input1,
       this.input2,
       this.input3,
-      this.inputScale,
+      this.inputScale
     )) {
-      const v = this.perlin.simplex3(x / scale, y / scale, z / scale)
-      this.output.next(v)
+      const v = this.perlin.simplex3(x / scale, y / scale, z / scale);
+      this.output.next(v);
     }
   }
 }
