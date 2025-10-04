@@ -112,7 +112,7 @@
   import { lastError } from '@/stores/use-error-log-store';
 
   const layoutMode = ref<'horizontal' | 'vertical' | 'graph' | 'canvas'>(
-    'horizontal'
+    'vertical'
   );
 
   function navigateToGithub() {
