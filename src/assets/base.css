@@ -88,3 +88,17 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+textarea::-webkit-scrollbar {
+  width: 8px;
+  cursor: grab;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background-color: var(--color-text);
+  border-radius: 4px;
+}
+
+textarea::-webkit-scrollbar-thumb:active {
+  cursor: grabbing;
+}

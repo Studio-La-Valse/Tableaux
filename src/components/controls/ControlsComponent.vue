@@ -52,11 +52,27 @@ const showHidden = ref(false)
   user-select: none;
 }
 
+.form-title {
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
 .header-actions {
   display: flex;
   align-items: center;
   gap: 6px;
-  /* space between eye and arrow */
+}
+
+.show-hidden-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  padding: 0;
+  border: none;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .icon {
@@ -65,85 +81,8 @@ const showHidden = ref(false)
   stroke: var(--color-text);
 }
 
-.show-hidden-button {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background-color: transparent;
-  padding: 0;
-  border: none;
-  font-size: 1rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.collapse-icon {
-  display: flex;
-  align-items: center;
-  transition: transform 0.2s ease;
-  cursor: pointer;
-  transform: rotate(90deg);
-}
-
-.collapse-icon.collapsed {
-  transform: rotate(0deg);
-}
-
-.form-title {
-  font-weight: bold;
-  font-size: 0.95rem;
-}
-
-.collapse-icon {
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
-
-.collapse-icon.collapsed {
-  transform: rotate(-90deg);
-}
-
-/* Smooth collapse animation */
-.collapse-enter-active,
-.collapse-leave-active {
-  transition: max-height 0.25s ease, opacity 0.25s ease;
-}
-
-.collapse-enter-from,
-.collapse-leave-to {
-  max-height: 0;
-  opacity: 0;
-}
-
-.collapse-enter-to,
-.collapse-leave-from {
-  max-height: 1000px;
-  /* large enough to fit content */
-  opacity: 1;
-}
-
-.resize-thumb {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 14px;
-  height: 14px;
-  cursor: nesw-resize;
-  z-index: 20;
-}
-
-.resize-thumb::after {
-  content: '';
-  position: absolute;
-  left: 2px;
-  bottom: 2px;
-  width: 10px;
-  height: 10px;
-  border-left: 2px solid var(--color-border);
-  border-bottom: 2px solid var(--color-border);
-}
-
 .scroll-area {
   overflow-y: auto;
+  padding-top: 5px;
 }
 </style>

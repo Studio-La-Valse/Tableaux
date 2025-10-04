@@ -4,7 +4,7 @@
     <GraphControls />
 
     <PanelGroup direction="horizontal">
-      <Panel>
+      <Panel :default-size="70">
         <div ref="viewportRef" class="canvas-container" @contextmenu.prevent @dblclick.prevent="onCanvasDblClick"
           @mousedown="onMouseDown" @wheel="canvasTransform.onWheel">
 
@@ -22,7 +22,7 @@
 
       <PanelResizeHandle class="gutter"/>
 
-      <Panel>
+      <Panel :default-size="30">
           <ControlsComponent/>
       </Panel>
     </PanelGroup>
@@ -141,6 +141,6 @@ onUnmounted(() => {
 
 :deep(.PanelGroup[direction='horizontal'] .gutter) {
   cursor: col-resize;
-  width: 4px;
+  width: 8px;
 }
 </style>

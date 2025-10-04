@@ -175,7 +175,7 @@ const zoomAll = () => {
   border-bottom: 1px solid var(--color-border);
   overflow-x: auto;
   white-space: nowrap;
-  height: 80px;
+  height: 85px;
 }
 
 .button-group {

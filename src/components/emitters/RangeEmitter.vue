@@ -73,8 +73,6 @@ onBeforeUnmount(() => {
   height: 100%;
   box-sizing: border-box;
   border-radius: 4px;
-  border: 1px solid var(--color-border);
-  background: var(--color-background);
   resize: none;
 }
 </style>

@@ -50,7 +50,6 @@ const setPressed = (state: boolean) => {
 .icon {
   width: 16px;
   height: 16px;
-  color: var(--color-text);
   pointer-events: none;
 }
 

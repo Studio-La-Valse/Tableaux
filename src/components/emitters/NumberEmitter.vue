@@ -68,6 +68,7 @@ onBeforeUnmount(() => {
   justify-content: center;
   flex: 1 1 auto;
   padding: 0;
+  padding-left: 5px;
   min-width: 0px;
   width: 100%;
   height: 100%;

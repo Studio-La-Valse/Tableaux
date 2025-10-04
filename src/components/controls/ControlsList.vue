@@ -180,7 +180,6 @@ const toggleVisible = (emitter: Emitter<JsonValue>) => {
   box-sizing: border-box;
   line-height: 1.4;
   resize: none;          /* keep consistent height */
-  overflow-y: hidden;    /* no scrollbars in 40px row */
 }
 
 /* Icons scale nicely inside buttons */

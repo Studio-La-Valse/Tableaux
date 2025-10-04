@@ -52,7 +52,7 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   flex: 1 1 auto;
-  padding: 0;
+  padding: 0px;
   min-width: 0px;
   width: 100%;
   height: 100%;

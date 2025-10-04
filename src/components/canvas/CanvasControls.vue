@@ -291,7 +291,7 @@ watch(
   overflow-x: hidden;
   white-space: nowrap;
 
-  height: 80px;
+  height: 85px;
 }
 
 .field-group {

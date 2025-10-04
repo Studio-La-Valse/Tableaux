@@ -63,6 +63,8 @@ onBeforeUnmount(() => {
   justify-content: center;
   flex: 1 1 auto;
   padding: 0;
+  padding-top: 5px;
+  padding-left: 5px;
   min-width: 0px;
   width: 100%;
   height: 100%;
@@ -71,20 +73,5 @@ onBeforeUnmount(() => {
   border: 1px solid var(--color-border);
   background: var(--color-background);
   resize: none;
-}
-
-/* (Optional) Custom scrollbar styling for WebKit browsers */
-.text-input::-webkit-scrollbar {
-  width: 8px;
-  cursor: grab;
-}
-
-.text-input::-webkit-scrollbar-thumb {
-  background-color: var(--color-text);
-  border-radius: 4px;
-}
-
-.text-input::-webkit-scrollbar-thumb:active {
-  cursor: grabbing;
 }
 </style>
