@@ -37,6 +37,13 @@
         @input="onWidthInput(($event.target as HTMLInputElement).value)" />
     </div>
 
+    <!-- Height input -->
+    <div class="field-group">
+      <label for="canvas-height">Height</label>
+      <input id="canvas-height" type="number" required min="1" step="1" pattern="\d+" :value="canvasProps.dimensions.y"
+        @input="onHeightInput(($event.target as HTMLInputElement).value)" />
+    </div>
+
     <!-- Lock ratio toggle -->
     <div class="field-group lock-group">
       <label>Lock Ratio</label>
@@ -48,13 +55,6 @@
         </button>
         <span class="ratio-display">{{ displayRatio }}</span>
       </div>
-    </div>
-
-    <!-- Height input -->
-    <div class="field-group">
-      <label for="canvas-height">Height</label>
-      <input id="canvas-height" type="number" required min="1" step="1" pattern="\d+" :value="canvasProps.dimensions.y"
-        @input="onHeightInput(($event.target as HTMLInputElement).value)" />
     </div>
 
     <!-- Flip & Full-screen buttons -->
@@ -321,6 +321,7 @@ watch(
 .lock-group {
   align-items: flex-start;
   width: auto;
+  max-width: 80px;
 }
 
 .lock-header {
@@ -347,7 +348,7 @@ watch(
   font-size: 0.9rem;
   color: var(--color-text);
   min-width: 3em;
-  text-align: right;
+  text-align: left;
 }
 
 /* flip & fullscreen */

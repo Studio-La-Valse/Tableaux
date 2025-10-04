@@ -147,6 +147,7 @@ const onDragEnd = () => {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  overflow-x: hidden;
   max-height: 100%;
 }
 

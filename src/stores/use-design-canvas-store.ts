@@ -16,7 +16,13 @@ export const useDesignCanvasStore = defineStore('canvas-props', () => {
   const graph = useGraphStore()
 
   const setCanvas = (canvas: HTMLCanvasElement) => {
-    if (canvasRef.value) throw new Error('Canvas has already been set.')
+    if (canvasRef.value) {
+      canvas.removeEventListener('click', click)
+      canvas.removeEventListener('mousemove', mousemove)
+    }
+    
+    window.addEventListener('keydown', keydown)
+    window.addEventListener('keyup', keyup)
 
     canvasRef.value = canvas
 

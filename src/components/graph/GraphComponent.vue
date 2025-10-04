@@ -1,16 +1,15 @@
 <template>
   <div class="page">
-
     <GraphControls />
 
-    <PanelGroup direction="horizontal">
+    <!-- Split mode -->
+    <PanelGroup v-if="layout.mode === 'split'" direction="horizontal">
       <Panel :default-size="70">
         <div ref="viewportRef" class="canvas-container" @contextmenu.prevent @dblclick.prevent="onCanvasDblClick"
           @mousedown="onMouseDown" @wheel="canvasTransform.onWheel">
 
           <div ref="canvasRef" class="canvas-content" :style="contentStyle">
             <GraphRenderer />
-
             <SelectionBorder />
           </div>
 
@@ -20,20 +19,35 @@
         </div>
       </Panel>
 
-      <PanelResizeHandle class="gutter"/>
+      <PanelResizeHandle class="gutter" />
 
       <Panel :default-size="30">
-          <ControlsComponent/>
+        <ControlsComponent />
       </Panel>
     </PanelGroup>
 
+    <!-- Graph only -->
+    <div v-else-if="layout.mode === 'graph'" ref="viewportRef" class="canvas-container" @contextmenu.prevent
+      @dblclick.prevent="onCanvasDblClick" @mousedown="onMouseDown" @wheel="canvasTransform.onWheel">
 
+      <div ref="canvasRef" class="canvas-content" :style="contentStyle">
+        <GraphRenderer />
+        <SelectionBorder />
+      </div>
+
+      <Teleport to="body">
+        <ActivatorTree />
+      </Teleport>
+    </div>
+
+    <!-- Controls only -->
+    <ControlsComponent v-else-if="layout.mode === 'controls'" class="controls-only" />
   </div>
-
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, type StyleValue } from 'vue';
+import { useGraphLayoutStore } from '@/stores/use-graph-layout-store'
+import { computed, onMounted, onUnmounted, type StyleValue } from 'vue';
 
 import ActivatorTree from '@/components/graph/NodeBrowser/ActivatorTree.vue'
 import GraphRenderer from '@/components/graph/GraphRenderer.vue'
@@ -51,6 +65,9 @@ import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store';
 import { useGraphStore } from '@/stores/use-graph-store';
 import ControlsComponent from '../controls/ControlsComponent.vue';
 import { PanelGroup, PanelResizeHandle, Panel } from 'vue-resizable-panels';
+import { storeToRefs } from 'pinia';
+
+const layout = useGraphLayoutStore()
 
 const selectionArea = useSelectionArea();
 const selectionAreaStore = useSelectionAreaStore();
@@ -61,8 +78,7 @@ const graph = useGraphStore();
 const canvasTransform = useCanvasTransform();
 const canvasStore = useGraphCanvasStore()
 
-const viewportRef = ref<HTMLElement | null>(null);
-const canvasRef = ref<HTMLElement | null>(null);
+const { viewportRef, canvasRef } = storeToRefs(canvasStore)
 
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({
@@ -92,12 +108,6 @@ function deleteSelectedNodes(evt: KeyboardEvent) {
 }
 
 onMounted(() => {
-  if (!viewportRef.value || !canvasRef.value) {
-    throw new Error()
-  }
-
-  canvasStore.setRefs(viewportRef.value, canvasRef.value)
-
   window.addEventListener('keydown', deleteSelectedNodes)
 })
 
@@ -135,7 +145,7 @@ onUnmounted(() => {
   cursor: col-resize;
 }
 
-:deep(.gutter:hover){
+:deep(.gutter:hover) {
   background-color: var(--color-accent);
 }
 

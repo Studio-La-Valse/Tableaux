@@ -71,7 +71,6 @@ onUnmounted(() => {
   padding: 4px;
   user-select: none;
   position: absolute;
-  z-index: 1000;
   top: 0;
   left: 0;
   background-color: var(--color-background-soft);

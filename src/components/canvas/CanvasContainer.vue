@@ -34,13 +34,14 @@ let ro: ResizeObserver
 
 onMounted(() => {
   ro = new ResizeObserver(([e]) => {
-    parentW.value = e.contentRect.width
-    parentH.value = e.contentRect.height
+    requestAnimationFrame(() => {
+      parentW.value = e.contentRect.width
+      parentH.value = e.contentRect.height
+    })
   })
-  if (wrapper.value) {
-    ro.observe(wrapper.value)
-  }
+  if (wrapper.value) ro.observe(wrapper.value)
 })
+
 onBeforeUnmount(() => ro.disconnect())
 
 // compute scale

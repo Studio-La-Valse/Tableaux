@@ -35,8 +35,6 @@ const showHidden = ref(false)
   height: 100%;
   background: var(--color-background);
   padding: 8px;
-  box-sizing: border-box;
-  z-index: 1000;
   pointer-events: auto;
   color: var(--color-text);
 }

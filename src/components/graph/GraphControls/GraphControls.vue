@@ -1,6 +1,19 @@
 <template>
   <div class="canvas-toolbar">
     <div class="button-group">
+
+      <button @click="layout.mode = 'split'" :class="{ active: layout.mode === 'split' }">
+        <ArrowsRightLeftIcon class="icon"/>
+      </button>
+
+      <button @click="layout.mode = 'graph'" :class="{ active: layout.mode === 'graph' }">
+        <CodeBracketIcon class="icon"/>
+      </button>
+
+      <button @click="layout.mode = 'controls'" :class="{ active: layout.mode === 'controls' }">
+        <AdjustmentsHorizontalIcon class="icon" />
+      </button>
+
       <button type="button" @click="zoomAll" :disabled="!nodes.length" title="Zoom All">
         <DocumentMagnifyingGlassIcon class="icon" />
       </button>
@@ -31,17 +44,15 @@
     </div>
   </div>
   <Teleport to="body">
-    <UnsavedChangesModal
-      v-if="showUnsavedModal"
-      @save="onSave"
-      @discard="onDiscard"
-      @cancel="onCancel"
-    />
+    <UnsavedChangesModal v-if="showUnsavedModal" @save="onSave" @discard="onDiscard" @cancel="onCancel" />
   </Teleport>
 </template>
 
 <script setup lang="ts">
 import {
+  ArrowsRightLeftIcon,
+  CodeBracketIcon,
+  AdjustmentsHorizontalIcon,
   DocumentMagnifyingGlassIcon,
   MagnifyingGlassIcon,
   ArrowUturnLeftIcon,
@@ -58,6 +69,8 @@ import { ref } from 'vue'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { useZoomToNodes } from '@/composables/use-zoom-to-nodes'
 import UnsavedChangesModal from './UnsavedChangesModal.vue'
+import { useGraphLayoutStore } from '@/stores/use-graph-layout-store'
+const layout = useGraphLayoutStore()
 
 const history = useGraphHistoryStore()
 const { hasUndo, hasRedo } = storeToRefs(history)
@@ -168,13 +181,17 @@ const zoomAll = () => {
 <style scoped>
 .canvas-toolbar {
   display: flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 1rem;
   background: var(--color-background-mute);
   border-bottom: 1px solid var(--color-border);
-  overflow-x: auto;
+  
+  /* temp width hack */
+  overflow-x: hidden;
   white-space: nowrap;
+
   height: 85px;
 }
 
@@ -213,6 +230,11 @@ const zoomAll = () => {
   color: #d0d0d0;
   cursor: not-allowed;
   opacity: 0.7;
+}
+
+button.active {
+  border: 2px solid var(--color-accent);
+  background: var(--color-background-strong);
 }
 
 .icon {

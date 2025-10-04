@@ -1,17 +1,10 @@
 import type { XY } from '@/geometry/xy'
+import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-const viewportRef = ref<HTMLElement | null>(null)
-const canvasRef = ref<HTMLElement | null>(null)
-
-export function useGraphCanvasStore() {
-  function setRefs(viewport: HTMLElement, canvas: HTMLElement) {
-    if (viewportRef.value) throw new Error('Viewport already initialized.')
-    if (canvasRef.value) throw new Error('Canvas already initialized.')
-
-    viewportRef.value = viewport
-    canvasRef.value = canvas
-  }
+export const useGraphCanvasStore = defineStore("graph-canvas-store", () => {
+  const viewportRef = ref<HTMLElement | null>(null)
+  const canvasRef = ref<HTMLElement | null>(null)
 
   function clientToViewport(event: MouseEvent): XY {
     const rect = viewportRef.value?.getBoundingClientRect()
@@ -41,8 +34,7 @@ export function useGraphCanvasStore() {
   return {
     viewportRef,
     canvasRef,
-    setRefs,
     clientToViewport,
     clientToCanvas,
   }
-}
+})
