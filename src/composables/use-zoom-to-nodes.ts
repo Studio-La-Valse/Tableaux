@@ -5,7 +5,7 @@ export const useZoomToNodes = () => {
   const { getNode } = useGraphStore()
   const { position, scale, canvasSize } = useCanvasTransform()
 
-  const zoomToNodes = (nodeIds: Iterable<string>) => {
+  const zoomToNodes = (nodeIds: Iterable<string>, padding: number = 200) => {
     // Convert to array so we can check length
     const ids = Array.from(nodeIds)
     if (!ids.length) return
@@ -30,7 +30,6 @@ export const useZoomToNodes = () => {
     const boxHeight = maxY - minY
 
     // Calculate zoom so the selection fits in view (with a small margin)
-    const padding = 200
     const zoomX = (_canvasSize.width - padding * 2) / boxWidth
     const zoomY = (_canvasSize.height - padding * 2) / boxHeight
     const minScale = 0.2

@@ -58,13 +58,12 @@ const { initResize } = useNodeResize(width, height);
 /* Resizer styling remains unchanged */
 .resizer {
   position: absolute;
-  bottom: -8px;
-  right: -8px;
+  bottom: -4px;
+  right: -4px;
   width: 16px;
   height: 16px;
   background-color: transparent;
   cursor: se-resize;
-  border-radius: 6px;
-  z-index: 1000;
+  z-index: 1
 }
 </style>

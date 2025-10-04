@@ -1,6 +1,36 @@
 <template>
   <div class="home-container">
 
+    <!-- Main resizable layout -->
+    <PanelGroup v-if="layoutMode === 'horizontal'" direction="horizontal" class="split-container">
+      <Panel>
+        <GraphCanvas class="panel-content" />
+      </Panel>
+
+      <PanelResizeHandle :class="['gutter', 'gutter-horizontal']" />
+
+      <Panel>
+        <CanvasComponent class="panel-content" />
+      </Panel>
+    </PanelGroup>
+
+    <PanelGroup v-else-if="layoutMode === 'vertical'" direction="vertical" class="split-container">
+      <Panel>
+        <CanvasComponent class="panel-content" />
+      </Panel>
+      <PanelResizeHandle :class="['gutter', 'gutter-vertical']" />
+
+      <Panel>
+        <GraphCanvas class="panel-content" />
+      </Panel>
+
+    </PanelGroup>
+
+
+    <GraphCanvas v-else-if="layoutMode === 'graph'" class="panel-content" />
+    <CanvasComponent v-else-if="layoutMode === 'canvas'" class="panel-content" />
+
+
     <!-- Floating button group -->
     <div class="button-group">
       <!-- Horizontal split -->
@@ -35,36 +65,6 @@
         </svg>
       </button>
     </div>
-
-
-    <!-- Main resizable layout -->
-    <PanelGroup v-if="layoutMode === 'horizontal'" direction="horizontal" class="split-container">
-      <Panel>
-        <GraphCanvas class="panel-content" />
-      </Panel>
-
-      <PanelResizeHandle :class="['gutter', 'gutter-horizontal']" />
-
-      <Panel>
-        <CanvasComponent class="panel-content" />
-      </Panel>
-    </PanelGroup>
-
-    <PanelGroup v-else-if="layoutMode === 'vertical'" direction="vertical" class="split-container">
-      <Panel>
-        <CanvasComponent class="panel-content" />
-      </Panel>
-      <PanelResizeHandle :class="['gutter', 'gutter-vertical']" />
-
-      <Panel>
-        <GraphCanvas class="panel-content" />
-      </Panel>
-
-    </PanelGroup>
-
-
-    <GraphCanvas v-else-if="layoutMode === 'graph'" class="panel-content" />
-    <CanvasComponent v-else-if="layoutMode === 'canvas'" class="panel-content" />
 
     <!-- Footer -->
     <div class="fixed-footer">
@@ -182,13 +182,12 @@ function navigateToGithub() {
   left: 16px;
   display: flex;
   gap: 8px;
-  z-index: 1000;
 }
 
 .toggle-btn {
   width: 50px;
   height: 50px;
-  background: var(--color-background-soft);
+  background: var(--color-background);
   color: var(--color-text);
   border: 1px solid var(--color-border-hover);
   border-radius: 4px;
@@ -200,7 +199,7 @@ function navigateToGithub() {
 
 .toggle-btn.active {
   border: 2px solid var(--color-accent);
-  background: var(--color-background-strong);
+  background: var(--color-background-soft);
 }
 
 .icon {

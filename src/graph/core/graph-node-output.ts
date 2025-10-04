@@ -122,6 +122,10 @@ export class GraphNodeOutputBoolean
 {
   override provides = ['boolean', 'number', 'string', 'unknown'] as ProviderType[]
 
+  constructor(graphNode: GraphNode, index: number, description: string) {
+    super(graphNode, index, description + " (Boolean)")
+  }
+
   public provideBoolean(index: number): boolean {
     return this.payload[index]
   }
@@ -145,6 +149,10 @@ export class GraphNodeOutputNumber
 {
   override provides = ['number', 'string', 'unknown'] as ProviderType[]
 
+  constructor(graphNode: GraphNode, index: number, description: string) {
+    super(graphNode, index, description + " (Number)")
+  }
+
   public provideNumber(index: number): number {
     return this.payload[index]
   }
@@ -164,6 +172,10 @@ export class GraphNodeOutputString
 {
   override provides = ['string', 'unknown'] as ProviderType[]
 
+  constructor(graphNode: GraphNode, index: number, description: string) {
+    super(graphNode, index, description + " (String)")
+  }
+
   public provideString(index: number): string {
     return this.payload[index]
   }
@@ -178,6 +190,10 @@ export class GraphNodeOutputObject<T extends JsonObject>
   implements ProvidesString, ProvidesObject, ProvidesUnknown
 {
   override provides = ['string', 'object', 'unknown'] as ProviderType[]
+
+  constructor(graphNode: GraphNode, index: number, description: string) {
+    super(graphNode, index, description + " (Json Object)")
+  }
 
   public provideString(index: number): string {
     return JSON.stringify(this.payload[index])
@@ -197,6 +213,10 @@ export class GraphNodeOutputUnknown
   implements ProvidesBoolean, ProvidesNumber, ProvidesString, ProvidesObject, ProvidesUnknown
 {
   override provides = ['boolean', 'number', 'string', 'object', 'unknown'] as ProviderType[]
+
+  constructor(graphNode: GraphNode, index: number, description: string) {
+    super(graphNode, index, description + " (Json Value)")
+  }
 
   public provideBoolean(index: number): boolean {
     return this.payload[index] as boolean

@@ -98,8 +98,7 @@ export abstract class GraphNodeInput implements IGraphNodeInput {
 
 export abstract class GraphNodeInputType<T>
   extends GraphNodeInput
-  implements IGraphNodeInputType<T>
-{
+  implements IGraphNodeInputType<T> {
   public abstract readonly payloadLength: number
 
   public abstract peek(index: number): T
@@ -144,7 +143,7 @@ export abstract class GraphNodeInputSubscriptionType<
   constructor(
     graphNode: GraphNode,
     description: string,
-    public readonly defaultPayload?: T[] | undefined,
+    public readonly defaultPayload?: T[],
   ) {
     super(graphNode, description)
 
@@ -173,6 +172,10 @@ export class GraphNodeInputBoolean extends GraphNodeInputSubscriptionType<
   boolean,
   ProvidesBoolean
 > {
+  constructor(graphNode: GraphNode, description: string, defaultPayload?: boolean[]) {
+    super(graphNode, description + " (Boolean)", defaultPayload)
+  }
+
   public repeat(): GraphNodeInputType<boolean> {
     return new GraphNodeInputBoolean(this.graphNode, this.description, this.defaultPayload ? [
       ...(this.defaultPayload)
@@ -200,6 +203,11 @@ export class GraphNodeInputBoolean extends GraphNodeInputSubscriptionType<
 }
 
 export class GraphNodeInputNumber extends GraphNodeInputSubscriptionType<number, ProvidesNumber> {
+  constructor(graphNode: GraphNode, description: string, defaultPayload?: number[]) {
+    super(graphNode, description + " (Number)", defaultPayload)
+  }
+
+
   public repeat(): GraphNodeInputType<number> {
     return new GraphNodeInputNumber(this.graphNode, this.description, this.defaultPayload ? [
       ...(this.defaultPayload)
@@ -227,6 +235,10 @@ export class GraphNodeInputNumber extends GraphNodeInputSubscriptionType<number,
 }
 
 export class GraphNodeInputString extends GraphNodeInputSubscriptionType<string, ProvidesString> {
+    constructor(graphNode: GraphNode, description: string, defaultPayload?: string[]) {
+    super(graphNode, description + " (String)", defaultPayload)
+  }
+
   public repeat(): GraphNodeInputType<string> {
     return new GraphNodeInputString(this.graphNode, this.description, this.defaultPayload ? [
       ...(this.defaultPayload)
@@ -257,6 +269,10 @@ export class GraphNodeInputObject extends GraphNodeInputSubscriptionType<
   JsonObject,
   ProvidesObject
 > {
+  constructor(graphNode: GraphNode, description: string, defaultPayload?: JsonObject[]) {
+    super(graphNode, description + " (Json Object)", defaultPayload)
+  }
+
   public repeat(): GraphNodeInputType<JsonObject> {
     return new GraphNodeInputObject(this.graphNode, this.description, this.defaultPayload ? [
       ...(this.defaultPayload)
@@ -360,6 +376,10 @@ export class GraphNodeInputUnknown extends GraphNodeInputSubscriptionType<
   JsonValue,
   ProvidesUnknown
 > {
+  constructor(graphNode: GraphNode, description: string, defaultPayload?: JsonValue[]) {
+    super(graphNode, description + " (Json Value)", defaultPayload)
+  }
+
   public repeat(): GraphNodeInputType<JsonValue> {
     return new GraphNodeInputUnknown(this.graphNode, this.description, this.defaultPayload ? [
       ...(this.defaultPayload)

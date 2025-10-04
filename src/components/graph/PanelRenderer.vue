@@ -9,14 +9,15 @@
     <div class="content" :style="contentStyle">
       <component :is="getPanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
 
-      <div class="inputs">
-        <GraphNodeInputRenderer v-for="(input, index) in graphNode.innerNode.inputs" :key="'input-' + index"
-          :input="input" :positionY="getRelativePosition(input).y" :graphNode="graphNode" />
-      </div>
-
+      <!-- If we render the outputs first, the labels are not obstructed. -->
       <div class="outputs">
         <GraphNodeOutputRenderer v-for="(output, index) in graphNode.innerNode.outputs" :key="'output-' + index"
           :output="output" :positionY="getRelativePosition(output).y" />
+      </div>
+
+      <div class="inputs">
+        <GraphNodeInputRenderer v-for="(input, index) in graphNode.innerNode.inputs" :key="'input-' + index"
+          :input="input" :positionY="getRelativePosition(input).y" :graphNode="graphNode" />
       </div>
     </div>
 

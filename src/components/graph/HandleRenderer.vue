@@ -44,6 +44,5 @@ const showTip = ref(false);
   white-space: nowrap;
   pointer-events: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  z-index: 99;
 }
 </style>

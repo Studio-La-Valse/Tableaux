@@ -3,11 +3,11 @@
     <div class="button-group">
 
       <button @click="layout.mode = 'split'" :class="{ active: layout.mode === 'split' }">
-        <ArrowsRightLeftIcon class="icon"/>
+        <ArrowsRightLeftIcon class="icon" />
       </button>
 
       <button @click="layout.mode = 'graph'" :class="{ active: layout.mode === 'graph' }">
-        <CodeBracketIcon class="icon"/>
+        <CodeBracketIcon class="icon" />
       </button>
 
       <button @click="layout.mode = 'controls'" :class="{ active: layout.mode === 'controls' }">
@@ -169,12 +169,12 @@ const newDocument = () => requestAction(() => {
 /** --- Zoom --- */
 const zoomSelected = () => {
   const selectedIds = selectedNodes.value
-  if (selectedIds.size) zoomToNodes(selectedIds)
+  if (selectedIds.size) zoomToNodes(selectedIds, 250)
 }
 
 const zoomAll = () => {
   const allIds = nodes.value.map((v) => v.nodeId)
-  if (allIds.length) zoomToNodes(allIds)
+  if (allIds.length) zoomToNodes(allIds, 100)
 }
 </script>
 
@@ -187,7 +187,7 @@ const zoomAll = () => {
   padding: 0.5rem 1rem;
   background: var(--color-background-mute);
   border-bottom: 1px solid var(--color-border);
-  
+
   /* temp width hack */
   overflow-x: hidden;
   white-space: nowrap;
