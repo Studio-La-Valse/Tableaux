@@ -3,4 +3,4 @@ export const componentStates = {
   working: 'working',
   complete: 'complete',
   error: 'error',
-} as const
+} as const;

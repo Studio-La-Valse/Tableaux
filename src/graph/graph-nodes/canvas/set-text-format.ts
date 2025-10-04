@@ -1,7 +1,10 @@
-import { GraphNode } from '../../core/graph-node'
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { GraphNodeType } from '../decorators'
-import { assertIsTextShape, type TextShape } from '@/bitmap-painters/text-shape'
+import { GraphNode } from '../../core/graph-node';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import { GraphNodeType } from '../decorators';
+import {
+  assertIsTextShape,
+  type TextShape,
+} from '@/bitmap-painters/text-shape';
 import {
   textAlignments,
   textBaselines,
@@ -10,43 +13,46 @@ import {
   type BaselineKind,
   type DirectionKind,
   type TextFormatOptions,
-} from '@/bitmap-painters/text-format-options'
+} from '@/bitmap-painters/text-format-options';
 
 @GraphNodeType('Canvas', 'Set Text Format')
 export class SetTextFormat extends GraphNode {
-  private asConst
+  private asConst;
 
-  private outputGeometry
+  private outputGeometry;
 
   constructor(id: string, path: string[]) {
-    super(id, path)
+    super(id, path);
 
     this.asConst = [
       this.registerObjectInput('Text').validate(assertIsTextShape),
       this.registerStringInput('Alignment', ['start']),
       this.registerStringInput('Baseline', ['alphabetic']),
       this.registerStringInput('Direction', ['inherit']),
-    ] as const
+    ] as const;
 
-    this.outputGeometry = this.registerObjectOutput<TextShape & Partial<TextFormatOptions>>(
-      'Geometry with stroke',
-    )
+    this.outputGeometry = this.registerObjectOutput<
+      TextShape & Partial<TextFormatOptions>
+    >('Geometry with stroke');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [text, alignment, baseline, direction] of inputIterators.cycleValues(
-      ...this.asConst,
-    )) {
+    for await (const [
+      text,
+      alignment,
+      baseline,
+      direction,
+    ] of inputIterators.cycleValues(...this.asConst)) {
       if (!textAlignments.includes(alignment as AlignmentKind)) {
-        throw new Error('Provided alignment is not valid.')
+        throw new Error('Provided alignment is not valid.');
       }
 
       if (!textBaselines.includes(baseline as BaselineKind)) {
-        throw new Error('Provided baseline is not valid.')
+        throw new Error('Provided baseline is not valid.');
       }
 
       if (!textDirections.includes(direction as DirectionKind)) {
-        throw new Error('Provided direction is not valid.')
+        throw new Error('Provided direction is not valid.');
       }
 
       const withFormat = {
@@ -54,9 +60,9 @@ export class SetTextFormat extends GraphNode {
         align: alignment as AlignmentKind,
         baseline: baseline as BaselineKind,
         direction: direction as DirectionKind,
-      }
+      };
 
-      this.outputGeometry.next(withFormat)
+      this.outputGeometry.next(withFormat);
     }
   }
 }

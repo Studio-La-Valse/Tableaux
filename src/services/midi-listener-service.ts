@@ -6,21 +6,21 @@ export class MidiListenerService {
     try {
       this.midiAccess = await navigator.requestMIDIAccess();
     } catch (error) {
-      console.error("Failed to access MIDI:", error);
+      console.error('Failed to access MIDI:', error);
       throw error;
     }
   }
 
   startListening(callback: (message: MIDIMessageEvent) => void): void {
     if (!this.midiAccess) {
-      console.warn("MIDI access not initialized.");
+      console.warn('MIDI access not initialized.');
       return;
     }
 
     this.listeners.add(callback);
 
     this.midiAccess.inputs.forEach((input) =>
-      input.addEventListener("midimessage", callback)
+      input.addEventListener('midimessage', callback)
     );
   }
 
@@ -29,7 +29,7 @@ export class MidiListenerService {
 
     this.listeners.forEach((callback) => {
       this.midiAccess!.inputs.forEach((input) =>
-        input.removeEventListener("midimessage", callback)
+        input.removeEventListener('midimessage', callback)
       );
     });
 

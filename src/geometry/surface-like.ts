@@ -1,11 +1,11 @@
-import type { Arc } from './arc'
-import type { Circle } from './circle'
-import type { Ellipse } from './ellipse'
-import { type EllipticalArc } from './elliptical-arc'
-import { type Parallelogram } from './parallelogram'
-import type { Rectangle } from './rectangle'
-import type { Square } from './square'
-import { isTransformationMatrix } from './transformation-matrix'
+import type { Arc } from './arc';
+import type { Circle } from './circle';
+import type { Ellipse } from './ellipse';
+import { type EllipticalArc } from './elliptical-arc';
+import { type Parallelogram } from './parallelogram';
+import type { Rectangle } from './rectangle';
+import type { Square } from './square';
+import { isTransformationMatrix } from './transformation-matrix';
 
 export const surfaceKinds = [
   'arc',
@@ -15,9 +15,9 @@ export const surfaceKinds = [
   'square',
   'rectangle',
   'parallelogram',
-] as const
+] as const;
 
-export type SurfaceKind = (typeof surfaceKinds)[number]
+export type SurfaceKind = (typeof surfaceKinds)[number];
 
 export type SurfaceLike =
   | Arc
@@ -26,10 +26,10 @@ export type SurfaceLike =
   | Ellipse
   | Square
   | Rectangle
-  | Parallelogram
+  | Parallelogram;
 
 export function isSurfaceKind(value: string): value is SurfaceKind {
-  return surfaceKinds.includes(value as SurfaceKind)
+  return surfaceKinds.includes(value as SurfaceKind);
 }
 
 export function isSurfaceLike(value: unknown): value is SurfaceLike {
@@ -41,13 +41,13 @@ export function isSurfaceLike(value: unknown): value is SurfaceLike {
     isSurfaceKind(value.kind) &&
     'transformation' in value &&
     isTransformationMatrix(value.transformation)
-  )
+  );
 }
 
 export function assertIsSurfaceLike(value: unknown): SurfaceLike {
   if (!isSurfaceLike(value)) {
-    throw new Error('Value is not surface-like.')
+    throw new Error('Value is not surface-like.');
   }
 
-  return value
+  return value;
 }

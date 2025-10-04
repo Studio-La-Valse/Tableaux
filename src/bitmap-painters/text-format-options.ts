@@ -1,9 +1,15 @@
-export const textAlignments = ['start', 'end', 'left', 'right', 'center'] as const
-export type AlignmentKind = (typeof textAlignments)[number]
+export const textAlignments = [
+  'start',
+  'end',
+  'left',
+  'right',
+  'center',
+] as const;
+export type AlignmentKind = (typeof textAlignments)[number];
 
 export type TextAlignment = {
-  align: AlignmentKind
-}
+  align: AlignmentKind;
+};
 
 export function hasAlignment(value: object): value is TextAlignment {
   return (
@@ -12,7 +18,7 @@ export function hasAlignment(value: object): value is TextAlignment {
     'align' in value &&
     typeof value.align === 'string' &&
     textAlignments.includes(value.align as AlignmentKind)
-  )
+  );
 }
 
 export const textBaselines = [
@@ -22,12 +28,12 @@ export const textBaselines = [
   'alphabetic',
   'ideographic',
   'bottom',
-] as const
-export type BaselineKind = (typeof textBaselines)[number]
+] as const;
+export type BaselineKind = (typeof textBaselines)[number];
 
 export type TextBaseline = {
-  baseline: BaselineKind
-}
+  baseline: BaselineKind;
+};
 
 export function hasBaseLine(value: object): value is TextBaseline {
   return (
@@ -36,15 +42,15 @@ export function hasBaseLine(value: object): value is TextBaseline {
     'baseline' in value &&
     typeof value.baseline === 'string' &&
     textBaselines.includes(value.baseline as BaselineKind)
-  )
+  );
 }
 
-export const textDirections = ['ltr', 'rtl', 'inherit'] as const
-export type DirectionKind = (typeof textDirections)[number]
+export const textDirections = ['ltr', 'rtl', 'inherit'] as const;
+export type DirectionKind = (typeof textDirections)[number];
 
 export type TextDirection = {
-  direction: DirectionKind
-}
+  direction: DirectionKind;
+};
 
 export function hasDirection(value: object): value is TextDirection {
   return (
@@ -53,10 +59,12 @@ export function hasDirection(value: object): value is TextDirection {
     'direction' in value &&
     typeof value.direction === 'string' &&
     textDirections.includes(value.direction as DirectionKind)
-  )
+  );
 }
 
-export type TextFormatOptions = Partial<TextAlignment & TextBaseline & TextDirection>
+export type TextFormatOptions = Partial<
+  TextAlignment & TextBaseline & TextDirection
+>;
 
 export function hasTextFormatting(value: object): boolean {
   return (
@@ -65,5 +73,5 @@ export function hasTextFormatting(value: object): boolean {
     (!('align' in value) || hasAlignment(value)) &&
     (!('baseline' in value) || hasBaseLine(value)) &&
     (!('direction' in value) || hasDirection(value))
-  )
+  );
 }

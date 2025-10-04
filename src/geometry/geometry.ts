@@ -1,4 +1,4 @@
-import type { XY } from './xy'
+import type { XY } from './xy';
 import {
   skew as skewXY,
   translate as translateXY,
@@ -7,7 +7,7 @@ import {
   scaleUniform as scaleUniformXY,
   isXY,
   applyMatrix,
-} from './xy'
+} from './xy';
 
 import {
   skew as skewArc,
@@ -15,16 +15,16 @@ import {
   rotate as rotateArc,
   scale as scaleArc,
   scaleUniform as scaleUniformArc,
-} from './arc'
+} from './arc';
 
-import type { EllipticalArc } from './elliptical-arc'
+import type { EllipticalArc } from './elliptical-arc';
 import {
   skew as skewEllipticalArc,
   translate as translateEllipticalArc,
   rotate as rotateEllipticalArc,
   scale as scaleEllipticalArc,
   scaleUniform as scaleUniformEllipticalArc,
-} from './elliptical-arc'
+} from './elliptical-arc';
 
 import {
   skew as skewCircle,
@@ -32,34 +32,34 @@ import {
   rotate as rotateCircle,
   scale as scaleCircle,
   scaleUniform as scaleUniformCircle,
-} from './circle'
+} from './circle';
 
-import type { Ellipse } from './ellipse'
+import type { Ellipse } from './ellipse';
 import {
   translate as translateEllipse,
   rotate as rotateEllipse,
   scale as scaleEllipse,
   scaleUniform as scaleUniformEllipse,
   skew as skewEllipse,
-} from './ellipse'
+} from './ellipse';
 
-import type { Line } from './line'
+import type { Line } from './line';
 import {
   translate as translateLine,
   rotate as rotateLine,
   scale as scaleLine,
   scaleUniform as scaleUniformLine,
   skew as skewLine,
-} from './line'
+} from './line';
 
-import type { Parallelogram } from './parallelogram'
+import type { Parallelogram } from './parallelogram';
 import {
   translate as translateParallelogram,
   rotate as rotateParallelogram,
   scale as scaleParallelogram,
   scaleUniform as scaleUniformParallelogram,
   skew as skewParallelogram,
-} from './parallelogram'
+} from './parallelogram';
 
 import {
   translate as translateRectangle,
@@ -67,7 +67,7 @@ import {
   scale as scaleRectangle,
   scaleUniform as scaleUniformRectangle,
   skew as skewRectangle,
-} from './rectangle'
+} from './rectangle';
 
 import {
   translate as translateSquare,
@@ -75,7 +75,7 @@ import {
   scale as scaleSquare,
   scaleUniform as scaleUniformSquare,
   skew as skewSquare,
-} from './square'
+} from './square';
 
 import {
   translate as translateText,
@@ -84,166 +84,177 @@ import {
   scaleUniform as scaleUniformText,
   skew as skewText,
   type TextShape,
-} from '../bitmap-painters/text-shape'
+} from '../bitmap-painters/text-shape';
 
-import { compose, type TransformationMatrix } from './transformation-matrix'
-import { isShape, type Shape } from './shape'
+import { compose, type TransformationMatrix } from './transformation-matrix';
+import { isShape, type Shape } from './shape';
 
-export type Geometry = Shape | XY
+export type Geometry = Shape | XY;
 
 export function isGeometry(value: unknown): value is Geometry {
-  return isXY(value) || isShape(value)
+  return isXY(value) || isShape(value);
 }
 
 export function assertIsGeometry(value: unknown): Geometry {
   if (!isGeometry(value)) {
-    throw new Error('Value is not geometry')
+    throw new Error('Value is not geometry');
   }
 
-  return value
+  return value;
 }
 
 export function translate(geometry: Geometry, delta: XY): Geometry {
   if (isXY(geometry)) {
-    return translateXY(geometry, delta)
+    return translateXY(geometry, delta);
   }
 
   switch (geometry.kind) {
     case 'arc':
-      return translateArc(geometry, delta)
+      return translateArc(geometry, delta);
     case 'elliptical-arc':
-      return translateEllipticalArc(geometry, delta)
+      return translateEllipticalArc(geometry, delta);
     case 'circle':
-      return translateCircle(geometry, delta)
+      return translateCircle(geometry, delta);
     case 'ellipse':
-      return translateEllipse(geometry, delta)
+      return translateEllipse(geometry, delta);
     case 'line':
-      return translateLine(geometry, delta)
+      return translateLine(geometry, delta);
     case 'square':
-      return translateSquare(geometry, delta)
+      return translateSquare(geometry, delta);
     case 'rectangle':
-      return translateRectangle(geometry, delta)
+      return translateRectangle(geometry, delta);
     case 'parallelogram':
-      return translateParallelogram(geometry, delta)
+      return translateParallelogram(geometry, delta);
     case 'text':
-      return translateText(geometry, delta)
+      return translateText(geometry, delta);
   }
 }
 
-export function rotate(geometry: Geometry, origin: XY, angle: number): Geometry {
+export function rotate(
+  geometry: Geometry,
+  origin: XY,
+  angle: number
+): Geometry {
   if (isXY(geometry)) {
-    return rotateXY(geometry, origin, angle)
+    return rotateXY(geometry, origin, angle);
   }
 
   switch (geometry.kind) {
     case 'arc':
-      return rotateArc(geometry, origin, angle)
+      return rotateArc(geometry, origin, angle);
     case 'elliptical-arc':
-      return rotateEllipticalArc(geometry, origin, angle)
+      return rotateEllipticalArc(geometry, origin, angle);
     case 'circle':
-      return rotateCircle(geometry, origin, angle)
+      return rotateCircle(geometry, origin, angle);
     case 'ellipse':
-      return rotateEllipse(geometry, origin, angle)
+      return rotateEllipse(geometry, origin, angle);
     case 'line':
-      return rotateLine(geometry, origin, angle)
+      return rotateLine(geometry, origin, angle);
     case 'square':
-      return rotateSquare(geometry, origin, angle)
+      return rotateSquare(geometry, origin, angle);
     case 'rectangle':
-      return rotateRectangle(geometry, origin, angle)
+      return rotateRectangle(geometry, origin, angle);
     case 'parallelogram':
-      return rotateParallelogram(geometry, origin, angle)
+      return rotateParallelogram(geometry, origin, angle);
     case 'text':
-      return rotateText(geometry, origin, angle)
+      return rotateText(geometry, origin, angle);
   }
 }
 
 export function scale(geometry: Geometry, origin: XY, factor: XY): Geometry {
   if (isXY(geometry)) {
-    return scaleXY(geometry, origin, factor)
+    return scaleXY(geometry, origin, factor);
   }
 
   switch (geometry.kind) {
     case 'arc':
-      return scaleArc(geometry, origin, factor)
+      return scaleArc(geometry, origin, factor);
     case 'elliptical-arc':
-      return scaleEllipticalArc(geometry, origin, factor)
+      return scaleEllipticalArc(geometry, origin, factor);
     case 'circle':
-      return scaleCircle(geometry, origin, factor)
+      return scaleCircle(geometry, origin, factor);
     case 'ellipse':
-      return scaleEllipse(geometry, origin, factor)
+      return scaleEllipse(geometry, origin, factor);
     case 'line':
-      return scaleLine(geometry, origin, factor)
+      return scaleLine(geometry, origin, factor);
     case 'square':
-      return scaleSquare(geometry, origin, factor)
+      return scaleSquare(geometry, origin, factor);
     case 'rectangle':
-      return scaleRectangle(geometry, origin, factor)
+      return scaleRectangle(geometry, origin, factor);
     case 'parallelogram':
-      return scaleParallelogram(geometry, origin, factor)
+      return scaleParallelogram(geometry, origin, factor);
     case 'text':
-      return scaleText(geometry, origin, factor)
+      return scaleText(geometry, origin, factor);
   }
 }
 
-export function scaleUniform(geometry: Geometry, origin: XY, factor: number): Geometry {
+export function scaleUniform(
+  geometry: Geometry,
+  origin: XY,
+  factor: number
+): Geometry {
   if (isXY(geometry)) {
-    return scaleUniformXY(geometry, origin, factor)
+    return scaleUniformXY(geometry, origin, factor);
   }
 
   switch (geometry.kind) {
     case 'arc':
-      return scaleUniformArc(geometry, origin, factor)
+      return scaleUniformArc(geometry, origin, factor);
     case 'elliptical-arc':
-      return scaleUniformEllipticalArc(geometry, origin, factor)
+      return scaleUniformEllipticalArc(geometry, origin, factor);
     case 'circle':
-      return scaleUniformCircle(geometry, origin, factor)
+      return scaleUniformCircle(geometry, origin, factor);
     case 'ellipse':
-      return scaleUniformEllipse(geometry, origin, factor)
+      return scaleUniformEllipse(geometry, origin, factor);
     case 'line':
-      return scaleUniformLine(geometry, origin, factor)
+      return scaleUniformLine(geometry, origin, factor);
     case 'square':
-      return scaleUniformSquare(geometry, origin, factor)
+      return scaleUniformSquare(geometry, origin, factor);
     case 'rectangle':
-      return scaleUniformRectangle(geometry, origin, factor)
+      return scaleUniformRectangle(geometry, origin, factor);
     case 'parallelogram':
-      return scaleUniformParallelogram(geometry, origin, factor)
+      return scaleUniformParallelogram(geometry, origin, factor);
     case 'text':
-      return scaleUniformText(geometry, origin, factor)
+      return scaleUniformText(geometry, origin, factor);
   }
 }
 
 export function skew(geometry: Geometry, origin: XY, factor: XY): Geometry {
   if (isXY(geometry)) {
-    return skewXY(geometry, origin, factor)
+    return skewXY(geometry, origin, factor);
   }
 
   switch (geometry.kind) {
     case 'arc':
-      return skewArc(geometry, origin, factor)
+      return skewArc(geometry, origin, factor);
     case 'elliptical-arc':
-      return skewEllipticalArc(geometry, origin, factor)
+      return skewEllipticalArc(geometry, origin, factor);
     case 'circle':
-      return skewCircle(geometry, origin, factor)
+      return skewCircle(geometry, origin, factor);
     case 'ellipse':
-      return skewEllipse(geometry, origin, factor)
+      return skewEllipse(geometry, origin, factor);
     case 'line':
-      return skewLine(geometry, origin, factor)
+      return skewLine(geometry, origin, factor);
     case 'square':
-      return skewSquare(geometry, origin, factor)
+      return skewSquare(geometry, origin, factor);
     case 'rectangle':
-      return skewRectangle(geometry, origin, factor)
+      return skewRectangle(geometry, origin, factor);
     case 'parallelogram':
-      return skewParallelogram(geometry, origin, factor)
+      return skewParallelogram(geometry, origin, factor);
     case 'text':
-      return skewText(geometry, origin, factor)
+      return skewText(geometry, origin, factor);
   }
 }
 
-export function pushTransform(geometry: Geometry, transformation: TransformationMatrix): Geometry {
+export function pushTransform(
+  geometry: Geometry,
+  transformation: TransformationMatrix
+): Geometry {
   if (isXY(geometry)) {
-    return applyMatrix(geometry, transformation)
+    return applyMatrix(geometry, transformation);
   }
 
-  const newMatrix = compose(transformation, geometry.transformation)
+  const newMatrix = compose(transformation, geometry.transformation);
   switch (geometry.kind) {
     case 'arc':
     case 'elliptical-arc':
@@ -251,24 +262,24 @@ export function pushTransform(geometry: Geometry, transformation: Transformation
         ...geometry,
         kind: 'elliptical-arc',
         transformation: newMatrix,
-      }
-      return result
+      };
+      return result;
     case 'circle':
     case 'ellipse': {
       const result: Ellipse = {
         ...geometry,
         kind: 'ellipse',
         transformation: newMatrix,
-      }
-      return result
+      };
+      return result;
     }
     case 'line': {
       const result: Line = {
         ...geometry,
         kind: 'line',
         transformation: newMatrix,
-      }
-      return result
+      };
+      return result;
     }
     case 'square':
     case 'rectangle':
@@ -277,23 +288,26 @@ export function pushTransform(geometry: Geometry, transformation: Transformation
         ...geometry,
         kind: 'parallelogram',
         transformation: newMatrix,
-      }
-      return result
+      };
+      return result;
     }
     case 'text': {
       const result: TextShape = {
         ...geometry,
         kind: 'text',
         transformation: newMatrix,
-      }
-      return result
+      };
+      return result;
     }
   }
 }
 
-export function setTransform(geometry: Geometry, transformation: TransformationMatrix): Geometry {
+export function setTransform(
+  geometry: Geometry,
+  transformation: TransformationMatrix
+): Geometry {
   if (isXY(geometry)) {
-    return applyMatrix(geometry, transformation)
+    return applyMatrix(geometry, transformation);
   }
 
   switch (geometry.kind) {
@@ -303,24 +317,24 @@ export function setTransform(geometry: Geometry, transformation: TransformationM
         ...geometry,
         kind: 'elliptical-arc',
         transformation,
-      }
-      return result
+      };
+      return result;
     case 'circle':
     case 'ellipse': {
       const result: Ellipse = {
         ...geometry,
         kind: 'ellipse',
         transformation,
-      }
-      return result
+      };
+      return result;
     }
     case 'line': {
       const result: Line = {
         ...geometry,
         kind: 'line',
         transformation,
-      }
-      return result
+      };
+      return result;
     }
     case 'square':
     case 'rectangle':
@@ -329,16 +343,16 @@ export function setTransform(geometry: Geometry, transformation: TransformationM
         ...geometry,
         kind: 'parallelogram',
         transformation,
-      }
-      return result
+      };
+      return result;
     }
     case 'text': {
       const result: TextShape = {
         ...geometry,
         kind: 'text',
         transformation,
-      }
-      return result
+      };
+      return result;
     }
   }
 }

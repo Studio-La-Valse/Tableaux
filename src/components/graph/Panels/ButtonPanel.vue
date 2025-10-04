@@ -1,45 +1,12 @@
 <template>
-  <div
-    class="press-button"
-    @mousedown="setPressed(true)"
-    @mouseup="setPressed(false)"
-  >
-    {{ graphNode.data.value ? '🟩' : '⭕' }}
-  </div>
+  <ButtonEmitter :graph-node="graphNode" />
 </template>
 
 <script setup lang="ts">
-import { useGraphStore } from '@/stores/use-graph-store';
-import type { Toggle } from '@/graph/graph-nodes/generic/toggle';
+  import type { Toggle } from '@/graph/graph-nodes/generic/toggle';
+  import ButtonEmitter from '@/components/emitters/ButtonEmitter.vue';
 
-const graph = useGraphStore();
-
-const props = defineProps<{
-  graphNode: Toggle
-}>()
-
-const setPressed = (state: boolean) => {
-  props.graphNode.onChange(state);
-  graph.commit();
-}
+  defineProps<{
+    graphNode: Toggle;
+  }>();
 </script>
-
-<style scoped>
-.press-button {
-  width: 60px;
-  height: 35px;
-  font-size: 24px;
-  line-height: 30px;
-  text-align: center;
-  border-radius: 4px;
-  background: var(--color-background-soft);
-  color: var(--color-text);
-  border: 1px solid var(--color-border-hover);
-  cursor: pointer;
-  user-select: none;
-}
-
-.press-button:hover {
-  background: var(--color-border-hover);
-}
-</style>

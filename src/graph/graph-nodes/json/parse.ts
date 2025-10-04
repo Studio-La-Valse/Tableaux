@@ -1,23 +1,23 @@
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { GraphNode } from '../../core/graph-node'
-import { GraphNodeType } from '../decorators'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import { GraphNode } from '../../core/graph-node';
+import { GraphNodeType } from '../decorators';
 
 @GraphNodeType('JSON', 'Parse')
 export class Parse extends GraphNode {
-  private input
-  private output
+  private input;
+  private output;
 
   constructor(id: string, path: string[]) {
-    super(id, path)
+    super(id, path);
 
-    this.input = this.registerStringInput('String')
-    this.output = this.registerObjectOutput('JSON')
+    this.input = this.registerStringInput('String');
+    this.output = this.registerObjectOutput('JSON');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const v of inputIterators.createGenerator(this.input)) {
-      const res = JSON.parse(v)
-      this.output.next(res)
+      const res = JSON.parse(v);
+      this.output.next(res);
     }
   }
 }

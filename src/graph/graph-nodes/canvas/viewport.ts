@@ -1,43 +1,43 @@
-import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
-import { GraphNode } from '../../core/graph-node'
-import { GraphNodeType } from '../decorators'
-import { createRectangle, type Rectangle } from '@/geometry/rectangle'
-import { type XY } from '@/geometry/xy'
+import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
+import { GraphNode } from '../../core/graph-node';
+import { GraphNodeType } from '../decorators';
+import { createRectangle, type Rectangle } from '@/geometry/rectangle';
+import { type XY } from '@/geometry/xy';
 
 @GraphNodeType('Canvas', 'Viewport')
 export class Viewport extends GraphNode {
-  private output
+  private output;
 
-  public override data: { dimensions: XY }
+  public override data: { dimensions: XY };
 
   constructor(id: string, path: string[]) {
-    super(id, path)
+    super(id, path);
 
-    this.output = this.registerObjectOutput<Rectangle>('Viewport')
+    this.output = this.registerObjectOutput<Rectangle>('Viewport');
 
-    this.data = { dimensions: { x: 0, y: 0 } }
+    this.data = { dimensions: { x: 0, y: 0 } };
   }
 
   public onInitialize(): void {
-    super.onInitialize()
+    super.onInitialize();
 
-    const viewPort = useDesignCanvasStore()
-    this.data = { dimensions: viewPort.dimensions }
+    const viewPort = useDesignCanvasStore();
+    this.data = { dimensions: viewPort.dimensions };
   }
 
   public onChange(newValue: XY): void {
-    this.data.dimensions = newValue
+    this.data.dimensions = newValue;
 
-    this.arm()
-    this.complete()
+    this.arm();
+    this.complete();
   }
 
   protected async solve(): Promise<void> {
     const rectangle = createRectangle(
       { x: 0, y: 0 },
       this.data.dimensions.x,
-      this.data.dimensions.y,
-    )
-    this.output.next(rectangle)
+      this.data.dimensions.y
+    );
+    this.output.next(rectangle);
   }
 }

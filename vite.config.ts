@@ -16,4 +16,17 @@ export default defineConfig({
   esbuild: {
     target: 'es2022', // Ensures ES2022 features like '.at()' are supported
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('vue-resizable-panels')) return 'resizable-panels'
+            if (id.includes('vuedraggable')) return 'vuedraggable'
+            if (id.includes('@heroicons')) return 'heroicons'
+          }
+        }
+      }
+    }
+  }
 })

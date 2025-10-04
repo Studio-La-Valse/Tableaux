@@ -1,49 +1,50 @@
-import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
-import { GraphNode } from '../../core/graph-node'
-import { GraphNodeType } from '../decorators'
-import { assertIsShape } from '@/geometry/shape'
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { BitmapPainter } from '@/bitmap-painters/bitmap-painter'
+import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
+import { GraphNode } from '../../core/graph-node';
+import { GraphNodeType } from '../decorators';
+import { assertIsShape } from '@/geometry/shape';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import { BitmapPainter } from '@/bitmap-painters/bitmap-painter';
 
 @GraphNodeType('Canvas', 'Canvas')
 export class Canvas extends GraphNode {
-  private input
+  private input;
 
   constructor(id: string, path: string[]) {
-    super(id, path)
+    super(id, path);
 
-    this.input = this.registerObjectInput('Drawable Elements').validate(assertIsShape)
+    this.input =
+      this.registerObjectInput('Drawable Elements').validate(assertIsShape);
   }
 
   public arm(): void {
-    super.arm()
+    super.arm();
 
-    this.getPainter().finish()
+    this.getPainter().finish();
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    const painter = this.getPainter()
+    const painter = this.getPainter();
     for await (const v of inputIterators.createGenerator(this.input)) {
-      painter.draw(v)
+      painter.draw(v);
     }
 
-    painter.finish()
+    painter.finish();
   }
 
   public onDestroy(): void {
-    super.onDestroy()
+    super.onDestroy();
 
-    const painter = this.getPainter()
-    painter.finish()
+    const painter = this.getPainter();
+    painter.finish();
   }
 
   private getPainter(): BitmapPainter {
-    const { canvasRef, dimensions } = useDesignCanvasStore()
+    const { canvasRef, dimensions } = useDesignCanvasStore();
     if (!canvasRef) {
-      throw new Error("A design canvas has not been initialized.")
+      throw new Error('A design canvas has not been initialized.');
     }
 
-    const painter = BitmapPainter.init(canvasRef, dimensions.x, dimensions.y)
-    return painter
+    const painter = BitmapPainter.init(canvasRef, dimensions.x, dimensions.y);
+    return painter;
   }
 }

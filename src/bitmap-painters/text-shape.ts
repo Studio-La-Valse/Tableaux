@@ -1,5 +1,5 @@
-import type { Font } from './font'
-import type { BaseShape } from '../geometry/shape'
+import type { Font } from './font';
+import type { BaseShape } from '../geometry/shape';
 import {
   compose,
   createRotation,
@@ -8,15 +8,15 @@ import {
   createTranslation,
   isTransformationMatrix,
   type TransformationMatrix,
-} from '../geometry/transformation-matrix'
-import type { XY } from '../geometry/xy'
+} from '../geometry/transformation-matrix';
+import type { XY } from '../geometry/xy';
 
 export type TextShape = BaseShape & {
-  kind: 'text'
-  text: string
-  fontFamily: Font
-  fontSize: number
-}
+  kind: 'text';
+  text: string;
+  fontFamily: Font;
+  fontSize: number;
+};
 
 export function isTextShape(value: unknown): value is TextShape {
   return (
@@ -27,22 +27,22 @@ export function isTextShape(value: unknown): value is TextShape {
     value.kind === 'text' &&
     'transformation' in value &&
     isTransformationMatrix(value.transformation)
-  )
+  );
 }
 
 export function assertIsTextShape(value: unknown): TextShape {
   if (!isTextShape(value)) {
-    throw new Error('Value is not a text shape.')
+    throw new Error('Value is not a text shape.');
   }
 
-  return value
+  return value;
 }
 
 export const createText = (
   text: string,
   origin: XY,
   fontFamily: Font,
-  fontSize: number,
+  fontSize: number
 ): TextShape => {
   const transformation: TransformationMatrix = {
     a: 1, // scale X
@@ -51,52 +51,56 @@ export const createText = (
     d: 1, // scale Y
     e: origin.x, // translate X
     f: origin.y, // translate Y
-  }
+  };
 
-  return { kind: 'text', transformation, text, fontFamily, fontSize }
-}
+  return { kind: 'text', transformation, text, fontFamily, fontSize };
+};
 
 export function translate(text: TextShape, delta: XY): TextShape {
-  const transformationMatrix = createTranslation(delta)
-  const transformation = compose(transformationMatrix, text.transformation)
+  const transformationMatrix = createTranslation(delta);
+  const transformation = compose(transformationMatrix, text.transformation);
   return {
     ...text,
     transformation,
-  }
+  };
 }
 
 export function scale(text: TextShape, origin: XY, factor: XY): TextShape {
-  const transformationMatrix = createScale(origin, factor)
-  const transformation = compose(transformationMatrix, text.transformation)
+  const transformationMatrix = createScale(origin, factor);
+  const transformation = compose(transformationMatrix, text.transformation);
   return {
     ...text,
     transformation,
-  }
+  };
 }
 
-export function scaleUniform(text: TextShape, origin: XY, factor: number): TextShape {
-  const transformationMatrix = createScale(origin, { x: factor, y: factor })
-  const transformation = compose(transformationMatrix, text.transformation)
+export function scaleUniform(
+  text: TextShape,
+  origin: XY,
+  factor: number
+): TextShape {
+  const transformationMatrix = createScale(origin, { x: factor, y: factor });
+  const transformation = compose(transformationMatrix, text.transformation);
   return {
     ...text,
     transformation,
-  }
+  };
 }
 
 export function rotate(text: TextShape, origin: XY, angle: number): TextShape {
-  const transformationMatrix = createRotation(origin, angle)
-  const transformation = compose(transformationMatrix, text.transformation)
+  const transformationMatrix = createRotation(origin, angle);
+  const transformation = compose(transformationMatrix, text.transformation);
   return {
     ...text,
     transformation,
-  }
+  };
 }
 
 export function skew(text: TextShape, origin: XY, factor: XY): TextShape {
-  const transformationMatrix = createSkew(origin, factor)
-  const transformation = compose(transformationMatrix, text.transformation)
+  const transformationMatrix = createSkew(origin, factor);
+  const transformation = compose(transformationMatrix, text.transformation);
   return {
     ...text,
     transformation,
-  }
+  };
 }

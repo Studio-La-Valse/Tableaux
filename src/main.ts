@@ -1,59 +1,59 @@
-import './assets/main.css'
+import './assets/main.css';
 
-import App from './App.vue'
-import router from './router'
+import App from './App.vue';
+import router from './router';
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 
-import { logError } from '@/stores/use-error-log-store'
-import { useGraphNodeActivatorStore } from '@/stores/use-graph-node-activator-store'
+import { logError } from '@/stores/use-error-log-store';
+import { useGraphNodeActivatorStore } from '@/stores/use-graph-node-activator-store';
 
-import { graphNodeTypes } from '@/graph/graph-nodes/decorators'
-import { useGraphNodePanelStore } from './stores/use-graph-node-panel-store'
-import { useEmitterInputStore } from './stores/use-emitter-input-store'
-import { useGraphStore } from './stores/use-graph-store'
-import.meta.glob('@/graph/graph-nodes/**/*.ts', { eager: true })
+import { graphNodeTypes } from '@/graph/graph-nodes/decorators';
+import { useGraphNodePanelStore } from './stores/use-graph-node-panel-store';
+import { useEmitterInputStore } from './stores/use-emitter-input-store';
+import { useGraphStore } from './stores/use-graph-store';
+import.meta.glob('@/graph/graph-nodes/**/*.ts', { eager: true });
 
-const app = createApp(App)
+const app = createApp(App);
 
 // catches runtime Vue errors
 app.config.errorHandler = (err, vm, info) => {
-  const _err = err as Error
-  logError(`[Vue Error] ${_err.message} — ${info}`)
-}
+  const _err = err as Error;
+  logError(`[Vue Error] ${_err.message} — ${info}`);
+};
 
 // catches unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
-  logError(`[Unhandled Promise] ${event.reason}`)
-})
+  logError(`[Unhandled Promise] ${event.reason}`);
+});
 
 // catches uncaught runtime JS errors
 window.addEventListener('error', (event) => {
-  logError(`[JS Error] ${event.message} @ ${event.filename}:${event.lineno}`)
-})
+  logError(`[JS Error] ${event.message} @ ${event.filename}:${event.lineno}`);
+});
 
-app.use(router)
+app.use(router);
 
-app.use(createPinia())
+app.use(createPinia());
 
-const { init } = useGraphStore()
-const { register } = useGraphNodeActivatorStore()
-const { registerPanel } = useGraphNodePanelStore()
-const { registerInput } = useEmitterInputStore()
+const { init } = useGraphStore();
+const { register } = useGraphNodeActivatorStore();
+const { registerPanel } = useGraphNodePanelStore();
+const { registerInput } = useEmitterInputStore();
 
 for (const { category, ctor } of graphNodeTypes) {
-  register(category, (id, path) => new ctor(id, path))
+  register(category, (id, path) => new ctor(id, path));
 
   if (ctor.__graphNodePanel) {
     registerPanel(ctor, ctor.__graphNodePanel);
   }
 
   if (ctor.__emitterInput) {
-    registerInput(ctor, ctor.__emitterInput)
+    registerInput(ctor, ctor.__emitterInput);
   }
 }
 
-init()
+init();
 
-app.mount('#app')
+app.mount('#app');

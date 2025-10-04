@@ -1,8 +1,8 @@
-import type { ComponentState } from './component-state'
-import type { GraphNodeInput } from './graph-node-input'
-import type { GraphNodeOutput } from './graph-node-output'
-import { InputIteratorsAsync } from './input-iterators-async'
-import type { JsonObject } from './models/json-value'
+import type { ComponentState } from './component-state';
+import type { GraphNodeInput } from './graph-node-input';
+import type { GraphNodeOutput } from './graph-node-output';
+import { InputIteratorsAsync } from './input-iterators-async';
+import type { JsonObject } from './models/json-value';
 
 /**
  * Abstract base class representing the core logic of a graph node.
@@ -10,60 +10,60 @@ import type { JsonObject } from './models/json-value'
  */
 export abstract class GraphNodeCore {
   // Indicates whether the node has been initialized
-  protected _initialized: boolean = false
+  protected _initialized: boolean = false;
 
   // A globally accassible error message.
-  public errorMessage: string = ''
+  public errorMessage: string = '';
 
   // Current component state of the node
   public get componentState(): ComponentState {
-    if (this.inputs.some((v) => v.armed)) return 'armed'
+    if (this.inputs.some((v) => v.armed)) return 'armed';
 
-    if (this._controller) return 'working'
+    if (this._controller) return 'working';
 
-    if (this.errorMessage) return 'error'
+    if (this.errorMessage) return 'error';
 
-    return 'complete'
+    return 'complete';
   }
 
   // Internal input connections
-  protected _inputs: GraphNodeInput[] = []
+  protected _inputs: GraphNodeInput[] = [];
 
   /**
    * Returns a copy of all input connections
    */
   public get inputs(): GraphNodeInput[] {
-    return [...this._inputs]
+    return [...this._inputs];
   }
 
   /**
    * Number of input connections
    */
   public get numberOfInputs(): number {
-    return this._inputs.length
+    return this._inputs.length;
   }
 
   // Internal output connections
-  protected _outputs: GraphNodeOutput[] = []
+  protected _outputs: GraphNodeOutput[] = [];
 
   /**
    * Returns a copy of all output connections
    */
   public get outputs(): GraphNodeOutput[] {
-    return [...this._outputs]
+    return [...this._outputs];
   }
 
   /**
    * Number of output connections
    */
   public get numberOfOutputs(): number {
-    return this._outputs.length
+    return this._outputs.length;
   }
 
   /**
    * Field that contains data for the graphnode.
    */
-  public readonly data: JsonObject = {}
+  public readonly data: JsonObject = {};
 
   /**
    * Constructs a new GraphNodeCore instance.
@@ -72,14 +72,14 @@ export abstract class GraphNodeCore {
    */
   constructor(
     public id: string,
-    public path: string[],
+    public path: string[]
   ) {}
 
   /**
    * Subscribes each output to this node's ID (self-subscription).
    */
   public trySubscribeSelf(): void {
-    this.outputs.forEach((output) => output.trySubscribe(this.id))
+    this.outputs.forEach((output) => output.trySubscribe(this.id));
   }
 
   /**
@@ -90,28 +90,30 @@ export abstract class GraphNodeCore {
    */
   public trySubscribeParent(graphNodeId: string): void {
     if (graphNodeId === this.id) {
-      throw new Error(`Circular subscription detected for graph node ${graphNodeId}.`)
+      throw new Error(
+        `Circular subscription detected for graph node ${graphNodeId}.`
+      );
     }
 
-    this.outputs.forEach((output) => output.trySubscribe(graphNodeId))
+    this.outputs.forEach((output) => output.trySubscribe(graphNodeId));
   }
 
   /**
    * Marks the node as initialized.
    */
   public onInitialize(): void {
-    this.errorMessage = ''
-    this._initialized = true
+    this.errorMessage = '';
+    this._initialized = true;
   }
 
   /**
    * Arms the node and propagates arming to all outputs.
    */
   public arm(): void {
-    this.errorMessage = ''
+    this.errorMessage = '';
 
     if (this.inputs.some((v) => v.armed)) {
-      this.outputs.forEach((output) => output.arm())
+      this.outputs.forEach((output) => output.arm());
     }
   }
 
@@ -140,41 +142,41 @@ export abstract class GraphNodeCore {
    * - Outputs' arm()/complete() are assumed to be idempotent.
    * - Inputs are checked before starting or re-starting; if any input is armed we do nothing.
    */
-  private _controller?: AbortController
-  private _rerunRequested = false
+  private _controller?: AbortController;
+  private _rerunRequested = false;
 
   public complete(): void {
     // Do not start if any input is currently armed (precondition not met).
-    if (this.inputs.some((i) => i.armed)) return
+    if (this.inputs.some((i) => i.armed)) return;
 
     // Reset transient errors and move to "working".
-    this.errorMessage = ''
+    this.errorMessage = '';
 
     // If a run is already in progress, request a rerun and cancel the current one.
     // abort() is idempotent; calling it multiple times is safe.
     if (this._controller) {
-      this._rerunRequested = true
-      this._controller.abort()
-      return
+      this._rerunRequested = true;
+      this._controller.abort();
+      return;
     }
 
     // Start a new run with a fresh controller/signal.
-    this._controller = new AbortController()
-    const signal = this._controller.signal
+    this._controller = new AbortController();
+    const signal = this._controller.signal;
 
     // Arm all outputs before solving; idempotent arm() is recommended.
     for (const o of this.outputs) {
       try {
-        o.arm()
+        o.arm();
       } catch (e) {
-        this.setError(e)
-        return
+        this.setError(e);
+        return;
       }
     }
 
     // create the iterators
-    const yieldEvery = 10_000
-    const iterators = new InputIteratorsAsync({ signal, yieldEvery })
+    const yieldEvery = 10_000;
+    const iterators = new InputIteratorsAsync({ signal, yieldEvery });
 
     // Kick off the async solve, passing the signal for cancellation.
     this.solve(iterators)
@@ -182,10 +184,10 @@ export abstract class GraphNodeCore {
         // Complete outputs
         for (const o of this.outputs) {
           try {
-            o.complete()
+            o.complete();
           } catch (e) {
-            this.setError(e)
-            break
+            this.setError(e);
+            break;
           }
         }
       })
@@ -194,24 +196,24 @@ export abstract class GraphNodeCore {
         if (signal.aborted) {
           // no rerun requested, this was an abort action, arm the component and bail
           if (!this._rerunRequested) {
-            this.arm()
+            this.arm();
           }
-          return
+          return;
         }
 
-        this.setError(error)
+        this.setError(error);
       })
       .finally(() => {
         // Clear the controller to mark this run as finished.
-        this._controller = undefined
+        this._controller = undefined;
 
         // If another call came in while we were running, run once more,
         // provided inputs are still ready. Coalesces bursts into a single extra run.
         if (this._rerunRequested && !this.inputs.some((i) => i.armed)) {
-          this._rerunRequested = false
-          this.complete()
+          this._rerunRequested = false;
+          this.complete();
         }
-      })
+      });
   }
 
   /**
@@ -219,40 +221,40 @@ export abstract class GraphNodeCore {
    * @param error
    */
   private setError(error: unknown) {
-    const _error = error instanceof Error ? error : new Error(String(error))
-    this.errorMessage = _error.message
+    const _error = error instanceof Error ? error : new Error(String(error));
+    this.errorMessage = _error.message;
   }
 
   /**
    * Abstract method where concrete node logic should be implemented.
    */
-  protected abstract solve(iterators: InputIteratorsAsync): Promise<void>
+  protected abstract solve(iterators: InputIteratorsAsync): Promise<void>;
 
   /**
    * Recompute the node
    */
   public recompute(): void {
-    this.arm()
-    this.complete()
+    this.arm();
+    this.complete();
   }
 
   /**
    * Abort the current calculation of the node
    */
   public abort(): void {
-    if (!this._controller) return
-    this._controller.abort()
+    if (!this._controller) return;
+    this._controller.abort();
   }
 
   /**
    * Virtual method to define what happens when a component is destroyed.
    */
   public onDestroy(): void {
-    if (this._controller) this._controller.abort()
-    this._controller = undefined
+    if (this._controller) this._controller.abort();
+    this._controller = undefined;
 
-    this.arm()
+    this.arm();
 
-    this._initialized = false
+    this._initialized = false;
   }
 }
