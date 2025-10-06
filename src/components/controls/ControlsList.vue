@@ -236,8 +236,7 @@
   }
 
   /* Text input and textarea stretch to fill row */
-  .name-cell input[type='text'],
-  .value-cell .text-input {
+  .name-cell input[type='text'] {
     flex: 1 1 auto;
     height: 100%;
     min-width: 0;
@@ -249,7 +248,11 @@
     box-sizing: border-box;
     line-height: 1.4;
     resize: none;
-    /* keep consistent height */
+  }
+
+  .name-cell input[type='text']:focus {
+    outline: none;
+    border: 2px solid var(--color-accent);
   }
 
   /* Icons scale nicely inside buttons */
