@@ -2,7 +2,8 @@ import { GraphNode } from '../../../core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../../decorators';
 import { type XY as xy } from '@/geometry/xy';
-import { assertIsOfShapeKind, assertIsShape } from '@/geometry/shape';
+import { assertIsRectangleShape } from '@/geometry/rectangle';
+import { assertIsShape } from '@/geometry/shape';
 
 @GraphNodeType('Geometry', 'Surface', 'Deconstruct Rectangle')
 export class DeconstructRectangle extends GraphNode {
@@ -16,7 +17,7 @@ export class DeconstructRectangle extends GraphNode {
     super(id, path);
 
     this.inputShape = this.registerObjectInput('Shape').validate((v) =>
-      assertIsOfShapeKind(assertIsShape(v), ['rectangle'])
+      assertIsRectangleShape(assertIsShape(v))
     );
 
     this.topLeft = this.registerObjectOutput<xy>('Top Left');

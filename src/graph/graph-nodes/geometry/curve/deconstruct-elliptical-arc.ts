@@ -1,7 +1,8 @@
 import { GraphNode } from '@/graph/core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../../decorators';
-import { assertIsOfShapeKind, assertIsShape } from '@/geometry/shape';
+import { assertIsEllipticalArcShape } from '@/geometry/elliptical-arc';
+import { assertIsShape } from '@/geometry/shape';
 
 @GraphNodeType('Geometry', 'Curve', 'Deconstruct Elliptical Arc')
 export class DeconstructEllipticalArc extends GraphNode {
@@ -18,7 +19,7 @@ export class DeconstructEllipticalArc extends GraphNode {
     super(id, path);
 
     this.input = this.registerObjectInput('Elliptical Arc').validate((v) =>
-      assertIsOfShapeKind(assertIsShape(v), ['elliptical-arc'])
+      assertIsEllipticalArcShape(assertIsShape(v))
     );
 
     this.outputCenter = this.registerObjectOutput('Center');

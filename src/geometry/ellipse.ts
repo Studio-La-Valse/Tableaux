@@ -1,5 +1,5 @@
 import { type XY } from './xy';
-import type { BaseShape } from './shape';
+import { assertIsOfShapeKind, type BaseShape, type Shape } from './shape';
 
 export type Ellipse = {
   x: number;
@@ -23,4 +23,20 @@ export function createEllipse(
     radiusY,
     rotation,
   };
+}
+
+export function assertIsEllipseShape(shape: Shape): EllipseShape {
+  const circleOrArc = assertIsOfShapeKind(shape, ['ellipse', 'circle']);
+
+  if (circleOrArc.kind == 'circle') {
+    return {
+      ...circleOrArc,
+      kind: 'ellipse',
+      radiusX: circleOrArc.radius,
+      radiusY: circleOrArc.radius,
+      rotation: 0,
+    };
+  }
+
+  return circleOrArc;
 }

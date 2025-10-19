@@ -1,5 +1,5 @@
 import { type XY } from './xy';
-import type { BaseShape } from './shape';
+import { assertIsOfShapeKind, type BaseShape, type Shape } from './shape';
 
 export type Circle = { x: number; y: number; radius: number };
 export type CircleShape = BaseShape & { kind: 'circle' } & Circle;
@@ -11,4 +11,9 @@ export function createCircle(origin: XY, radius: number): CircleShape {
     radius,
   };
   return circle;
+}
+
+export function assertIsCircleShape(shape: Shape): CircleShape {
+  const circleOrArc = assertIsOfShapeKind(shape, ['circle']);
+  return circleOrArc;
 }

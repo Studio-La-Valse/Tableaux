@@ -1,8 +1,9 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { type XY } from '@/geometry/xy';
-import { assertIsOfShapeKind, assertIsShape } from '@/geometry/shape';
 import { GraphNode } from '@/graph/core/graph-node';
 import { GraphNodeType } from '../../decorators';
+import { assertIsArcShape } from '@/geometry/arc';
+import { assertIsShape } from '@/geometry/shape';
 
 @GraphNodeType('Geometry', 'Deconstruct Arc')
 export class DeconstructArc extends GraphNode {
@@ -18,7 +19,7 @@ export class DeconstructArc extends GraphNode {
     super(id, path);
 
     this.inputCircle = this.registerObjectInput('Circle').validate((v) =>
-      assertIsOfShapeKind(assertIsShape(v), ['arc'])
+      assertIsArcShape(assertIsShape(v))
     );
 
     this.outputOrigin = this.registerObjectOutput<XY>('Origin');

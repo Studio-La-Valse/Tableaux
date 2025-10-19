@@ -1,4 +1,4 @@
-import type { BaseShape } from './shape';
+import { assertIsOfShapeKind, type BaseShape, type Shape } from './shape';
 import type { TransformationMatrix } from './transformation-matrix';
 import { type XY } from './xy';
 
@@ -20,4 +20,25 @@ export function createPolyline(
   };
 
   return line;
+}
+
+export function assertIsPolyline(shape: Shape): PolylineShape {
+  const circleOrArc = assertIsOfShapeKind(shape, ['polyline', 'rectangle']);
+
+  if (circleOrArc.kind == 'rectangle') {
+    const { x, y, width, height } = circleOrArc;
+    return {
+      ...circleOrArc,
+      kind: 'polyline',
+      start: { x, y },
+      end: { x, y },
+      points: [
+        { x: x + width, y },
+        { x: x + width, y: y + height },
+        { x, y: y + height },
+      ],
+    };
+  }
+
+  return circleOrArc;
 }

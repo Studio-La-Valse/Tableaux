@@ -1,5 +1,5 @@
 import { type XY } from './xy';
-import type { BaseShape } from './shape';
+import { assertIsOfShapeKind, type BaseShape, type Shape } from './shape';
 import type { Circle } from './circle';
 import type { TransformationMatrix } from './transformation-matrix';
 
@@ -19,7 +19,7 @@ export function createArc(
   startAngle: number,
   endAngle: number,
   counterclockwise: boolean = false,
-  transformationMatrix?: TransformationMatrix
+  t?: TransformationMatrix
 ): ArcShape {
   return {
     kind: 'arc',
@@ -28,6 +28,22 @@ export function createArc(
     startAngle,
     endAngle,
     counterclockwise,
-    t: transformationMatrix,
+    t,
   };
+}
+
+export function assertIsArcShape(shape: Shape): ArcShape {
+  const circleOrArc = assertIsOfShapeKind(shape, ['arc', 'circle']);
+
+  if (circleOrArc.kind == 'circle') {
+    return {
+      ...circleOrArc,
+      kind: 'arc',
+      startAngle: 0,
+      endAngle: Math.PI * 2,
+      counterclockwise: false,
+    };
+  }
+
+  return circleOrArc;
 }

@@ -9,6 +9,8 @@ import { formatCtx } from '@/geometry/font';
 import { formatCtxFilter } from '../geometry/filter';
 import type { CircleShape } from '@/geometry/circle';
 import type { EllipseShape } from '@/geometry/ellipse';
+import type { CubicShape } from '@/geometry/cubic';
+import type { QuadraticShape } from '@/geometry/quadratic';
 
 const DEFAULT_MATRIX = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
 
@@ -43,7 +45,7 @@ export function clear(ctx: CanvasRenderingContext2D) {
 export function draw(ctx: CanvasRenderingContext2D, element: Shape) {
   switch (element.kind) {
     case 'polyline':
-      drawLine(ctx, element);
+      drawPolyline(ctx, element);
       return;
     case 'circle':
     case 'arc':
@@ -58,6 +60,12 @@ export function draw(ctx: CanvasRenderingContext2D, element: Shape) {
       return;
     case 'text':
       drawText(ctx, element);
+      return;
+    case 'cubic':
+      drawCubic(ctx, element);
+      return;
+    case 'quadratic':
+      drawQuadratic(ctx, element);
       return;
   }
 }
@@ -120,7 +128,7 @@ function drawShape<T extends Shape>(
 
 // --- shapes ---
 
-function drawLine(ctx: CanvasRenderingContext2D, element: PolylineShape) {
+function drawPolyline(ctx: CanvasRenderingContext2D, element: PolylineShape) {
   drawShape(ctx, element, () => {
     const { start, end, points } = element;
     ctx.moveTo(start.x, start.y);
@@ -183,4 +191,22 @@ function drawText(ctx: CanvasRenderingContext2D, element: TextShape) {
   }
 
   ctx.restore();
+}
+
+// --- new shapes ---
+
+function drawCubic(ctx: CanvasRenderingContext2D, element: CubicShape) {
+  drawShape(ctx, element, () => {
+    const { start, control1, control2, end } = element;
+    ctx.moveTo(start.x, start.y);
+    ctx.bezierCurveTo(control1.x, control1.y, control2.x, control2.y, end.x, end.y);
+  });
+}
+
+function drawQuadratic(ctx: CanvasRenderingContext2D, element: QuadraticShape) {
+  drawShape(ctx, element, () => {
+    const { start, control, end } = element;
+    ctx.moveTo(start.x, start.y);
+    ctx.quadraticCurveTo(control.x, control.y, end.x, end.y);
+  });
 }

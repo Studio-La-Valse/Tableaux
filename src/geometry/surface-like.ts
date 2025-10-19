@@ -1,9 +1,5 @@
-import { createArc } from './arc';
 import type { CircleShape } from './circle';
-import type { CurveLike } from './curve-like';
 import type { EllipseShape } from './ellipse';
-import { createEllipticalArc } from './elliptical-arc';
-import { createPolyline } from './polyline';
 import type { RectangleShape } from './rectangle';
 import type { Shape } from './shape';
 import { identity, invert } from './transformation-matrix';
@@ -142,42 +138,4 @@ export function getSurfaceCenter(surface: SurfaceLike): XY {
 
   // Apply optional transform
   return applyMatrix(local, surface.t ?? identity());
-}
-
-export function surfaceToCurve(surface: SurfaceLike): CurveLike {
-  switch (surface.kind) {
-    case 'circle': {
-      const { x, y, radius, t } = surface;
-      const arc = createArc({ x, y }, radius, 0, Math.PI * 2, undefined, t);
-      return arc;
-    }
-
-    case 'ellipse': {
-      const { x, y, radiusX, radiusY, rotation, t } = surface;
-      const eArc = createEllipticalArc(
-        { x, y },
-        radiusX,
-        radiusY,
-        rotation,
-        0,
-        Math.PI * 2,
-        undefined,
-        t
-      );
-      return eArc;
-    }
-
-    case 'rectangle': {
-      const { x, y, width, height, t } = surface;
-      const poly = createPolyline(
-        { x, y },
-        { x, y },
-        t,
-        { x: x + width, y },
-        { x: x + width, y: y + height },
-        { x, y: y + height }
-      );
-      return poly;
-    }
-  }
 }

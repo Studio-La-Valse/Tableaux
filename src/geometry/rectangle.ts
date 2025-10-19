@@ -1,6 +1,6 @@
 import { type XY } from './xy';
-import type { BaseShape } from './shape';
-import { createPolyline, type PolylineShape } from './polyline';
+import { assertIsOfShapeKind, type BaseShape, type Shape } from './shape';
+
 export type Rectangle = {
   x: number;
   y: number;
@@ -25,14 +25,7 @@ export function createRectangle(
   };
 }
 
-export function toPolyline(rectangle: RectangleShape): PolylineShape {
-  const { x, y, width, height } = rectangle;
-  return createPolyline(
-    { x, y },
-    { x, y },
-    rectangle.t,
-    { x: x + width, y },
-    { x: x + width, y: y + height },
-    { x, y: y + height }
-  );
+export function assertIsRectangleShape(shape: Shape): RectangleShape {
+  const circleOrArc = assertIsOfShapeKind(shape, ['rectangle']);
+  return circleOrArc;
 }

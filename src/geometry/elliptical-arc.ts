@@ -1,5 +1,5 @@
 import { type XY } from './xy';
-import type { BaseShape } from './shape';
+import { assertIsOfShapeKind, type BaseShape, type Shape } from './shape';
 import type { Ellipse } from './ellipse';
 import type { TransformationMatrix } from './transformation-matrix';
 
@@ -34,4 +34,49 @@ export function createEllipticalArc(
     counterclockwise,
     t: transformationMatrix,
   };
+}
+
+export function assertIsEllipticalArcShape(shape: Shape): EllipticalArcShape {
+  const circleOrArc = assertIsOfShapeKind(shape, ['elliptical-arc', 'ellipse', 'circle', 'arc']);
+
+  if (circleOrArc.kind == 'circle') {
+    return {
+      ...circleOrArc,
+      kind: 'elliptical-arc',
+      radiusX: circleOrArc.radius,
+      radiusY: circleOrArc.radius,
+      rotation: 0,
+      startAngle: 0,
+      endAngle: Math.PI * 2,
+      counterclockwise: false,
+    };
+  }
+
+  if (circleOrArc.kind == 'ellipse') {
+    return {
+      ...circleOrArc,
+      kind: 'elliptical-arc',
+      radiusX: circleOrArc.radiusX,
+      radiusY: circleOrArc.radiusY,
+      rotation: 0,
+      startAngle: 0,
+      endAngle: Math.PI * 2,
+      counterclockwise: false,
+    };
+  }
+
+  if (circleOrArc.kind == 'arc') {
+    return {
+      ...circleOrArc,
+      kind: 'elliptical-arc',
+      radiusX: circleOrArc.radius,
+      radiusY: circleOrArc.radius,
+      rotation: 0,
+      startAngle: 0,
+      endAngle: Math.PI * 2,
+      counterclockwise: false,
+    };
+  }
+
+  return circleOrArc;
 }
