@@ -62,11 +62,7 @@ export class GraphNodeWrapper implements IGraphNodeWrapper {
   }
 
   public get minHeight(): number {
-    const totalHandles = Math.max(
-      this.innerNode.inputs.length,
-      this.innerNode.outputs.length,
-      1
-    );
+    const totalHandles = Math.max(this.innerNode.inputs.length, this.innerNode.outputs.length, 1);
     if (totalHandles === 1) {
       return this._handlePadStartStop * 2; // just top and bottom padding
     }

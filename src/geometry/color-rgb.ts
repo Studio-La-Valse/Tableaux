@@ -1,10 +1,4 @@
-import type {
-  ColorARGB,
-  ColorHex,
-  ColorHSL,
-  ColorHSV,
-  ColorRGB,
-} from './color';
+import type { ColorARGB, ColorHex, ColorHSL, ColorHSV, ColorRGB } from './color';
 
 export function isColorRGB(value: unknown): value is ColorARGB {
   return (
@@ -32,10 +26,8 @@ export function assertIsColorARGB(value: unknown): ColorARGB {
 }
 
 export function toColorHex(colorRGB: ColorRGB): ColorHex {
-  const clampChannelValue = (value: number): number =>
-    Math.max(0, Math.min(255, value));
-  const toHex = (n: number) =>
-    clampChannelValue(n).toString(16).padStart(2, '0');
+  const clampChannelValue = (value: number): number => Math.max(0, Math.min(255, value));
+  const toHex = (n: number) => clampChannelValue(n).toString(16).padStart(2, '0');
 
   return isColorARGB(colorRGB)
     ? `#${toHex(colorRGB.a)}${toHex(colorRGB.r)}${toHex(colorRGB.g)}${toHex(colorRGB.b)}`
@@ -106,7 +98,7 @@ export function toColorHSL({ r, g, b }: ColorRGB): ColorHSL {
   };
 }
 
-export function formatCSSRGBA(color: ColorRGB): string {
+export function formatCSSRGBA(color: ColorRGB | ColorARGB): string {
   const alpha = isColorARGB(color) ? color.a : 255;
   return `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha / 255})`;
 }

@@ -17,9 +17,7 @@ export class Sort extends GraphNode {
     this.indices = this.registerNumberOutput('Index');
   }
 
-  protected override async solve(
-    iterators: InputIteratorsAsync
-  ): Promise<void> {
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
     const values: valueType[] = [];
 
     let index = 0;

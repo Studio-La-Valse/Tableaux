@@ -9,7 +9,7 @@ import { KeyPress } from '@/graph/graph-nodes/canvas/key-press';
 import { Canvas } from '@/graph/graph-nodes/canvas/canvas';
 
 export const useDesignCanvasStore = defineStore('canvas-props', () => {
-  let initCounter = 0
+  let initCounter = 0;
   const canvasRef = ref<HTMLCanvasElement | undefined>();
   const dimensions = ref<XY>({ x: 1920, y: 1080 });
   const lastClick = ref<XY | undefined>();
@@ -17,19 +17,19 @@ export const useDesignCanvasStore = defineStore('canvas-props', () => {
   const { nodes } = storeToRefs(graph);
 
   const attachCanvas = (canvas: HTMLCanvasElement) => {
-    canvasRef.value = canvas
+    canvasRef.value = canvas;
 
-    canvasRef.value.addEventListener('click', click)
-    canvasRef.value.addEventListener('mousemove', mousemove)
+    canvasRef.value.addEventListener('click', click);
+    canvasRef.value.addEventListener('mousemove', mousemove);
 
     // The very first time the canvas is attached, we dont need a redraw
     // because that will happen because of the graph invalidation
     if (initCounter > 0) {
-      redraw()
+      redraw();
     }
 
-    initCounter ++;
-  }
+    initCounter++;
+  };
 
   onMounted(() => {
     window.addEventListener('keydown', keydown);

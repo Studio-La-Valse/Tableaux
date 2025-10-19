@@ -52,10 +52,7 @@
     </div>
 
     <!-- Controls only -->
-    <ControlsComponent
-      v-else-if="layout.mode === 'controls'"
-      class="controls-only"
-    />
+    <ControlsComponent v-else-if="layout.mode === 'controls'" class="controls-only" />
   </div>
 </template>
 

@@ -3,7 +3,7 @@ import { GraphNode } from '../../core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../decorators';
 import { assertIsShape, type Shape } from '@/geometry/shape';
-import type { Stroke } from '@/bitmap-painters/stroke';
+import type { Stroke } from '@/geometry/stroke';
 
 @GraphNodeType('Canvas', 'Set Stroke')
 export class SetStroke extends GraphNode {
@@ -16,14 +16,11 @@ export class SetStroke extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.inputGeometry =
-      this.registerObjectInput('Geometry').validate(assertIsShape);
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsShape);
     this.color = this.registerObjectInput('Color').validate(assertIsColorARGB);
     this.strokeWidth = this.registerNumberInput('Stroke Width');
 
-    this.outputGeometry = this.registerObjectOutput<Shape & Stroke>(
-      'Geometry with stroke'
-    );
+    this.outputGeometry = this.registerObjectOutput<Shape & Stroke>('Geometry with stroke');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

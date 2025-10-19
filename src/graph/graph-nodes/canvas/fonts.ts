@@ -1,6 +1,6 @@
 import { GraphNode } from '@/graph/core/graph-node';
 import { GraphNodeType } from '../decorators';
-import { formatCtx, type Font } from '@/bitmap-painters/font';
+import { formatCtx, type Font } from '@/geometry/font';
 
 @GraphNodeType('Canvas', 'Fonts')
 export class Fonts extends GraphNode {
@@ -91,9 +91,7 @@ async function find(): Promise<Font[]> {
 }
 
 // Query the 'local-fonts' permission safely across browsers.
-async function queryLocalFontsPermissionSafe(): Promise<
-  PermissionState | 'unknown'
-> {
+async function queryLocalFontsPermissionSafe(): Promise<PermissionState | 'unknown'> {
   try {
     if (!navigator?.permissions?.query) return 'unknown';
     // Some TS libs don’t include 'local-fonts' in PermissionName, hence the cast.

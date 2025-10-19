@@ -12,9 +12,7 @@ export class SquareRoot extends GraphNode {
     this.output = this.registerNumberOutput('Square Root');
   }
 
-  protected override async solve(
-    iterators: InputIteratorsAsync
-  ): Promise<void> {
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
     for await (const n of iterators.createGenerator(this.numbers)) {
       this.output.next(Math.sqrt(n));
     }

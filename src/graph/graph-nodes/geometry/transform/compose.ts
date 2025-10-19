@@ -16,15 +16,11 @@ export class Compose extends GraphNode {
     super(id, path);
 
     this.inputParams = this.registerObjectInputParams('Transformation Matrix');
-    this.output = this.registerObjectOutput<TransformationMatrix>(
-      'Transformation Matrix'
-    );
+    this.output = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const values of inputIterators.cycleValues(
-      ...this.inputParams
-    )) {
+    for await (const values of inputIterators.cycleValues(...this.inputParams)) {
       values
         .map(() => values.map((v) => assertIsTransformationMatrix(v)))
         .map((values) => values.reduce((acc, next) => compose(acc, next)))

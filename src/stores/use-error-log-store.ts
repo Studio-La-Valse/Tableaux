@@ -5,9 +5,7 @@ export const errorMessages = ref<string[]>([]);
 
 // only expose the last one
 export const lastError = computed(() =>
-  errorMessages.value.length
-    ? errorMessages.value[errorMessages.value.length - 1]
-    : ''
+  errorMessages.value.length ? errorMessages.value[errorMessages.value.length - 1] : ''
 );
 
 export function logError(message: string) {

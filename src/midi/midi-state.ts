@@ -22,9 +22,7 @@ export function isMidiChannelState(obj: unknown): obj is MidiChannelState {
   const isRecordOfNumbers = (val: unknown): val is Record<number, number> =>
     typeof val === 'object' &&
     val !== null &&
-    Object.entries(val).every(
-      ([k, v]) => !isNaN(Number(k)) && typeof v === 'number'
-    );
+    Object.entries(val).every(([k, v]) => !isNaN(Number(k)) && typeof v === 'number');
 
   return (
     isRecordOfNumbers(o.notes) &&
@@ -32,8 +30,7 @@ export function isMidiChannelState(obj: unknown): obj is MidiChannelState {
     isRecordOfNumbers(o.controllerValues) &&
     (o.sustainedNotes === undefined || isRecordOfNumbers(o.sustainedNotes)) &&
     (o.program === undefined || typeof o.program === 'number') &&
-    (o.channelPressure === undefined ||
-      typeof o.channelPressure === 'number') &&
+    (o.channelPressure === undefined || typeof o.channelPressure === 'number') &&
     (o.pitchBend === undefined || typeof o.pitchBend === 'number')
   );
 }
@@ -57,10 +54,7 @@ export function isMidiState(obj: unknown): obj is MidiState {
   return Object.values(maybeState.channels).every(isMidiChannelState);
 }
 
-export function getChannelState(
-  state: MidiState,
-  channel: number
-): MidiChannelState {
+export function getChannelState(state: MidiState, channel: number): MidiChannelState {
   return (
     state.channels[channel] ?? {
       notes: {},
@@ -108,14 +102,11 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
 
     case 'controllerChange':
       if (message.controllerValue > 0) {
-        newChannelState.controllerValues[message.controllerNumber] =
-          message.controllerValue;
+        newChannelState.controllerValues[message.controllerNumber] = message.controllerValue;
 
         // Handle sustain pedal release
         if (message.controllerNumber === 64 && message.controllerValue < 64) {
-          const sustainedKeys = Object.keys(
-            newChannelState.sustainedNotes ?? {}
-          ).map(Number);
+          const sustainedKeys = Object.keys(newChannelState.sustainedNotes ?? {}).map(Number);
           const filteredNotes: Record<number, number> = Object.fromEntries(
             Object.entries(newChannelState.notes).filter(
               ([k]) => !sustainedKeys.includes(Number(k))
@@ -125,8 +116,7 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
           delete newChannelState.sustainedNotes;
         }
       } else {
-        const { [message.controllerNumber]: _, ...rest } =
-          newChannelState.controllerValues;
+        const { [message.controllerNumber]: _, ...rest } = newChannelState.controllerValues;
         newChannelState.controllerValues = rest;
       }
       break;

@@ -2,23 +2,14 @@
   <div ref="wrapper" class="canvas-container">
     <div :style="stripeStyle" class="stripe">
       <div :style="canvasStyle">
-        <CanvasRenderer
-          :width="canvasProps.dimensions.x"
-          :height="canvasProps.dimensions.y"
-        />
+        <CanvasRenderer :width="canvasProps.dimensions.x" :height="canvasProps.dimensions.y" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import {
-    ref,
-    onMounted,
-    onBeforeUnmount,
-    computed,
-    type StyleValue,
-  } from 'vue';
+  import { ref, onMounted, onBeforeUnmount, computed, type StyleValue } from 'vue';
   import CanvasRenderer from './CanvasRenderer.vue';
   import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
 
@@ -64,12 +55,8 @@
   const scaledH = computed(() => canvasProps.dimensions.y * scale.value);
 
   // centering margins (≥0)
-  const marginX = computed(() =>
-    Math.max((parentW.value - scaledW.value) / 2, 0)
-  );
-  const marginY = computed(() =>
-    Math.max((parentH.value - scaledH.value) / 2, 0)
-  );
+  const marginX = computed(() => Math.max((parentW.value - scaledW.value) / 2, 0));
+  const marginY = computed(() => Math.max((parentH.value - scaledH.value) / 2, 0));
 
   // stripe behind the canvas
   const stripeStyle = computed<StyleValue>(() => ({

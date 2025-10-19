@@ -14,9 +14,7 @@ export class Default extends GraphNode {
     this.out = this.registerUnkownOutput('Output');
   }
 
-  protected override async solve(
-    iterators: InputIteratorsAsync
-  ): Promise<void> {
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
     const length = this.in.payloadLength;
     let payload = this.in;
 

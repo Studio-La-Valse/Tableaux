@@ -12,9 +12,8 @@
   const { attachCanvas } = canvasStore;
 
   onMounted(() => {
-    if (canvasRef.value) attachCanvas(canvasRef.value)
-  })
-
+    if (canvasRef.value) attachCanvas(canvasRef.value);
+  });
 </script>
 
 <style>

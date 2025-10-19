@@ -57,8 +57,7 @@ export abstract class GraphNodeInput implements IGraphNodeInput {
 
   public get index() {
     const index = this.graphNode.inputs.findIndex((v) => v.id == this.id);
-    if (index === -1)
-      throw new Error('This input was not found in its parent graph node.');
+    if (index === -1) throw new Error('This input was not found in its parent graph node.');
     return index;
   }
 
@@ -110,9 +109,7 @@ export abstract class GraphNodeInputSubscriptionType<
   T,
   TOutput extends GraphNodeOutput,
 > extends GraphNodeInputType<T> {
-  protected subscription:
-    | { graphNodeOutput: TOutput; subscription: Unsubscriber }
-    | undefined;
+  protected subscription: { graphNodeOutput: TOutput; subscription: Unsubscriber } | undefined;
 
   public get isSubscribed() {
     return this.subscription !== undefined;
@@ -152,9 +149,7 @@ export abstract class GraphNodeInputSubscriptionType<
     super(graphNode, description);
 
     if (defaultPayload && defaultPayload.length == 0) {
-      throw new Error(
-        'A zero length default graph node input payload is not allowed.'
-      );
+      throw new Error('A zero length default graph node input payload is not allowed.');
     }
   }
 
@@ -178,11 +173,7 @@ export class GraphNodeInputBoolean extends GraphNodeInputSubscriptionType<
   boolean,
   ProvidesBoolean
 > {
-  constructor(
-    graphNode: GraphNode,
-    description: string,
-    defaultPayload?: boolean[]
-  ) {
+  constructor(graphNode: GraphNode, description: string, defaultPayload?: boolean[]) {
     super(graphNode, description + ' (Boolean)', defaultPayload);
   }
 
@@ -214,15 +205,8 @@ export class GraphNodeInputBoolean extends GraphNodeInputSubscriptionType<
   }
 }
 
-export class GraphNodeInputNumber extends GraphNodeInputSubscriptionType<
-  number,
-  ProvidesNumber
-> {
-  constructor(
-    graphNode: GraphNode,
-    description: string,
-    defaultPayload?: number[]
-  ) {
+export class GraphNodeInputNumber extends GraphNodeInputSubscriptionType<number, ProvidesNumber> {
+  constructor(graphNode: GraphNode, description: string, defaultPayload?: number[]) {
     super(graphNode, description + ' (Number)', defaultPayload);
   }
 
@@ -254,15 +238,8 @@ export class GraphNodeInputNumber extends GraphNodeInputSubscriptionType<
   }
 }
 
-export class GraphNodeInputString extends GraphNodeInputSubscriptionType<
-  string,
-  ProvidesString
-> {
-  constructor(
-    graphNode: GraphNode,
-    description: string,
-    defaultPayload?: string[]
-  ) {
+export class GraphNodeInputString extends GraphNodeInputSubscriptionType<string, ProvidesString> {
+  constructor(graphNode: GraphNode, description: string, defaultPayload?: string[]) {
     super(graphNode, description + ' (String)', defaultPayload);
   }
 
@@ -298,11 +275,7 @@ export class GraphNodeInputObject extends GraphNodeInputSubscriptionType<
   JsonObject,
   ProvidesObject
 > {
-  constructor(
-    graphNode: GraphNode,
-    description: string,
-    defaultPayload?: JsonObject[]
-  ) {
+  constructor(graphNode: GraphNode, description: string, defaultPayload?: JsonObject[]) {
     super(graphNode, description + ' (Json Object)', defaultPayload);
   }
 
@@ -338,9 +311,7 @@ export class GraphNodeInputObject extends GraphNodeInputSubscriptionType<
   }
 }
 
-export class GraphNodeInputValidatedObject<
-  T extends JsonObject,
-> extends GraphNodeInputObject {
+export class GraphNodeInputValidatedObject<T extends JsonObject> extends GraphNodeInputObject {
   public get id() {
     return this.originalInput.id;
   }
@@ -372,9 +343,7 @@ export class GraphNodeInputValidatedObject<
     super(
       originalInput.graphNode,
       originalInput.description,
-      originalInput.defaultPayload
-        ? [...originalInput.defaultPayload]
-        : undefined
+      originalInput.defaultPayload ? [...originalInput.defaultPayload] : undefined
     );
   }
 
@@ -417,11 +386,7 @@ export class GraphNodeInputUnknown extends GraphNodeInputSubscriptionType<
   JsonValue,
   ProvidesUnknown
 > {
-  constructor(
-    graphNode: GraphNode,
-    description: string,
-    defaultPayload?: JsonValue[]
-  ) {
+  constructor(graphNode: GraphNode, description: string, defaultPayload?: JsonValue[]) {
     super(graphNode, description + ' (Json Value)', defaultPayload);
   }
 

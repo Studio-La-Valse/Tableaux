@@ -22,10 +22,7 @@ export class Buffer extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    const [length, reset] = inputIterators.singletonOnly(
-      this.inputLength,
-      this.inputReset
-    );
+    const [length, reset] = inputIterators.singletonOnly(this.inputLength, this.inputReset);
 
     if (reset) {
       this.data.buffer.length = 0;

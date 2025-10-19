@@ -9,9 +9,7 @@ export type TransformationMatrix = {
   f: number; // translation
 };
 
-export function isTransformationMatrix(
-  value: unknown
-): value is TransformationMatrix {
+export function isTransformationMatrix(value: unknown): value is TransformationMatrix {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -30,9 +28,7 @@ export function isTransformationMatrix(
   );
 }
 
-export function assertIsTransformationMatrix(
-  value: unknown
-): TransformationMatrix {
+export function assertIsTransformationMatrix(value: unknown): TransformationMatrix {
   if (!isTransformationMatrix(value)) {
     throw new Error('Provided value is not a transformation matrix.');
   }
@@ -88,10 +84,7 @@ export function createTranslation(delta: XY): TransformationMatrix {
   return matrix;
 }
 
-export function createRotation(
-  origin: XY,
-  angle: number
-): TransformationMatrix {
+export function createRotation(origin: XY, angle: number): TransformationMatrix {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
   return {
@@ -129,10 +122,7 @@ export function createSkew(origin: XY, skew: XY): TransformationMatrix {
   };
 }
 
-export function compose(
-  a: TransformationMatrix,
-  b: TransformationMatrix
-): TransformationMatrix {
+export function compose(a: TransformationMatrix, b: TransformationMatrix): TransformationMatrix {
   return {
     a: a.a * b.a + a.c * b.b,
     b: a.b * b.a + a.d * b.b,

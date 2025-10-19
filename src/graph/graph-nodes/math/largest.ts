@@ -14,9 +14,7 @@ export class Largest extends GraphNode {
     this.largest = this.registerNumberOutput('Largest');
   }
 
-  protected override async solve(
-    iterators: InputIteratorsAsync
-  ): Promise<void> {
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
     let largest;
     for await (const v of iterators.createGenerator(this.numbers)) {
       if (!largest || v > largest) {

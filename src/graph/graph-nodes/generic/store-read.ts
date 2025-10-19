@@ -27,9 +27,7 @@ export class StoreReader extends GraphNode {
     this.data = { name: nanoid(11) };
   }
 
-  protected override async solve(
-    iterators: InputIteratorsAsync
-  ): Promise<void> {
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
     const [reset] = iterators.singletonOnly(this.reset);
 
     const name = this.data.name;

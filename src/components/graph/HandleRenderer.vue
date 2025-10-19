@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="handle"
-    @mouseenter="showTip = true"
-    @mouseleave="showTip = false"
-  >
+  <div class="handle" @mouseenter="showTip = true" @mouseleave="showTip = false">
     <div v-show="showTip" class="tooltip">{{ description }}</div>
   </div>
 </template>

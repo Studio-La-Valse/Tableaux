@@ -38,15 +38,13 @@ export type AllSoundOffControllerChangeMidiMessage = ControllerChangeBase & {
   type: 'allSoundOffControllerChange';
 };
 
-export type ResetAllControllersControllerChangeMidiMessage =
-  ControllerChangeBase & {
-    type: 'resetAllControllersControllerChange';
-  };
+export type ResetAllControllersControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'resetAllControllersControllerChange';
+};
 
-export type LocalControlOffControllerChangeMidiMessage =
-  ControllerChangeBase & {
-    type: 'localControlOffControllerChange';
-  };
+export type LocalControlOffControllerChangeMidiMessage = ControllerChangeBase & {
+  type: 'localControlOffControllerChange';
+};
 
 export type LocalControlOnControllerChangeMidiMessage = ControllerChangeBase & {
   type: 'localControlOnControllerChange';
@@ -117,9 +115,7 @@ export const messageKinds = [
 export type MessageKind = (typeof messageKinds)[number];
 
 export function isMessageKind(value: unknown): value is MessageKind {
-  return (
-    typeof value === 'string' && messageKinds.includes(value as MessageKind)
-  );
+  return typeof value === 'string' && messageKinds.includes(value as MessageKind);
 }
 
 export type MidiMessage =
@@ -143,10 +139,7 @@ export type MidiMessage =
 
 export function isMidiMessage(value: unknown): value is MidiMessage {
   return (
-    typeof value === 'object' &&
-    value !== null &&
-    'type' in value &&
-    isMessageKind(value.type)
+    typeof value === 'object' && value !== null && 'type' in value && isMessageKind(value.type)
   );
 }
 

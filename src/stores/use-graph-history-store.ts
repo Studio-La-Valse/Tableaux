@@ -30,9 +30,7 @@ export const useGraphHistoryStore = defineStore('history', () => {
   // 5) commit a new state
   function commit(model: GraphModel): GraphModel {
     if (!present.value)
-      throw new Error(
-        'History was not correctly initialized because it has no present state.'
-      );
+      throw new Error('History was not correctly initialized because it has no present state.');
 
     // Add the current state to the end of the history
     past.value.push(present.value);
@@ -53,9 +51,7 @@ export const useGraphHistoryStore = defineStore('history', () => {
   // 6) undo
   function undo(): GraphModel | null {
     if (!present.value)
-      throw new Error(
-        'History was not correctly initialized because it has no present state.'
-      );
+      throw new Error('History was not correctly initialized because it has no present state.');
 
     // the new state will be the last item of the history
     const pastValue = past.value.pop();
@@ -74,9 +70,7 @@ export const useGraphHistoryStore = defineStore('history', () => {
   // 7) redo
   function redo(): GraphModel | null {
     if (!present.value)
-      throw new Error(
-        'History was not correctly initialized because it has no present state.'
-      );
+      throw new Error('History was not correctly initialized because it has no present state.');
 
     // the new state is the first item of the futures
     const futureValue = future.value.shift();

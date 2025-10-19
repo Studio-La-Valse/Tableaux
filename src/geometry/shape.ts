@@ -1,36 +1,25 @@
-import {
-  isTransformationMatrix,
-  type TransformationMatrix,
-} from './transformation-matrix';
-import type { TextShape } from '../bitmap-painters/text-shape';
 import { curveKinds, type CurveLike } from './curve-like';
 import { surfaceKinds, type SurfaceLike } from './surface-like';
+import type { Fill } from './fill';
+import type { Filter } from './filter';
+import type { Stroke } from './stroke';
+import type { TextShape } from './text';
+import type { TransformationMatrix } from './transformation-matrix';
 
 export const shapeKinds = [...curveKinds, ...surfaceKinds, 'text'] as const;
 
 export type ShapeKind = (typeof shapeKinds)[number];
 
-export type BaseShape = {
-  kind: ShapeKind;
-  transformation: TransformationMatrix;
-};
-
-export type Shape = CurveLike | SurfaceLike | TextShape;
-
-export function isShape(value: unknown): value is Shape {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'kind' in value &&
-    typeof value.kind === 'string' &&
-    isShapeKind(value.kind) &&
-    'transformation' in value &&
-    isTransformationMatrix(value.transformation)
-  );
-}
-
 export function isShapeKind(value: string): value is ShapeKind {
   return shapeKinds.includes(value as ShapeKind);
+}
+
+export function assertIsShapeKind(value: string): ShapeKind {
+  if (!isShapeKind(value)) {
+    throw Error('Value is not a shape kind');
+  }
+
+  return value;
 }
 
 export function isOfShapeKind<K extends Shape['kind']>(
@@ -40,23 +29,41 @@ export function isOfShapeKind<K extends Shape['kind']>(
   return allowedKinds.includes(geom.kind as K);
 }
 
-export function assertIsShape(value: unknown): Shape {
-  if (!isShape(value)) {
-    throw new Error('Value is not a shape.');
-  }
-
-  return value;
-}
-
 export function assertIsOfShapeKind<K extends Shape['kind']>(
   geom: Shape,
   allowedKinds: K[]
 ): Extract<Shape, { kind: K }> {
   if (!allowedKinds.includes(geom.kind as K)) {
     throw new Error(
-      `Provided shape is not of kind [${allowedKinds.join(', ')}]`
+      `Provided shape with kind ${geom.kind} is not of kind [${allowedKinds.join(', ')}]`
     );
   }
 
   return geom as Extract<Shape, { kind: K }>;
+}
+
+export type BaseShape = {
+  kind: ShapeKind;
+  t?: TransformationMatrix;
+} & Filter &
+  Partial<Stroke & Fill>;
+
+export type Shape = SurfaceLike | CurveLike | TextShape;
+
+export function isShape(value: unknown): value is Shape {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'kind' in value &&
+    typeof value.kind === 'string' &&
+    isShapeKind(value.kind)
+  );
+}
+
+export function assertIsShape(value: unknown): Shape {
+  if (!isShape(value)) {
+    throw new Error('Value is not a shape.');
+  }
+
+  return value;
 }

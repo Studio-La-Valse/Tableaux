@@ -20,13 +20,7 @@
   import ResizablePanel from './ResizablePanel.vue';
   import type { Preview } from '@/graph/graph-nodes/geometry/preview';
   import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
-  import {
-    computed,
-    onBeforeUnmount,
-    onMounted,
-    ref,
-    type StyleValue,
-  } from 'vue';
+  import { computed, onBeforeUnmount, onMounted, ref, type StyleValue } from 'vue';
 
   const canvasProps = useDesignCanvasStore();
 
@@ -55,12 +49,8 @@
   const scaledH = computed(() => canvasProps.dimensions.y * scale.value);
 
   // centering margins (≥0)
-  const marginX = computed(() =>
-    Math.max((parentW.value - scaledW.value) / 2, 0)
-  );
-  const marginY = computed(() =>
-    Math.max((parentH.value - scaledH.value) / 2, 0)
-  );
+  const marginX = computed(() => Math.max((parentW.value - scaledW.value) / 2, 0));
+  const marginY = computed(() => Math.max((parentH.value - scaledH.value) / 2, 0));
 
   // stripe behind the canvas
   const stripeStyle = computed<StyleValue>(() => ({

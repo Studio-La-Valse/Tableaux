@@ -75,9 +75,9 @@ export class InputIteratorsAsync {
   /**
    * Reverse iteration over a single input.
    */
-  public async *createGeneratorReversed<
-    Input extends IGraphNodeInputType<unknown>,
-  >(input: Input): AsyncGenerator<InputOf<Input>> {
+  public async *createGeneratorReversed<Input extends IGraphNodeInputType<unknown>>(
+    input: Input
+  ): AsyncGenerator<InputOf<Input>> {
     const len = input.payloadLength;
     for await (const offset of this.createRange(0, len, 1)) {
       const i = len - 1 - offset;
@@ -101,9 +101,7 @@ export class InputIteratorsAsync {
     }
 
     for await (const i of this.createRange(0, maxLen, 1)) {
-      yield inputs.map((node) =>
-        node.peek(i % node.payloadLength)
-      ) as RowOf<Inputs>;
+      yield inputs.map((node) => node.peek(i % node.payloadLength)) as RowOf<Inputs>;
     }
   }
 
@@ -116,19 +114,14 @@ export class InputIteratorsAsync {
     const lengths = inputs.map((i) => i.payloadLength);
     const maxLen = Math.max(...lengths);
 
-    if (
-      inputs.length >= 2 &&
-      lengths.some((len) => len === 0 || maxLen % len !== 0)
-    ) {
+    if (inputs.length >= 2 && lengths.some((len) => len === 0 || maxLen % len !== 0)) {
       throw new Error(
         `cycleInputsMultiples: payload lengths [${lengths.join(',')}] must all be >0 and divide ${maxLen}`
       );
     }
 
     for await (const i of this.createRange(0, maxLen, 1)) {
-      yield inputs.map((node) =>
-        node.peek(i % node.payloadLength)
-      ) as RowOf<Inputs>;
+      yield inputs.map((node) => node.peek(i % node.payloadLength)) as RowOf<Inputs>;
     }
   }
 

@@ -27,10 +27,7 @@ export class Subscription implements Unsubscriber {
       throw err;
     }
 
-    const subscription = new Subscription(
-      alreadyConnectedInputs,
-      graphNodeOutput
-    );
+    const subscription = new Subscription(alreadyConnectedInputs, graphNodeOutput);
     return subscription;
   }
 }

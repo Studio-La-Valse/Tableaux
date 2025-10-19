@@ -1,258 +1,186 @@
-import { isOfShapeKind, type Shape } from '@/geometry/shape';
-import type { Arc } from '../geometry/arc';
-import {
-  IDENTITY_ORIGIN,
-  IDENTITY_RADIUS,
-  type Circle,
-} from '../geometry/circle';
+import { type BaseShape, type Shape } from '@/geometry/shape';
+import { type ArcShape } from '../geometry/arc';
 import { formatCSSRGBA } from '../geometry/color-rgb';
-import type { Ellipse } from '../geometry/ellipse';
-import type { EllipticalArc } from '../geometry/elliptical-arc';
-import { hasFill } from '@/bitmap-painters/fill';
-import { deconstruct, type Line } from '../geometry/line';
-import { type Parallelogram } from '../geometry/parallelogram';
-import {
-  deconstruct as deconstructRectangle,
-  type Rectangle,
-} from '../geometry/rectangle';
-import { IDENTITY_BR, IDENTITY_TL, type Square } from '../geometry/square';
-import { hasStroke } from '@/bitmap-painters/stroke';
-import type { TextShape } from '@/bitmap-painters/text-shape';
-import {
-  hasAlignment,
-  hasBaseLine,
-  hasDirection,
-} from '@/bitmap-painters/text-format-options';
-import { decomposeMatrix } from '@/geometry/decomposed-transformation-matrix';
-import { formatCtx } from '@/bitmap-painters/font';
-import { formatCtxFilter, hasFilter } from './filter';
-import { hasRoundCorners } from './round-corners';
+import { type EllipticalArcShape } from '../geometry/elliptical-arc';
+import { type PolylineShape } from '../geometry/polyline';
+import { type RectangleShape } from '../geometry/rectangle';
+import { type TextShape } from '@/geometry/text';
+import { formatCtx } from '@/geometry/font';
+import { formatCtxFilter } from '../geometry/filter';
+import type { CircleShape } from '@/geometry/circle';
+import type { EllipseShape } from '@/geometry/ellipse';
 
-export class BitmapPainter {
-  constructor(private ctx: CanvasRenderingContext2D) {}
+const DEFAULT_MATRIX = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
 
-  public static init(
-    canvasRef: HTMLCanvasElement,
-    width: number,
-    height: number
-  ): BitmapPainter {
-    // We set the dimensions here in case of drawing to the preview canvasses,
-    //  their size is not set when updating the viewport of the design canvas.
-    canvasRef.width = width;
-    canvasRef.height = height;
+export function init(
+  canvasRef: HTMLCanvasElement,
+  width: number,
+  height: number
+): CanvasRenderingContext2D {
+  // Ensure the canvas matches the intended drawing surface
+  canvasRef.width = width;
+  canvasRef.height = height;
 
-    const ctx = canvasRef.getContext('2d')!;
-    if (!ctx) {
-      throw new Error(
-        'A 2d context could not be created from an HTML Canvas Element.'
-      );
-    }
-
-    ctx.imageSmoothingEnabled = false;
-    ctx.clearRect(0, 0, width, height);
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.save();
-
-    const painter = new BitmapPainter(ctx);
-    return painter;
+  const ctx = canvasRef.getContext('2d');
+  if (!ctx) {
+    throw new Error('A 2d context could not be created from an HTML Canvas Element.');
   }
 
-  public draw(element: Shape | TextShape): BitmapPainter {
-    switch (element.kind) {
-      case 'arc':
-      case 'elliptical-arc':
-      case 'circle':
-      case 'ellipse':
-        return this.drawCircle(element);
-      case 'line':
-        return this.drawLine(element);
-      case 'rectangle':
-      case 'square':
-      case 'parallelogram':
-        return this.drawRectangle(element);
-      case 'text':
-        return this.drawText(element);
-    }
+  ctx.imageSmoothingEnabled = false;
+  const { a, b, c, d, e, f } = DEFAULT_MATRIX;
+  ctx.setTransform(a, b, c, d, e, f);
+
+  return ctx;
+}
+
+export function clear(ctx: CanvasRenderingContext2D) {
+  const width = ctx.canvas.width;
+  const height = ctx.canvas.height;
+
+  ctx.clearRect(0, 0, width, height);
+}
+
+export function draw(ctx: CanvasRenderingContext2D, element: Shape) {
+  switch (element.kind) {
+    case 'polyline':
+      drawLine(ctx, element);
+      return;
+    case 'circle':
+    case 'arc':
+      drawArc(ctx, element);
+      return;
+    case 'ellipse':
+    case 'elliptical-arc':
+      drawEllipse(ctx, element);
+      return;
+    case 'rectangle':
+      drawRectangle(ctx, element);
+      return;
+    case 'text':
+      drawText(ctx, element);
+      return;
   }
+}
 
-  private drawLine(element: Line): this {
-    const { start, end } = deconstruct(element);
+// --- shared helpers ---
 
-    this.ctx.save();
+function setTransform(ctx: CanvasRenderingContext2D, element: BaseShape) {
+  const { a, b, c, d, e, f } = element.t ?? DEFAULT_MATRIX;
+  ctx.setTransform(a, b, c, d, e, f);
+}
 
-    this.applyEffect(element);
+function setFilter(ctx: CanvasRenderingContext2D, element: BaseShape) {
+  ctx.filter = formatCtxFilter(element);
+}
 
-    this.ctx.beginPath();
-    this.ctx.moveTo(start.x, start.y);
-    this.ctx.lineTo(end.x, end.y);
+function setTextFormat(ctx: CanvasRenderingContext2D, element: TextShape) {
+  const { fontFamily, fontSize, align, baseline, direction } = element;
 
-    this.setStroke(element);
+  ctx.font = formatCtx(fontFamily, fontSize);
+  ctx.textAlign = align ?? 'left';
+  ctx.textBaseline = baseline ?? 'alphabetic';
+  ctx.direction = direction ?? 'inherit';
+}
 
-    this.ctx.restore();
+function applyFill(ctx: CanvasRenderingContext2D, element: BaseShape) {
+  const { fill } = element;
+  if (!fill) return;
 
-    return this;
-  }
+  ctx.fillStyle = formatCSSRGBA(fill);
+  ctx.fill();
+}
 
-  private drawRectangle(element: Square | Rectangle | Parallelogram): this {
-    if (isOfShapeKind(element, ['parallelogram'])) {
-      return this.drawParallelogram(element);
+function applyStroke(ctx: CanvasRenderingContext2D, element: BaseShape) {
+  const { stroke, strokeWidth } = element;
+  if (!stroke || !strokeWidth) return;
+
+  ctx.strokeStyle = formatCSSRGBA(stroke);
+  ctx.lineWidth = strokeWidth;
+  ctx.stroke();
+}
+
+function drawShape<T extends Shape>(
+  ctx: CanvasRenderingContext2D,
+  element: T,
+  _drawShape: () => void
+) {
+  ctx.save();
+
+  setTransform(ctx, element);
+  setFilter(ctx, element);
+
+  ctx.beginPath();
+  _drawShape();
+
+  applyFill(ctx, element);
+  applyStroke(ctx, element);
+
+  ctx.restore();
+}
+
+// --- shapes ---
+
+function drawLine(ctx: CanvasRenderingContext2D, element: PolylineShape) {
+  drawShape(ctx, element, () => {
+    const { start, end, points } = element;
+    ctx.moveTo(start.x, start.y);
+    for (const p of points) {
+      ctx.lineTo(p.x, p.y);
     }
+    ctx.lineTo(end.x, end.y);
+  });
+}
 
-    const { translation, rotation } = decomposeMatrix(element.transformation);
+function drawArc(ctx: CanvasRenderingContext2D, element: ArcShape | CircleShape) {
+  drawShape(ctx, element, () => {
+    const { x, y, radius } = element;
+    const startAngle = (element as ArcShape).startAngle ?? 0;
+    const endAngle = (element as ArcShape).endAngle ?? Math.PI * 2;
+    const counterclockwise = (element as ArcShape).counterclockwise ?? false;
 
-    this.ctx.save();
+    ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise);
+  });
+}
 
-    this.ctx.translate(translation.x, translation.y);
-    this.ctx.rotate(rotation);
-    this.applyEffect(element);
+function drawEllipse(ctx: CanvasRenderingContext2D, element: EllipticalArcShape | EllipseShape) {
+  drawShape(ctx, element, () => {
+    const { x, y, radiusX, radiusY, rotation } = element;
+    const startAngle = (element as EllipticalArcShape).startAngle ?? 0;
+    const endAngle = (element as EllipticalArcShape).endAngle ?? Math.PI * 2;
+    const counterclockwise = (element as EllipticalArcShape).counterclockwise ?? false;
 
-    const { width, height } = deconstructRectangle(element);
-    this.ctx.beginPath();
-    if (hasRoundCorners(element)) {
-      this.ctx.roundRect(0, 0, width, height, [
-        element.topLeft ?? 0,
-        element.topRight ?? 0,
-        element.bottomRight ?? 0,
-        element.bottomLeft ?? 0,
-      ]);
+    ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise);
+  });
+}
+
+function drawRectangle(ctx: CanvasRenderingContext2D, element: RectangleShape) {
+  drawShape(ctx, element, () => {
+    const { x, y, width, height, radii } = element;
+    if (radii) {
+      ctx.roundRect(x, y, width, height, radii);
     } else {
-      this.ctx.rect(0, 0, width, height);
+      ctx.rect(x, y, width, height);
     }
+  });
+}
 
-    this.setFill(element);
-    this.setStroke(element);
+function drawText(ctx: CanvasRenderingContext2D, element: TextShape) {
+  ctx.save();
+  setTransform(ctx, element);
+  setFilter(ctx, element);
+  setTextFormat(ctx, element);
 
-    this.ctx.restore();
+  const { x, y, text, stroke, strokeWidth, fill } = element;
 
-    return this;
+  if (stroke && strokeWidth) {
+    ctx.strokeStyle = formatCSSRGBA(stroke);
+    ctx.lineWidth = strokeWidth;
+    ctx.strokeText(text, x, y);
+  }
+  if (fill) {
+    ctx.fillStyle = formatCSSRGBA(fill);
+    ctx.fillText(text, x, y);
   }
 
-  public drawParallelogram(element: Parallelogram): this {
-    const { a, b, c, d, e, f } = element.transformation;
-
-    this.ctx.save();
-    this.ctx.setTransform(a, b, c, d, e, f);
-    this.applyEffect(element);
-
-    this.ctx.beginPath();
-    this.ctx.rect(
-      IDENTITY_TL.x,
-      IDENTITY_TL.y,
-      IDENTITY_BR.x - IDENTITY_TL.x,
-      IDENTITY_BR.y - IDENTITY_TL.y
-    );
-
-    this.setFill(element);
-    this.setStroke(element);
-
-    this.ctx.restore();
-
-    return this;
-  }
-
-  private drawCircle(element: Arc | EllipticalArc | Circle | Ellipse): this {
-    const { a, b, c, d, e, f } = element.transformation;
-    let start = 0;
-    let end = Math.PI * 2;
-    let counterClockwise = true;
-    switch (element.kind) {
-      case 'arc':
-      case 'elliptical-arc':
-        start = element.startAngle;
-        end = element.endAngle;
-        counterClockwise = !(element.clockwise ?? false);
-    }
-    this.ctx.save();
-    this.ctx.setTransform(a, b, c, d, e, f);
-    this.applyEffect(element);
-
-    this.ctx.beginPath();
-    this.ctx.arc(
-      IDENTITY_ORIGIN.x,
-      IDENTITY_ORIGIN.y,
-      IDENTITY_RADIUS,
-      start,
-      end,
-      counterClockwise
-    );
-
-    this.setFill(element);
-    this.setStroke(element);
-
-    this.ctx.restore();
-
-    return this;
-  }
-
-  private drawText(element: TextShape) {
-    const fill = hasFill(element);
-    const stroke = hasStroke(element);
-    if (!fill && !stroke) return this;
-
-    const { a, b, c, d, e, f } = element.transformation;
-
-    this.ctx.save();
-    const fontName = formatCtx(element.fontFamily, element.fontSize);
-    this.ctx.font = fontName;
-
-    if (hasAlignment(element)) {
-      this.ctx.textAlign = element.align;
-    }
-
-    if (hasBaseLine(element)) {
-      this.ctx.textBaseline = element.baseline;
-    }
-
-    if (hasDirection(element)) {
-      this.ctx.direction = element.direction;
-    }
-
-    this.ctx.setTransform(a, b, c, d, e, f);
-    this.applyEffect(element);
-
-    if (fill) {
-      this.ctx.fillStyle = formatCSSRGBA(element.fill);
-      this.ctx.fillText(element.text, 0, 0);
-    }
-    if (stroke) {
-      this.ctx.strokeStyle = formatCSSRGBA(element.stroke);
-      this.ctx.lineWidth = element.strokeWidth;
-      this.ctx.strokeText(element.text, 0, 0);
-    }
-
-    this.ctx.restore();
-
-    return this;
-  }
-
-  private setFill(element: Shape) {
-    if (!hasFill(element)) return;
-
-    this.ctx.fillStyle = formatCSSRGBA(element.fill);
-    this.ctx.fill();
-  }
-
-  private setStroke(element: Shape) {
-    if (!hasStroke(element)) return;
-
-    this.ctx.strokeStyle = formatCSSRGBA(element.stroke);
-    this.ctx.lineWidth = element.strokeWidth;
-    this.ctx.stroke();
-  }
-
-  private applyEffect(element: Shape) {
-    if (!hasFilter(element)) return;
-
-    const filter = formatCtxFilter(element);
-    this.ctx.filter = filter;
-  }
-
-  private resetTransform() {
-    this.ctx.setTransform(1, 0, 0, 1, 0, 0);
-  }
-
-  public finish(): BitmapPainter {
-    this.ctx.restore();
-    return this;
-  }
+  ctx.restore();
 }

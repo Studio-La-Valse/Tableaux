@@ -1,33 +1,19 @@
 <template>
   <div class="canvas-toolbar">
     <div class="button-group">
-      <button
-        @click="layout.mode = 'split'"
-        :class="{ active: layout.mode === 'split' }"
-      >
+      <button @click="layout.mode = 'split'" :class="{ active: layout.mode === 'split' }">
         <ArrowsRightLeftIcon class="icon" />
       </button>
 
-      <button
-        @click="layout.mode = 'graph'"
-        :class="{ active: layout.mode === 'graph' }"
-      >
+      <button @click="layout.mode = 'graph'" :class="{ active: layout.mode === 'graph' }">
         <CodeBracketIcon class="icon" />
       </button>
 
-      <button
-        @click="layout.mode = 'controls'"
-        :class="{ active: layout.mode === 'controls' }"
-      >
+      <button @click="layout.mode = 'controls'" :class="{ active: layout.mode === 'controls' }">
         <AdjustmentsHorizontalIcon class="icon" />
       </button>
 
-      <button
-        type="button"
-        @click="zoomAll"
-        :disabled="!nodes.length"
-        title="Zoom All"
-      >
+      <button type="button" @click="zoomAll" :disabled="!nodes.length" title="Zoom All">
         <DocumentMagnifyingGlassIcon class="icon" />
       </button>
 
@@ -109,8 +95,7 @@
 
   const lastSavedModel = ref(toModel());
   const hasUnsavedChanges = () =>
-    hasRedo.value ||
-    JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel());
+    hasRedo.value || JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel());
 
   /** --- Modal state --- */
   const showUnsavedModal = ref(false);

@@ -84,9 +84,7 @@ export default class FrameGenerator extends GraphNode {
     );
 
     if (delay < 1) {
-      throw new Error(
-        `Invalid delay: ${delay}, please provide a value larger than 1`
-      );
+      throw new Error(`Invalid delay: ${delay}, please provide a value larger than 1`);
     }
 
     this.data.delay = delay;

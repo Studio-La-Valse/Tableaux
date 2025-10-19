@@ -43,9 +43,7 @@
   const inputRef = ref<HTMLInputElement | null>(null);
 
   const filteredGroup = computed(() => {
-    return search.value.trim()
-      ? filterTree(rootGroup, search.value.trim())
-      : rootGroup;
+    return search.value.trim() ? filterTree(rootGroup, search.value.trim()) : rootGroup;
   });
 
   const onWheel = (evt: WheelEvent) => {

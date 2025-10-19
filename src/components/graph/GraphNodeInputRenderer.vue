@@ -8,8 +8,7 @@
   >
     <button
       v-if="
-        graphNode.paramsInputOrigin?.index == input.index &&
-        graphNode.canInsertInput(input.index)
+        graphNode.paramsInputOrigin?.index == input.index && graphNode.canInsertInput(input.index)
       "
       class="prepender fade-toggle"
       :class="{ show: scale >= 3 }"

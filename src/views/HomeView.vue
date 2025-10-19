@@ -1,11 +1,7 @@
 <template>
   <div class="home-container">
     <!-- Main resizable layout -->
-    <PanelGroup
-      v-if="layoutMode === 'horizontal'"
-      direction="horizontal"
-      class="split-container"
-    >
+    <PanelGroup v-if="layoutMode === 'horizontal'" direction="horizontal" class="split-container">
       <Panel>
         <GraphCanvas class="panel-content" />
       </Panel>
@@ -17,11 +13,7 @@
       </Panel>
     </PanelGroup>
 
-    <PanelGroup
-      v-else-if="layoutMode === 'vertical'"
-      direction="vertical"
-      class="split-container"
-    >
+    <PanelGroup v-else-if="layoutMode === 'vertical'" direction="vertical" class="split-container">
       <Panel>
         <CanvasComponent class="panel-content" />
       </Panel>
@@ -33,10 +25,7 @@
     </PanelGroup>
 
     <GraphCanvas v-else-if="layoutMode === 'graph'" class="panel-content" />
-    <CanvasComponent
-      v-else-if="layoutMode === 'canvas'"
-      class="panel-content"
-    />
+    <CanvasComponent v-else-if="layoutMode === 'canvas'" class="panel-content" />
 
     <!-- Floating button group -->
     <div class="button-group">
@@ -77,11 +66,7 @@
       </button>
 
       <!-- GitHub link -->
-      <button
-        class="toggle-btn"
-        @click="navigateToGithub"
-        aria-label="Open GitHub"
-      >
+      <button class="toggle-btn" @click="navigateToGithub" aria-label="Open GitHub">
         <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
           <path
             d="M12 .297a12 12 0 0 0-3.79 23.4c.6.113.82-.26.82-.577v-2.02c-3.34.726-4.04-1.61-4.04-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.73.083-.73 1.205.085 1.84 1.237 1.84 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.605-2.665-.305-5.466-1.334-5.466-5.93 0-1.31.468-2.38 1.236-3.22-.124-.304-.536-1.527.117-3.18 0 0 1.008-.322 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.552 3.297-1.23 3.297-1.23.655 1.653.243 2.876.12 3.18.77.84 1.235 1.91 1.235 3.22 0 4.61-2.804 5.624-5.476 5.92.43.37.823 1.102.823 2.222v3.293c0 .32.218.694.825.576A12 12 0 0 0 12 .297z"
@@ -111,9 +96,7 @@
   import CanvasComponent from '@/components/canvas/CanvasComponent.vue';
   import { lastError } from '@/stores/use-error-log-store';
 
-  const layoutMode = ref<'horizontal' | 'vertical' | 'graph' | 'canvas'>(
-    'vertical'
-  );
+  const layoutMode = ref<'horizontal' | 'vertical' | 'graph' | 'canvas'>('vertical');
 
   function navigateToGithub() {
     window.open('https://github.com/Studio-La-Valse/Tableaux/', '_blank');

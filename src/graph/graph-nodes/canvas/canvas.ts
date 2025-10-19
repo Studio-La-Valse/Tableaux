@@ -3,7 +3,7 @@ import { GraphNode } from '../../core/graph-node';
 import { GraphNodeType } from '../decorators';
 import { assertIsShape } from '@/geometry/shape';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { BitmapPainter } from '@/bitmap-painters/bitmap-painter';
+import { clear, draw, init } from '@/bitmap-painters/bitmap-painter';
 
 @GraphNodeType('Canvas', 'Canvas')
 export class Canvas extends GraphNode {
@@ -12,39 +12,37 @@ export class Canvas extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input =
-      this.registerObjectInput('Drawable Elements').validate(assertIsShape);
+    this.input = this.registerObjectInput('Drawable Elements').validate(assertIsShape);
   }
 
   public arm(): void {
     super.arm();
 
-    this.getPainter().finish();
+    const canvas = this.getCanvasContext();
+    clear(canvas);
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    const painter = this.getPainter();
+    const canvas = this.getCanvasContext();
     for await (const v of inputIterators.createGenerator(this.input)) {
-      painter.draw(v);
+      draw(canvas, v);
     }
-
-    painter.finish();
   }
 
   public onDestroy(): void {
     super.onDestroy();
 
-    const painter = this.getPainter();
-    painter.finish();
+    const canvas = this.getCanvasContext();
+    clear(canvas);
   }
 
-  private getPainter(): BitmapPainter {
+  private getCanvasContext(): CanvasRenderingContext2D {
     const { canvasRef, dimensions } = useDesignCanvasStore();
     if (!canvasRef) {
       throw new Error('A design canvas has not been initialized.');
     }
 
-    const painter = BitmapPainter.init(canvasRef, dimensions.x, dimensions.y);
-    return painter;
+    const canvas = init(canvasRef, dimensions.x, dimensions.y);
+    return canvas;
   }
 }

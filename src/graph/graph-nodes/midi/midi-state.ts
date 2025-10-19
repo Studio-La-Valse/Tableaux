@@ -17,8 +17,7 @@ export default class MidiState extends GraphNode {
 
     this.inputReset = this.registerBooleanInput('Reset');
     this.inputMessages = this.registerObjectInput('Messages').validate((v) => {
-      if (!isMidiMessage(v))
-        throw new Error('Value received is not a midi message.');
+      if (!isMidiMessage(v)) throw new Error('Value received is not a midi message.');
       return v;
     });
     this.outputState = this.registerObjectOutput<state>('MIDI State');

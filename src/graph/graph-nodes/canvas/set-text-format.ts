@@ -2,18 +2,15 @@ import { GraphNode } from '../../core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../decorators';
 import {
-  assertIsTextShape,
-  type TextShape,
-} from '@/bitmap-painters/text-shape';
-import {
   textAlignments,
   textBaselines,
   textDirections,
   type AlignmentKind,
   type BaselineKind,
   type DirectionKind,
-  type TextFormatOptions,
-} from '@/bitmap-painters/text-format-options';
+  type TextShape,
+} from '@/geometry/text';
+import { assertIsOfShapeKind, assertIsShape } from '@/geometry/shape';
 
 @GraphNodeType('Canvas', 'Set Text Format')
 export class SetTextFormat extends GraphNode {
@@ -25,24 +22,21 @@ export class SetTextFormat extends GraphNode {
     super(id, path);
 
     this.asConst = [
-      this.registerObjectInput('Text').validate(assertIsTextShape),
+      this.registerObjectInput('Text').validate((v) =>
+        assertIsOfShapeKind(assertIsShape(v), ['text'])
+      ),
       this.registerStringInput('Alignment', ['start']),
       this.registerStringInput('Baseline', ['alphabetic']),
       this.registerStringInput('Direction', ['inherit']),
     ] as const;
 
-    this.outputGeometry = this.registerObjectOutput<
-      TextShape & Partial<TextFormatOptions>
-    >('Geometry with stroke');
+    this.outputGeometry = this.registerObjectOutput<TextShape>('Geometry with stroke');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [
-      text,
-      alignment,
-      baseline,
-      direction,
-    ] of inputIterators.cycleValues(...this.asConst)) {
+    for await (const [text, alignment, baseline, direction] of inputIterators.cycleValues(
+      ...this.asConst
+    )) {
       if (!textAlignments.includes(alignment as AlignmentKind)) {
         throw new Error('Provided alignment is not valid.');
       }

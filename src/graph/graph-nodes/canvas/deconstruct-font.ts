@@ -1,7 +1,7 @@
 import { GraphNode } from '../../core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../decorators';
-import { assertIsFont } from '@/bitmap-painters/font';
+import { assertIsFont } from '@/geometry/font';
 
 @GraphNodeType('Canvas', 'Deconstruct Font')
 export class DeconstructFont extends GraphNode {

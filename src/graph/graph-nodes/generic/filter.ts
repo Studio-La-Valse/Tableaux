@@ -17,10 +17,7 @@ export class Filter extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [left, right] of inputIterators.cycleValues(
-      this.input1,
-      this.input2
-    )) {
+    for await (const [left, right] of inputIterators.cycleValues(this.input1, this.input2)) {
       if (right) {
         this.output.next(left);
       }

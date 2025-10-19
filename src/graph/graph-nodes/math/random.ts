@@ -24,9 +24,7 @@ export class Random extends GraphNode {
     };
   }
 
-  protected override async solve(
-    iterators: InputIteratorsAsync
-  ): Promise<void> {
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
     for await (const seed of iterators.createGenerator(this.numbers)) {
       const generator = this.splitmix32(seed);
       const number = generator();
