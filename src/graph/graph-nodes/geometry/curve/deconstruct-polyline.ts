@@ -8,9 +8,7 @@ import { assertIsShape } from '@/geometry/shape';
 @GraphNodeType('Geometry', 'Curve', 'Deconstruct Polyline')
 export class DeconstructPolyline extends GraphNode {
   private input;
-  private outputStart;
   private outputPoints;
-  private outputEnd;
   private outputLength;
 
   constructor(id: string, path: string[]) {
@@ -20,9 +18,7 @@ export class DeconstructPolyline extends GraphNode {
       assertIsPolyline(assertIsShape(v))
     );
 
-    this.outputStart = this.registerObjectOutput<XY>('Start');
     this.outputPoints = this.registerObjectOutput<XY>('Points');
-    this.outputEnd = this.registerObjectOutput<XY>('End');
     this.outputLength = this.registerNumberOutput('Length');
   }
 
@@ -30,11 +26,11 @@ export class DeconstructPolyline extends GraphNode {
     for await (const [polyline] of inputIterators.cycleValues(this.input)) {
       const { start, points, end } = polyline as PolylineShape;
 
-      this.outputStart.next(start);
+      this.outputPoints.next(start);
       for (const point of points) {
         this.outputPoints.next(point);
       }
-      this.outputEnd.next(end);
+      this.outputPoints.next(end);
 
       // length = start + intermediate points + end
       const length = 2 + (points?.length ?? 0);

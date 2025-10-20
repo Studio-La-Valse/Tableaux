@@ -7,23 +7,24 @@ import { clear, draw, init } from '@/bitmap-painters/bitmap-painter';
 
 @GraphNodeType('Canvas', 'Canvas')
 export class Canvas extends GraphNode {
+  private clear;
   private input;
 
   constructor(id: string, path: string[]) {
     super(id, path);
 
+    this.clear = this.registerBooleanInput('Clear');
     this.input = this.registerObjectInput('Drawable Elements').validate(assertIsShape);
-  }
-
-  public arm(): void {
-    super.arm();
-
-    const canvas = this.getCanvasContext();
-    clear(canvas);
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const canvas = this.getCanvasContext();
+
+    const _clear = inputIterators.singletonOnly(this.clear);
+    if (_clear) {
+      clear(canvas);
+    }
+
     for await (const v of inputIterators.createGenerator(this.input)) {
       draw(canvas, v);
     }

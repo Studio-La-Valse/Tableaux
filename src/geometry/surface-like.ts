@@ -1,15 +1,16 @@
 import type { CircleShape } from './circle';
+import type { ClearRectShape } from './clear-rect';
 import type { EllipseShape } from './ellipse';
-import type { RectangleShape } from './rectangle';
-import type { Shape } from './shape';
+import { type RectangleShape } from './rectangle';
+import { assertIsShape, type Shape } from './shape';
 import { identity, invert } from './transformation-matrix';
 import { applyMatrix, type XY } from './xy';
 
-export const surfaceKinds = ['circle', 'ellipse', 'rectangle'] as const;
+export const surfaceKinds = ['circle', 'ellipse', 'rectangle', 'clear-rect'] as const;
 
 export type SurfaceKind = (typeof surfaceKinds)[number];
 
-export type SurfaceLike = CircleShape | EllipseShape | RectangleShape;
+export type SurfaceLike = CircleShape | EllipseShape | RectangleShape | ClearRectShape;
 
 export function isSurfaceKind(value: string): value is SurfaceKind {
   return surfaceKinds.includes(value as SurfaceKind);
@@ -19,12 +20,14 @@ export function isSurfaceLike(value: Shape): value is SurfaceLike {
   return isSurfaceKind(value.kind);
 }
 
-export function assertIsSurfaceLike(value: Shape): SurfaceLike {
-  if (!isSurfaceLike(value)) {
-    throw new Error('Value is not surface-like.');
+export function assertIsSurfaceLike(value: object): SurfaceLike {
+  const shape = assertIsShape(value);
+
+  if (isSurfaceLike(shape)) {
+    return shape;
   }
 
-  return value;
+  throw Error(`Shape of kind ${shape.kind} is not surface like.`)
 }
 
 export function pointOnSurface(surface: SurfaceLike, point: XY, epsilon = 1e-6): boolean {
@@ -55,6 +58,7 @@ export function pointOnSurface(surface: SurfaceLike, point: XY, epsilon = 1e-6):
       return Math.abs(value - 1) <= epsilon;
     }
 
+    case 'clear-rect':
     case 'rectangle': {
       const { x, y, width, height } = surface;
       const px = localPoint.x;
@@ -101,6 +105,7 @@ export function pointInSurface(surface: SurfaceLike, point: XY): boolean {
       return value <= 1;
     }
 
+    case 'clear-rect':
     case 'rectangle': {
       const { x, y, width, height } = surface;
       return (
@@ -129,6 +134,7 @@ export function getSurfaceCenter(surface: SurfaceLike): XY {
       break;
     }
 
+    case 'clear-rect':
     case 'rectangle': {
       const { x, y, width, height } = surface;
       local = { x: x + width / 2, y: y + height / 2 };

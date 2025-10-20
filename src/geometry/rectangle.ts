@@ -26,6 +26,15 @@ export function createRectangle(
 }
 
 export function assertIsRectangleShape(shape: Shape): RectangleShape {
-  const circleOrArc = assertIsOfShapeKind(shape, ['rectangle']);
+  const circleOrArc = assertIsOfShapeKind(shape, ['rectangle', 'clear-rect']);
+
+  if (circleOrArc.kind === 'clear-rect') {
+    const rect: RectangleShape = {
+      ...circleOrArc,
+      kind: 'rectangle',
+    };
+    return rect;
+  }
+
   return circleOrArc;
 }

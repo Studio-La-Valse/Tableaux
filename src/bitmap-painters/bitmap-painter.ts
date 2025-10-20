@@ -11,6 +11,7 @@ import type { CircleShape } from '@/geometry/circle';
 import type { EllipseShape } from '@/geometry/ellipse';
 import type { CubicShape } from '@/geometry/cubic';
 import type { QuadraticShape } from '@/geometry/quadratic';
+import type { ClearRectShape } from '@/geometry/clear-rect';
 
 const DEFAULT_MATRIX = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
 
@@ -44,6 +45,9 @@ export function clear(ctx: CanvasRenderingContext2D) {
 
 export function draw(ctx: CanvasRenderingContext2D, element: Shape) {
   switch (element.kind) {
+    case 'clear-rect':
+      clearRect(ctx, element);
+      return;
     case 'polyline':
       drawPolyline(ctx, element);
       return;
@@ -107,7 +111,7 @@ function applyStroke(ctx: CanvasRenderingContext2D, element: BaseShape) {
   ctx.stroke();
 }
 
-function drawShape<T extends Shape>(
+function drawShape<T extends BaseShape>(
   ctx: CanvasRenderingContext2D,
   element: T,
   _drawShape: () => void
@@ -193,8 +197,6 @@ function drawText(ctx: CanvasRenderingContext2D, element: TextShape) {
   ctx.restore();
 }
 
-// --- new shapes ---
-
 function drawCubic(ctx: CanvasRenderingContext2D, element: CubicShape) {
   drawShape(ctx, element, () => {
     const { start, control1, control2, end } = element;
@@ -208,5 +210,14 @@ function drawQuadratic(ctx: CanvasRenderingContext2D, element: QuadraticShape) {
     const { start, control, end } = element;
     ctx.moveTo(start.x, start.y);
     ctx.quadraticCurveTo(control.x, control.y, end.x, end.y);
+  });
+}
+
+// --- clear rect ---
+
+export function clearRect(ctx: CanvasRenderingContext2D, element: ClearRectShape) {
+  drawShape(ctx, element, () => {
+    const { x, y, width, height } = element;
+    ctx.clearRect(x, y, width, height);
   });
 }

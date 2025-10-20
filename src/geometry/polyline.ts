@@ -23,9 +23,9 @@ export function createPolyline(
 }
 
 export function assertIsPolyline(shape: Shape): PolylineShape {
-  const circleOrArc = assertIsOfShapeKind(shape, ['polyline', 'rectangle']);
+  const circleOrArc = assertIsOfShapeKind(shape, ['polyline', 'rectangle', 'clear-rect']);
 
-  if (circleOrArc.kind == 'rectangle') {
+  if (circleOrArc.kind == 'rectangle' || circleOrArc.kind == 'clear-rect') {
     const { x, y, width, height } = circleOrArc;
     return {
       ...circleOrArc,

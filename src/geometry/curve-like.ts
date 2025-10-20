@@ -45,6 +45,7 @@ export function assertIsCurveLike(value: object): CurveLike {
       return assertIsEllipticalArcShape(shape);
     }
 
+    case 'clear-rect':
     case 'rectangle': {
       return assertIsPolyline(shape);
     }

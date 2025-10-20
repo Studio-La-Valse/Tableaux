@@ -5,8 +5,9 @@ import type { Filter } from './filter';
 import type { Stroke } from './stroke';
 import type { TextShape } from './text';
 import type { TransformationMatrix } from './transformation-matrix';
+import type { ClearRectShape } from './clear-rect';
 
-export const shapeKinds = [...curveKinds, ...surfaceKinds, 'text'] as const;
+export const shapeKinds = [...curveKinds, ...surfaceKinds, 'text', 'clear-rect'] as const;
 
 export type ShapeKind = (typeof shapeKinds)[number];
 
@@ -48,7 +49,7 @@ export type BaseShape = {
 } & Filter &
   Partial<Stroke & Fill>;
 
-export type Shape = SurfaceLike | CurveLike | TextShape;
+export type Shape = SurfaceLike | CurveLike | TextShape | ClearRectShape;
 
 export function isShape(value: unknown): value is Shape {
   return (

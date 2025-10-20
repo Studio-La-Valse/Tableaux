@@ -6,8 +6,6 @@ import { createPolyline, type PolylineShape } from '@/geometry/polyline';
 
 @GraphNodeType('Geometry', 'Curve', 'Construct Polyline')
 export class ConstructPolyline extends GraphNode {
-  private inputStart;
-  private inputEnd;
   private inputTargetLength;
   private inputPoints;
   private output;
@@ -15,39 +13,36 @@ export class ConstructPolyline extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.inputStart = this.registerObjectInput('Start').validate(assertIsXY);
     this.inputPoints = this.registerObjectInput('Points').validate(assertIsXY);
-    this.inputEnd = this.registerObjectInput('End').validate(assertIsXY);
     this.inputTargetLength = this.registerNumberInput('Target Length');
-
     this.output = this.registerObjectOutput<PolylineShape>('Polyline');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    let pointIndex = 0;
-    const pointsAvailable = this.inputPoints.payloadLength;
-    if (pointsAvailable <= 0) {
-      throw Error('There a no points available through the Points input.');
+    const totalPoints = this.inputPoints.payloadLength;
+
+    if (totalPoints < 2) {
+      throw new Error('Polyline construction requires at least two points from the Points input.');
     }
 
-    for await (const [start, end, targetLength] of inputIterators.cycleValues(
-      this.inputStart,
-      this.inputEnd,
-      this.inputTargetLength
-    )) {
+    let pointIndex = 0;
+
+    for await (const targetLength of inputIterators.createGenerator(this.inputTargetLength)) {
       if (targetLength < 2) {
-        throw Error('Found target length  smaller than 2 through Target Length input.');
+        throw new Error(`Target Length must be at least 2, but received: ${targetLength}`);
       }
 
-      // Collect exactly targetLength points from the points iterator
+      // Collect exactly `targetLength` points, cycling if necessary
       const pts: XY[] = [];
-      for (let i = 0; i < targetLength - 2; i++) {
-        const pt = this.inputPoints.peek(pointIndex % pointsAvailable);
+      for (let i = 0; i < targetLength; i++) {
+        const pt = this.inputPoints.peek(pointIndex % totalPoints);
         pts.push(pt);
         pointIndex++;
       }
 
-      const polyline = createPolyline(start, end, undefined, ...pts);
+      // Construct polyline: start, end, optional transform, intermediate points
+      const polyline = createPolyline(pts[0], pts[pts.length - 1], undefined, ...pts.slice(1, -1));
+
       this.output.next(polyline);
     }
   }
