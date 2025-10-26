@@ -1,7 +1,7 @@
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
 import { GraphNode } from '../../core/graph-node';
 import { GraphNodeType } from '../decorators';
-import { createRectangle, type Rectangle } from '@/geometry/rectangle';
+import { createRectangleShape, type Rectangle } from '@/geometry/rectangle';
 import { type XY } from '@/geometry/xy';
 
 @GraphNodeType('Canvas', 'Viewport')
@@ -33,7 +33,7 @@ export class Viewport extends GraphNode {
   }
 
   protected async solve(): Promise<void> {
-    const rectangle = createRectangle(
+    const rectangle = createRectangleShape(
       { x: 0, y: 0 },
       this.data.dimensions.x,
       this.data.dimensions.y

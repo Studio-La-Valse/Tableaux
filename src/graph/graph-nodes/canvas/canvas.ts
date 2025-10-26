@@ -1,9 +1,9 @@
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
 import { GraphNode } from '../../core/graph-node';
 import { GraphNodeType } from '../decorators';
-import { assertIsShape } from '@/geometry/shape';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { clear, draw, init } from '@/bitmap-painters/bitmap-painter';
+import { asShape } from '@/geometry/shape';
 
 @GraphNodeType('Canvas', 'Canvas')
 export class Canvas extends GraphNode {
@@ -14,7 +14,7 @@ export class Canvas extends GraphNode {
     super(id, path);
 
     this.clear = this.registerBooleanInput('Clear');
-    this.input = this.registerObjectInput('Drawable Elements').validate(assertIsShape);
+    this.input = this.registerObjectInput('Drawable Elements').validate(asShape);
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

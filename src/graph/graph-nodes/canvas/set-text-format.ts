@@ -10,7 +10,7 @@ import {
   type DirectionKind,
   type TextShape,
 } from '@/geometry/text';
-import { assertIsOfShapeKind, assertIsShape } from '@/geometry/shape';
+import { assertIsOfShapeKind, asShape } from '@/geometry/shape';
 
 @GraphNodeType('Canvas', 'Set Text Format')
 export class SetTextFormat extends GraphNode {
@@ -22,9 +22,7 @@ export class SetTextFormat extends GraphNode {
     super(id, path);
 
     this.asConst = [
-      this.registerObjectInput('Text').validate((v) =>
-        assertIsOfShapeKind(assertIsShape(v), ['text'])
-      ),
+      this.registerObjectInput('Text').validate((v) => assertIsOfShapeKind(asShape(v), ['text'])),
       this.registerStringInput('Alignment', ['start']),
       this.registerStringInput('Baseline', ['alphabetic']),
       this.registerStringInput('Direction', ['inherit']),

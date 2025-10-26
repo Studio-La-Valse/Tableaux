@@ -2,7 +2,7 @@ import { assertIsColorARGB } from '@/geometry/color-rgb';
 import { GraphNode } from '../../core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../decorators';
-import { assertIsShape, type Shape } from '@/geometry/shape';
+import { asShape, type Shape } from '@/geometry/shape';
 import type { Stroke } from '@/geometry/stroke';
 
 @GraphNodeType('Canvas', 'Set Stroke')
@@ -16,7 +16,7 @@ export class SetStroke extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsShape);
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape);
     this.color = this.registerObjectInput('Color').validate(assertIsColorARGB);
     this.strokeWidth = this.registerNumberInput('Stroke Width');
 

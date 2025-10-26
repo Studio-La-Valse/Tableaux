@@ -1,13 +1,50 @@
 import { type XY } from './xy';
-import { assertIsOfShapeKind, type BaseShape, type Shape } from './shape';
-import type { Circle } from './circle';
+import { type BaseShape } from './shape';
+import { circleAsArc, isCircle, type Circle } from './circle';
 import type { TransformationMatrix } from './transformation-matrix';
+import type { JsonObject } from '@/graph/core/models/json-value';
+import type { EllipticalArc } from './elliptical-arc';
 
 export type Arc = Circle & {
   startAngle: number;
   endAngle: number;
   counterclockwise: boolean;
 };
+
+export function isArc(object: JsonObject): object is Arc {
+  return (
+    isCircle(object) &&
+    'startAngle' in object &&
+    typeof object.startAngle === 'number' &&
+    'endAngle' in object &&
+    typeof object.endAngle === 'number' &&
+    'counterclockwise' in object &&
+    typeof object.counterclockwise === 'boolean'
+  );
+}
+
+export function asArc(object: JsonObject): Arc {
+  if (isArc(object)) {
+    return {
+      ...object,
+    };
+  }
+
+  if (isCircle(object)) {
+    return circleAsArc(object);
+  }
+
+  throw Error('This object could not be cast to an arc shape.');
+}
+
+export function arcAsEllipticalArc(arc: Arc): EllipticalArc {
+  return {
+    ...arc,
+    radiusX: arc.radius,
+    radiusY: arc.radius,
+    rotation: 0,
+  };
+}
 
 export type ArcShape = BaseShape & {
   kind: 'arc';
@@ -30,20 +67,4 @@ export function createArc(
     counterclockwise,
     t,
   };
-}
-
-export function assertIsArcShape(shape: Shape): ArcShape {
-  const circleOrArc = assertIsOfShapeKind(shape, ['arc', 'circle']);
-
-  if (circleOrArc.kind == 'circle') {
-    return {
-      ...circleOrArc,
-      kind: 'arc',
-      startAngle: 0,
-      endAngle: Math.PI * 2,
-      counterclockwise: false,
-    };
-  }
-
-  return circleOrArc;
 }

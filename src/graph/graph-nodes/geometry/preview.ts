@@ -1,7 +1,7 @@
 import { GraphNode } from '@/graph/core/graph-node';
 import { GraphNodePanel, GraphNodeType } from '../decorators';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { assertIsShape } from '@/geometry/shape';
+import { asShape } from '@/geometry/shape';
 import PreviewPanel from '@/components/graph/Panels/PreviewPanel.vue';
 import { clear, draw, init } from '@/bitmap-painters/bitmap-painter';
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
@@ -16,7 +16,7 @@ export class Preview extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input = this.registerObjectInput('Geometry').validate(assertIsShape);
+    this.input = this.registerObjectInput('Geometry').validate(asShape);
   }
 
   public setCanvas(canvas: HTMLCanvasElement | null) {

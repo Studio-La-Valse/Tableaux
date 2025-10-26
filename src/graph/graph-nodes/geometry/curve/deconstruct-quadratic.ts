@@ -2,7 +2,7 @@ import { GraphNode } from '@/graph/core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../../decorators';
 import { assertIsQuadraticShape } from '@/geometry/quadratic';
-import { assertIsShape } from '@/geometry/shape';
+import { asShape } from '@/geometry/shape';
 
 @GraphNodeType('Geometry', 'Curve', 'Deconstruct Quadratic Bézier')
 export class DeconstructQuadratic extends GraphNode {
@@ -15,7 +15,7 @@ export class DeconstructQuadratic extends GraphNode {
     super(id, path);
 
     this.input = this.registerObjectInput('Quadratic Bézier').validate((v) =>
-      assertIsQuadraticShape(assertIsShape(v))
+      assertIsQuadraticShape(asShape(v))
     );
 
     this.outputStart = this.registerObjectOutput('Start');

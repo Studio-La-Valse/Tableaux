@@ -1,6 +1,6 @@
 import { GraphNode } from '../../core/graph-node';
 import { GraphNodeType } from '../decorators';
-import { assertIsShape, type Shape } from '@/geometry/shape';
+import { asShape, type Shape } from '@/geometry/shape';
 import type { Fill } from '@/geometry/fill';
 import { assertIsColorARGB } from '@/geometry/color-rgb';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
@@ -15,7 +15,7 @@ export class SetFill extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsShape);
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape);
     this.color = this.registerObjectInput('Color').validate(assertIsColorARGB);
 
     this.outputGeometry = this.registerObjectOutput<Shape & Fill>('Geometry with fill');

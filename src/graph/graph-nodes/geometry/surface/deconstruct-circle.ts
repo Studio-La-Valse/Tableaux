@@ -1,8 +1,7 @@
 import { GraphNode } from '../../../core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../../decorators';
-import { assertIsCircleShape } from '@/geometry/circle';
-import { assertIsShape } from '@/geometry/shape';
+import { asCircle } from '@/geometry/circle';
 
 @GraphNodeType('Geometry', 'Surface', 'Deconstruct Circle')
 export class DeconstructCircle extends GraphNode {
@@ -13,9 +12,7 @@ export class DeconstructCircle extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input = this.registerObjectInput('Circle').validate((v) =>
-      assertIsCircleShape(assertIsShape(v))
-    );
+    this.input = this.registerObjectInput('Circle').validate(asCircle);
 
     this.outputCenter = this.registerObjectOutput('Center');
     this.outputRadius = this.registerNumberOutput('Radius');

@@ -1,11 +1,12 @@
-import { curveKinds, type CurveLike } from './curve-like';
-import { surfaceKinds, type SurfaceLike } from './surface-like';
+import { curveKinds, isCurveLike, type CurveLike } from './curve-like';
+import { isSurfaceLike, surfaceKinds, type SurfaceLike } from './surface-like';
 import type { Fill } from './fill';
 import type { Filter } from './filter';
 import type { Stroke } from './stroke';
-import type { TextShape } from './text';
+import { isTextShape, type TextShape } from './text';
 import type { TransformationMatrix } from './transformation-matrix';
-import type { ClearRectShape } from './clear-rect';
+import { isClearRectShape, type ClearRectShape } from './clear-rect';
+import type { JsonObject } from '@/graph/core/models/json-value';
 
 export const shapeKinds = [...curveKinds, ...surfaceKinds, 'text', 'clear-rect'] as const;
 
@@ -51,20 +52,16 @@ export type BaseShape = {
 
 export type Shape = SurfaceLike | CurveLike | TextShape | ClearRectShape;
 
-export function isShape(value: unknown): value is Shape {
+export function isShape(value: JsonObject): value is Shape {
   return (
-    typeof value === 'object' &&
-    value !== null &&
-    'kind' in value &&
-    typeof value.kind === 'string' &&
-    isShapeKind(value.kind)
+    isSurfaceLike(value) || isCurveLike(value) || isTextShape(value) || isClearRectShape(value)
   );
 }
 
-export function assertIsShape(value: unknown): Shape {
+export function asShape(value: JsonObject): Shape {
   if (!isShape(value)) {
     throw new Error('Value is not a shape.');
   }
 
-  return value;
+  return { ...value };
 }

@@ -1,7 +1,7 @@
 import { GraphNode } from '@/graph/core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '@/graph/graph-nodes/decorators';
-import { assertIsShape } from '@/geometry/shape';
+import { asShape } from '@/geometry/shape';
 import { identity, type TransformationMatrix } from '@/geometry/transformation-matrix';
 
 @GraphNodeType('Geometry', 'Transform', 'Transformation')
@@ -13,7 +13,7 @@ export class Transformation extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsShape);
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape);
 
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Translated Geometry');
   }

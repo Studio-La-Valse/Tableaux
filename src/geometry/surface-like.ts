@@ -1,8 +1,8 @@
-import type { CircleShape } from './circle';
+import type { JsonObject } from '@/graph/core/models/json-value';
+import { isCircle, type CircleShape } from './circle';
 import type { ClearRectShape } from './clear-rect';
-import type { EllipseShape } from './ellipse';
-import { type RectangleShape } from './rectangle';
-import { assertIsShape, type Shape } from './shape';
+import { isEllipse, type EllipseShape } from './ellipse';
+import { isRectangle, type RectangleShape } from './rectangle';
 import { identity, invert } from './transformation-matrix';
 import { applyMatrix, type XY } from './xy';
 
@@ -10,24 +10,55 @@ export const surfaceKinds = ['circle', 'ellipse', 'rectangle', 'clear-rect'] as 
 
 export type SurfaceKind = (typeof surfaceKinds)[number];
 
+export function isSurfaceKind(str: string): str is SurfaceKind {
+  return str in surfaceKinds;
+}
+
 export type SurfaceLike = CircleShape | EllipseShape | RectangleShape | ClearRectShape;
 
-export function isSurfaceKind(value: string): value is SurfaceKind {
-  return surfaceKinds.includes(value as SurfaceKind);
-}
-
-export function isSurfaceLike(value: Shape): value is SurfaceLike {
-  return isSurfaceKind(value.kind);
-}
-
-export function assertIsSurfaceLike(value: object): SurfaceLike {
-  const shape = assertIsShape(value);
-
-  if (isSurfaceLike(shape)) {
-    return shape;
+export function asSurfaceLike(value: JsonObject): SurfaceLike {
+  if (isCircle(value)) {
+    return {
+      ...value,
+      kind: 'circle',
+    };
   }
 
-  throw Error(`Shape of kind ${shape.kind} is not surface like.`)
+  if (isEllipse(value)) {
+    return {
+      ...value,
+      kind: 'ellipse',
+    };
+  }
+
+  if (isRectangle(value)) {
+    let kind: 'rectangle' | 'clear-rect' = 'rectangle';
+    if ('kind' in value && typeof value.kind === 'string' && value.kind === 'clear-rect') {
+      kind = 'clear-rect';
+    }
+    return {
+      ...value,
+      kind,
+    };
+  }
+
+  throw Error(`Shape is not surface like.`);
+}
+
+export function isSurfaceLike(object: JsonObject): object is SurfaceLike {
+  if (!('kind' in object)) return false;
+  if (!(typeof object.kind === 'string')) return false;
+  if (!isSurfaceKind(object.kind)) return false;
+
+  switch (object.kind) {
+    case 'circle':
+      return isCircle(object);
+    case 'ellipse':
+      return isEllipse(object);
+    case 'clear-rect':
+    case 'rectangle':
+      return isRectangle(object);
+  }
 }
 
 export function pointOnSurface(surface: SurfaceLike, point: XY, epsilon = 1e-6): boolean {

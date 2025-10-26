@@ -2,7 +2,7 @@ import { assertIsColorARGB } from '@/geometry/color-rgb';
 import { GraphNode } from '../../core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../decorators';
-import { assertIsShape, type Shape } from '@/geometry/shape';
+import { asShape, type Shape } from '@/geometry/shape';
 import { applyDropShadow, type DropShadow } from '@/geometry/filter';
 import { assertIsXY } from '@/geometry/xy';
 
@@ -18,7 +18,7 @@ export class SetDropShadow extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.inputGeometry = this.registerObjectInput('Shape').validate(assertIsShape);
+    this.inputGeometry = this.registerObjectInput('Shape').validate(asShape);
     this.inputOffset = this.registerObjectInput('Offset').validate(assertIsXY);
     this.inputColor = this.registerObjectInput('Color').validate(assertIsColorARGB);
     this.inputSize = this.registerNumberInput('Size');

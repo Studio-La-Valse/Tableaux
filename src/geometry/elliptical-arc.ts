@@ -1,13 +1,28 @@
 import { type XY } from './xy';
-import { assertIsOfShapeKind, type BaseShape, type Shape } from './shape';
-import type { Ellipse } from './ellipse';
+import { type BaseShape } from './shape';
+import { ellipseAsEllipticalArc, isEllipse, type Ellipse } from './ellipse';
 import type { TransformationMatrix } from './transformation-matrix';
+import { circleAsEllipticalArc, isCircle } from './circle';
+import type { JsonObject } from '@/graph/core/models/json-value';
+import { arcAsEllipticalArc, isArc } from './arc';
 
 export type EllipticalArc = Ellipse & {
   startAngle: number;
   endAngle: number;
   counterclockwise: boolean;
 };
+
+export function isEllipticalArc(object: object): object is EllipticalArc {
+  return (
+    isEllipse(object) &&
+    'startAngle' in object &&
+    typeof object.startAngle === 'number' &&
+    'endAngle' in object &&
+    typeof object.endAngle === 'number' &&
+    'counterclockwise' in object &&
+    typeof object.counterclockwise === 'boolean'
+  );
+}
 
 export type EllipticalArcShape = BaseShape & {
   kind: 'elliptical-arc';
@@ -36,47 +51,24 @@ export function createEllipticalArc(
   };
 }
 
-export function assertIsEllipticalArcShape(shape: Shape): EllipticalArcShape {
-  const circleOrArc = assertIsOfShapeKind(shape, ['elliptical-arc', 'ellipse', 'circle', 'arc']);
-
-  if (circleOrArc.kind == 'circle') {
+export function asEllipticalArc(object: JsonObject): EllipticalArc {
+  if (isEllipticalArc(object)) {
     return {
-      ...circleOrArc,
-      kind: 'elliptical-arc',
-      radiusX: circleOrArc.radius,
-      radiusY: circleOrArc.radius,
-      rotation: 0,
-      startAngle: 0,
-      endAngle: Math.PI * 2,
-      counterclockwise: false,
+      ...object,
     };
   }
 
-  if (circleOrArc.kind == 'ellipse') {
-    return {
-      ...circleOrArc,
-      kind: 'elliptical-arc',
-      radiusX: circleOrArc.radiusX,
-      radiusY: circleOrArc.radiusY,
-      rotation: 0,
-      startAngle: 0,
-      endAngle: Math.PI * 2,
-      counterclockwise: false,
-    };
+  if (isEllipse(object)) {
+    return ellipseAsEllipticalArc(object);
   }
 
-  if (circleOrArc.kind == 'arc') {
-    return {
-      ...circleOrArc,
-      kind: 'elliptical-arc',
-      radiusX: circleOrArc.radius,
-      radiusY: circleOrArc.radius,
-      rotation: 0,
-      startAngle: 0,
-      endAngle: Math.PI * 2,
-      counterclockwise: false,
-    };
+  if (isCircle(object)) {
+    return circleAsEllipticalArc(object);
   }
 
-  return circleOrArc;
+  if (isArc(object)) {
+    return arcAsEllipticalArc(object);
+  }
+
+  throw Error('Object could not be cast to an elliptical arc.');
 }

@@ -1,9 +1,45 @@
-import { assertIsOfShapeKind, type BaseShape, type Shape } from './shape';
+import type { JsonObject } from '@/graph/core/models/json-value';
+import { isRectangle, rectangleAsPolyline } from './rectangle';
+import { type BaseShape } from './shape';
 import type { TransformationMatrix } from './transformation-matrix';
-import { type XY } from './xy';
+import { isXY, type XY } from './xy';
+
+export type Line = { start: XY; end: XY };
+
+export function isLine(object: JsonObject): object is Line {
+  return 'start' in object && isXY(object.start) && 'end' in object && isXY(object.end);
+}
+
+export function asLine(object: JsonObject): Line {
+  if (isLine(object)) {
+    return {
+      ...object,
+    };
+  }
+
+  throw Error('Object could not be cast to line');
+}
 
 export type Polyline = { start: XY; points: XY[]; end: XY };
 export type PolylineShape = BaseShape & { kind: 'polyline' } & Polyline;
+
+export function isPolyline(object: JsonObject): object is Polyline {
+  return isLine(object) && 'points' in object && Array.isArray(object.points);
+}
+
+export function asPolyline(object: JsonObject): Polyline {
+  if (isPolyline(object)) {
+    return {
+      ...object,
+    };
+  }
+
+  if (isRectangle(object)) {
+    return rectangleAsPolyline(object);
+  }
+
+  throw Error('Object could not be cast to a polyline.');
+}
 
 export function createPolyline(
   start: XY,
@@ -20,25 +56,4 @@ export function createPolyline(
   };
 
   return line;
-}
-
-export function assertIsPolyline(shape: Shape): PolylineShape {
-  const circleOrArc = assertIsOfShapeKind(shape, ['polyline', 'rectangle', 'clear-rect']);
-
-  if (circleOrArc.kind == 'rectangle' || circleOrArc.kind == 'clear-rect') {
-    const { x, y, width, height } = circleOrArc;
-    return {
-      ...circleOrArc,
-      kind: 'polyline',
-      start: { x, y },
-      end: { x, y },
-      points: [
-        { x: x + width, y },
-        { x: x + width, y: y + height },
-        { x, y: y + height },
-      ],
-    };
-  }
-
-  return circleOrArc;
 }

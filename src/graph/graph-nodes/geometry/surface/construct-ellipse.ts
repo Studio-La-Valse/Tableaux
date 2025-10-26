@@ -2,7 +2,7 @@ import { GraphNode } from '../../../core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../../decorators';
 import { assertIsXY } from '@/geometry/xy';
-import { createEllipse, type EllipseShape } from '@/geometry/ellipse';
+import { createEllipseShape, type EllipseShape } from '@/geometry/ellipse';
 
 @GraphNodeType('Geometry', 'Surface', 'Construct Ellipse')
 export class Ellipse extends GraphNode {
@@ -30,7 +30,7 @@ export class Ellipse extends GraphNode {
       this.input3,
       this.input4
     )) {
-      const ellipse = createEllipse(xy, x, y, rotation);
+      const ellipse = createEllipseShape(xy, x, y, rotation);
       this.output.next(ellipse);
     }
   }

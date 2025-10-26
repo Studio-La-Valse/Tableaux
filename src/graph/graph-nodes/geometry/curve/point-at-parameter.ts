@@ -1,8 +1,7 @@
-import { assertIsCurveLike, getPointAt } from '@/geometry/curve-like';
+import { asCurveLike, getPointAt } from '@/geometry/curve-like';
 import { GraphNode } from '../../../core/graph-node';
 import { GraphNodeType } from '../../decorators';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { assertIsShape } from '@/geometry/shape';
 import type { XY } from '@/geometry/xy';
 
 @GraphNodeType('Geometry', 'Curve', 'Point At Parameter')
@@ -14,9 +13,7 @@ export class PointAtParameter extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.curveInput = this.registerObjectInput('Curve').validate((v) =>
-      assertIsCurveLike(assertIsShape(v))
-    );
+    this.curveInput = this.registerObjectInput('Curve').validate(asCurveLike);
 
     this.tInput = this.registerNumberInput('t');
 

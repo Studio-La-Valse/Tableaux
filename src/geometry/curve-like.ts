@@ -1,57 +1,102 @@
-import { assertIsArcShape, type ArcShape } from './arc';
-import type { CubicShape } from './cubic';
-import { assertIsEllipticalArcShape, type EllipticalArcShape } from './elliptical-arc';
-import { assertIsPolyline, type PolylineShape } from './polyline';
-import type { QuadraticShape } from './quadratic';
-import { assertIsShape, type Shape } from './shape';
+import type { JsonObject } from '@/graph/core/models/json-value';
+import { isArc, type ArcShape } from './arc';
+import { isCubic, type CubicShape } from './cubic';
+import { isEllipticalArc, type EllipticalArcShape } from './elliptical-arc';
+import { isPolyline, type PolylineShape } from './polyline';
+import { isQuadratic, type QuadraticShape } from './quadratic';
+import { isRectangle, rectangleAsPolyline } from './rectangle';
 import { identity } from './transformation-matrix';
 import { applyMatrix, distance, type XY } from './xy';
+import { circleAsArc, isCircle } from './circle';
+import { ellipseAsEllipticalArc, isEllipse } from './ellipse';
 
 export const curveKinds = ['arc', 'elliptical-arc', 'polyline', 'quadratic', 'cubic'] as const;
 
 export type CurveKind = (typeof curveKinds)[number];
 
+export function isCurveKind(str: string): str is CurveKind {
+  return str in curveKinds;
+}
+
 export type CurveLike = ArcShape | EllipticalArcShape | PolylineShape | QuadraticShape | CubicShape;
 
-export function isCurveKind(value: string): value is CurveKind {
-  return curveKinds.includes(value as CurveKind);
+export function isCurveLike(value: JsonObject): value is CurveLike {
+  if (!('kind' in value)) return false;
+  if (!(typeof value.kind === 'string')) return false;
+  if (!isCurveKind(value.kind)) return false;
+
+  switch (value.kind) {
+    case 'arc':
+      return isArc(value);
+    case 'elliptical-arc':
+      return isEllipticalArc(value);
+    case 'polyline':
+      return isPolyline(value);
+    case 'quadratic':
+      return isQuadratic(value);
+    case 'cubic':
+      return isCubic(value);
+  }
 }
 
-export function assertIsCurveKind(value: string): CurveKind {
-  if (!isCurveKind(value)) {
-    throw Error(`Value ${value} is not curve kind.`);
+export function asCurveLike(value: JsonObject): CurveLike {
+  if (isArc(value)) {
+    return {
+      ...value,
+      kind: 'arc',
+    };
   }
 
-  return value;
-}
-
-export function isCurveLike(value: Shape): value is CurveLike {
-  return isCurveKind(value.kind);
-}
-
-export function assertIsCurveLike(value: object): CurveLike {
-  const shape = assertIsShape(value);
-
-  if (isCurveLike(shape)) {
-    return shape;
+  if (isEllipticalArc(value)) {
+    return {
+      ...value,
+      kind: 'elliptical-arc',
+    };
   }
 
-  switch (shape.kind) {
-    case 'circle': {
-      return assertIsArcShape(shape);
-    }
-
-    case 'ellipse': {
-      return assertIsEllipticalArcShape(shape);
-    }
-
-    case 'clear-rect':
-    case 'rectangle': {
-      return assertIsPolyline(shape);
-    }
+  if (isPolyline(value)) {
+    return {
+      ...value,
+      kind: 'polyline',
+    };
   }
 
-  throw new Error(`Value of kind ${shape.kind} is not a shape that can be cast to curve.`);
+  if (isQuadratic(value)) {
+    return {
+      ...value,
+      kind: 'quadratic',
+    };
+  }
+
+  if (isCubic(value)) {
+    return {
+      ...value,
+      kind: 'cubic',
+    };
+  }
+
+  if (isCircle(value)) {
+    return {
+      ...circleAsArc(value),
+      kind: 'arc',
+    };
+  }
+
+  if (isEllipse(value)) {
+    return {
+      ...ellipseAsEllipticalArc(value),
+      kind: 'elliptical-arc',
+    };
+  }
+
+  if (isRectangle(value)) {
+    return {
+      ...rectangleAsPolyline(value),
+      kind: 'polyline',
+    };
+  }
+
+  throw new Error(`Value is not a shape that can be cast to curve.`);
 }
 
 export function getPointAt(shape: CurveLike, t: number): XY {

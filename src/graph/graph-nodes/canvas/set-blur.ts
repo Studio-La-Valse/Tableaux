@@ -1,7 +1,7 @@
 import { GraphNode } from '../../core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../decorators';
-import { assertIsShape, type Shape } from '@/geometry/shape';
+import { asShape, type Shape } from '@/geometry/shape';
 import { applyBlur, type Blur } from '@/geometry/filter';
 
 @GraphNodeType('Canvas', 'Set Blur')
@@ -14,7 +14,7 @@ export class SetBlur extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.inputGeometry = this.registerObjectInput('Shape').validate(assertIsShape);
+    this.inputGeometry = this.registerObjectInput('Shape').validate(asShape);
     this.inputSize = this.registerNumberInput('Size');
 
     this.outputGeometry = this.registerObjectOutput<Shape & { blur: Blur }>('Geometry with blur');

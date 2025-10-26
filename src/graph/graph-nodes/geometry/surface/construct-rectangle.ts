@@ -1,6 +1,6 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { assertIsXY } from '@/geometry/xy';
-import { createRectangle, type Rectangle as rect } from '@/geometry/rectangle';
+import { createRectangleShape, type Rectangle as rect } from '@/geometry/rectangle';
 import { GraphNode } from '@/graph/core/graph-node';
 import { GraphNodeType } from '../../decorators';
 
@@ -27,7 +27,7 @@ export class Rectangle extends GraphNode {
       this.inputWidth,
       this.inputHeight
     )) {
-      const rectangle = createRectangle(topLeft, width, height);
+      const rectangle = createRectangleShape(topLeft, width, height);
       this.outputRect.next(rectangle);
     }
   }

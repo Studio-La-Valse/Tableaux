@@ -2,8 +2,7 @@ import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { type XY } from '@/geometry/xy';
 import { GraphNode } from '@/graph/core/graph-node';
 import { GraphNodeType } from '../../decorators';
-import { assertIsPolyline } from '@/geometry/polyline';
-import { assertIsShape } from '@/geometry/shape';
+import { asLine } from '@/geometry/polyline';
 
 @GraphNodeType('Geometry', 'Deconstruct Line')
 export class DeconstructLine extends GraphNode {
@@ -15,9 +14,7 @@ export class DeconstructLine extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.inputLine = this.registerObjectInput('Line').validate((v) =>
-      assertIsPolyline(assertIsShape(v))
-    );
+    this.inputLine = this.registerObjectInput('Line').validate(asLine);
 
     this.outputStart = this.registerObjectOutput<XY>('Start');
     this.outputEnd = this.registerObjectOutput<XY>('End');

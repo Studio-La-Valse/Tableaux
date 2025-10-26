@@ -1,8 +1,7 @@
 import { GraphNode } from '../../../core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '../../decorators';
-import { assertIsEllipseShape } from '@/geometry/ellipse';
-import { assertIsShape } from '@/geometry/shape';
+import { asEllipse } from '@/geometry/ellipse';
 
 @GraphNodeType('Geometry', 'Surface', 'Deconstruct Ellipse')
 export class DeconstructEllipse extends GraphNode {
@@ -15,9 +14,7 @@ export class DeconstructEllipse extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input = this.registerObjectInput('Ellipse').validate((v) =>
-      assertIsEllipseShape(assertIsShape(v))
-    );
+    this.input = this.registerObjectInput('Ellipse').validate(asEllipse);
 
     this.outputCenter = this.registerObjectOutput('Center');
     this.outputRadiusX = this.registerNumberOutput('Radius X');

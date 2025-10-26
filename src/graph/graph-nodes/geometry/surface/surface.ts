@@ -1,7 +1,7 @@
 import { GraphNode } from '../../../core/graph-node';
 import { GraphNodeType } from '../../decorators';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { assertIsSurfaceLike, type SurfaceLike } from '@/geometry/surface-like';
+import { asSurfaceLike, type SurfaceLike } from '@/geometry/surface-like';
 
 @GraphNodeType('Geometry', 'Surface', 'Surface')
 export class Surface extends GraphNode {
@@ -11,7 +11,7 @@ export class Surface extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input = this.registerObjectInput('Shape').validate(assertIsSurfaceLike);
+    this.input = this.registerObjectInput('Shape').validate(asSurfaceLike);
 
     this.output = this.registerObjectOutput<SurfaceLike>('Curve');
   }

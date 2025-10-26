@@ -2,7 +2,7 @@ import { GraphNode } from '@/graph/core/graph-node';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { GraphNodeType } from '@/graph/graph-nodes/decorators';
 import { assertIsTransformationMatrix, compose, identity } from '@/geometry/transformation-matrix';
-import { assertIsShape, type Shape } from '@/geometry/shape';
+import { asShape, type Shape } from '@/geometry/shape';
 
 @GraphNodeType('Geometry', 'Transform', 'Transform')
 export class PushTransform extends GraphNode {
@@ -14,7 +14,7 @@ export class PushTransform extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.inputGeometry = this.registerObjectInput('Geometry').validate(assertIsShape);
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape);
     this.inputTransform = this.registerObjectInput('Transformation').validate(
       assertIsTransformationMatrix
     );

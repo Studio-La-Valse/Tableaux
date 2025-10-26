@@ -1,6 +1,6 @@
 import { GraphNode } from '../../core/graph-node';
 import { GraphNodeType } from '../decorators';
-import { assertIsOfShapeKind, assertIsShape } from '@/geometry/shape';
+import { assertIsOfShapeKind, asShape } from '@/geometry/shape';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import type { Rectangle } from '@/geometry/rectangle';
 
@@ -18,7 +18,7 @@ export class RoundCorners extends GraphNode {
     super(id, path);
 
     this.inputGeometry = this.registerObjectInput('Geometry').validate((v) =>
-      assertIsOfShapeKind(assertIsShape(v), ['rectangle'])
+      assertIsOfShapeKind(asShape(v), ['rectangle'])
     );
     this.topLeft = this.registerNumberInput('Top Left');
     this.topRight = this.registerNumberInput('Top Right');
