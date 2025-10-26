@@ -8,9 +8,7 @@ export const useGraphCanvasStore = defineStore('graph-canvas-store', () => {
 
   function clientToViewport(event: MouseEvent): XY {
     const rect = viewportRef.value?.getBoundingClientRect();
-    return rect
-      ? { x: event.clientX - rect.left, y: event.clientY - rect.top }
-      : { x: 0, y: 0 };
+    return rect ? { x: event.clientX - rect.left, y: event.clientY - rect.top } : { x: 0, y: 0 };
   }
 
   function clientToCanvas(event: MouseEvent): XY {

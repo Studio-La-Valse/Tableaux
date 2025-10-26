@@ -18,8 +18,7 @@ export class ColorPicker extends Emitter<string> {
   }
 
   protected async solve(): Promise<void> {
-    if (!isValidHexColor(this.data.value))
-      throw new Error('Expected valid hex format.');
+    if (!isValidHexColor(this.data.value)) throw new Error('Expected valid hex format.');
 
     const argb = toColorARGB(this.data.value);
     this.output.next(argb);

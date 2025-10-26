@@ -1,10 +1,8 @@
 import { GraphNode } from '../../core/graph-node';
 import { GraphNodeType } from '../decorators';
-import { assertIsOfShapeKind, assertIsShape } from '@/geometry/shape';
+import { assertIsOfShapeKind, asShape } from '@/geometry/shape';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import type { Rectangle } from '@/geometry/rectangle';
-import type { RoundCorners as roundCorners } from '@/bitmap-painters/round-corners';
-import type { Square } from '@/geometry/square';
 
 @GraphNodeType('Canvas', 'Round Corners')
 export class RoundCorners extends GraphNode {
@@ -19,18 +17,15 @@ export class RoundCorners extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.inputGeometry = this.registerObjectInput('Geometry').validate((v) => {
-      const w = assertIsShape(v);
-      return assertIsOfShapeKind(w, ['rectangle', 'square']);
-    });
-    this.topLeft = this.registerNumberInput('1');
-    this.topRight = this.registerNumberInput('2');
-    this.bottomRight = this.registerNumberInput('3');
-    this.bottomLeft = this.registerNumberInput('4');
+    this.inputGeometry = this.registerObjectInput('Geometry').validate((v) =>
+      assertIsOfShapeKind(asShape(v), ['rectangle'])
+    );
+    this.topLeft = this.registerNumberInput('Top Left');
+    this.topRight = this.registerNumberInput('Top Right');
+    this.bottomRight = this.registerNumberInput('Bottom Right');
+    this.bottomLeft = this.registerNumberInput('Bottom Left');
 
-    this.outputGeometry = this.registerObjectOutput<
-      (Square | Rectangle) & roundCorners
-    >('Geometry with fill');
+    this.outputGeometry = this.registerObjectOutput<Rectangle>('Geometry with Round Corners');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -49,10 +44,7 @@ export class RoundCorners extends GraphNode {
     )) {
       const withFill = {
         ...geom,
-        topLeft,
-        topRight,
-        bottomRight,
-        bottomLeft,
+        radii: [topLeft, topRight, bottomRight, bottomLeft],
       };
       this.outputGeometry.next(withFill);
     }

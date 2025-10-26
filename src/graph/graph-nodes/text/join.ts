@@ -17,10 +17,7 @@ export class Join extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [value, ...values] of inputIterators.cycleValues(
-      this.char,
-      ...this.params
-    )) {
+    for await (const [value, ...values] of inputIterators.cycleValues(this.char, ...this.params)) {
       const v = values.join(value);
       this.output.next(v);
     }

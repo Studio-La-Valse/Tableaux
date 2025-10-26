@@ -17,15 +17,10 @@ export default class Property extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [o, p] of inputIterators.cycleValues(
-      this.inputObject,
-      this.inputProperty
-    )) {
+    for await (const [o, p] of inputIterators.cycleValues(this.inputObject, this.inputProperty)) {
       const result = o[p];
       if (result === undefined)
-        throw new Error(
-          `Property '${p}' not found in object '${JSON.stringify(o)}'`
-        );
+        throw new Error(`Property '${p}' not found in object '${JSON.stringify(o)}'`);
       this.outputValue.next(result);
     }
   }

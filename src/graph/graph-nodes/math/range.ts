@@ -19,11 +19,7 @@ export class Range extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    const [start, stop, step] = inputIterators.singletonOnly(
-      this.input1,
-      this.input2,
-      this.input3
-    );
+    const [start, stop, step] = inputIterators.singletonOnly(this.input1, this.input2, this.input3);
 
     if (step <= 0) {
       const msg = `Invalid input, stepsize smaller or equal to 0`;

@@ -5,11 +5,7 @@
       <label for="preset">Preset</label>
       <select id="preset" v-model="selectedPreset">
         <option value="custom">Custom</option>
-        <optgroup
-          v-for="group in presetGroups"
-          :key="group.label"
-          :label="group.label"
-        >
+        <optgroup v-for="group in presetGroups" :key="group.label" :label="group.label">
           <option v-for="p in group.items" :key="p.label" :value="p.label">
             {{ p.label }}
           </option>
@@ -73,9 +69,7 @@
           :class="{ locked: aspectLocked }"
           :aria-pressed="aspectLocked"
           @click="toggleLock"
-          :title="
-            aspectLocked ? `Locked at ${displayRatio}` : 'Unlock ratio control'
-          "
+          :title="aspectLocked ? `Locked at ${displayRatio}` : 'Unlock ratio control'"
         >
           <LockClosedIcon v-if="aspectLocked" class="icon" />
           <LockOpenIcon v-else class="icon" />
@@ -266,8 +260,7 @@
     if (!p) return;
 
     // if dims already match, do nothing
-    if (canvasProps.dimensions.x === p.w && canvasProps.dimensions.y === p.h)
-      return;
+    if (canvasProps.dimensions.x === p.w && canvasProps.dimensions.y === p.h) return;
 
     // otherwise, we’re “applying” a preset,
     // so set the guard so our dims-watcher can ignore the next assignment
@@ -288,9 +281,7 @@
 
       if (presetTimeout) clearTimeout(presetTimeout);
       presetTimeout = window.setTimeout(() => {
-        const match = allPresets.value.find(
-          (p) => p.w === dim.x && p.h === dim.y
-        );
+        const match = allPresets.value.find((p) => p.w === dim.x && p.h === dim.y);
         const newLabel = match ? match.label : 'custom';
         if (newLabel !== selectedPreset.value) {
           selectedPreset.value = newLabel;

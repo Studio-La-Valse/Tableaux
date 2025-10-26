@@ -1,11 +1,7 @@
 <template>
   <div class="edges-container">
     <!-- Permanent edges -->
-    <GraphEdgeRenderer
-      v-for="edge in graph.edges"
-      :key="edge.id"
-      :edge="edge"
-    />
+    <GraphEdgeRenderer v-for="edge in graph.edges" :key="edge.id" :edge="edge" />
 
     <!-- Temporary (drag) edge -->
     <GraphEdgePathRenderer
@@ -55,20 +51,14 @@
   }
   function getOutputY(nodeId: string, outputIndex: number) {
     const node = graph.getNode(nodeId);
-    return node.calculateHandleCoordinate(
-      outputIndex,
-      node.innerNode.outputs.length
-    );
+    return node.calculateHandleCoordinate(outputIndex, node.innerNode.outputs.length);
   }
   function getInputX(nodeId: string) {
     return graph.getNode(nodeId).xy.x;
   }
   function getInputY(nodeId: string, inputIndex: number) {
     const node = graph.getNode(nodeId);
-    return node.calculateHandleCoordinate(
-      inputIndex,
-      node.innerNode.inputs.length
-    );
+    return node.calculateHandleCoordinate(inputIndex, node.innerNode.inputs.length);
   }
 
   // Compute drag start/end points based on direction
@@ -77,10 +67,7 @@
     if (tempEdge.value.direction === 'forward') {
       return {
         x: getOutputX(tempEdge.value.fromNodeId!),
-        y: getOutputY(
-          tempEdge.value.fromNodeId!,
-          tempEdge.value.fromOutputIndex!
-        ),
+        y: getOutputY(tempEdge.value.fromNodeId!, tempEdge.value.fromOutputIndex!),
       };
     } else {
       return {

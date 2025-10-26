@@ -7,19 +7,13 @@
     <!-- Title -->
     <div class="title">
       <p>
-        {{
-          graphNode.innerNode.data.name ||
-          graphNode.nodePath[graphNode.nodePath.length - 1]
-        }}
+        {{ graphNode.innerNode.data.name || graphNode.nodePath[graphNode.nodePath.length - 1] }}
       </p>
     </div>
 
     <!-- Main Content Panel -->
     <div class="content" :style="contentStyle">
-      <component
-        :is="getPanel(graphNode.innerNode)"
-        :graphNode="graphNode.innerNode"
-      />
+      <component :is="getPanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
 
       <!-- If we render the outputs first, the labels are not obstructed. -->
       <div class="outputs">
@@ -42,11 +36,7 @@
       </div>
     </div>
   </div>
-  <details
-    v-if="graphNode.innerNode.errorMessage"
-    class="error-details"
-    @mousedown.stop
-  >
+  <details v-if="graphNode.innerNode.errorMessage" class="error-details" @mousedown.stop>
     <summary>⚠️ Error</summary>
     <p>{{ graphNode.innerNode.errorMessage }}</p>
   </details>
@@ -61,10 +51,7 @@
   import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store';
 
   import type { IGraphNodeWrapper } from '@/graph/core/graph-node-wrapper';
-  import {
-    GraphNodeInput,
-    type IGraphNodeInput,
-  } from '@/graph/core/graph-node-input';
+  import { GraphNodeInput, type IGraphNodeInput } from '@/graph/core/graph-node-input';
   import { type IGraphNodeOutput } from '@/graph/core/graph-node-output';
   import { useGraphNodePanelStore } from '@/stores/use-graph-node-panel-store';
 
@@ -111,9 +98,7 @@
 
   const borderStyle = computed(() => ({
     '--gradient-border': borderColor.value,
-    boxShadow: _isSelected.value
-      ? `0 0 12px 4px var(${shadowColor.value})`
-      : '',
+    boxShadow: _isSelected.value ? `0 0 12px 4px var(${shadowColor.value})` : '',
   }));
 
   const contentStyle = computed<StyleValue>(() => ({

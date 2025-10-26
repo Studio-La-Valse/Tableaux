@@ -20,10 +20,7 @@ export class RepeatShortest extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [x, y] of inputIterators.fillLast(
-      this.input1,
-      this.input2
-    )) {
+    for await (const [x, y] of inputIterators.fillLast(this.input1, this.input2)) {
       this.output1.next(x);
       this.output2.next(y);
     }

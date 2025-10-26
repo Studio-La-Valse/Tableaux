@@ -19,9 +19,7 @@ export class MidiListenerService {
 
     this.listeners.add(callback);
 
-    this.midiAccess.inputs.forEach((input) =>
-      input.addEventListener('midimessage', callback)
-    );
+    this.midiAccess.inputs.forEach((input) => input.addEventListener('midimessage', callback));
   }
 
   stopListening(): void {

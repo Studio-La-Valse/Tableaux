@@ -53,9 +53,7 @@ export default class DeconstructChannelState extends GraphNode {
       }
 
       // Emit controllers and values
-      for (const [controller, value] of Object.entries(
-        state.controllerValues
-      )) {
+      for (const [controller, value] of Object.entries(state.controllerValues)) {
         this.outputControllerValues.next({
           controller: Number(controller),
           value,

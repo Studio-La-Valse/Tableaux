@@ -38,10 +38,7 @@
   };
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (
-      textInputRef.value &&
-      !textInputRef.value.contains(event.target as Node)
-    ) {
+    if (textInputRef.value && !textInputRef.value.contains(event.target as Node)) {
       textInputRef.value.blur();
       if (changed) {
         graph.commit();

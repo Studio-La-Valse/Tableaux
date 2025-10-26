@@ -81,11 +81,7 @@ export function useEdgeDrag() {
   /**
    * Finish connecting — the clicked port type depends on the starting direction
    */
-  function finishConnect(
-    nodeId: string,
-    portIndex: number,
-    e: MouseEvent
-  ): void {
+  function finishConnect(nodeId: string, portIndex: number, e: MouseEvent): void {
     if (e.button !== 0 || !tempEdge.value) return;
     e.stopPropagation();
     e.preventDefault();

@@ -1,11 +1,6 @@
 <template>
   <div class="controls-list" ref="wrapperRef">
-    <draggable
-      :list="emitters"
-      item-key="id"
-      handle=".drag-handle"
-      @end="onDragEnd"
-    >
+    <draggable :list="emitters" item-key="id" handle=".drag-handle" @end="onDragEnd">
       <template #item="{ element: emitter }">
         <div class="emitter-row">
           <!-- Left: buttons + name -->
@@ -17,15 +12,8 @@
               <button type="button" class="ctrl-btn" @click="zoom(emitter)">
                 <MagnifyingGlassIcon class="icon" />
               </button>
-              <button
-                type="button"
-                class="ctrl-btn"
-                @click="toggleVisible(emitter)"
-              >
-                <component
-                  :is="emitter.data.hidden ? EyeSlashIcon : EyeIcon"
-                  class="icon"
-                />
+              <button type="button" class="ctrl-btn" @click="toggleVisible(emitter)">
+                <component :is="emitter.data.hidden ? EyeSlashIcon : EyeIcon" class="icon" />
               </button>
             </div>
             <input
@@ -40,10 +28,7 @@
 
           <!-- Right: dynamic emitter component -->
           <div class="value-cell">
-            <component
-              :is="emitterComponents[emitter.type]"
-              :graph-node="emitter"
-            />
+            <component :is="emitterComponents[emitter.type]" :graph-node="emitter" />
           </div>
         </div>
       </template>
@@ -52,21 +37,10 @@
 </template>
 
 <script setup lang="ts">
-  import {
-    computed,
-    ref,
-    onMounted,
-    onBeforeUnmount,
-    type Component,
-  } from 'vue';
+  import { computed, ref, onMounted, onBeforeUnmount, type Component } from 'vue';
   import { storeToRefs } from 'pinia';
   import draggable from 'vuedraggable';
-  import {
-    MagnifyingGlassIcon,
-    EyeIcon,
-    EyeSlashIcon,
-    Bars3Icon,
-  } from '@heroicons/vue/24/solid';
+  import { MagnifyingGlassIcon, EyeIcon, EyeSlashIcon, Bars3Icon } from '@heroicons/vue/24/solid';
 
   import { Emitter } from '@/graph/core/emitter';
   import type { JsonValue } from '@/graph/core/models/json-value';

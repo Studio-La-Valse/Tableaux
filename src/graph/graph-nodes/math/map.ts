@@ -22,16 +22,8 @@ export class Map extends GraphNode {
     this.result = this.registerNumberOutput('Result');
   }
 
-  protected override async solve(
-    iterators: InputIteratorsAsync
-  ): Promise<void> {
-    for await (const [
-      value,
-      inMin,
-      inMax,
-      outMin,
-      outMax,
-    ] of iterators.cycleValues(
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
+    for await (const [value, inMin, inMax, outMin, outMax] of iterators.cycleValues(
       this.numbers,
       this.fromStart,
       this.fromEnd,

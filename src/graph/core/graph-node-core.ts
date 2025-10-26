@@ -90,9 +90,7 @@ export abstract class GraphNodeCore {
    */
   public trySubscribeParent(graphNodeId: string): void {
     if (graphNodeId === this.id) {
-      throw new Error(
-        `Circular subscription detected for graph node ${graphNodeId}.`
-      );
+      throw new Error(`Circular subscription detected for graph node ${graphNodeId}.`);
     }
 
     this.outputs.forEach((output) => output.trySubscribe(graphNodeId));

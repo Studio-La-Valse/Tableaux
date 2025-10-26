@@ -15,9 +15,7 @@ export class StoreWriter extends GraphNode {
     this.input = this.registerUnkownInput('Values');
   }
 
-  protected override async solve(
-    iterators: InputIteratorsAsync
-  ): Promise<void> {
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
     const [name] = iterators.singletonOnly(this.name);
     const values: JsonValue[] = [];
     for await (const value of iterators.createGenerator(this.input)) {
@@ -26,9 +24,7 @@ export class StoreWriter extends GraphNode {
 
     // Auto-initialize if store doesn't exist yet
     if (!listStores().includes(name)) {
-      throw Error(
-        `Store with name {name} does not exist! Please initialize it first.`
-      );
+      throw Error(`Store with name {name} does not exist! Please initialize it first.`);
     } else {
       read(name).update(values);
     }

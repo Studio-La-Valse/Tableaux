@@ -17,10 +17,7 @@ export class Or extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [a, b] of inputIterators.cycleValues(
-      this.input1,
-      this.input2
-    )) {
+    for await (const [a, b] of inputIterators.cycleValues(this.input1, this.input2)) {
       const result = a || b;
       this.output.next(result);
     }

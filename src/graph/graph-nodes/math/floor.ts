@@ -12,9 +12,7 @@ export class Floor extends GraphNode {
     this.output = this.registerNumberOutput('Floor');
   }
 
-  protected override async solve(
-    iterators: InputIteratorsAsync
-  ): Promise<void> {
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
     for await (const n of iterators.createGenerator(this.numbers)) {
       this.output.next(Math.floor(n));
     }

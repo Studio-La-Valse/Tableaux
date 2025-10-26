@@ -1,115 +1,52 @@
-import {
-  compose,
-  createRotation,
-  createScale,
-  createSkew,
-  createTranslation,
-  type TransformationMatrix,
-} from './transformation-matrix';
-import { applyMatrix, type XY } from './xy';
-import type { BaseShape } from './shape';
-import { createUnitEllipse, type Ellipse } from './ellipse';
+import { isXY, type XY } from './xy';
+import { type BaseShape } from './shape';
+import type { JsonObject } from '@/graph/core/models/json-value';
+import type { Arc } from './arc';
+import type { EllipticalArc } from './elliptical-arc';
 
-export type Circle = BaseShape & { kind: 'circle' };
+export type Circle = { x: number; y: number; radius: number };
+export type CircleShape = BaseShape & { kind: 'circle' } & Circle;
 
-export const IDENTITY_ORIGIN: XY = { x: 0, y: 0 };
-export const IDENTITY_RADIUS = 1;
-
-export function unitCircle(): Circle {
-  return createCircle(IDENTITY_ORIGIN, IDENTITY_RADIUS);
+export function isCircle(object: JsonObject): object is Circle {
+  return isXY(object) && 'radius' in object && typeof object.radius === 'number';
 }
 
-export function createCircle(origin: XY, radius: number): Circle {
-  const transformation: TransformationMatrix = {
-    a: radius, // scale X
-    b: 0,
-    c: 0,
-    d: radius, // scale Y
-    e: origin.x, // translate X
-    f: origin.y, // translate Y
-  };
+export function asCircle(object: JsonObject): Circle {
+  if (isCircle(object)) {
+    return {
+      ...object,
+    };
+  }
 
-  return { kind: 'circle', transformation };
+  throw Error('Object could not be cast to a circle');
 }
 
-export type DeconstructedCircle = {
-  origin: XY;
-  radius: number;
-  rotation: number; // in radians
-  area: number;
-  circumference: number;
-};
-
-export function deconstruct(circle: Circle): DeconstructedCircle {
-  const matrix2d = circle.transformation;
-
-  // Origin is the transformed (0,0)
-  const origin = applyMatrix(IDENTITY_ORIGIN, matrix2d);
-
-  // Transformed unit X vector
-  const rightPoint = applyMatrix({ x: 1, y: 0 }, matrix2d);
-
-  // Radius is distance from origin to transformed unit X
-  const radius = Math.hypot(rightPoint.x - origin.x, rightPoint.y - origin.y);
-
-  // Rotation is angle of transformed X-axis
-  const dx = rightPoint.x - origin.x;
-  const dy = rightPoint.y - origin.y;
-  const rotation = Math.atan2(dy, dx); // in radians
-
-  const area = Math.PI * radius * radius;
-  const circumference = 2 * Math.PI * radius;
-
+export function circleAsArc(circle: Circle): Arc {
   return {
-    origin,
+    ...circle,
+    startAngle: 0,
+    endAngle: Math.PI * 2,
+    counterclockwise: false,
+  };
+}
+
+export function circleAsEllipticalArc(circle: Circle): EllipticalArc {
+  return {
+    ...circle,
+    radiusX: circle.radius,
+    radiusY: circle.radius,
+    rotation: 0,
+    startAngle: 0,
+    endAngle: Math.PI * 2,
+    counterclockwise: false,
+  };
+}
+
+export function createCircle(origin: XY, radius: number): CircleShape {
+  const circle: CircleShape = {
+    kind: 'circle',
+    ...origin,
     radius,
-    rotation,
-    area,
-    circumference,
   };
-}
-
-export function translate(circle: Circle, delta: XY): Circle {
-  const transformationMatrix = createTranslation(delta);
-  const multiplied = compose(transformationMatrix, circle.transformation);
-  return {
-    ...circle,
-    transformation: multiplied,
-  };
-}
-
-export function scale(circle: Circle, origin: XY, factor: XY): Ellipse {
-  const transformationMatrix = createScale(origin, factor);
-  const multiplied = compose(transformationMatrix, circle.transformation);
-  const ellipse = createUnitEllipse(multiplied);
-  return ellipse;
-}
-
-export function scaleUniform(
-  circle: Circle,
-  origin: XY,
-  factor: number
-): Circle {
-  const transformationMatrix = createScale(origin, { x: factor, y: factor });
-  const multiplied = compose(transformationMatrix, circle.transformation);
-  return {
-    ...circle,
-    transformation: multiplied,
-  };
-}
-
-export function rotate(circle: Circle, origin: XY, angle: number): Circle {
-  const transformationMatrix = createRotation(origin, angle);
-  const multiplied = compose(transformationMatrix, circle.transformation);
-  return {
-    ...circle,
-    transformation: multiplied,
-  };
-}
-
-export function skew(circle: Circle, origin: XY, factor: XY): Ellipse {
-  const transformationMatrix = createSkew(origin, factor);
-  const multiplied = compose(transformationMatrix, circle.transformation);
-  const ellipse = createUnitEllipse(multiplied);
-  return ellipse;
+  return circle;
 }

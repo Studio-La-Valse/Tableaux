@@ -1,11 +1,7 @@
 import { GraphNode } from '@/graph/core/graph-node';
 import { GraphNodeType } from '../decorators';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import {
-  getChannelState,
-  isMidiState,
-  type MidiChannelState,
-} from '@/midi/midi-state';
+import { getChannelState, isMidiState, type MidiChannelState } from '@/midi/midi-state';
 
 @GraphNodeType('MIDI', 'Channel State')
 export default class ChannelState extends GraphNode {
@@ -23,15 +19,11 @@ export default class ChannelState extends GraphNode {
       return v;
     });
     this.inputChannel = this.registerNumberInput('Channel');
-    this.outputState =
-      this.registerObjectOutput<MidiChannelState>('MIDI State');
+    this.outputState = this.registerObjectOutput<MidiChannelState>('MIDI State');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    const [state, channel] = inputIterators.singletonOnly(
-      this.inputState,
-      this.inputChannel
-    );
+    const [state, channel] = inputIterators.singletonOnly(this.inputState, this.inputChannel);
 
     const channelState = getChannelState(state, channel);
     this.outputState.next(channelState);

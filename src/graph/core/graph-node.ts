@@ -265,10 +265,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
     return input;
   }
 
-  public registerNumberInput(
-    description: string,
-    defaultPayload?: number[]
-  ): GraphNodeInputNumber {
+  public registerNumberInput(description: string, defaultPayload?: number[]): GraphNodeInputNumber {
     this.assertNotInitialized();
     this.assertParamsHasNotBeenSet();
 
@@ -277,10 +274,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
     return input;
   }
 
-  public registerStringInput(
-    description: string,
-    defaultPayload?: string[]
-  ): GraphNodeInputString {
+  public registerStringInput(description: string, defaultPayload?: string[]): GraphNodeInputString {
     this.assertNotInitialized();
     this.assertParamsHasNotBeenSet();
 
@@ -318,11 +312,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
   public registerBooleanOutput(description: string): GraphNodeOutputBoolean {
     this.assertNotInitialized();
 
-    const output = new GraphNodeOutputBoolean(
-      this,
-      this.numberOfOutputs,
-      description
-    );
+    const output = new GraphNodeOutputBoolean(this, this.numberOfOutputs, description);
     this._outputs.push(output);
     return output;
   }
@@ -330,11 +320,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
   public registerNumberOutput(description: string): GraphNodeOutputNumber {
     this.assertNotInitialized();
 
-    const output = new GraphNodeOutputNumber(
-      this,
-      this.numberOfOutputs,
-      description
-    );
+    const output = new GraphNodeOutputNumber(this, this.numberOfOutputs, description);
     this._outputs.push(output);
     return output;
   }
@@ -342,25 +328,15 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
   public registerStringOutput(description: string): GraphNodeOutputString {
     this.assertNotInitialized();
 
-    const output = new GraphNodeOutputString(
-      this,
-      this.numberOfOutputs,
-      description
-    );
+    const output = new GraphNodeOutputString(this, this.numberOfOutputs, description);
     this._outputs.push(output);
     return output;
   }
 
-  public registerObjectOutput<T extends JsonObject>(
-    description: string
-  ): GraphNodeOutputObject<T> {
+  public registerObjectOutput<T extends JsonObject>(description: string): GraphNodeOutputObject<T> {
     this.assertNotInitialized();
 
-    const output = new GraphNodeOutputObject<T>(
-      this,
-      this.numberOfOutputs,
-      description
-    );
+    const output = new GraphNodeOutputObject<T>(this, this.numberOfOutputs, description);
     this._outputs.push(output);
     return output;
   }
@@ -368,11 +344,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
   public registerUnkownOutput(description: string): GraphNodeOutputUnknown {
     this.assertNotInitialized();
 
-    const output = new GraphNodeOutputUnknown(
-      this,
-      this.numberOfOutputs,
-      description
-    );
+    const output = new GraphNodeOutputUnknown(this, this.numberOfOutputs, description);
     this._outputs.push(output);
     return output;
   }

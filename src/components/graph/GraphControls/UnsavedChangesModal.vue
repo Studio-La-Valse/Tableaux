@@ -48,9 +48,7 @@
   const modalRef = ref<HTMLElement | null>(null);
 
   onMounted(() => {
-    const firstButton = modalRef.value?.querySelector(
-      'button'
-    ) as HTMLButtonElement | null;
+    const firstButton = modalRef.value?.querySelector('button') as HTMLButtonElement | null;
     firstButton?.focus();
   });
 </script>

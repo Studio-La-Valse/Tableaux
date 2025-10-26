@@ -1,9 +1,9 @@
 import { GraphNode } from '@/graph/core/graph-node';
 import { GraphNodeType } from '../decorators';
-import { createText, type TextShape } from '@/bitmap-painters/text-shape';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 import { assertIsXY } from '@/geometry/xy';
-import { assertIsFont } from '@/bitmap-painters/font';
+import { assertIsFont } from '@/geometry/font';
+import { createText, type TextShape } from '@/geometry/text';
 
 @GraphNodeType('Geometry', 'Text')
 export class Text extends GraphNode {
@@ -18,8 +18,7 @@ export class Text extends GraphNode {
 
     this.inputText = this.registerStringInput('Text');
     this.inputOrigin = this.registerObjectInput('Origin').validate(assertIsXY);
-    this.inputFontFamily =
-      this.registerObjectInput('Family').validate(assertIsFont);
+    this.inputFontFamily = this.registerObjectInput('Family').validate(assertIsFont);
     this.inputFontSize = this.registerNumberInput('Size');
     this.outputText = this.registerObjectOutput<TextShape>('Text');
   }

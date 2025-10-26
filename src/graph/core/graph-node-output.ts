@@ -4,13 +4,7 @@ import { type JsonObject, type JsonValue } from './models/json-value';
 import { Subscription } from './subscription';
 import type { Unsubscriber } from './unsubscriber';
 
-export const providerTypes = [
-  'boolean',
-  'number',
-  'string',
-  'object',
-  'unknown',
-] as const;
+export const providerTypes = ['boolean', 'number', 'string', 'object', 'unknown'] as const;
 export type ProviderType = (typeof providerTypes)[number];
 
 export interface IGraphNodeOutput {
@@ -44,10 +38,7 @@ export abstract class GraphNodeOutput implements IGraphNodeOutput {
     // Create the subscription
     // Will add the input to the provided set
     // Will throw an exception if unsuccesfull
-    const subscription = Subscription.subscribeOrThrow(
-      this.targetInputs,
-      graphNodeInput
-    );
+    const subscription = Subscription.subscribeOrThrow(this.targetInputs, graphNodeInput);
     return subscription;
   }
 
@@ -129,12 +120,7 @@ export class GraphNodeOutputBoolean
   extends GraphNodeOutputType<boolean>
   implements ProvidesBoolean, ProvidesNumber, ProvidesString, ProvidesUnknown
 {
-  override provides = [
-    'boolean',
-    'number',
-    'string',
-    'unknown',
-  ] as ProviderType[];
+  override provides = ['boolean', 'number', 'string', 'unknown'] as ProviderType[];
 
   constructor(graphNode: GraphNode, index: number, description: string) {
     super(graphNode, index, description + ' (Boolean)');
@@ -224,20 +210,9 @@ export class GraphNodeOutputObject<T extends JsonObject>
 
 export class GraphNodeOutputUnknown
   extends GraphNodeOutputType<JsonValue>
-  implements
-    ProvidesBoolean,
-    ProvidesNumber,
-    ProvidesString,
-    ProvidesObject,
-    ProvidesUnknown
+  implements ProvidesBoolean, ProvidesNumber, ProvidesString, ProvidesObject, ProvidesUnknown
 {
-  override provides = [
-    'boolean',
-    'number',
-    'string',
-    'object',
-    'unknown',
-  ] as ProviderType[];
+  override provides = ['boolean', 'number', 'string', 'object', 'unknown'] as ProviderType[];
 
   constructor(graphNode: GraphNode, index: number, description: string) {
     super(graphNode, index, description + ' (Json Value)');

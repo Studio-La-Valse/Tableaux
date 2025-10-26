@@ -6,10 +6,7 @@ import { GraphEdge, type GraphEdgePrototype } from '@/graph/core/graph-edge';
 import type { GraphNodeModel } from '@/graph/core/models/graph-node-model';
 import type { GraphModel } from '@/graph/core/models/graph-model';
 import type { GraphEdgeModel } from '@/graph/core/models/graph-edge-model';
-import {
-  type IGraphNodeWrapper,
-  GraphNodeWrapper,
-} from '@/graph/core/graph-node-wrapper';
+import { type IGraphNodeWrapper, GraphNodeWrapper } from '@/graph/core/graph-node-wrapper';
 import { useGraphHistoryStore } from './use-graph-history-store';
 import { nanoid } from 'nanoid';
 
@@ -34,9 +31,7 @@ const useGraphInternal = defineStore('graph', () => {
     }
 
     const graphNode = activator.activate(id);
-    const wrapper = reactive<IGraphNodeWrapper>(
-      new GraphNodeWrapper(graphNode)
-    );
+    const wrapper = reactive<IGraphNodeWrapper>(new GraphNodeWrapper(graphNode));
     wrapper.xy = { x: position.x, y: position.y };
     wrapper.innerNode.onInitialize();
     wrapper.innerNode.arm();
@@ -52,16 +47,12 @@ const useGraphInternal = defineStore('graph', () => {
       return;
     }
 
-    const leftConnections = [
-      ...edges.value.filter((e) => e.rightGraphNode.nodeId == id),
-    ];
+    const leftConnections = [...edges.value.filter((e) => e.rightGraphNode.nodeId == id)];
     leftConnections.forEach((conn) => {
       removeEdge(conn.rightGraphNode.nodeId, conn.inputIndex);
     });
 
-    const rightConnections = [
-      ...edges.value.filter((e) => e.leftGraphNode.nodeId == id),
-    ];
+    const rightConnections = [...edges.value.filter((e) => e.leftGraphNode.nodeId == id)];
     rightConnections.forEach((conn) => {
       removeEdge(conn.rightGraphNode.nodeId, conn.inputIndex);
     });
@@ -86,8 +77,7 @@ const useGraphInternal = defineStore('graph', () => {
   ): GraphEdge | undefined => {
     // we need to remove the existing edge after succesfull subscription, but dont call removeEdge because it will close the connection
     const existingEdge = edges.value.findIndex(
-      (e) =>
-        e.rightGraphNode.nodeId == rightNodeId && e.inputIndex == inputIndex
+      (e) => e.rightGraphNode.nodeId == rightNodeId && e.inputIndex == inputIndex
     );
 
     const leftNode = getNode(leftNodeId);
@@ -119,8 +109,7 @@ const useGraphInternal = defineStore('graph', () => {
 
   const removeEdge = (rightNodeId: string, inputIndex: number) => {
     const existingEdge = edges.value.findIndex(
-      (e) =>
-        e.rightGraphNode.nodeId == rightNodeId && e.inputIndex == inputIndex
+      (e) => e.rightGraphNode.nodeId == rightNodeId && e.inputIndex == inputIndex
     );
     if (existingEdge == -1) {
       return;
@@ -162,10 +151,7 @@ const useGraphInternal = defineStore('graph', () => {
       });
   };
 
-  const duplicate = (
-    nodeIds: string[],
-    pasteEvents: number
-  ): IGraphNodeWrapper[] => {
+  const duplicate = (nodeIds: string[], pasteEvents: number): IGraphNodeWrapper[] => {
     // 1) grab originals & snapshot the current edges
     const originals = nodeIds.map(getNode);
     const allEdges = [...edges.value]; // snapshot so we don't iterate newly created edges
@@ -191,12 +177,7 @@ const useGraphInternal = defineStore('graph', () => {
 
       if (Lclone && Rclone) {
         // internal→internal
-        connect(
-          Lclone.nodeId,
-          edge.outputIndex,
-          Rclone.nodeId,
-          edge.inputIndex
-        );
+        connect(Lclone.nodeId, edge.outputIndex, Rclone.nodeId, edge.inputIndex);
       }
     });
 
@@ -250,23 +231,18 @@ const useGraphInternal = defineStore('graph', () => {
       });
   };
 
-  const addNodeModel: (model: GraphNodeModel) => void = (
-    model: GraphNodeModel
-  ) => {
+  const addNodeModel: (model: GraphNodeModel) => void = (model: GraphNodeModel) => {
     const activator = activators.getFromPath(model.path);
     if (activator == undefined) {
       throw new Error(`Cannot find node with path: ${model.path}`);
     }
 
     const graphNode = activator.activate(model.id);
-    const wrapper = reactive<IGraphNodeWrapper>(
-      new GraphNodeWrapper(graphNode)
-    );
+    const wrapper = reactive<IGraphNodeWrapper>(new GraphNodeWrapper(graphNode));
     wrapper.xy = { x: model.x, y: model.y };
     if (model.width) wrapper.width = model.width;
     if (model.height) wrapper.height = model.height;
-    if (model.data)
-      Object.assign(graphNode.data, JSON.parse(JSON.stringify(model.data)));
+    if (model.data) Object.assign(graphNode.data, JSON.parse(JSON.stringify(model.data)));
 
     const numberOfParams = graphNode.data?.params_length as number;
     if (numberOfParams) {
@@ -277,9 +253,7 @@ const useGraphInternal = defineStore('graph', () => {
     nodeMap.value[wrapper.nodeId] = wrapper;
   };
 
-  const addEdgeModel: (model: GraphEdgeModel) => void = (
-    model: GraphEdgeModel
-  ) => {
+  const addEdgeModel: (model: GraphEdgeModel) => void = (model: GraphEdgeModel) => {
     const rightNodeId = model.rightId;
     const inputIndex = model.input;
     const leftNodeId = model.leftId;
@@ -363,12 +337,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     const state = internalGraph.toModel();
     try {
       edges.forEach((v) => {
-        internalGraph.connect(
-          v.fromNodeId,
-          v.fromOutputIndex,
-          v.toNodeId,
-          v.toInputIndex
-        );
+        internalGraph.connect(v.fromNodeId, v.fromOutputIndex, v.toNodeId, v.toInputIndex);
       });
       commit();
     } catch {
@@ -384,9 +353,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     const state = internalGraph.toModel();
     try {
       const edges = [...internalGraph.edges.filter((v) => ids.includes(v.id))];
-      edges.forEach((v) =>
-        internalGraph.removeEdge(v.rightGraphNode.nodeId, v.inputIndex)
-      );
+      edges.forEach((v) => internalGraph.removeEdge(v.rightGraphNode.nodeId, v.inputIndex));
       commit();
     } catch {
       internalGraph.fromModel(state);

@@ -17,10 +17,7 @@ export class Hypotenuse extends GraphNode {
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [a, b] of inputIterators.cycleValues(
-      this.inputA,
-      this.inputB
-    )) {
+    for await (const [a, b] of inputIterators.cycleValues(this.inputA, this.inputB)) {
       const result = Math.sqrt(a * a + b * b);
       this.output.next(result);
     }

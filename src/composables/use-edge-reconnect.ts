@@ -18,11 +18,7 @@ export const useEdgeReconnect = () => {
   const { clientToCanvas } = useGraphCanvasStore();
   const { close } = useContextMenuStore();
 
-  function startReconnect(
-    fromNodeId: string,
-    fromOutputIndex: number,
-    ev: MouseEvent
-  ) {
+  function startReconnect(fromNodeId: string, fromOutputIndex: number, ev: MouseEvent) {
     if (ev.button !== 0) return;
 
     ev.stopPropagation();
@@ -34,11 +30,7 @@ export const useEdgeReconnect = () => {
 
     tempEdges.value = [];
     edges
-      .filter(
-        (v) =>
-          v.leftGraphNode.nodeId == fromNodeId &&
-          v.outputIndex == fromOutputIndex
-      )
+      .filter((v) => v.leftGraphNode.nodeId == fromNodeId && v.outputIndex == fromOutputIndex)
       .map((v) => ({
         edgeId: v.id,
         toNodeId: v.rightGraphNode.nodeId,
@@ -86,11 +78,7 @@ export const useEdgeReconnect = () => {
     ev.stopPropagation();
   }
 
-  function finishReconnect(
-    fromNodeId: string,
-    fromOutputIndex: number,
-    ev: MouseEvent
-  ) {
+  function finishReconnect(fromNodeId: string, fromOutputIndex: number, ev: MouseEvent) {
     if (ev.button !== 0) return;
 
     ev.stopPropagation();

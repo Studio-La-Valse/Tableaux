@@ -1,9 +1,9 @@
 import { GraphNode } from '@/graph/core/graph-node';
 import { GraphNodePanel, GraphNodeType } from '../decorators';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { assertIsShape } from '@/geometry/shape';
+import { asShape } from '@/geometry/shape';
 import PreviewPanel from '@/components/graph/Panels/PreviewPanel.vue';
-import { BitmapPainter } from '@/bitmap-painters/bitmap-painter';
+import { clear, draw, init } from '@/bitmap-painters/bitmap-painter';
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
 
 @GraphNodeType('Geometry', 'Preview')
@@ -16,7 +16,7 @@ export class Preview extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input = this.registerObjectInput('Geometry').validate(assertIsShape);
+    this.input = this.registerObjectInput('Geometry').validate(asShape);
   }
 
   public setCanvas(canvas: HTMLCanvasElement | null) {
@@ -31,36 +31,34 @@ export class Preview extends GraphNode {
     super.arm();
 
     // The first arm may fail because a canvas may be set after initialization. No problem.
-    this.getPainter()?.finish();
+    const canvas = this.getCanvas();
+    if (canvas) clear(canvas);
   }
 
-  protected override async solve(
-    iterators: InputIteratorsAsync
-  ): Promise<void> {
-    const painter = this.getPainter();
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
+    const painter = this.getCanvas();
     if (!painter) return;
 
     for await (const e of iterators.createGenerator(this.input)) {
-      painter.draw(e);
+      draw(painter, e);
     }
-
-    painter.finish();
   }
 
   public onDestroy(): void {
     super.onDestroy();
 
     // Same as arm, no problem if painter couldn't be initialized.
-    this.getPainter()?.finish();
+    const canvas = this.getCanvas();
+    if (canvas) clear(canvas);
   }
 
-  private getPainter(): BitmapPainter | null {
+  private getCanvas(): CanvasRenderingContext2D | null {
     const { dimensions } = useDesignCanvasStore();
     if (!this.canvas) {
       return null;
     }
 
-    const painter = BitmapPainter.init(this.canvas, dimensions.x, dimensions.y);
-    return painter;
+    const canvasContext = init(this.canvas, dimensions.x, dimensions.y);
+    return canvasContext;
   }
 }

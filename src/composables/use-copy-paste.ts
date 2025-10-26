@@ -20,11 +20,7 @@ export const useCopyPaste = () => {
     }
 
     // Paste
-    if (
-      (evt.ctrlKey || evt.metaKey) &&
-      evt.key.toLowerCase() === 'v' &&
-      clipboard.length
-    ) {
+    if ((evt.ctrlKey || evt.metaKey) && evt.key.toLowerCase() === 'v' && clipboard.length) {
       pasteEvents += 1;
 
       // duplicate the nodes

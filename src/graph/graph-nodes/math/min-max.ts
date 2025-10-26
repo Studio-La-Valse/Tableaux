@@ -16,9 +16,7 @@ export class MinMax extends GraphNode {
     this.largest = this.registerNumberOutput('Largest');
   }
 
-  protected override async solve(
-    iterators: InputIteratorsAsync
-  ): Promise<void> {
+  protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
     let largest;
     let smallest;
 

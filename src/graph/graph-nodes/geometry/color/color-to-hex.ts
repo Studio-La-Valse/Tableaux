@@ -11,9 +11,7 @@ export class ColorToHex extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input = this.registerObjectInput('Color').validate((v) =>
-      assertIsColorARGB(v)
-    );
+    this.input = this.registerObjectInput('Color').validate((v) => assertIsColorARGB(v));
     this.output1 = this.registerStringOutput('Hex Value');
   }
 

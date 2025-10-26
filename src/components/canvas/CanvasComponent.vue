@@ -1,9 +1,6 @@
 <template>
   <div class="page" :style="style">
-    <CanvasControls
-      v-model:zoomMode="zoomMode"
-      @fullScreen="handleFullScreen"
-    />
+    <CanvasControls v-model:zoomMode="zoomMode" @fullScreen="handleFullScreen" />
 
     <div ref="canvasContainer" class="canvas-container">
       <DesignCanvas :zoomMode="zoomMode" />
@@ -22,8 +19,7 @@
   const canvasPan = useCanvasTransform();
 
   const style = computed<StyleValue>(() => ({
-    pointerEvents:
-      groupDrag.dragging.value || canvasPan.isDragging.value ? 'none' : 'all',
+    pointerEvents: groupDrag.dragging.value || canvasPan.isDragging.value ? 'none' : 'all',
   }));
 
   type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200';
