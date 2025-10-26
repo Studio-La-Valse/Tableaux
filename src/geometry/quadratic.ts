@@ -1,22 +1,25 @@
-import { assertIsOfShapeKind, type BaseShape, type Shape } from './shape';
+import type { JsonObject } from '@/graph/core/models/json-value';
+import { isLine, type Line } from './polyline';
+import { type BaseShape } from './shape';
 import type { TransformationMatrix } from './transformation-matrix';
 import { isXY, type XY } from './xy';
 
-export type Quadratic = {
-  start: XY;
+export type Quadratic = Line & {
   control: XY;
-  end: XY;
 };
 
-export function isQuadratic(object: object): object is Quadratic {
-  return (
-    'start' in object &&
-    isXY(object.start) &&
-    'control' in object &&
-    isXY(object.control) &&
-    'end' in object &&
-    isXY(object.end)
-  );
+export function isQuadratic(object: JsonObject): object is Quadratic {
+  return isLine(object) && 'control' in object && isXY(object.control);
+}
+
+export function asQuadratic(object: JsonObject): Quadratic {
+  if (isQuadratic(object)) {
+    return {
+      ...object,
+    };
+  }
+
+  throw Error('Object could not be cast to a quadratic');
 }
 
 // Quadratic Bézier: start → control → end
@@ -37,21 +40,5 @@ export function createQuadratic(
     control,
     end,
     t,
-  };
-}
-
-export function assertIsQuadraticShape(shape: Shape): QuadraticShape {
-  const circleOrArc = assertIsOfShapeKind(shape, ['quadratic']);
-  return circleOrArc;
-}
-
-export function asQuadraticShape(object: object): QuadraticShape {
-  if (!isQuadratic(object)) {
-    throw Error('Object could not be cast to a quadratic');
-  }
-
-  return {
-    ...object,
-    kind: 'quadratic',
   };
 }

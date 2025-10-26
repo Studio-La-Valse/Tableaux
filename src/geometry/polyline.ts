@@ -20,6 +20,13 @@ export function asLine(object: JsonObject): Line {
   throw Error('Object could not be cast to line');
 }
 
+export function lineAsPolyline(line: Line): Polyline {
+  return {
+    ...line,
+    points: [],
+  };
+}
+
 export type Polyline = { start: XY; points: XY[]; end: XY };
 export type PolylineShape = BaseShape & { kind: 'polyline' } & Polyline;
 
@@ -32,6 +39,10 @@ export function asPolyline(object: JsonObject): Polyline {
     return {
       ...object,
     };
+  }
+
+  if (isLine(object)) {
+    return lineAsPolyline(object);
   }
 
   if (isRectangle(object)) {

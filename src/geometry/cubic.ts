@@ -2,24 +2,20 @@ import type { JsonObject } from '@/graph/core/models/json-value';
 import { type BaseShape } from './shape';
 import type { TransformationMatrix } from './transformation-matrix';
 import { isXY, type XY } from './xy';
+import { isLine, type Line } from './polyline';
 
-export type Cubic = {
-  start: XY;
+export type Cubic = Line & {
   control1: XY;
   control2: XY;
-  end: XY;
 };
 
 export function isCubic(object: JsonObject): object is Cubic {
   return (
-    'start' in object &&
-    isXY(object.start) &&
+    isLine(object) &&
     'control1' in object &&
     isXY(object.control1) &&
     'control2' in object &&
-    isXY(object.control2) &&
-    'end' in object &&
-    isXY(object.end)
+    isXY(object.control2)
   );
 }
 
