@@ -13,7 +13,7 @@ export class RepeatUntil extends GraphNode {
 
     this.input1 = this.registerUnkownInput('Values');
     this.input2 = this.registerNumberInput('Count');
-    this.output = this.registerUnkownOutput('Values');
+    this.output = this.registerUnknownOutput('Values');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

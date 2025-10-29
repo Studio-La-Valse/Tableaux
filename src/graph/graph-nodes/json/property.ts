@@ -13,7 +13,7 @@ export default class Property extends GraphNode {
 
     this.inputObject = this.registerObjectInput('Object');
     this.inputProperty = this.registerStringInput('Property');
-    this.outputValue = this.registerUnkownOutput('Value');
+    this.outputValue = this.registerUnknownOutput('Value');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

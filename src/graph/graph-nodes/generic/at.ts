@@ -13,7 +13,7 @@ export class At extends GraphNode {
 
     this.input = this.registerUnkownInput('Input');
     this.input2 = this.registerNumberInput('Index');
-    this.output = this.registerUnkownOutput('Value');
+    this.output = this.registerUnknownOutput('Value');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

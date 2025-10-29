@@ -14,8 +14,8 @@ export class Dispatch extends GraphNode {
 
     this.input1 = this.registerBooleanInput('Filter');
     this.input2 = this.registerUnkownInput('Signal');
-    this.output1 = this.registerUnkownOutput('Values (False)');
-    this.output2 = this.registerUnkownOutput('Values (True)');
+    this.output1 = this.registerUnknownOutput('Values (False)');
+    this.output2 = this.registerUnknownOutput('Values (True)');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
