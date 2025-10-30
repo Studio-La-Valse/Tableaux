@@ -15,8 +15,8 @@ export class RepeatShortest extends GraphNode {
     this.input1 = this.registerUnkownInput('Left');
     this.input2 = this.registerUnkownInput('Right');
 
-    this.output1 = this.registerUnkownOutput('Left');
-    this.output2 = this.registerUnkownOutput('Right');
+    this.output1 = this.registerUnknownOutput('Left');
+    this.output2 = this.registerUnknownOutput('Right');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

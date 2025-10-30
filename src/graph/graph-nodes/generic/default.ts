@@ -11,7 +11,7 @@ export class Default extends GraphNode {
 
     this.in = this.registerUnkownInput('Input');
     this.default = this.registerUnkownInput('Default Value');
-    this.out = this.registerUnkownOutput('Output');
+    this.out = this.registerUnknownOutput('Output');
   }
 
   protected override async solve(iterators: InputIteratorsAsync): Promise<void> {

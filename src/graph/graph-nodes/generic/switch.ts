@@ -13,7 +13,7 @@ export class Switch extends GraphNode {
 
     this.input1 = this.registerNumberInput('Filter');
     this.params = this.registerUnkownInputParams('Signal');
-    this.output = this.registerUnkownOutput('Values');
+    this.output = this.registerUnknownOutput('Values');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

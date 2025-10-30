@@ -18,7 +18,7 @@ export class Buffer extends GraphNode {
     this.inputValues = this.registerUnkownInput('Input');
     this.inputLength = this.registerNumberInput('Length');
     this.inputReset = this.registerBooleanInput('Reset');
-    this.output = this.registerUnkownOutput('Values');
+    this.output = this.registerUnknownOutput('Values');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

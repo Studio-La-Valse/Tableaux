@@ -9,7 +9,7 @@ export class Reverse extends GraphNode {
     super(id, path);
 
     this.in = this.registerUnkownInput('Input');
-    this.out = this.registerUnkownOutput('Output');
+    this.out = this.registerUnknownOutput('Output');
   }
 
   protected async solve(iterators: InputIteratorsAsync): Promise<void> {

@@ -13,7 +13,7 @@ export class Merge extends GraphNode {
     super(id, path);
 
     this.params = this.registerUnkownInputParams('Values');
-    this.output = this.registerUnkownOutput('Values');
+    this.output = this.registerUnknownOutput('Values');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

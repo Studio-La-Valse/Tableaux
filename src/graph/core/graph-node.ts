@@ -341,7 +341,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
     return output;
   }
 
-  public registerUnkownOutput(description: string): GraphNodeOutputUnknown {
+  public registerUnknownOutput(description: string): GraphNodeOutputUnknown {
     this.assertNotInitialized();
 
     const output = new GraphNodeOutputUnknown(this, this.numberOfOutputs, description);

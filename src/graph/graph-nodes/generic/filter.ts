@@ -13,7 +13,7 @@ export class Filter extends GraphNode {
 
     this.input1 = this.registerUnkownInput('Signal');
     this.input2 = this.registerBooleanInput('Filter');
-    this.output = this.registerUnkownOutput('Values');
+    this.output = this.registerUnknownOutput('Values');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

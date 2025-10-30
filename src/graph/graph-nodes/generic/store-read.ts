@@ -23,7 +23,7 @@ export class StoreReader extends GraphNode {
     this.registerUnkownInput('Trigger'); // ensures dependency
 
     this.name = this.registerStringOutput('Name');
-    this.values = this.registerUnkownOutput('Values');
+    this.values = this.registerUnknownOutput('Values');
     this.data = { name: nanoid(11) };
   }
 

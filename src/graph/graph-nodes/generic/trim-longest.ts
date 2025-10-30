@@ -15,8 +15,8 @@ export class TrimLongest extends GraphNode {
     this.input1 = this.registerUnkownInput('First');
     this.input2 = this.registerUnkownInput('Second');
 
-    this.output1 = this.registerUnkownOutput('First');
-    this.output2 = this.registerUnkownOutput('Second');
+    this.output1 = this.registerUnknownOutput('First');
+    this.output2 = this.registerUnknownOutput('Second');
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
