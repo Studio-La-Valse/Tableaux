@@ -10,7 +10,7 @@ export class Stringify extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input = this.registerUnkownInput('JSON');
+    this.input = this.registerUnknownInput('JSON');
     this.output = this.registerStringOutput('String');
   }
 

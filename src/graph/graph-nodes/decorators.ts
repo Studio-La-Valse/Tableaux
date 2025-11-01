@@ -1,11 +1,17 @@
 import 'reflect-metadata';
 import type { GraphNode } from '../core/graph-node';
 import type { Component } from 'vue';
+import type { CustomNodeDefinition } from './json/dynamic-graph-node';
 
 export interface GraphNodeConstructor {
   new (id: string, path: string[]): GraphNode;
   __graphNodePanel?: Component;
   __emitterInput?: Component;
+}
+
+export interface CustomNodeConstructor extends GraphNodeConstructor {
+  __graphNodePanel: Component;
+  __definition: CustomNodeDefinition;
 }
 
 export const graphNodeTypes: Array<{

@@ -9,7 +9,7 @@ export class Count extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input = this.registerUnkownInput('Signal');
+    this.input = this.registerUnknownInput('Signal');
     this.output = this.registerNumberOutput('Count');
   }
 

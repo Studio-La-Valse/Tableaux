@@ -295,7 +295,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
     return input;
   }
 
-  public registerUnkownInput(
+  public registerUnknownInput(
     description: string,
     defaultPayload?: JsonValue[]
   ): GraphNodeInputUnknown {

@@ -12,8 +12,8 @@ export class TrimLongest extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input1 = this.registerUnkownInput('First');
-    this.input2 = this.registerUnkownInput('Second');
+    this.input1 = this.registerUnknownInput('First');
+    this.input2 = this.registerUnknownInput('Second');
 
     this.output1 = this.registerUnknownOutput('First');
     this.output2 = this.registerUnknownOutput('Second');

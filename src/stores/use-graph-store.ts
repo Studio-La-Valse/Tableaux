@@ -9,6 +9,7 @@ import type { GraphEdgeModel } from '@/graph/core/models/graph-edge-model';
 import { type IGraphNodeWrapper, GraphNodeWrapper } from '@/graph/core/graph-node-wrapper';
 import { useGraphHistoryStore } from './use-graph-history-store';
 import { nanoid } from 'nanoid';
+import { useCustomNodeRegistry } from './use-custom-node-registry-store';
 
 const useGraphInternal = defineStore('graph', () => {
   const nodeMap: Ref<Record<string, IGraphNodeWrapper>> = ref({});
@@ -16,6 +17,7 @@ const useGraphInternal = defineStore('graph', () => {
   const edges: Ref<GraphEdge[]> = ref([]);
 
   const activators = useGraphNodeActivatorStore();
+  const customNodeRegistry = useCustomNodeRegistry();
 
   const clear = () => {
     const nodeIds = Object.keys(nodeMap.value);
@@ -207,10 +209,12 @@ const useGraphInternal = defineStore('graph', () => {
   };
 
   const toModel: () => GraphModel = () => {
+    const defs = customNodeRegistry.getAllDefinitions();
     const nodeModels = nodes.value.map((v) => v.toModel());
     const edgeModels = edges.value.map((v) => v.toModel());
 
     return {
+      defs: defs,
       nodes: nodeModels,
       edges: edgeModels,
     };
@@ -218,6 +222,9 @@ const useGraphInternal = defineStore('graph', () => {
 
   const fromModel: (model: GraphModel) => void = (model: GraphModel) => {
     clear();
+
+    customNodeRegistry.clear();
+    customNodeRegistry.loadFromDefinitions(model.defs ?? []);
 
     model.nodes.forEach((v) => addNodeModel(v));
     model.edges.forEach((v) => addEdgeModel(v));

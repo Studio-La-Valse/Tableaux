@@ -12,7 +12,7 @@ export class StoreWriter extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
     this.name = this.registerStringInput('Name');
-    this.input = this.registerUnkownInput('Values');
+    this.input = this.registerUnknownInput('Values');
   }
 
   protected override async solve(iterators: InputIteratorsAsync): Promise<void> {

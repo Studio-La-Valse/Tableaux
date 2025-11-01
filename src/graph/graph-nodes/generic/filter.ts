@@ -11,7 +11,7 @@ export class Filter extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input1 = this.registerUnkownInput('Signal');
+    this.input1 = this.registerUnknownInput('Signal');
     this.input2 = this.registerBooleanInput('Filter');
     this.output = this.registerUnknownOutput('Values');
   }

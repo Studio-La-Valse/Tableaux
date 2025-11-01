@@ -23,6 +23,32 @@ export const useGraphNodeActivatorStore = defineStore('graph-node-activator-stor
     }
   }
 
+  function unregister(path: string[]) {
+    let tree = activatorTree;
+    const stack: ActivatorGroup[] = [tree];
+
+    // Walk down to the parent group of the activator
+    for (const segment of path.slice(0, -1)) {
+      const branch = tree.findChild(segment);
+      if (!branch) return; // nothing to remove
+      stack.push(branch);
+      tree = branch;
+    }
+
+    // Remove the activator
+    const name = path[path.length - 1];
+    tree.activators = tree.activators.filter((a) => a.name !== name);
+
+    // Optionally prune empty groups on the way back up
+    for (let i = stack.length - 1; i > 0; i--) {
+      const group = stack[i];
+      if (group.activators.length === 0 && group.children.length === 0) {
+        const parent = stack[i - 1];
+        parent.children = parent.children.filter((c) => c !== group);
+      }
+    }
+  }
+
   function getFromPath(path: string[]): Activator | undefined {
     let tree = activatorTree;
 
@@ -77,7 +103,7 @@ export const useGraphNodeActivatorStore = defineStore('graph-node-activator-stor
     return null;
   }
 
-  return { activatorTree, getFromPath, getAll, register, filterTree };
+  return { activatorTree, getFromPath, getAll, register, unregister, filterTree };
 });
 
 export class Activator {

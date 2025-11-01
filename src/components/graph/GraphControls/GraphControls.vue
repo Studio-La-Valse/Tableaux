@@ -26,6 +26,8 @@
         <MagnifyingGlassIcon class="icon" />
       </button>
 
+      <button type="button" @click="() => (showCustomNodeModal = true)"></button>
+
       <button type="button" @click="undo" :disabled="!hasUndo" title="Undo">
         <ArrowUturnLeftIcon class="icon" />
       </button>
@@ -55,6 +57,18 @@
       @cancel="onCancel"
     />
   </Teleport>
+
+  <Teleport to="body">
+    <CustomNodeComponent
+      v-if="showCustomNodeModal"
+      @close="
+        () => {
+          showCustomNodeModal = false;
+        }
+      "
+      @save="addDynamic"
+    />
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -79,6 +93,11 @@
   import { useZoomToNodes } from '@/composables/use-zoom-to-nodes';
   import UnsavedChangesModal from './UnsavedChangesModal.vue';
   import { useGraphLayoutStore } from '@/stores/use-graph-layout-store';
+  import CustomNodeComponent from '../CustomNode/CustomNodeComponent.vue';
+  import type { CustomNodeDefinition } from '@/graph/graph-nodes/json/dynamic-graph-node';
+
+  import { useCustomNodeRegistry } from '@/stores/use-custom-node-registry-store';
+
   const layout = useGraphLayoutStore();
 
   const history = useGraphHistoryStore();
@@ -88,6 +107,8 @@
   const { init, toModel, fromModel, undo, redo } = graphStore;
   const { nodes } = storeToRefs(graphStore);
 
+  const customNodeRegistry = useCustomNodeRegistry();
+
   const selectionStore = useGraphNodeSelectionStore();
   const { selectedNodes } = storeToRefs(selectionStore);
 
@@ -96,6 +117,14 @@
   const lastSavedModel = ref(toModel());
   const hasUnsavedChanges = () =>
     hasRedo.value || JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel());
+
+  /** --- Custom Node Modal --- */
+  const showCustomNodeModal = ref(false);
+
+  const addDynamic = (def: CustomNodeDefinition) => {
+    customNodeRegistry.register(def);
+    graphStore.commit();
+  };
 
   /** --- Modal state --- */
   const showUnsavedModal = ref(false);

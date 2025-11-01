@@ -11,8 +11,8 @@ export class Includes extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.values = this.registerUnkownInput('Values');
-    this.testValues = this.registerUnkownInput('Contains');
+    this.values = this.registerUnknownInput('Values');
+    this.testValues = this.registerUnknownInput('Contains');
     this.output = this.registerBooleanOutput('Contains');
   }
 

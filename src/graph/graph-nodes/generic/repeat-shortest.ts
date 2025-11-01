@@ -12,8 +12,8 @@ export class RepeatShortest extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input1 = this.registerUnkownInput('Left');
-    this.input2 = this.registerUnkownInput('Right');
+    this.input1 = this.registerUnknownInput('Left');
+    this.input2 = this.registerUnknownInput('Right');
 
     this.output1 = this.registerUnknownOutput('Left');
     this.output2 = this.registerUnknownOutput('Right');

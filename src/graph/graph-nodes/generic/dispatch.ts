@@ -13,7 +13,7 @@ export class Dispatch extends GraphNode {
     super(id, path);
 
     this.input1 = this.registerBooleanInput('Filter');
-    this.input2 = this.registerUnkownInput('Signal');
+    this.input2 = this.registerUnknownInput('Signal');
     this.output1 = this.registerUnknownOutput('Values (False)');
     this.output2 = this.registerUnknownOutput('Values (True)');
   }

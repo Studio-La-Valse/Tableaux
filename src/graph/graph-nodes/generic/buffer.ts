@@ -15,7 +15,7 @@ export class Buffer extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.inputValues = this.registerUnkownInput('Input');
+    this.inputValues = this.registerUnknownInput('Input');
     this.inputLength = this.registerNumberInput('Length');
     this.inputReset = this.registerBooleanInput('Reset');
     this.output = this.registerUnknownOutput('Values');

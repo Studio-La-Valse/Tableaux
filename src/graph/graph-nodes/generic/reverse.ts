@@ -8,7 +8,7 @@ export class Reverse extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.in = this.registerUnkownInput('Input');
+    this.in = this.registerUnknownInput('Input');
     this.out = this.registerUnknownOutput('Output');
   }
 

@@ -11,7 +11,7 @@ export class At extends GraphNode {
   constructor(id: string, path: string[]) {
     super(id, path);
 
-    this.input = this.registerUnkownInput('Input');
+    this.input = this.registerUnknownInput('Input');
     this.input2 = this.registerNumberInput('Index');
     this.output = this.registerUnknownOutput('Value');
   }
