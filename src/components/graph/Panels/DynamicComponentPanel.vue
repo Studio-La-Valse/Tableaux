@@ -6,7 +6,8 @@
   <Teleport to="body">
     <CustomNodeComponent
       v-if="visible"
-      :initial-data="graphNode.data as CustomNodeDefinition"
+      :initial-data="initialData"
+      :mode="'edit'"
       @close="() => (visible = false)"
       @save="update"
     />
@@ -14,34 +15,32 @@
 </template>
 
 <script setup lang="ts">
-  import { ref } from 'vue';
-  import CustomNodeComponent from '../CustomNode/CustomNodeComponent.vue';
-  import { type CustomNodeDefinition } from '@/graph/graph-nodes/json/dynamic-graph-node';
-  import { useGraphStore } from '@/stores/use-graph-store';
-  import { useCustomNodeRegistry } from '@/stores/use-custom-node-registry-store';
+  import { computed, ref } from 'vue';
+  import CustomNodeComponent from '../CustomNode/CustomNodeModal.vue';
+  import {
+    createCustomNode,
+    type CustomNodeDefinition,
+  } from '@/graph/graph-nodes/json/dynamic-graph-node';
   import type { GraphNode } from '@/graph/core/graph-node';
+  import { useGraphNodeRegistry } from '@/stores/use-graph-node-registry';
 
-  const graphStore = useGraphStore();
-  const customNodeRegistry = useCustomNodeRegistry();
+  const graphNodeRegistry = useGraphNodeRegistry();
 
   const props = defineProps<{
     graphNode: GraphNode;
   }>();
 
   const visible = ref(false);
+  const initialData = computed(
+    () => graphNodeRegistry.getDefinition(props.graphNode.path)?.customTemplate
+  );
 
   const dblclick = () => {
     visible.value = true;
   };
 
   const update = (def: CustomNodeDefinition) => {
-    customNodeRegistry.updateCode(def.name, def.code);
-
-    const instances = graphStore.nodes.filter((v) => v.nodePath === props.graphNode.path);
-    instances.forEach((v) => v.innerNode.arm());
-    instances.forEach((v) => v.innerNode.complete());
-
-    graphStore.commit();
+    createCustomNode(def);
   };
 </script>
 

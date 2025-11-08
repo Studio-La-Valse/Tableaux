@@ -22,7 +22,7 @@
         class="leaf"
         @click.stop="(evt) => clickNode(evt, act.name)"
       >
-        {{ act.name }}
+        {{ act.name + (act.definition.customTemplate ? ' [C]' : '') }}
       </li>
     </ul>
   </li>
@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
   import { ref, computed, onMounted, watch } from 'vue';
-  import type { ActivatorGroup } from '@/stores/use-graph-node-activator-store';
+  import type { ActivatorGroup } from '@/stores/use-graph-node-registry';
   import { useContextMenuStore } from '@/stores/use-context-menu-store';
 
   const menu = useContextMenuStore();

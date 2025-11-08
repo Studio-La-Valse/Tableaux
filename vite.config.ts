@@ -24,6 +24,8 @@ export default defineConfig({
             if (id.includes('vue-resizable-panels')) return 'resizable-panels'
             if (id.includes('vuedraggable')) return 'vuedraggable'
             if (id.includes('@heroicons')) return 'heroicons'
+          } else {
+            if (id.includes('graph-nodes')) return 'graph'
           }
         }
       }

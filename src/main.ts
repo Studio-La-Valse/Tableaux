@@ -6,7 +6,10 @@ import router from './router';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 
+import useGraphNodeRegistrar from './plugins/graph-node-registrar';
+
 import { logError } from '@/stores/use-error-log-store';
+import useGraphInitializer from './plugins/graph-node-initializer';
 
 const app = createApp(App);
 
@@ -29,5 +32,9 @@ window.addEventListener('error', (event) => {
 app.use(router);
 
 app.use(createPinia());
+
+app.use(useGraphInitializer());
+
+app.use(useGraphNodeRegistrar());
 
 app.mount('#app');

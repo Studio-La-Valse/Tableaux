@@ -1,9 +1,8 @@
 import { GraphNode } from '../../core/graph-node';
-import { GraphNodeType } from '../decorators';
 import { type XY } from '@/geometry/xy';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import type { GraphNodeDefinition } from '../graph-node-definition';
 
-@GraphNodeType('Canvas', 'Canvas Click')
 export class CanvasClick extends GraphNode {
   private output;
   private active;
@@ -38,3 +37,10 @@ export class CanvasClick extends GraphNode {
     this.output.next(this.data.value);
   }
 }
+
+const def: GraphNodeDefinition = {
+  category: ['Canvas', 'CanvasClick'],
+  NodeClass: CanvasClick,
+};
+
+export default def;

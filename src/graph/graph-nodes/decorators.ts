@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import type { GraphNode } from '../core/graph-node';
 import type { Component } from 'vue';
 import type { CustomNodeDefinition } from './json/dynamic-graph-node';
+import { useGraphNodeRegistry } from '@/stores/use-graph-node-registry';
 
 export interface GraphNodeConstructor {
   new (id: string, path: string[]): GraphNode;
@@ -21,7 +22,8 @@ export const graphNodeTypes: Array<{
 
 export function GraphNodeType(...category: string[]) {
   return function (target: GraphNodeConstructor) {
-    graphNodeTypes.push({ category, ctor: target });
+    // const graphNodeRegistry = useGraphNodeActivatorStore()
+    // graphNodeRegistry.register(category, (id, path) => new target(id, path))
   };
 }
 

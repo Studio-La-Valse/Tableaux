@@ -3,7 +3,7 @@ import type { GraphEdgeModel } from './graph-edge-model';
 import type { GraphNodeModel } from './graph-node-model';
 
 export type GraphModel = {
-  defs?: CustomNodeDefinition[];
+  defs: CustomNodeDefinition[];
   nodes: GraphNodeModel[];
   edges: GraphEdgeModel[];
 };

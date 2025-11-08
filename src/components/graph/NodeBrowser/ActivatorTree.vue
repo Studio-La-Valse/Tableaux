@@ -22,6 +22,16 @@
         :parentPath="[]"
         :forceExpand="search !== ''"
       />
+
+      <!-- leaf items emit the full path -->
+      <li
+        v-for="act in filteredGroup.activators"
+        :key="act.name"
+        class="leaf"
+        @click.stop="(evt) => clickNode(evt, act.name)"
+      >
+        {{ act.name + (act.definition.customTemplate ? ' [C]' : '') }}
+      </li>
     </ul>
 
     <div class="no-results" v-else>No matching nodes found.</div>
@@ -31,13 +41,13 @@
 <script setup lang="ts">
   import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue';
   import ActivatorNode from '@/components/graph/NodeBrowser/ActivatorNode.vue';
-  import { useGraphNodeActivatorStore } from '@/stores/use-graph-node-activator-store';
+  import { useGraphNodeRegistry } from '@/stores/use-graph-node-registry';
   import { useContextMenuStore } from '@/stores/use-context-menu-store';
 
   const menu = useContextMenuStore();
-  const { filterTree } = useGraphNodeActivatorStore();
+  const { filterTree } = useGraphNodeRegistry();
 
-  const rootGroup = useGraphNodeActivatorStore().activatorTree;
+  const rootGroup = useGraphNodeRegistry().activatorTree;
 
   const search = ref('');
   const inputRef = ref<HTMLInputElement | null>(null);
@@ -45,6 +55,10 @@
   const filteredGroup = computed(() => {
     return search.value.trim() ? filterTree(rootGroup, search.value.trim()) : rootGroup;
   });
+
+  const clickNode = (evt: MouseEvent, nodeName: string) => {
+    menu.onActivate([nodeName]);
+  };
 
   const onWheel = (evt: WheelEvent) => {
     evt.stopPropagation();
@@ -106,6 +120,11 @@
     color: var(--color-text);
     border: 1px solid var(--color-border-hover);
     font-size: 14px;
+  }
+
+  .leaf {
+    padding: 2px 6px;
+    cursor: pointer;
   }
 
   .no-results {

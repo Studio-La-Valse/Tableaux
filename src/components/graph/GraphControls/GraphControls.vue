@@ -26,7 +26,9 @@
         <MagnifyingGlassIcon class="icon" />
       </button>
 
-      <button type="button" @click="() => (showCustomNodeModal = true)"></button>
+      <button type="button" @click="() => (showCustomNodeModal = true)">
+        <BeakerIcon class="icon" />
+      </button>
 
       <button type="button" @click="undo" :disabled="!hasUndo" title="Undo">
         <ArrowUturnLeftIcon class="icon" />
@@ -61,11 +63,8 @@
   <Teleport to="body">
     <CustomNodeComponent
       v-if="showCustomNodeModal"
-      @close="
-        () => {
-          showCustomNodeModal = false;
-        }
-      "
+      :mode="'create'"
+      @close="() => (showCustomNodeModal = false)"
       @save="addDynamic"
     />
   </Teleport>
@@ -93,10 +92,12 @@
   import { useZoomToNodes } from '@/composables/use-zoom-to-nodes';
   import UnsavedChangesModal from './UnsavedChangesModal.vue';
   import { useGraphLayoutStore } from '@/stores/use-graph-layout-store';
-  import CustomNodeComponent from '../CustomNode/CustomNodeComponent.vue';
-  import type { CustomNodeDefinition } from '@/graph/graph-nodes/json/dynamic-graph-node';
-
-  import { useCustomNodeRegistry } from '@/stores/use-custom-node-registry-store';
+  import CustomNodeComponent from '../CustomNode/CustomNodeModal.vue';
+  import {
+    createCustomNode,
+    type CustomNodeDefinition,
+  } from '@/graph/graph-nodes/json/dynamic-graph-node';
+  import { BeakerIcon } from '@heroicons/vue/24/solid';
 
   const layout = useGraphLayoutStore();
 
@@ -106,8 +107,6 @@
   const graphStore = useGraphStore();
   const { init, toModel, fromModel, undo, redo } = graphStore;
   const { nodes } = storeToRefs(graphStore);
-
-  const customNodeRegistry = useCustomNodeRegistry();
 
   const selectionStore = useGraphNodeSelectionStore();
   const { selectedNodes } = storeToRefs(selectionStore);
@@ -122,7 +121,7 @@
   const showCustomNodeModal = ref(false);
 
   const addDynamic = (def: CustomNodeDefinition) => {
-    customNodeRegistry.register(def);
+    createCustomNode(def);
     graphStore.commit();
   };
 
