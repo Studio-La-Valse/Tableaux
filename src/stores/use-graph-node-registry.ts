@@ -45,12 +45,28 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
   }
 
   function _clearCustomDefinitions() {
-    function traverseAndRemove(group: ActivatorGroup) {
+    function traverseAndClean(group: ActivatorGroup): boolean {
+      // 1. Remove custom activators
       group.activators = group.activators.filter((a) => !a.definition.customTemplate);
-      group.children.forEach(traverseAndRemove);
+
+      // 2. Recursively clean children
+      group.children = group.children.filter((child) => {
+        const keep = traverseAndClean(child);
+        return keep;
+      });
+
+      // 3. Return whether this group should remain in the tree
+      const hasActivators = group.activators.length > 0;
+      const hasChildren = group.children.length > 0;
+
+      // Root should always remain
+      if (group === activatorTree) return true;
+
+      // Keep only if it has content
+      return hasActivators || hasChildren;
     }
 
-    traverseAndRemove(activatorTree);
+    traverseAndClean(activatorTree);
   }
 
   function getCustomDefinitions() {
