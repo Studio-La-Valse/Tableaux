@@ -1,25 +1,25 @@
-import { asSurfaceLike, getSurfaceCenter } from '@/geometry/surface-like';
-import { GraphNode } from '../../../core/graph-node';
-import { GraphNodeType } from '../../decorators';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import type { XY } from '@/geometry/xy';
+import type { XY } from '@/geometry/xy'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { asSurfaceLike, getSurfaceCenter } from '@/geometry/surface-like'
+import { GraphNode } from '../../../core/graph-node'
+import { GraphNodeType } from '../../decorators'
 
 @GraphNodeType('Geometry', 'Surface', 'Center')
 export class GetSurfaceCenter extends GraphNode {
-  private input;
-  private output;
+  private input
+  private output
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.input = this.registerObjectInput('Surface').validate(asSurfaceLike);
-    this.output = this.registerObjectOutput<XY>('Center');
+    this.input = this.registerObjectInput('Surface').validate(asSurfaceLike)
+    this.output = this.registerObjectOutput<XY>('Center')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [surface] of inputIterators.cycleValues(this.input)) {
-      const center = getSurfaceCenter(surface);
-      this.output.next(center);
+      const center = getSurfaceCenter(surface)
+      this.output.next(center)
     }
   }
 }

@@ -1,39 +1,39 @@
-import { type XY } from './xy';
-import { type BaseShape } from './shape';
-import type { JsonObject } from '@/graph/core/models/json-value';
-import type { EllipticalArc } from './elliptical-arc';
+import type { EllipticalArc } from './elliptical-arc'
+import type { BaseShape } from './shape'
+import type { XY } from './xy'
+import type { JsonObject } from '@/graph/core/models/json-value'
 
 export type Ellipse = {
-  x: number;
-  y: number;
-  radiusX: number;
-  radiusY: number;
-  rotation: number;
-};
+  x: number
+  y: number
+  radiusX: number
+  radiusY: number
+  rotation: number
+}
 
 export function isEllipse(object: object): object is Ellipse {
   return (
-    'x' in object &&
-    typeof object.x === 'number' &&
-    'y' in object &&
-    typeof object.y === 'number' &&
-    'radiusX' in object &&
-    typeof object.radiusX === 'number' &&
-    'radiusY' in object &&
-    typeof object.radiusY === 'number' &&
-    'rotation' in object &&
-    typeof object.rotation === 'number'
-  );
+    'x' in object
+    && typeof object.x === 'number'
+    && 'y' in object
+    && typeof object.y === 'number'
+    && 'radiusX' in object
+    && typeof object.radiusX === 'number'
+    && 'radiusY' in object
+    && typeof object.radiusY === 'number'
+    && 'rotation' in object
+    && typeof object.rotation === 'number'
+  )
 }
 
 export function asEllipse(object: JsonObject): Ellipse {
   if (!isEllipse(object)) {
-    throw Error('Object could not be cast to an ellipse');
+    throw new Error('Object could not be cast to an ellipse')
   }
 
   return {
     ...object,
-  };
+  }
 }
 
 export function ellipseAsEllipticalArc(ellipse: Ellipse): EllipticalArc {
@@ -45,10 +45,10 @@ export function ellipseAsEllipticalArc(ellipse: Ellipse): EllipticalArc {
     startAngle: 0,
     endAngle: Math.PI * 2,
     counterclockwise: false,
-  };
+  }
 }
 
-export type EllipseShape = BaseShape & { kind: 'ellipse' } & Ellipse;
+export type EllipseShape = BaseShape & { kind: 'ellipse' } & Ellipse
 
 export function createEllipseShape(
   origin: XY,
@@ -62,5 +62,5 @@ export function createEllipseShape(
     radiusX,
     radiusY,
     rotation,
-  };
+  }
 }

@@ -5,11 +5,11 @@
 </template>
 
 <script setup lang="ts">
-import type { NumberEmitter } from '@/graph/graph-nodes/math/number-emitter';
-import ResizablePanel from './ResizablePanel.vue';
-import RangeEmitter from '@/components/emitters/RangeEmitter.vue';
+import type { NumberEmitter } from '@/graph/graph-nodes/math/number-emitter'
+import RangeEmitter from '@/components/emitters/RangeEmitter.vue'
+import ResizablePanel from './ResizablePanel.vue'
 
 defineProps<{
-  graphNode: NumberEmitter;
-}>();
+  graphNode: NumberEmitter
+}>()
 </script>

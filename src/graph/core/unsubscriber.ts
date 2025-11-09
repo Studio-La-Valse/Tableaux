@@ -1,3 +1,3 @@
-export interface Unsubscriber {
-  unsubscribe(): void;
+export type Unsubscriber = {
+  unsubscribe: () => void
 }

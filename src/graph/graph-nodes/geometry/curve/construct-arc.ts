@@ -1,28 +1,29 @@
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { assertIsXY } from '@/geometry/xy';
-import { createArc, type ArcShape } from '@/geometry/arc';
-import { GraphNode } from '@/graph/core/graph-node';
-import { GraphNodeType } from '../../decorators';
+import type { ArcShape } from '@/geometry/arc'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { createArc } from '@/geometry/arc'
+import { assertIsXY } from '@/geometry/xy'
+import { GraphNode } from '@/graph/core/graph-node'
+import { GraphNodeType } from '../../decorators'
 
 @GraphNodeType('Geometry', 'Curve', 'Construct Arc')
 export class Arc extends GraphNode {
-  private input1;
-  private input2;
-  private input3;
-  private input4;
-  private input5;
-  private outputCircle;
+  private input1
+  private input2
+  private input3
+  private input4
+  private input5
+  private outputCircle
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.input1 = this.registerObjectInput('XY').validate(assertIsXY);
-    this.input2 = this.registerNumberInput('Radius');
-    this.input3 = this.registerNumberInput('Start Angle');
-    this.input4 = this.registerNumberInput('End Angle');
-    this.input5 = this.registerBooleanInput('Clockwise', [false]);
+    this.input1 = this.registerObjectInput('XY').validate(assertIsXY)
+    this.input2 = this.registerNumberInput('Radius')
+    this.input3 = this.registerNumberInput('Start Angle')
+    this.input4 = this.registerNumberInput('End Angle')
+    this.input5 = this.registerBooleanInput('Clockwise', [false])
 
-    this.outputCircle = this.registerObjectOutput<ArcShape>('Circle');
+    this.outputCircle = this.registerObjectOutput<ArcShape>('Circle')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -33,8 +34,8 @@ export class Arc extends GraphNode {
       this.input4,
       this.input5,
     )) {
-      const arc = createArc(xy, radius, start, end, clockwise);
-      this.outputCircle.next(arc);
+      const arc = createArc(xy, radius, start, end, clockwise)
+      this.outputCircle.next(arc)
     }
   }
 }

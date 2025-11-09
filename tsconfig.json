@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "lib": ["ES2022", "DOM"],
     "target": "ES2022",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "lib": ["ES2022", "DOM"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   },
-  "files": [],
   "references": [
     {
       "path": "./tsconfig.node.json"
@@ -13,5 +12,6 @@
     {
       "path": "./tsconfig.app.json"
     }
-  ]
+  ],
+  "files": []
 }

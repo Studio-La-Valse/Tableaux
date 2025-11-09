@@ -1,30 +1,31 @@
-import { GraphNode } from '@/graph/core/graph-node';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { GraphNodeType } from '@/graph/graph-nodes/decorators';
+import type { TransformationMatrix } from '@/geometry/transformation-matrix'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import {
   assertIsTransformationMatrix,
   compose,
-  type TransformationMatrix,
-} from '@/geometry/transformation-matrix';
+
+} from '@/geometry/transformation-matrix'
+import { GraphNode } from '@/graph/core/graph-node'
+import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 
 @GraphNodeType('Geometry', 'Transform', 'Compose')
 export class Compose extends GraphNode {
-  private inputParams;
-  private output;
+  private inputParams
+  private output
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.inputParams = this.registerObjectInputParams('Transformation Matrix');
-    this.output = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix');
+    this.inputParams = this.registerObjectInputParams('Transformation Matrix')
+    this.output = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const values of inputIterators.cycleValues(...this.inputParams)) {
       values
-        .map(() => values.map((v) => assertIsTransformationMatrix(v)))
-        .map((values) => values.reduce((acc, next) => compose(acc, next)))
-        .forEach((v) => this.output.next(v));
+        .map(() => values.map(v => assertIsTransformationMatrix(v)))
+        .map(values => values.reduce((acc, next) => compose(acc, next)))
+        .forEach(v => this.output.next(v))
     }
   }
 }

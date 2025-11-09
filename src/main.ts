@@ -1,41 +1,41 @@
-import './assets/main.css';
+import { createPinia } from 'pinia'
 
-import App from './App.vue';
-import router from './router';
+import { createApp } from 'vue'
+import { logError } from '@/stores/use-error-log-store'
 
-import { createApp } from 'vue';
-import { createPinia } from 'pinia';
+import App from './App.vue'
+import useGraphInitializer from './plugins/graph-node-initializer'
 
-import useGraphNodeRegistrar from './plugins/graph-node-registrar';
+import useGraphNodeRegistrar from './plugins/graph-node-registrar'
 
-import { logError } from '@/stores/use-error-log-store';
-import useGraphInitializer from './plugins/graph-node-initializer';
+import router from './router'
+import './assets/main.css'
 
-const app = createApp(App);
+const app = createApp(App)
 
 // catches runtime Vue errors
 app.config.errorHandler = (err, vm, info) => {
-  const _err = err as Error;
-  logError(`[Vue Error] ${_err.message} — ${info}`);
-  throw err;
-};
+  const _err = err as Error
+  logError(`[Vue Error] ${_err.message} — ${info}`)
+  throw err
+}
 
 // catches unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
-  logError(`[Unhandled Promise] ${event.reason}`);
-});
+  logError(`[Unhandled Promise] ${event.reason}`)
+})
 
 // catches uncaught runtime JS errors
 window.addEventListener('error', (event) => {
-  logError(`[JS Error] ${event.message} @ ${event.filename}:${event.lineno}`);
-});
+  logError(`[JS Error] ${event.message} @ ${event.filename}:${event.lineno}`)
+})
 
-app.use(router);
+app.use(router)
 
-app.use(createPinia());
+app.use(createPinia())
 
-app.use(useGraphInitializer());
+app.use(useGraphInitializer())
 
-app.use(useGraphNodeRegistrar());
+app.use(useGraphNodeRegistrar())
 
-app.mount('#app');
+app.mount('#app')

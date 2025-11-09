@@ -1,9 +1,9 @@
-import { nanoid } from 'nanoid';
-import type { IGraphNodeWrapper } from './graph-node-wrapper';
-import type { GraphEdgeModel } from './models/graph-edge-model';
+import type { IGraphNodeWrapper } from './graph-node-wrapper'
+import type { GraphEdgeModel } from './models/graph-edge-model'
+import { nanoid } from 'nanoid'
 
 export class GraphEdge {
-  public readonly id: string;
+  public readonly id: string
 
   constructor(
     public readonly leftGraphNode: IGraphNodeWrapper,
@@ -12,7 +12,7 @@ export class GraphEdge {
     public inputIndex: number,
   ) {
     // used to track selection, note how the public fields may be modified
-    this.id = nanoid(11);
+    this.id = nanoid(11)
   }
 
   public toModel(): GraphEdgeModel {
@@ -21,13 +21,13 @@ export class GraphEdge {
       rightId: this.rightGraphNode.modelId,
       output: this.outputIndex,
       input: this.inputIndex,
-    };
+    }
   }
 }
 
-export interface GraphEdgePrototype {
-  fromNodeId: string;
-  fromOutputIndex: number;
-  toNodeId: string;
-  toInputIndex: number;
+export type GraphEdgePrototype = {
+  fromNodeId: string
+  fromOutputIndex: number
+  toNodeId: string
+  toInputIndex: number
 }

@@ -1,23 +1,25 @@
-import { GraphNode } from '../../core/graph-node';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { GraphNodeType } from '../decorators';
-import { asShape, type Shape } from '@/geometry/shape';
-import { applyBlur, type Blur } from '@/geometry/filter';
+import type { Blur } from '@/geometry/filter'
+import type { Shape } from '@/geometry/shape'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { applyBlur } from '@/geometry/filter'
+import { asShape } from '@/geometry/shape'
+import { GraphNode } from '../../core/graph-node'
+import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Canvas', 'Set Blur')
 export class SetBlur extends GraphNode {
-  private inputGeometry;
-  private inputSize;
+  private inputGeometry
+  private inputSize
 
-  private outputGeometry;
+  private outputGeometry
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.inputGeometry = this.registerObjectInput('Shape').validate(asShape);
-    this.inputSize = this.registerNumberInput('Size');
+    this.inputGeometry = this.registerObjectInput('Shape').validate(asShape)
+    this.inputSize = this.registerNumberInput('Size')
 
-    this.outputGeometry = this.registerObjectOutput<Shape & { blur: Blur }>('Geometry with blur');
+    this.outputGeometry = this.registerObjectOutput<Shape & { blur: Blur }>('Geometry with blur')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -25,8 +27,8 @@ export class SetBlur extends GraphNode {
       this.inputGeometry,
       this.inputSize,
     )) {
-      const withStroke = applyBlur(geom, size);
-      this.outputGeometry.next(withStroke);
+      const withStroke = applyBlur(geom, size)
+      this.outputGeometry.next(withStroke)
     }
   }
 }

@@ -1,45 +1,49 @@
 <template>
   <div
     class="node-port output-port"
-    :style="{ top: positionY + 'px' }"
+    :style="{ top: `${positionY}px` }"
     @mousedown.stop="handleMouseDown"
   >
     <div class="label">
       <span>{{ output.description[0] }}</span>
     </div>
+
     <HandleRenderer :description="output.description" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useEdgeDrag } from '@/composables/use-edge-drag';
-import HandleRenderer from './HandleRenderer.vue';
-import type { IGraphNodeOutput } from '@/graph/core/graph-node-output';
-import { useEdgeReconnect } from '@/composables/use-edge-reconnect';
+import type { IGraphNodeOutput } from '@/graph/core/graph-node-output'
+import { useEdgeDrag } from '@/composables/use-edge-drag'
+import { useEdgeReconnect } from '@/composables/use-edge-reconnect'
+import HandleRenderer from './HandleRenderer.vue'
 
 const props = defineProps<{
-  output: IGraphNodeOutput;
-  positionY: number;
-}>();
+  output: IGraphNodeOutput
+  positionY: number
+}>()
 
-const { startConnect, finishConnect, tempEdge } = useEdgeDrag();
-const { tempEdges, startReconnect, finishReconnect } = useEdgeReconnect();
+const { startConnect, finishConnect, tempEdge } = useEdgeDrag()
+const { tempEdges, startReconnect, finishReconnect } = useEdgeReconnect()
 
 function handleMouseDown(e: MouseEvent) {
-  const fromId = props.output.graphNodeId;
-  const outputIndex = props.output.index;
+  const fromId = props.output.graphNodeId
+  const outputIndex = props.output.index
 
   if (tempEdges.value.length) {
     // Finish the reconnect has heighest priority
-    finishReconnect(fromId, outputIndex, e);
-  } else if (tempEdge.value) {
-    finishConnect(fromId, outputIndex, e);
-  } else if (e.ctrlKey || e.metaKey) {
+    finishReconnect(fromId, outputIndex, e)
+  }
+  else if (tempEdge.value) {
+    finishConnect(fromId, outputIndex, e)
+  }
+  else if (e.ctrlKey || e.metaKey) {
     // Start the reconnect of existing edges
-    startReconnect(fromId, outputIndex, e);
-  } else {
+    startReconnect(fromId, outputIndex, e)
+  }
+  else {
     // Start the drag using the node's id and the output index.
-    startConnect('forward', fromId, outputIndex, e);
+    startConnect('forward', fromId, outputIndex, e)
   }
 }
 </script>

@@ -1,26 +1,27 @@
-import { GraphNode } from '../../core/graph-node';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { GraphNodeType } from '../decorators';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { GraphNode } from '../../core/graph-node'
+import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Math', 'Divide')
 export class Divide extends GraphNode {
-  private input1;
-  private input2;
-  private output;
+  private input1
+  private input2
+  private output
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.input1 = this.registerNumberInput('Values');
-    this.input2 = this.registerNumberInput('Factor');
-    this.output = this.registerNumberOutput('Result');
+    this.input1 = this.registerNumberInput('Values')
+    this.input2 = this.registerNumberInput('Factor')
+    this.output = this.registerNumberOutput('Result')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [a, b] of inputIterators.cycleValues(this.input1, this.input2)) {
-      if (b === 0) throw new Error('Division by zero');
-      const result = a / b;
-      this.output.next(result);
+      if (b === 0)
+        throw new Error('Division by zero')
+      const result = a / b
+      this.output.next(result)
     }
   }
 }

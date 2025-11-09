@@ -1,21 +1,22 @@
-import { Emitter, type EmitterKind } from '@/graph/core/emitter';
-import { GraphNodePanel, GraphNodeType } from '../decorators';
-import SliderPanel from '@/components/graph/Panels/SliderPanel.vue';
+import type { EmitterKind } from '@/graph/core/emitter'
+import SliderPanel from '@/components/graph/Panels/SliderPanel.vue'
+import { Emitter } from '@/graph/core/emitter'
+import { GraphNodePanel, GraphNodeType } from '../decorators'
 
 @GraphNodeType('Math', 'Slider')
 @GraphNodePanel(SliderPanel)
 export class Slider extends Emitter<number> {
-  public type: EmitterKind = 'range';
+  public type: EmitterKind = 'range'
 
-  private output;
+  private output
 
   constructor(modelId: string) {
-    super(modelId, 0);
+    super(modelId, 0)
 
-    this.output = this.registerNumberOutput('Value');
+    this.output = this.registerNumberOutput('Value')
   }
 
   protected async solve(): Promise<void> {
-    this.output.next(this.data.value);
+    this.output.next(this.data.value)
   }
 }

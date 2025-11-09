@@ -1,65 +1,76 @@
 <template>
-  <div class="page" :style="style">
-    <CanvasControls v-model:zoomMode="zoomMode" @fullScreen="handleFullScreen" />
+  <div
+    class="page"
+    :style="style"
+  >
+    <CanvasControls
+      v-model:zoom-mode="zoomMode"
+      @full-screen="handleFullScreen"
+    />
 
-    <div ref="canvasContainer" class="canvas-container">
-      <DesignCanvas :zoomMode="zoomMode" />
+    <div
+      ref="canvasContainer"
+      class="canvas-container"
+    >
+      <DesignCanvas :zoom-mode="zoomMode" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, type StyleValue } from 'vue';
-import CanvasControls from './CanvasControls.vue';
-import DesignCanvas from './CanvasContainer.vue';
-import { useNodeSelectionAndDrag } from '@/composables/use-node-selection-and-drag';
-import { useCanvasTransform } from '@/composables/use-canvas-transform';
+import type { StyleValue } from 'vue'
+import { computed, onMounted, onUnmounted, ref, useTemplateRef } from 'vue'
+import { useCanvasTransform } from '@/composables/use-canvas-transform'
+import { useNodeSelectionAndDrag } from '@/composables/use-node-selection-and-drag'
+import DesignCanvas from './CanvasContainer.vue'
+import CanvasControls from './CanvasControls.vue'
 
-const groupDrag = useNodeSelectionAndDrag();
-const canvasPan = useCanvasTransform();
+const groupDrag = useNodeSelectionAndDrag()
+const canvasPan = useCanvasTransform()
 
 const style = computed<StyleValue>(() => ({
   pointerEvents: groupDrag.dragging.value || canvasPan.isDragging.value ? 'none' : 'all',
-}));
+}))
 
-type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200';
+type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200'
 
-const zoomMode = ref<ZoomMode>('fit');
+const zoomMode = ref<ZoomMode>('fit')
 
 // keep track of what the zoom was before we forced Fit
-let previousZoom: ZoomMode = zoomMode.value;
+let previousZoom: ZoomMode = zoomMode.value
 
 // DOM ref for the element we fullscreen
-const canvasContainer = ref<HTMLElement | null>(null);
+const canvasContainer = useTemplateRef<HTMLElement>('canvasContainer')
 
 function handleFullScreen() {
-  if (!canvasContainer.value) return;
+  if (!canvasContainer.value)
+    return
 
   // stash current zoom
-  previousZoom = zoomMode.value;
+  previousZoom = zoomMode.value
 
   // force Fit mode
-  zoomMode.value = 'fit';
+  zoomMode.value = 'fit'
 
   // request fullscreen
-  canvasContainer.value.requestFullscreen().catch(console.error);
+  canvasContainer.value.requestFullscreen().catch(console.error)
 }
 
 // this runs on *every* fullscreen change
 function onFullScreenChange() {
   // if we've *exited* fullscreen (element is null)
   if (!document.fullscreenElement) {
-    zoomMode.value = previousZoom;
+    zoomMode.value = previousZoom
   }
 }
 
 onMounted(() => {
-  document.addEventListener('fullscreenchange', onFullScreenChange);
-});
+  document.addEventListener('fullscreenchange', onFullScreenChange)
+})
 
 onUnmounted(() => {
-  document.removeEventListener('fullscreenchange', onFullScreenChange);
-});
+  document.removeEventListener('fullscreenchange', onFullScreenChange)
+})
 </script>
 
 <style scoped>

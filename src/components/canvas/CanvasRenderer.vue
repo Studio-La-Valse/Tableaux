@@ -1,19 +1,23 @@
 <template>
-  <canvas ref="canvasRef" class="canvas"></canvas>
+  <canvas
+    ref="canvasRef"
+    class="canvas"
+  />
 </template>
 
 <script setup lang="ts">
-import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
-import { storeToRefs } from 'pinia';
-import { onMounted } from 'vue';
+import { storeToRefs } from 'pinia'
+import { onMounted } from 'vue'
+import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 
-const canvasStore = useDesignCanvasStore();
-const { canvasRef } = storeToRefs(canvasStore);
-const { attachCanvas } = canvasStore;
+const canvasStore = useDesignCanvasStore()
+const { canvasRef } = storeToRefs(canvasStore)
+const { attachCanvas } = canvasStore
 
 onMounted(() => {
-  if (canvasRef.value) attachCanvas(canvasRef.value);
-});
+  if (canvasRef.value)
+    attachCanvas(canvasRef.value)
+})
 </script>
 
 <style>

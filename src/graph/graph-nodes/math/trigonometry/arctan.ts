@@ -1,23 +1,23 @@
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { GraphNode } from '../../../core/graph-node';
-import { GraphNodeType } from '../../decorators';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { GraphNode } from '../../../core/graph-node'
+import { GraphNodeType } from '../../decorators'
 
 @GraphNodeType('Math', 'Trigonometry', 'Arctan')
 export class Arctan extends GraphNode {
-  private input;
-  private output;
+  private input
+  private output
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.input = this.registerNumberInput('Tangent Value');
-    this.output = this.registerNumberOutput('Angle (Radians)');
+    this.input = this.registerNumberInput('Tangent Value')
+    this.output = this.registerNumberOutput('Angle (Radians)')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [value] of inputIterators.cycleValues(this.input)) {
-      const result = Math.atan(value);
-      this.output.next(result);
+      const result = Math.atan(value)
+      this.output.next(result)
     }
   }
 }

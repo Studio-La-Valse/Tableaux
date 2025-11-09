@@ -1,25 +1,25 @@
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { GraphNode } from '../../../core/graph-node';
-import { GraphNodeType } from '../../decorators';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { GraphNode } from '../../../core/graph-node'
+import { GraphNodeType } from '../../decorators'
 
 @GraphNodeType('Math', 'Trigonometry', 'Hypotenuse')
 export class Hypotenuse extends GraphNode {
-  private inputA;
-  private inputB;
-  private output;
+  private inputA
+  private inputB
+  private output
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.inputA = this.registerNumberInput('Side A');
-    this.inputB = this.registerNumberInput('Side B');
-    this.output = this.registerNumberOutput('Hypotenuse');
+    this.inputA = this.registerNumberInput('Side A')
+    this.inputB = this.registerNumberInput('Side B')
+    this.output = this.registerNumberOutput('Hypotenuse')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [a, b] of inputIterators.cycleValues(this.inputA, this.inputB)) {
-      const result = Math.sqrt(a * a + b * b);
-      this.output.next(result);
+      const result = Math.sqrt(a * a + b * b)
+      this.output.next(result)
     }
   }
 }

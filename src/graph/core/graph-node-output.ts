@@ -1,32 +1,32 @@
-import type { GraphNode } from './graph-node';
-import { type IGraphNodeInput } from './graph-node-input';
-import { type JsonObject, type JsonValue } from './models/json-value';
-import { Subscription } from './subscription';
-import type { Unsubscriber } from './unsubscriber';
+import type { GraphNode } from './graph-node'
+import type { IGraphNodeInput } from './graph-node-input'
+import type { JsonObject, JsonValue } from './models/json-value'
+import type { Unsubscriber } from './unsubscriber'
+import { Subscription } from './subscription'
 
-export const providerTypes = ['boolean', 'number', 'string', 'object', 'unknown'] as const;
-export type ProviderType = (typeof providerTypes)[number];
+export const providerTypes = ['boolean', 'number', 'string', 'object', 'unknown'] as const
+export type ProviderType = (typeof providerTypes)[number]
 
-export interface IGraphNodeOutput {
-  readonly provides: ProviderType[];
-  readonly payloadLength: number;
+export type IGraphNodeOutput = {
+  readonly provides: ProviderType[]
+  readonly payloadLength: number
 
-  readonly index: number;
-  readonly description: string;
-  readonly graphNodeId: string;
+  readonly index: number
+  readonly description: string
+  readonly graphNodeId: string
 
-  acceptIncoming: (input: IGraphNodeInput) => Unsubscriber;
+  acceptIncoming: (input: IGraphNodeInput) => Unsubscriber
 }
 
 export abstract class GraphNodeOutput implements IGraphNodeOutput {
-  public targetInputs: Set<IGraphNodeInput> = new Set();
+  public targetInputs: Set<IGraphNodeInput> = new Set()
 
   public get graphNodeId() {
-    return this.graphNode.modelId;
+    return this.graphNode.modelId
   }
 
-  public abstract provides: ProviderType[];
-  public abstract payloadLength: number;
+  public abstract provides: ProviderType[]
+  public abstract payloadLength: number
 
   constructor(
     private readonly graphNode: GraphNode,
@@ -38,203 +38,198 @@ export abstract class GraphNodeOutput implements IGraphNodeOutput {
     // Create the subscription
     // Will add the input to the provided set
     // Will throw an exception if unsuccesfull
-    const subscription = Subscription.subscribeOrThrow(this.targetInputs, graphNodeInput);
-    return subscription;
+    const subscription = Subscription.subscribeOrThrow(this.targetInputs, graphNodeInput)
+    return subscription
   }
 
   public trySubscribe(graphNodeId: string): void {
     this.targetInputs.forEach((observer) => {
-      observer.trySubscribeParent(graphNodeId);
-    });
+      observer.trySubscribeParent(graphNodeId)
+    })
   }
 
-  public abstract arm(): void;
+  public abstract arm(): void
 
   public complete(): void {
     this.targetInputs.forEach((input) => {
-      input.complete();
-    });
+      input.complete()
+    })
   }
 }
 
 export abstract class GraphNodeOutputType<T> extends GraphNodeOutput {
-  protected payload: T[] = [];
+  protected payload: T[] = []
 
   public override arm(): void {
-    this.payload.length = 0;
+    this.payload.length = 0
     this.targetInputs.forEach((observer) => {
-      observer.arm();
-    });
+      observer.arm()
+    })
   }
 
   public next(value: T): void {
-    this.payload.push(value);
+    this.payload.push(value)
   }
 
   public get payloadLength(): number {
-    return this.payload.length;
+    return this.payload.length
   }
 }
 
 export abstract class ProvidesBoolean extends GraphNodeOutput {
-  abstract provideBoolean(index: number): boolean;
+  abstract provideBoolean(index: number): boolean
 }
 
 export function providesBoolean(obj: IGraphNodeOutput): obj is ProvidesBoolean {
-  return obj.provides.includes('boolean');
+  return obj.provides.includes('boolean')
 }
 
 export abstract class ProvidesNumber extends GraphNodeOutput {
-  abstract provideNumber(index: number): number;
+  abstract provideNumber(index: number): number
 }
 
 export function providesNumber(obj: IGraphNodeOutput): obj is ProvidesNumber {
-  return obj.provides.includes('number');
+  return obj.provides.includes('number')
 }
 
 export abstract class ProvidesString extends GraphNodeOutput {
-  abstract provideString(index: number): string;
+  abstract provideString(index: number): string
 }
 
 export function providesString(obj: IGraphNodeOutput): obj is ProvidesString {
-  return obj.provides.includes('string');
+  return obj.provides.includes('string')
 }
 
 export abstract class ProvidesObject extends GraphNodeOutput {
-  abstract provideObject(index: number): JsonObject;
+  abstract provideObject(index: number): JsonObject
 }
 
 export function providesObject(obj: IGraphNodeOutput): obj is ProvidesObject {
-  return obj.provides.includes('object');
+  return obj.provides.includes('object')
 }
 
 export abstract class ProvidesUnknown extends GraphNodeOutput {
-  abstract provideUnknown(index: number): JsonValue;
+  abstract provideUnknown(index: number): JsonValue
 }
 
 export function providesUnknown(obj: IGraphNodeOutput): obj is ProvidesUnknown {
-  return obj.provides.includes('unknown');
+  return obj.provides.includes('unknown')
 }
 
 export class GraphNodeOutputBoolean
   extends GraphNodeOutputType<boolean>
-  implements ProvidesBoolean, ProvidesNumber, ProvidesString, ProvidesUnknown
-{
-  override provides = ['boolean', 'number', 'string', 'unknown'] as ProviderType[];
+  implements ProvidesBoolean, ProvidesNumber, ProvidesString, ProvidesUnknown {
+  override provides = ['boolean', 'number', 'string', 'unknown'] as ProviderType[]
 
   constructor(graphNode: GraphNode, index: number, description: string) {
-    super(graphNode, index, description + ' (Boolean)');
+    super(graphNode, index, `${description} (Boolean)`)
   }
 
   public provideBoolean(index: number): boolean {
-    return this.payload[index];
+    return this.payload[index]
   }
 
   public provideNumber(index: number): number {
-    return this.payload[index] ? 1 : 0;
+    return this.payload[index] ? 1 : 0
   }
 
   public provideString(index: number): string {
-    return String(this.payload[index]);
+    return String(this.payload[index])
   }
 
   public provideUnknown(index: number): JsonValue {
-    return this.payload[index];
+    return this.payload[index]
   }
 }
 
 export class GraphNodeOutputNumber
   extends GraphNodeOutputType<number>
-  implements ProvidesNumber, ProvidesString, ProvidesUnknown
-{
-  override provides = ['number', 'string', 'unknown'] as ProviderType[];
+  implements ProvidesNumber, ProvidesString, ProvidesUnknown {
+  override provides = ['number', 'string', 'unknown'] as ProviderType[]
 
   constructor(graphNode: GraphNode, index: number, description: string) {
-    super(graphNode, index, description + ' (Number)');
+    super(graphNode, index, `${description} (Number)`)
   }
 
   public provideNumber(index: number): number {
-    return this.payload[index];
+    return this.payload[index]
   }
 
   public provideString(index: number): string {
-    return String(this.payload[index]);
+    return String(this.payload[index])
   }
 
   public provideUnknown(index: number): JsonValue {
-    return this.payload[index];
+    return this.payload[index]
   }
 }
 
 export class GraphNodeOutputString
   extends GraphNodeOutputType<string>
-  implements ProvidesString, ProvidesUnknown
-{
-  override provides = ['string', 'unknown'] as ProviderType[];
+  implements ProvidesString, ProvidesUnknown {
+  override provides = ['string', 'unknown'] as ProviderType[]
 
   constructor(graphNode: GraphNode, index: number, description: string) {
-    super(graphNode, index, description + ' (String)');
+    super(graphNode, index, `${description} (String)`)
   }
 
   public provideString(index: number): string {
-    return this.payload[index];
+    return this.payload[index]
   }
 
   public provideUnknown(index: number): JsonValue {
-    return this.payload[index];
+    return this.payload[index]
   }
 }
 
 export class GraphNodeOutputObject<T extends JsonObject>
   extends GraphNodeOutputType<T>
-  implements ProvidesString, ProvidesObject, ProvidesUnknown
-{
-  override provides = ['string', 'object', 'unknown'] as ProviderType[];
+  implements ProvidesString, ProvidesObject, ProvidesUnknown {
+  override provides = ['string', 'object', 'unknown'] as ProviderType[]
 
   constructor(graphNode: GraphNode, index: number, description: string) {
-    super(graphNode, index, description + ' (Json Object)');
+    super(graphNode, index, `${description} (Json Object)`)
   }
 
   public provideString(index: number): string {
-    return JSON.stringify(this.payload[index]);
+    return JSON.stringify(this.payload[index])
   }
 
   public provideObject(index: number): JsonObject {
-    return this.payload[index];
+    return this.payload[index]
   }
 
   public provideUnknown(index: number): JsonValue {
-    return this.payload[index];
+    return this.payload[index]
   }
 }
 
 export class GraphNodeOutputUnknown
   extends GraphNodeOutputType<JsonValue>
-  implements ProvidesBoolean, ProvidesNumber, ProvidesString, ProvidesObject, ProvidesUnknown
-{
-  override provides = ['boolean', 'number', 'string', 'object', 'unknown'] as ProviderType[];
+  implements ProvidesBoolean, ProvidesNumber, ProvidesString, ProvidesObject, ProvidesUnknown {
+  override provides = ['boolean', 'number', 'string', 'object', 'unknown'] as ProviderType[]
 
   constructor(graphNode: GraphNode, index: number, description: string) {
-    super(graphNode, index, description + ' (Json Value)');
+    super(graphNode, index, `${description} (Json Value)`)
   }
 
   public provideBoolean(index: number): boolean {
-    return this.payload[index] as boolean;
+    return this.payload[index] as boolean
   }
 
   public provideNumber(index: number): number {
-    return this.payload[index] as number;
+    return this.payload[index] as number
   }
 
   public provideString(index: number): string {
-    return JSON.stringify(this.payload[index]);
+    return JSON.stringify(this.payload[index])
   }
 
   public provideObject(index: number): JsonObject {
-    return this.payload[index] as JsonObject;
+    return this.payload[index] as JsonObject
   }
 
   public provideUnknown(index: number): JsonValue {
-    return this.payload[index];
+    return this.payload[index]
   }
 }

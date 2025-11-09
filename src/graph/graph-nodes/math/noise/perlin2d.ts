@@ -1,26 +1,26 @@
-import { GraphNode } from '@/graph/core/graph-node';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import Perlin from '@/noise/perlin';
-import { GraphNodeType } from '../../decorators';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { GraphNode } from '@/graph/core/graph-node'
+import Perlin from '@/noise/perlin'
+import { GraphNodeType } from '../../decorators'
 
 @GraphNodeType('Math', 'Noise', 'Perlin 2d')
 export class Perlin2d extends GraphNode {
-  private input1;
-  private input2;
-  private inputScale;
+  private input1
+  private input2
+  private inputScale
 
-  private output;
+  private output
 
-  private perlin;
+  private perlin
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.input1 = this.registerNumberInput('X');
-    this.input2 = this.registerNumberInput('Y');
-    this.inputScale = this.registerNumberInput('Scale');
-    this.output = this.registerNumberOutput('Value');
-    this.perlin = new Perlin();
+    this.input1 = this.registerNumberInput('X')
+    this.input2 = this.registerNumberInput('Y')
+    this.inputScale = this.registerNumberInput('Scale')
+    this.output = this.registerNumberOutput('Value')
+    this.perlin = new Perlin()
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -29,8 +29,8 @@ export class Perlin2d extends GraphNode {
       this.input2,
       this.inputScale,
     )) {
-      const v = this.perlin.perlin2(x / scale, y / scale);
-      this.output.next(v);
+      const v = this.perlin.perlin2(x / scale, y / scale)
+      this.output.next(v)
     }
   }
 }

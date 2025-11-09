@@ -12,56 +12,56 @@
     @touchstart.stop
     @touchmove.stop
     @touchend.stop
-  ></textarea>
+  />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useGraphStore } from '@/stores/use-graph-store';
-import type { Emitter } from '@/graph/core/emitter';
-import type { JsonValue } from '@/graph/core/models/json-value';
-
-const graph = useGraphStore();
+import type { Emitter } from '@/graph/core/emitter'
+import type { JsonValue } from '@/graph/core/models/json-value'
+import { onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
+import { useGraphStore } from '@/stores/use-graph-store'
 
 const props = defineProps<{
-  graphNode: Emitter<JsonValue>;
-}>();
+  graphNode: Emitter<JsonValue>
+}>()
 
-const textInputRef = ref<HTMLTextAreaElement | null>(null);
+const graph = useGraphStore()
 
-let changed = false;
-const handleInput = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement;
-  const value = target.value;
-  props.graphNode.onChange(value);
-  changed = true;
-};
+const textInputRef = useTemplateRef<HTMLTextAreaElement>('textInputRef')
 
-const handleClickOutside = (event: MouseEvent) => {
+let changed = false
+function handleInput(event: Event) {
+  const target = event.target as HTMLTextAreaElement
+  const value = target.value
+  props.graphNode.onChange(value)
+  changed = true
+}
+
+function handleClickOutside(event: MouseEvent) {
   if (textInputRef.value && !textInputRef.value.contains(event.target as Node)) {
-    textInputRef.value.blur();
+    textInputRef.value.blur()
     if (changed) {
-      graph.commit();
+      graph.commit()
     }
 
-    changed = false;
+    changed = false
   }
-};
+}
 
-const handleKeyDown = (event: KeyboardEvent) => {
+function handleKeyDown(event: KeyboardEvent) {
   if (event.key === 'Escape') {
-    const textarea = event.target as HTMLTextAreaElement;
-    textarea.blur();
+    const textarea = event.target as HTMLTextAreaElement
+    textarea.blur()
   }
-};
+}
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-});
+  document.addEventListener('click', handleClickOutside)
+})
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style scoped>

@@ -14,17 +14,17 @@
 </template>
 
 <script setup lang="ts">
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
-import type { Emitter } from '@/graph/core/emitter';
-import type { JsonValue } from '@/graph/core/models/json-value';
+import type { Emitter } from '@/graph/core/emitter'
+import type { JsonValue } from '@/graph/core/models/json-value'
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps<{
-  graphNode: Emitter<JsonValue>;
-}>();
+  graphNode: Emitter<JsonValue>
+}>()
 
-const setPressed = (state: boolean) => {
-  props.graphNode.onChange(state);
-};
+function setPressed(state: boolean) {
+  props.graphNode.onChange(state)
+}
 </script>
 
 <style scoped>

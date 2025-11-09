@@ -1,7 +1,11 @@
 <template>
   <div class="edges-container">
     <!-- Permanent edges -->
-    <GraphEdgeRenderer v-for="edge in graph.edges" :key="edge.id" :edge="edge" />
+    <GraphEdgeRenderer
+      v-for="edge in graph.edges"
+      :key="edge.id"
+      :edge="edge"
+    />
 
     <!-- Temporary (drag) edge -->
     <GraphEdgePathRenderer
@@ -16,7 +20,10 @@
     />
 
     <!-- Temporary (reconnect) edges -->
-    <div v-for="tempReconnect in tempEdges" :key="tempReconnect.toNodeId">
+    <div
+      v-for="tempReconnect in tempEdges"
+      :key="tempReconnect.toNodeId"
+    >
       <GraphEdgePathRenderer
         class="temp-edge-svg"
         :x1="tempReconnect.currentX"
@@ -31,71 +38,76 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import GraphEdgeRenderer from './GraphEdgeRenderer.vue';
-import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue';
-import { useGraphStore } from '@/stores/use-graph-store';
-import { useEdgeDrag } from '@/composables/use-edge-drag'; // your new unified composable
-import { useEdgeReconnect } from '@/composables/use-edge-reconnect';
+import { computed } from 'vue'
+import { useEdgeDrag } from '@/composables/use-edge-drag' // your new unified composable
+import { useEdgeReconnect } from '@/composables/use-edge-reconnect'
+import { useGraphStore } from '@/stores/use-graph-store'
+import GraphEdgePathRenderer from './GraphEdgePathRenderer.vue'
+import GraphEdgeRenderer from './GraphEdgeRenderer.vue'
 
-const graph = useGraphStore();
-const { tempEdge } = useEdgeDrag();
+const graph = useGraphStore()
+const { tempEdge } = useEdgeDrag()
 
-const edgeReconnect = useEdgeReconnect();
-const tempEdges = edgeReconnect.tempEdges;
+const edgeReconnect = useEdgeReconnect()
+const tempEdges = edgeReconnect.tempEdges
 
 // Helpers to get port coordinates
 function getOutputX(nodeId: string) {
-  const node = graph.getNode(nodeId);
-  return node.xy.x + (node.width ?? 150);
+  const node = graph.getNode(nodeId)
+  return node.xy.x + (node.width ?? 150)
 }
 function getOutputY(nodeId: string, outputIndex: number) {
-  const node = graph.getNode(nodeId);
-  return node.calculateHandleCoordinate(outputIndex, node.innerNode.outputs.length);
+  const node = graph.getNode(nodeId)
+  return node.calculateHandleCoordinate(outputIndex, node.innerNode.outputs.length)
 }
 function getInputX(nodeId: string) {
-  return graph.getNode(nodeId).xy.x;
+  return graph.getNode(nodeId).xy.x
 }
 function getInputY(nodeId: string, inputIndex: number) {
-  const node = graph.getNode(nodeId);
-  return node.calculateHandleCoordinate(inputIndex, node.innerNode.inputs.length);
+  const node = graph.getNode(nodeId)
+  return node.calculateHandleCoordinate(inputIndex, node.innerNode.inputs.length)
 }
 
 // Compute drag start/end points based on direction
 const dragStart = computed(() => {
-  if (!tempEdge.value) return { x: 0, y: 0 };
+  if (!tempEdge.value)
+    return { x: 0, y: 0 }
   if (tempEdge.value.direction === 'forward') {
     return {
       x: getOutputX(tempEdge.value.fromNodeId!),
       y: getOutputY(tempEdge.value.fromNodeId!, tempEdge.value.fromOutputIndex!),
-    };
-  } else {
+    }
+  }
+  else {
     return {
       x: tempEdge.value.currentX,
       y: tempEdge.value.currentY,
-    };
+    }
   }
-});
+})
 
 const dragEnd = computed(() => {
-  if (!tempEdge.value) return { x: 0, y: 0 };
+  if (!tempEdge.value)
+    return { x: 0, y: 0 }
   if (tempEdge.value.direction === 'forward') {
     return {
       x: tempEdge.value.currentX,
       y: tempEdge.value.currentY,
-    };
-  } else {
+    }
+  }
+  else {
     return {
       x: getInputX(tempEdge.value.toNodeId!),
       y: getInputY(tempEdge.value.toNodeId!, tempEdge.value.toInputIndex!),
-    };
+    }
   }
-});
+})
 
 // Still used for tempEdges (plural)
-const endX = (targetNodeId: string) => getInputX(targetNodeId);
-const endY = (targetNodeId: string, targetInputIndex: number) =>
-  getInputY(targetNodeId, targetInputIndex);
+const endX = (targetNodeId: string) => getInputX(targetNodeId)
+function endY(targetNodeId: string, targetInputIndex: number) {
+  return getInputY(targetNodeId, targetInputIndex)
+}
 </script>
 
 <style scoped>

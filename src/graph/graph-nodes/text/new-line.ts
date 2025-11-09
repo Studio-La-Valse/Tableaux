@@ -1,19 +1,19 @@
-import { GraphNode } from '../../core/graph-node';
-import type { GraphNodeOutputType } from '../../core/graph-node-output';
-import { GraphNodeType } from '../decorators';
+import type { GraphNodeOutputType } from '../../core/graph-node-output'
+import { GraphNode } from '../../core/graph-node'
+import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Text', 'New Line')
 export class NewLine extends GraphNode {
-  private output: GraphNodeOutputType<string>;
+  private output: GraphNodeOutputType<string>
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.output = this.registerStringOutput('Character');
+    this.output = this.registerStringOutput('Character')
   }
 
   protected async solve(): Promise<void> {
-    const text = '\n';
-    this.output.next(text);
+    const text = '\n'
+    this.output.next(text)
   }
 }

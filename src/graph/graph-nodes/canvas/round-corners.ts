@@ -1,31 +1,31 @@
-import { GraphNode } from '../../core/graph-node';
-import { GraphNodeType } from '../decorators';
-import { assertIsOfShapeKind, asShape } from '@/geometry/shape';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import type { Rectangle } from '@/geometry/rectangle';
+import type { Rectangle } from '@/geometry/rectangle'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { assertIsOfShapeKind, asShape } from '@/geometry/shape'
+import { GraphNode } from '../../core/graph-node'
+import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Canvas', 'Round Corners')
 export class RoundCorners extends GraphNode {
-  private inputGeometry;
-  private topLeft;
-  private topRight;
-  private bottomRight;
-  private bottomLeft;
+  private inputGeometry
+  private topLeft
+  private topRight
+  private bottomRight
+  private bottomLeft
 
-  private outputGeometry;
+  private outputGeometry
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.inputGeometry = this.registerObjectInput('Geometry').validate((v) =>
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(v =>
       assertIsOfShapeKind(asShape(v), ['rectangle']),
-    );
-    this.topLeft = this.registerNumberInput('Top Left');
-    this.topRight = this.registerNumberInput('Top Right');
-    this.bottomRight = this.registerNumberInput('Bottom Right');
-    this.bottomLeft = this.registerNumberInput('Bottom Left');
+    )
+    this.topLeft = this.registerNumberInput('Top Left')
+    this.topRight = this.registerNumberInput('Top Right')
+    this.bottomRight = this.registerNumberInput('Bottom Right')
+    this.bottomLeft = this.registerNumberInput('Bottom Left')
 
-    this.outputGeometry = this.registerObjectOutput<Rectangle>('Geometry with Round Corners');
+    this.outputGeometry = this.registerObjectOutput<Rectangle>('Geometry with Round Corners')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -45,8 +45,8 @@ export class RoundCorners extends GraphNode {
       const withFill = {
         ...geom,
         radii: [topLeft, topRight, bottomRight, bottomLeft],
-      };
-      this.outputGeometry.next(withFill);
+      }
+      this.outputGeometry.next(withFill)
     }
   }
 }

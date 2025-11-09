@@ -1,20 +1,20 @@
-import { GraphNode } from '@/graph/core/graph-node';
-import { GraphNodeType } from '../decorators';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { GraphNode } from '@/graph/core/graph-node'
+import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Math', 'Ceiling')
 export class Ceiling extends GraphNode {
-  private numbers;
-  private output;
+  private numbers
+  private output
   constructor(modelId: string) {
-    super(modelId);
-    this.numbers = this.registerNumberInput('Numbers');
-    this.output = this.registerNumberOutput('Ceiling');
+    super(modelId)
+    this.numbers = this.registerNumberInput('Numbers')
+    this.output = this.registerNumberOutput('Ceiling')
   }
 
   protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
     for await (const n of iterators.createGenerator(this.numbers)) {
-      this.output.next(Math.ceil(n));
+      this.output.next(Math.ceil(n))
     }
   }
 }

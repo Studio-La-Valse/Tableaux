@@ -1,18 +1,25 @@
 <template>
   <li>
-    <div class="node-header" @click.stop="toggle">
+    <div
+      class="node-header"
+      @click.stop="toggle"
+    >
       <span class="toggle-icon">{{ expanded ? "▾" : "▸" }}</span>
+
       <span class="group-name">{{ group.name }}</span>
     </div>
 
-    <ul v-if="expanded" class="node-children">
+    <ul
+      v-if="expanded"
+      class="node-children"
+    >
       <!-- recurse, passing down the path so far -->
       <ActivatorNode
         v-for="child in group.children.values()"
         :key="child.name"
         :group="child"
-        :parentPath="currentPath"
-        :forceExpand="forceExpand"
+        :parent-path="currentPath"
+        :force-expand="forceExpand"
       />
 
       <!-- leaf items emit the full path -->
@@ -29,40 +36,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
-import type { ActivatorGroup } from '@/stores/use-graph-node-registry';
-import { useContextMenuStore } from '@/stores/use-context-menu-store';
-import { nanoid } from 'nanoid';
-
-const menu = useContextMenuStore();
+import type { ActivatorGroup } from '@/stores/use-graph-node-registry'
+import { nanoid } from 'nanoid'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useContextMenuStore } from '@/stores/use-context-menu-store'
 
 const props = defineProps<{
-  group: ActivatorGroup;
-  parentPath: string[];
-  forceExpand?: boolean;
-}>();
+  group: ActivatorGroup
+  parentPath: string[]
+  forceExpand?: boolean
+}>()
 
-const expanded = ref(props.forceExpand ?? false);
+const menu = useContextMenuStore()
+
+const expanded = ref(props.forceExpand ?? false)
 
 // build the path array up to *this* group
-const currentPath = computed(() => [...props.parentPath, props.group.name]);
+const currentPath = computed(() => [...props.parentPath, props.group.name])
 
 function toggle() {
-  expanded.value = !expanded.value;
+  expanded.value = !expanded.value
 }
 
-const clickNode = (evt: MouseEvent, nodeName: string) => {
-  menu.onActivate([...currentPath.value, nodeName], nanoid(11));
-};
+function clickNode(evt: MouseEvent, nodeName: string) {
+  menu.onActivate([...currentPath.value, nodeName], nanoid(11))
+}
 
 onMounted(() => {
   watch(
     () => props.forceExpand,
     (val) => {
-      expanded.value = val;
+      expanded.value = val
     },
-  );
-});
+  )
+})
 </script>
 
 <style scoped>

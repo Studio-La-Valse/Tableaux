@@ -2,9 +2,9 @@
   <div
     v-if="menu.visible"
     class="tree-container"
+    :style="{ top: `${menu.y}px`, left: `${menu.x}px` }"
     @mousedown.stop
     @wheel.capture="onWheel"
-    :style="{ top: menu.y + 'px', left: menu.x + 'px' }"
   >
     <input
       ref="inputRef"
@@ -12,15 +12,18 @@
       class="tree-filter"
       type="text"
       placeholder="Filter nodes…"
-    />
+    >
 
-    <ul class="tree-root" v-if="filteredGroup">
+    <ul
+      v-if="filteredGroup"
+      class="tree-root"
+    >
       <ActivatorNode
         v-for="child in filteredGroup.children.values()"
         :key="child.name"
         :group="child"
-        :parentPath="[]"
-        :forceExpand="search !== ''"
+        :parent-path="[]"
+        :force-expand="search !== ''"
       />
 
       <!-- leaf items emit the full path -->
@@ -34,42 +37,46 @@
       </li>
     </ul>
 
-    <div class="no-results" v-else>
+    <div
+      v-else
+      class="no-results"
+    >
       No matching nodes found.
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue';
-import ActivatorNode from '@/components/graph/NodeBrowser/ActivatorNode.vue';
-import { useGraphNodeRegistry } from '@/stores/use-graph-node-registry';
-import { useContextMenuStore } from '@/stores/use-context-menu-store';
-import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid'
+import { computed, nextTick, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
+import ActivatorNode from '@/components/graph/NodeBrowser/ActivatorNode.vue'
+import { useContextMenuStore } from '@/stores/use-context-menu-store'
+import { useGraphNodeRegistry } from '@/stores/use-graph-node-registry'
 
-const menu = useContextMenuStore();
-const { filterTree } = useGraphNodeRegistry();
+const menu = useContextMenuStore()
+const { filterTree } = useGraphNodeRegistry()
 
-const rootGroup = useGraphNodeRegistry().activatorTree;
+const rootGroup = useGraphNodeRegistry().activatorTree
 
-const search = ref('');
-const inputRef = ref<HTMLInputElement | null>(null);
+const search = ref('')
+const inputRef = useTemplateRef<HTMLInputElement>('inputRef')
 
 const filteredGroup = computed(() => {
-  return search.value.trim() ? filterTree(rootGroup, search.value.trim()) : rootGroup;
-});
+  return search.value.trim() ? filterTree(rootGroup, search.value.trim()) : rootGroup
+})
 
-const clickNode = (evt: MouseEvent, nodeName: string) => {
-  menu.onActivate([nodeName], nanoid(11));
-};
+function clickNode(evt: MouseEvent, nodeName: string) {
+  menu.onActivate([nodeName], nanoid(11))
+}
 
-const onWheel = (evt: WheelEvent) => {
-  evt.stopPropagation();
-};
+function onWheel(evt: WheelEvent) {
+  evt.stopPropagation()
+}
 
-const close = (e: KeyboardEvent) => {
-  if (e.key == 'Escape') menu.close();
-};
+function close(e: KeyboardEvent) {
+  if (e.key === 'Escape')
+    menu.close()
+}
 
 onMounted(() => {
   watch(
@@ -77,20 +84,21 @@ onMounted(() => {
     (newValue: boolean) => {
       if (newValue) {
         nextTick(() => {
-          inputRef.value?.focus();
-        });
-      } else {
-        search.value = '';
+          inputRef.value?.focus()
+        })
+      }
+      else {
+        search.value = ''
       }
     },
-  );
+  )
 
-  window.addEventListener('keydown', close);
-});
+  window.addEventListener('keydown', close)
+})
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', close);
-});
+  window.removeEventListener('keydown', close)
+})
 </script>
 
 <style scoped>

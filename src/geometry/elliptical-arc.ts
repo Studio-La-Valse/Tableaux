@@ -1,32 +1,33 @@
-import { type XY } from './xy';
-import { type BaseShape } from './shape';
-import { ellipseAsEllipticalArc, isEllipse, type Ellipse } from './ellipse';
-import type { TransformationMatrix } from './transformation-matrix';
-import { circleAsEllipticalArc, isCircle } from './circle';
-import type { JsonObject } from '@/graph/core/models/json-value';
-import { arcAsEllipticalArc, isArc } from './arc';
+import type { Ellipse } from './ellipse'
+import type { BaseShape } from './shape'
+import type { TransformationMatrix } from './transformation-matrix'
+import type { XY } from './xy'
+import type { JsonObject } from '@/graph/core/models/json-value'
+import { arcAsEllipticalArc, isArc } from './arc'
+import { circleAsEllipticalArc, isCircle } from './circle'
+import { ellipseAsEllipticalArc, isEllipse } from './ellipse'
 
 export type EllipticalArc = Ellipse & {
-  startAngle: number;
-  endAngle: number;
-  counterclockwise: boolean;
-};
+  startAngle: number
+  endAngle: number
+  counterclockwise: boolean
+}
 
 export function isEllipticalArc(object: object): object is EllipticalArc {
   return (
-    isEllipse(object) &&
-    'startAngle' in object &&
-    typeof object.startAngle === 'number' &&
-    'endAngle' in object &&
-    typeof object.endAngle === 'number' &&
-    'counterclockwise' in object &&
-    typeof object.counterclockwise === 'boolean'
-  );
+    isEllipse(object)
+    && 'startAngle' in object
+    && typeof object.startAngle === 'number'
+    && 'endAngle' in object
+    && typeof object.endAngle === 'number'
+    && 'counterclockwise' in object
+    && typeof object.counterclockwise === 'boolean'
+  )
 }
 
 export type EllipticalArcShape = BaseShape & {
-  kind: 'elliptical-arc';
-} & EllipticalArc;
+  kind: 'elliptical-arc'
+} & EllipticalArc
 
 export function createEllipticalArc(
   origin: XY,
@@ -48,27 +49,27 @@ export function createEllipticalArc(
     endAngle,
     counterclockwise,
     t: transformationMatrix,
-  };
+  }
 }
 
 export function asEllipticalArc(object: JsonObject): EllipticalArc {
   if (isEllipticalArc(object)) {
     return {
       ...object,
-    };
+    }
   }
 
   if (isEllipse(object)) {
-    return ellipseAsEllipticalArc(object);
+    return ellipseAsEllipticalArc(object)
   }
 
   if (isCircle(object)) {
-    return circleAsEllipticalArc(object);
+    return circleAsEllipticalArc(object)
   }
 
   if (isArc(object)) {
-    return arcAsEllipticalArc(object);
+    return arcAsEllipticalArc(object)
   }
 
-  throw Error('Object could not be cast to an elliptical arc.');
+  throw new Error('Object could not be cast to an elliptical arc.')
 }

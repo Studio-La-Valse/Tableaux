@@ -1,24 +1,25 @@
-import { isXY, type XY } from './xy';
-import { type BaseShape } from './shape';
-import type { JsonObject } from '@/graph/core/models/json-value';
-import type { Arc } from './arc';
-import type { EllipticalArc } from './elliptical-arc';
+import type { Arc } from './arc'
+import type { EllipticalArc } from './elliptical-arc'
+import type { BaseShape } from './shape'
+import type { XY } from './xy'
+import type { JsonObject } from '@/graph/core/models/json-value'
+import { isXY } from './xy'
 
-export type Circle = { x: number; y: number; radius: number };
-export type CircleShape = BaseShape & { kind: 'circle' } & Circle;
+export type Circle = { x: number, y: number, radius: number }
+export type CircleShape = BaseShape & { kind: 'circle' } & Circle
 
 export function isCircle(object: JsonObject): object is Circle {
-  return isXY(object) && 'radius' in object && typeof object.radius === 'number';
+  return isXY(object) && 'radius' in object && typeof object.radius === 'number'
 }
 
 export function asCircle(object: JsonObject): Circle {
   if (isCircle(object)) {
     return {
       ...object,
-    };
+    }
   }
 
-  throw Error('Object could not be cast to a circle');
+  throw new Error('Object could not be cast to a circle')
 }
 
 export function circleAsArc(circle: Circle): Arc {
@@ -27,7 +28,7 @@ export function circleAsArc(circle: Circle): Arc {
     startAngle: 0,
     endAngle: Math.PI * 2,
     counterclockwise: false,
-  };
+  }
 }
 
 export function circleAsEllipticalArc(circle: Circle): EllipticalArc {
@@ -39,7 +40,7 @@ export function circleAsEllipticalArc(circle: Circle): EllipticalArc {
     startAngle: 0,
     endAngle: Math.PI * 2,
     counterclockwise: false,
-  };
+  }
 }
 
 export function createCircle(origin: XY, radius: number): CircleShape {
@@ -47,6 +48,6 @@ export function createCircle(origin: XY, radius: number): CircleShape {
     kind: 'circle',
     ...origin,
     radius,
-  };
-  return circle;
+  }
+  return circle
 }
