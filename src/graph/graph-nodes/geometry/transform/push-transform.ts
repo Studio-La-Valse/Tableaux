@@ -16,7 +16,7 @@ export class PushTransform extends GraphNode {
 
     this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape);
     this.inputTransform = this.registerObjectInput('Transformation').validate(
-      assertIsTransformationMatrix
+      assertIsTransformationMatrix,
     );
 
     this.outputGeometry = this.registerObjectOutput<Shape>('Translated Geometry');
@@ -25,7 +25,7 @@ export class PushTransform extends GraphNode {
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [geom, transform] of inputIterators.cycleValues(
       this.inputGeometry,
-      this.inputTransform
+      this.inputTransform,
     )) {
       const baseTransform = geom.t ?? identity();
       const result = compose(baseTransform, transform);

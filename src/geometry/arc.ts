@@ -56,7 +56,7 @@ export function createArc(
   startAngle: number,
   endAngle: number,
   counterclockwise: boolean = false,
-  t?: TransformationMatrix
+  t?: TransformationMatrix,
 ): ArcShape {
   return {
     kind: 'arc',

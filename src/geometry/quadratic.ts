@@ -32,7 +32,7 @@ export function createQuadratic(
   start: XY,
   control: XY,
   end: XY,
-  t?: TransformationMatrix
+  t?: TransformationMatrix,
 ): QuadraticShape {
   return {
     kind: 'quadratic',

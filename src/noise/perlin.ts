@@ -2,7 +2,7 @@ class Grad {
   constructor(
     readonly x: number,
     readonly y: number,
-    readonly z: number
+    readonly z: number,
   ) {}
 
   dot2(x: number, y: number): number {
@@ -330,7 +330,7 @@ class Perlin {
     return this.lerp(
       this.lerp(this.lerp(n000, n100, u), this.lerp(n001, n101, u), w),
       this.lerp(this.lerp(n010, n110, u), this.lerp(n011, n111, u), w),
-      v
+      v,
     );
   }
 }

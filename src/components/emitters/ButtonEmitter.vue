@@ -14,54 +14,54 @@
 </template>
 
 <script setup lang="ts">
-  import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
-  import type { Emitter } from '@/graph/core/emitter';
-  import type { JsonValue } from '@/graph/core/models/json-value';
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
+import type { Emitter } from '@/graph/core/emitter';
+import type { JsonValue } from '@/graph/core/models/json-value';
 
-  const props = defineProps<{
-    graphNode: Emitter<JsonValue>;
-  }>();
+const props = defineProps<{
+  graphNode: Emitter<JsonValue>;
+}>();
 
-  const setPressed = (state: boolean) => {
-    props.graphNode.onChange(state);
-  };
+const setPressed = (state: boolean) => {
+  props.graphNode.onChange(state);
+};
 </script>
 
 <style scoped>
-  .press-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1 1 auto;
-    padding: 0;
-    min-width: 0px;
-    width: 100%;
-    box-sizing: border-box;
-    border-radius: 4px;
-    border: 1px solid var(--color-border);
-    background: var(--color-background);
-  }
+.press-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  padding: 0;
+  min-width: 0px;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+}
 
-  .press-button.active {
-    background: var(--color-background-soft);
-    border-color: var(--color-accent);
-  }
+.press-button.active {
+  background: var(--color-background-soft);
+  border-color: var(--color-accent);
+}
 
-  .press-button:hover {
-    background: var(--color-border-hover);
-  }
+.press-button:hover {
+  background: var(--color-border-hover);
+}
 
-  .icon {
-    width: 16px;
-    height: 16px;
-    pointer-events: none;
-  }
+.icon {
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
 
-  .icon-true {
-    color: var(--vt-complete-2);
-  }
+.icon-true {
+  color: var(--vt-complete-2);
+}
 
-  .icon-false {
-    color: var(--vt-error-1);
-  }
+.icon-false {
+  color: var(--vt-error-1);
+}
 </style>

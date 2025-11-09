@@ -26,18 +26,18 @@ export function assertIsShapeKind(value: string): ShapeKind {
 
 export function isOfShapeKind<K extends Shape['kind']>(
   geom: Shape,
-  allowedKinds: K[]
+  allowedKinds: K[],
 ): geom is Extract<Shape, { kind: K }> {
   return allowedKinds.includes(geom.kind as K);
 }
 
 export function assertIsOfShapeKind<K extends Shape['kind']>(
   geom: Shape,
-  allowedKinds: K[]
+  allowedKinds: K[],
 ): Extract<Shape, { kind: K }> {
   if (!allowedKinds.includes(geom.kind as K)) {
     throw new Error(
-      `Provided shape with kind ${geom.kind} is not of kind [${allowedKinds.join(', ')}]`
+      `Provided shape with kind ${geom.kind} is not of kind [${allowedKinds.join(', ')}]`,
     );
   }
 

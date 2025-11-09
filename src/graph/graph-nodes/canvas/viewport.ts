@@ -36,7 +36,7 @@ export class Viewport extends GraphNode {
     const rectangle = createRectangleShape(
       { x: 0, y: 0 },
       this.data.dimensions.x,
-      this.data.dimensions.y
+      this.data.dimensions.y,
     );
     this.output.next(rectangle);
   }

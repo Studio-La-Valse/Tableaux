@@ -28,7 +28,7 @@ export class ConstructCubic extends GraphNode {
       this.inputStart,
       this.inputControl1,
       this.inputControl2,
-      this.inputEnd
+      this.inputEnd,
     )) {
       const cubic = createCubic(start, control1, control2, end);
       this.output.next(cubic);

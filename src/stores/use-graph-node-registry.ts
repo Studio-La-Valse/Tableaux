@@ -1,8 +1,8 @@
 import type { GraphNode } from '@/graph/core/graph-node';
 import { validateNodePathParts } from '@/graph/core/graph-node-path';
-import type { GraphNodeDefinition } from '@/graph/graph-nodes/graph-node-definition';
+import type { NodeClass } from '@/graph/graph-nodes/graph-node-definition';
 import {
-  createCustomNode,
+  createAndRegisterCustomNode,
   type CustomNodeDefinition,
 } from '@/graph/graph-nodes/json/dynamic-graph-node';
 import { defineStore } from 'pinia';
@@ -10,12 +10,12 @@ import { defineStore } from 'pinia';
 export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
   const activatorTree = new ActivatorGroup('root');
 
-  function register(definition: GraphNodeDefinition) {
+  function register(NodeClass: NodeClass) {
     let tree = activatorTree;
 
-    const path = definition.NodeClass.__graphNodePath;
+    const path = NodeClass.__graphNodePath;
     if (!path) {
-      throw Error(`Trying to register a component that does not have path.`);
+      throw Error('Trying to register a component that does not have path.');
     }
 
     const { errors, sanitized } = validateNodePathParts(path);
@@ -23,49 +23,43 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
       throw Error(`Invalid Node Path: ${errors[0]}`);
     }
 
+    // Create intermediate groups
     sanitized.slice(0, -1).forEach((segment) => {
-      let branch = tree.findChild(segment);
-      if (!branch) {
-        branch = new ActivatorGroup(segment);
-        tree.children.push(branch);
-      }
-      tree = branch;
+      tree = tree.ensureChild(segment);
     });
 
     const leaf = sanitized[sanitized.length - 1];
-    const existing = tree.findActivator(leaf);
 
-    if (existing) {
-      throw Error(`A node with the path ${path} is already registered. No overrides allowed.`);
-    }
-
-    tree.activators.push(new Activator(leaf, definition));
+    // ✅ Overwrite existing activator instead of rejecting
+    tree.activators.set(leaf, new Activator(leaf, NodeClass));
   }
 
   function loadCustomDefinitions(defs: CustomNodeDefinition[]) {
     _clearCustomDefinitions();
-    defs.forEach((def) => createCustomNode(def)); // automatically registers NodeClass with template
+    defs.forEach((def) => createAndRegisterCustomNode(def)); // automatically registers NodeClass with template
   }
 
   function _clearCustomDefinitions() {
     function traverseAndClean(group: ActivatorGroup): boolean {
-      // 1. Remove custom activators
-      group.activators = group.activators.filter((a) => !a.definition.customTemplate);
+      // Remove custom activators
+      for (const [key, a] of group.activators) {
+        if (a.NodeClass.__customNodeDefinition) {
+          group.activators.delete(key);
+        }
+      }
 
-      // 2. Recursively clean children
-      group.children = group.children.filter((child) => {
+      // Recursively clean children
+      for (const [key, child] of group.children) {
         const keep = traverseAndClean(child);
-        return keep;
-      });
+        if (!keep) {
+          group.children.delete(key);
+        }
+      }
 
-      // 3. Return whether this group should remain in the tree
-      const hasActivators = group.activators.length > 0;
-      const hasChildren = group.children.length > 0;
+      const hasActivators = group.activators.size > 0;
+      const hasChildren = group.children.size > 0;
 
-      // Root should always remain
       if (group === activatorTree) return true;
-
-      // Keep only if it has content
       return hasActivators || hasChildren;
     }
 
@@ -76,12 +70,12 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
     const result: CustomNodeDefinition[] = [];
 
     function traverse(group: ActivatorGroup) {
-      for (const a of group.activators) {
-        if (a.definition.customTemplate) {
-          result.push(a.definition.customTemplate);
+      for (const a of group.activators.values()) {
+        if (a.NodeClass.__customNodeDefinition) {
+          result.push(a.NodeClass.__customNodeDefinition);
         }
       }
-      for (const child of group.children) {
+      for (const child of group.children.values()) {
         traverse(child);
       }
     }
@@ -95,11 +89,11 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
     let tree: ActivatorGroup | undefined = activatorTree;
 
     for (const segment of path.slice(0, -1)) {
-      tree = tree.findChild(segment);
+      tree = tree.getChild(segment);
       if (!tree) return undefined;
     }
 
-    return tree.findActivator(path[path.length - 1]);
+    return tree.getActivator(path[path.length - 1]);
   }
 
   /** Returns true if a definition exists at the given path */
@@ -108,9 +102,9 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
   }
 
   /** Returns only the definition (not the activator) */
-  function getDefinition(path: string[]): GraphNodeDefinition | undefined {
+  function getDefinition(path: string[]): NodeClass | undefined {
     const a = getFromPath(path);
-    return a?.definition;
+    return a?.NodeClass;
   }
 
   /** Get all registered paths */
@@ -118,10 +112,10 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
     const paths: string[][] = [];
 
     function traverse(tree: ActivatorGroup, currentPath: string[]) {
-      for (const a of tree.activators) {
+      for (const a of tree.activators.values()) {
         paths.push([...currentPath, a.name]);
       }
-      for (const child of tree.children) {
+      for (const child of tree.children.values()) {
         traverse(child, [...currentPath, child.name]);
       }
     }
@@ -136,7 +130,7 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
     if (!activator) {
       throw Error(`No graph node registered with path ${path.join('/')}`);
     }
-    return new activator.definition.NodeClass(modelId);
+    return new activator.NodeClass(modelId);
   }
 
   /**
@@ -145,15 +139,22 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
   function filterTree(group: ActivatorGroup, term: string): ActivatorGroup | null {
     const match = (name: string) => name.toLowerCase().includes(term.toLowerCase());
 
-    const matchedActivators = group.activators.filter((a) => match(a.name));
-    const matchedChildren = group.children
-      .map((child) => filterTree(child, term))
-      .filter(Boolean) as ActivatorGroup[];
+    const matchedActivators = [...group.activators.values()].filter((a) => match(a.name));
+    const matchedChildren: ActivatorGroup[] = [];
+
+    for (const child of group.children.values()) {
+      const filtered = filterTree(child, term);
+      if (filtered) matchedChildren.push(filtered);
+    }
 
     if (matchedActivators.length || matchedChildren.length) {
       const newGroup = new ActivatorGroup(group.name);
-      newGroup.activators = matchedActivators;
-      newGroup.children = matchedChildren;
+      for (const a of matchedActivators) {
+        newGroup.activators.set(a.name, a);
+      }
+      for (const child of matchedChildren) {
+        newGroup.children.set(child.name, child);
+      }
       return newGroup;
     }
 
@@ -180,22 +181,30 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
 export class Activator {
   constructor(
     public name: string,
-    public definition: GraphNodeDefinition
+    public NodeClass: NodeClass,
   ) {}
 }
 
-/** A group of categories, holding children and activators */
 export class ActivatorGroup {
-  public children: ActivatorGroup[] = [];
-  public activators: Activator[] = [];
+  public children = new Map<string, ActivatorGroup>();
+  public activators = new Map<string, Activator>();
 
   constructor(public name: string) {}
 
-  findChild(name: string): ActivatorGroup | undefined {
-    return this.children.find((c) => c.name === name);
+  getChild(name: string): ActivatorGroup | undefined {
+    return this.children.get(name);
   }
 
-  findActivator(name: string): Activator | undefined {
-    return this.activators.find((a) => a.name === name);
+  getActivator(name: string): Activator | undefined {
+    return this.activators.get(name);
+  }
+
+  ensureChild(name: string): ActivatorGroup {
+    let child = this.children.get(name);
+    if (!child) {
+      child = new ActivatorGroup(name);
+      this.children.set(name, child);
+    }
+    return child;
   }
 }

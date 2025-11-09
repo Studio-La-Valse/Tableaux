@@ -31,7 +31,7 @@ export abstract class GraphNodeOutput implements IGraphNodeOutput {
   constructor(
     private readonly graphNode: GraphNode,
     public readonly index: number,
-    public readonly description: string
+    public readonly description: string,
   ) {}
 
   public acceptIncoming(graphNodeInput: IGraphNodeInput) {

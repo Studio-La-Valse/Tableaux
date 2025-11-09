@@ -1,21 +1,19 @@
 import 'reflect-metadata';
 import type { Component } from 'vue';
-import type { GraphNodeConstructor, GraphNodeDefinition } from './graph-node-definition';
+import type { NodeClass } from './graph-node-definition';
 
-export const graphNodeTypes: Array<GraphNodeDefinition> = [];
+export const graphNodeTypes: Array<NodeClass> = [];
 
 export function GraphNodeType(...category: string[]) {
-  return function (target: GraphNodeConstructor) {
+  return function (target: NodeClass) {
     target.__graphNodePath = category;
 
-    graphNodeTypes.push({
-      NodeClass: target,
-    });
+    graphNodeTypes.push(target);
   };
 }
 
 export function GraphNodePanel(component: Component) {
-  return function (target: GraphNodeConstructor) {
+  return function (target: NodeClass) {
     target.__graphNodePanel = component;
   };
 }

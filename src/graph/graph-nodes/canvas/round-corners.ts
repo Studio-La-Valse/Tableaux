@@ -18,7 +18,7 @@ export class RoundCorners extends GraphNode {
     super(modelId);
 
     this.inputGeometry = this.registerObjectInput('Geometry').validate((v) =>
-      assertIsOfShapeKind(asShape(v), ['rectangle'])
+      assertIsOfShapeKind(asShape(v), ['rectangle']),
     );
     this.topLeft = this.registerNumberInput('Top Left');
     this.topRight = this.registerNumberInput('Top Right');
@@ -36,12 +36,12 @@ export class RoundCorners extends GraphNode {
       bottomRight,
       bottomLeft,
     ] of inputIterators.cycleValues(
-      this.inputGeometry,
-      this.topLeft,
-      this.topRight,
-      this.bottomRight,
-      this.bottomLeft
-    )) {
+        this.inputGeometry,
+        this.topLeft,
+        this.topRight,
+        this.bottomRight,
+        this.bottomLeft,
+      )) {
       const withFill = {
         ...geom,
         radii: [topLeft, topRight, bottomRight, bottomLeft],

@@ -28,7 +28,7 @@ export class Map extends GraphNode {
       this.fromStart,
       this.fromEnd,
       this.toStart,
-      this.toEnd
+      this.toEnd,
     )) {
       if (inMin === inMax) {
         throw new Error('Input range cannot have the same min and max values');

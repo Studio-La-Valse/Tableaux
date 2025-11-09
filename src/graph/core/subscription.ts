@@ -5,7 +5,7 @@ import type { Unsubscriber } from './unsubscriber';
 export class Subscription implements Unsubscriber {
   constructor(
     private inputs: Set<IGraphNodeInput>,
-    private observer: IGraphNodeInput
+    private observer: IGraphNodeInput,
   ) {}
 
   public unsubscribe(): void {
@@ -14,7 +14,7 @@ export class Subscription implements Unsubscriber {
 
   public static subscribeOrThrow(
     alreadyConnectedInputs: Set<IGraphNodeInput>,
-    graphNodeOutput: IGraphNodeInput
+    graphNodeOutput: IGraphNodeInput,
   ): Unsubscriber {
     if (!alreadyConnectedInputs.add(graphNodeOutput)) {
       throw new ObserverAlreadySubscribedError();

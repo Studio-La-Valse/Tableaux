@@ -24,7 +24,7 @@ export class SetDropShadow extends GraphNode {
     this.inputSize = this.registerNumberInput('Size');
 
     this.outputGeometry = this.registerObjectOutput<Shape & { dropShadow: DropShadow }>(
-      'Geometry with shadow'
+      'Geometry with shadow',
     );
   }
 
@@ -33,7 +33,7 @@ export class SetDropShadow extends GraphNode {
       this.inputGeometry,
       this.inputOffset,
       this.inputColor,
-      this.inputSize
+      this.inputSize,
     )) {
       const withStroke = applyDropShadow(geom, offset, color, size);
       this.outputGeometry.next(withStroke);

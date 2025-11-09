@@ -1,6 +1,6 @@
-@import './base.css';
+@import "./base.css";
 
-input[type='range'] {
+input[type="range"] {
   background: transparent; /* let us style the track */
   cursor: pointer;
 
@@ -10,14 +10,14 @@ input[type='range'] {
 }
 
 /* Track styling (WebKit) */
-input[type='range']::-webkit-slider-runnable-track {
+input[type="range"]::-webkit-slider-runnable-track {
   height: 5px;
   background: var(--color-border);
   border-radius: 2px;
 }
 
 /* Thumb styling (WebKit) */
-input[type='range']::-webkit-slider-thumb {
+input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   height: 16px;
@@ -30,14 +30,14 @@ input[type='range']::-webkit-slider-thumb {
 }
 
 /* Track styling (Firefox) */
-input[type='range']::-moz-range-track {
+input[type="range"]::-moz-range-track {
   height: 6px;
   background: var(--color-accent);
   border-radius: 3px;
 }
 
 /* Thumb styling (Firefox) */
-input[type='range']::-moz-range-thumb {
+input[type="range"]::-moz-range-thumb {
   height: 16px;
   width: 16px;
   border-radius: 50%;
@@ -46,7 +46,7 @@ input[type='range']::-moz-range-thumb {
   cursor: pointer;
 }
 
-input[type='range']::-webkit-slider-thumb:hover,
-input[type='range']::-moz-range-thumb:hover {
+input[type="range"]::-webkit-slider-thumb:hover,
+input[type="range"]::-moz-range-thumb:hover {
   background: color-mix(in srgb, var(--color-accent) 80%, white);
 }

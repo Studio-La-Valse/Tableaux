@@ -95,7 +95,7 @@ const useGraphInternal = defineStore('graph', () => {
 
     // remove existing edge to same input
     edges.value = edges.value.filter(
-      (e) => !(e.rightGraphNode.modelId === rightId && e.inputIndex === inputIndex)
+      (e) => !(e.rightGraphNode.modelId === rightId && e.inputIndex === inputIndex),
     );
     edges.value.push(edge);
 
@@ -104,7 +104,7 @@ const useGraphInternal = defineStore('graph', () => {
 
   const removeEdge = (rightNodeId: string, inputIndex: number) => {
     const idx = edges.value.findIndex(
-      (e) => e.rightGraphNode.modelId === rightNodeId && e.inputIndex === inputIndex
+      (e) => e.rightGraphNode.modelId === rightNodeId && e.inputIndex === inputIndex,
     );
     if (idx === -1) return;
 
@@ -232,11 +232,11 @@ const useGraphInternal = defineStore('graph', () => {
     wrapper.xy = { x: model.x, y: model.y };
     if (model.width) wrapper.width = model.width;
     if (model.height) wrapper.height = model.height;
+    if (model.data) Object.assign(wrapper.innerNode.data, JSON.parse(JSON.stringify(model.data)));
+    if (model.data?.params_length)
+      node.setParamsLength(Number(wrapper.innerNode.data.params_length));
 
-    if (model.data) Object.assign(node.data, structuredClone(model.data));
-    if (node.data?.params_length) node.setParamsLength(Number(node.data.params_length));
-
-    node.onInitialize();
+    wrapper.innerNode.onInitialize();
     nodeMap.value[wrapper.modelId] = wrapper;
   };
 

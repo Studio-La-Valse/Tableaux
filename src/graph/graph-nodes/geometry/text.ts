@@ -27,7 +27,7 @@ export class Text extends GraphNode {
       this.inputText,
       this.inputOrigin,
       this.inputFontFamily,
-      this.inputFontSize
+      this.inputFontSize,
     )) {
       const v = createText(t, o, ff, si);
       this.outputText.next(v);

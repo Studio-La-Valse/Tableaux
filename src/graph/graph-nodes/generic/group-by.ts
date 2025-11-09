@@ -40,7 +40,7 @@ export default class GroupBy extends GraphNode {
       const value = object[key];
       if (!this.isValidGroupKey(value)) {
         throw new Error(
-          `GroupBy: value for key "${key}" must be string or number, got ${typeof value}`
+          `GroupBy: value for key "${key}" must be string or number, got ${typeof value}`,
         );
       }
 

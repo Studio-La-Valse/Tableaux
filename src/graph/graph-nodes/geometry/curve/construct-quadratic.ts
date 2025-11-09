@@ -25,7 +25,7 @@ export class ConstructQuadratic extends GraphNode {
     for await (const [start, control, end] of inputIterators.cycleValues(
       this.inputStart,
       this.inputControl,
-      this.inputEnd
+      this.inputEnd,
     )) {
       const quadratic = createQuadratic(start, control, end);
       this.output.next(quadratic);

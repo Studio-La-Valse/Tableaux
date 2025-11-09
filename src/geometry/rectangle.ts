@@ -54,7 +54,7 @@ export function createRectangleShape(
   topLeft: XY,
   width: number,
   height: number,
-  radii?: number | number[]
+  radii?: number | number[],
 ): RectangleShape {
   return {
     kind: 'rectangle',

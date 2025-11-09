@@ -31,7 +31,7 @@ export class Arc extends GraphNode {
       this.input2,
       this.input3,
       this.input4,
-      this.input5
+      this.input5,
     )) {
       const arc = createArc(xy, radius, start, end, clockwise);
       this.outputCircle.next(arc);

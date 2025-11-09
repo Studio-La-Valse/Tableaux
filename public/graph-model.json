@@ -2,10 +2,7 @@
   "nodes": [
     {
       "id": "Zlytu9sKZ8-",
-      "path": [
-        "Text",
-        "Text Emitter"
-      ],
+      "path": ["Text", "Text Emitter"],
       "x": 172.98030923571554,
       "y": 192.08859332685202,
       "data": {
@@ -18,10 +15,7 @@
     },
     {
       "id": "_WVHKYDF0QW",
-      "path": [
-        "Generic",
-        "Logger"
-      ],
+      "path": ["Generic", "Logger"],
       "x": 716.7989501182925,
       "y": 197.80921420317864,
       "width": 329.02434835782924,
@@ -29,10 +23,7 @@
     },
     {
       "id": "Gz7xWfU96hy",
-      "path": [
-        "Text",
-        "Text Emitter"
-      ],
+      "path": ["Text", "Text Emitter"],
       "x": 173.64187088941958,
       "y": 305.4784464465574,
       "data": {
@@ -45,10 +36,7 @@
     },
     {
       "id": "vQV8kpdd_zt",
-      "path": [
-        "Text",
-        "Join"
-      ],
+      "path": ["Text", "Join"],
       "x": 440.5386751159624,
       "y": 171.53843529352875,
       "data": {
@@ -57,10 +45,7 @@
     },
     {
       "id": "ShtzWf9NnxN",
-      "path": [
-        "Text",
-        "Text Emitter"
-      ],
+      "path": ["Text", "Text Emitter"],
       "x": 170.07258271166188,
       "y": 98.93522260984122,
       "data": {
@@ -73,10 +58,7 @@
     },
     {
       "id": "lXkUEgV6EHS",
-      "path": [
-        "Canvas",
-        "Viewport"
-      ],
+      "path": ["Canvas", "Viewport"],
       "x": 423.51881384423086,
       "y": 462.2073294254558,
       "data": {
@@ -88,38 +70,25 @@
     },
     {
       "id": "DADlwbIxz_V",
-      "path": [
-        "Geometry",
-        "Analyze",
-        "Center"
-      ],
+      "path": ["Geometry", "Analyze", "Center"],
       "x": 595.0631438300073,
       "y": 462.2073294254558
     },
     {
       "id": "9bCzXT4XZ1S",
-      "path": [
-        "Canvas",
-        "Fonts"
-      ],
+      "path": ["Canvas", "Fonts"],
       "x": 408.002586095427,
       "y": 587.4142547735012
     },
     {
       "id": "ynkeyW5fx_L",
-      "path": [
-        "Generic",
-        "At"
-      ],
+      "path": ["Generic", "At"],
       "x": 579.5465712684799,
       "y": 632.2399088401362
     },
     {
       "id": "NEvoPqDKaoK",
-      "path": [
-        "Math",
-        "Number Emitter"
-      ],
+      "path": ["Math", "Number Emitter"],
       "x": 409.7263049006508,
       "y": 685.6858809965087,
       "data": {
@@ -130,19 +99,13 @@
     },
     {
       "id": "IJQ0ASw47C-",
-      "path": [
-        "Geometry",
-        "Text"
-      ],
+      "path": ["Geometry", "Text"],
       "x": 819.2797258231591,
       "y": 433.80859995891603
     },
     {
       "id": "zaJtxkM1pyg",
-      "path": [
-        "Math",
-        "Number Emitter"
-      ],
+      "path": ["Math", "Number Emitter"],
       "x": 567.1337442351622,
       "y": 751.7179485798025,
       "data": {
@@ -153,20 +116,13 @@
     },
     {
       "id": "ZMdlSR2MZTI",
-      "path": [
-        "Canvas",
-        "Set Fill"
-      ],
+      "path": ["Canvas", "Set Fill"],
       "x": 1272.5954230609104,
       "y": 518.3146086272861
     },
     {
       "id": "f966ohqemNq",
-      "path": [
-        "Geometry",
-        "Color",
-        "Color Picker"
-      ],
+      "path": ["Geometry", "Color", "Color Picker"],
       "x": 1061.4657692966582,
       "y": 654.5686041260041,
       "data": {
@@ -177,28 +133,19 @@
     },
     {
       "id": "1Lyfn5k1cZ4",
-      "path": [
-        "Canvas",
-        "Canvas"
-      ],
+      "path": ["Canvas", "Canvas"],
       "x": 1443.739138786373,
       "y": 531.2207644465542
     },
     {
       "id": "MtNRxzzUp7R",
-      "path": [
-        "Canvas",
-        "Set Text Format"
-      ],
+      "path": ["Canvas", "Set Text Format"],
       "x": 1066.7091387606074,
       "y": 474.1871240654026
     },
     {
       "id": "S2fmY_7HqX2",
-      "path": [
-        "Canvas",
-        "Text Alignment"
-      ],
+      "path": ["Canvas", "Text Alignment"],
       "x": 816.7321059323357,
       "y": 628.9055179690249
     }

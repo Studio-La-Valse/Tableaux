@@ -54,7 +54,7 @@ export function createEllipseShape(
   origin: XY,
   radiusX: number,
   radiusY: number,
-  rotation: number
+  rotation: number,
 ): EllipseShape {
   return {
     ...origin,

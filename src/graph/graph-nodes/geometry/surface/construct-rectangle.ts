@@ -25,7 +25,7 @@ export class Rectangle extends GraphNode {
     for await (const [topLeft, width, height] of inputIterators.cycleValues(
       this.inputTopLeft,
       this.inputWidth,
-      this.inputHeight
+      this.inputHeight,
     )) {
       const rectangle = createRectangleShape(topLeft, width, height);
       this.outputRect.next(rectangle);

@@ -27,7 +27,7 @@ export class Simplex2d extends GraphNode {
     for await (const [x, y, scale] of inputIterators.cycleValues(
       this.input1,
       this.input2,
-      this.inputScale
+      this.inputScale,
     )) {
       const v = this.perlin.simplex2(x / scale, y / scale);
       this.output.next(v);

@@ -33,7 +33,7 @@ export class SetTextFormat extends GraphNode {
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [text, alignment, baseline, direction] of inputIterators.cycleValues(
-      ...this.asConst
+      ...this.asConst,
     )) {
       if (!textAlignments.includes(alignment as AlignmentKind)) {
         throw new Error('Provided alignment is not valid.');

@@ -24,7 +24,7 @@ export class StoreWriter extends GraphNode {
 
     // Auto-initialize if store doesn't exist yet
     if (!listStores().includes(name)) {
-      throw Error(`Store with name {name} does not exist! Please initialize it first.`);
+      throw Error('Store with name {name} does not exist! Please initialize it first.');
     } else {
       read(name).update(values);
     }

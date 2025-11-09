@@ -30,7 +30,7 @@ export class Perlin3d extends GraphNode {
       this.input1,
       this.input2,
       this.input3,
-      this.inputScale
+      this.inputScale,
     )) {
       const v = this.perlin.perlin3(x / scale, y / scale, z / scale);
       this.output.next(v);

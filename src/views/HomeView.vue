@@ -77,162 +77,162 @@
 
     <!-- Footer -->
     <div class="fixed-footer">
-      {{ lastError || '✅ All clear' }}
+      {{ lastError || "✅ All clear" }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import {
-    ArrowsRightLeftIcon,
-    ArrowsUpDownIcon,
-    FilmIcon,
-    CodeBracketIcon,
-  } from '@heroicons/vue/24/outline';
+import {
+  ArrowsRightLeftIcon,
+  ArrowsUpDownIcon,
+  FilmIcon,
+  CodeBracketIcon,
+} from '@heroicons/vue/24/outline';
 
-  import { ref } from 'vue';
-  import { Panel, PanelGroup, PanelResizeHandle } from 'vue-resizable-panels';
-  import GraphCanvas from '@/components/graph/GraphComponent.vue';
-  import CanvasComponent from '@/components/canvas/CanvasComponent.vue';
-  import { lastError } from '@/stores/use-error-log-store';
+import { ref } from 'vue';
+import { Panel, PanelGroup, PanelResizeHandle } from 'vue-resizable-panels';
+import GraphCanvas from '@/components/graph/GraphComponent.vue';
+import CanvasComponent from '@/components/canvas/CanvasComponent.vue';
+import { lastError } from '@/stores/use-error-log-store';
 
-  const layoutMode = ref<'horizontal' | 'vertical' | 'graph' | 'canvas'>('vertical');
+const layoutMode = ref<'horizontal' | 'vertical' | 'graph' | 'canvas'>('vertical');
 
-  function navigateToGithub() {
-    window.open('https://github.com/Studio-La-Valse/Tableaux/', '_blank');
-  }
+function navigateToGithub() {
+  window.open('https://github.com/Studio-La-Valse/Tableaux/', '_blank');
+}
 </script>
 
 <style scoped>
-  .home-container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-  }
+.home-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
 
-  /* Split container fills all space above footer */
-  .split-container {
-    flex: 1;
-    display: flex;
-    overflow: hidden;
-  }
+/* Split container fills all space above footer */
+.split-container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
 
-  /* Deep selectors to style internal structure of vue-resizable-panels */
-  :deep(.PanelGroup) {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
+/* Deep selectors to style internal structure of vue-resizable-panels */
+:deep(.PanelGroup) {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
 
-  :deep(.PanelGroup[direction='vertical']) {
-    flex-direction: column;
-  }
+:deep(.PanelGroup[direction="vertical"]) {
+  flex-direction: column;
+}
 
-  :deep(.Panel) {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
+:deep(.Panel) {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
 
-  /* Horizontal handles */
-  :deep(.gutter-horizontal) {
-    width: 2px;
-    background-color: var(--color-border-hover);
-    cursor: col-resize;
-  }
+/* Horizontal handles */
+:deep(.gutter-horizontal) {
+  width: 2px;
+  background-color: var(--color-border-hover);
+  cursor: col-resize;
+}
 
-  :deep(.gutter-horizontal:hover::before) {
-    height: 4px;
-  }
+:deep(.gutter-horizontal:hover::before) {
+  height: 4px;
+}
 
-  /* Vertical handles */
-  :deep(.gutter-vertical) {
-    height: 2px;
-    background-color: var(--color-border-hover);
-    cursor: row-resize;
-  }
+/* Vertical handles */
+:deep(.gutter-vertical) {
+  height: 2px;
+  background-color: var(--color-border-hover);
+  cursor: row-resize;
+}
 
-  :deep(.gutter-horizontal:hover::before) {
-    height: 4px;
-  }
+:deep(.gutter-horizontal:hover::before) {
+  height: 4px;
+}
 
-  :deep(.gutter-horizontal:hover),
-  :deep(.gutter-vertical:hover) {
-    background-color: var(--color-accent);
-  }
+:deep(.gutter-horizontal:hover),
+:deep(.gutter-vertical:hover) {
+  background-color: var(--color-accent);
+}
 
-  .panel-content {
-    flex: 1;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-  }
+.panel-content {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
 
-  /* Gutters */
-  .gutter {
-    flex-shrink: 0;
-  }
+/* Gutters */
+.gutter {
+  flex-shrink: 0;
+}
 
-  :deep(.PanelGroup[direction='horizontal'] .gutter) {
-    cursor: col-resize;
-    width: 4px;
-  }
+:deep(.PanelGroup[direction="horizontal"] .gutter) {
+  cursor: col-resize;
+  width: 4px;
+}
 
-  :deep(.PanelGroup[direction='vertical'] .gutter) {
-    cursor: row-resize;
-    height: 4px;
-  }
+:deep(.PanelGroup[direction="vertical"] .gutter) {
+  cursor: row-resize;
+  height: 4px;
+}
 
-  /* Floating buttons */
-  .button-group {
-    position: fixed;
-    bottom: 40px;
-    left: 16px;
-    display: flex;
-    gap: 8px;
-  }
+/* Floating buttons */
+.button-group {
+  position: fixed;
+  bottom: 40px;
+  left: 16px;
+  display: flex;
+  gap: 8px;
+}
 
-  .toggle-btn {
-    width: 50px;
-    height: 50px;
-    background: var(--color-background);
-    color: var(--color-text);
-    border: 1px solid var(--color-border-hover);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
+.toggle-btn {
+  width: 50px;
+  height: 50px;
+  background: var(--color-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-hover);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
 
-  .toggle-btn.active {
-    border: 2px solid var(--color-accent);
-    background: var(--color-background-soft);
-  }
+.toggle-btn.active {
+  border: 2px solid var(--color-accent);
+  background: var(--color-background-soft);
+}
 
-  .icon {
-    width: 20px;
-    height: 20px;
-  }
+.icon {
+  width: 20px;
+  height: 20px;
+}
 
-  .toggle-btn.vertical .icon {
-    transform: rotate(90deg);
-  }
+.toggle-btn.vertical .icon {
+  transform: rotate(90deg);
+}
 
-  /* Footer */
-  .fixed-footer {
-    height: 30px;
-    background-color: var(--color-accent);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-  }
+/* Footer */
+.fixed-footer {
+  height: 30px;
+  background-color: var(--color-accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
 
-  .icon {
-    width: 20px;
-    height: 20px;
-  }
+.icon {
+  width: 20px;
+  height: 20px;
+}
 </style>

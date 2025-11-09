@@ -4,7 +4,7 @@ import type { GraphNodeInput } from './graph-node-input';
 import type { GraphNodeOutput } from './graph-node-output';
 import { InputIteratorsAsync } from './input-iterators-async';
 import type { JsonObject } from './models/json-value';
-import type { GraphNodeConstructor } from '../graph-nodes/graph-node-definition';
+import type { NodeClass } from '../graph-nodes/graph-node-definition';
 
 /**
  * Abstract base class representing the core logic of a graph node.
@@ -80,8 +80,8 @@ export abstract class GraphNodeCore {
   }
 
   /** Optional typed constructor accessor for metadata */
-  protected get ctor(): GraphNodeConstructor {
-    return this.constructor as unknown as GraphNodeConstructor;
+  protected get ctor(): NodeClass {
+    return this.constructor as unknown as NodeClass;
   }
 
   /**

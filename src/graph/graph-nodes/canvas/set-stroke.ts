@@ -27,7 +27,7 @@ export class SetStroke extends GraphNode {
     for await (const [geom, stroke, strokeWidth] of inputIterators.cycleValues(
       this.inputGeometry,
       this.color,
-      this.strokeWidth
+      this.strokeWidth,
     )) {
       const withStroke = {
         ...geom,

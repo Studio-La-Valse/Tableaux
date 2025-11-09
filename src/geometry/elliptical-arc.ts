@@ -36,7 +36,7 @@ export function createEllipticalArc(
   startAngle: number,
   endAngle: number,
   counterclockwise: boolean = false,
-  transformationMatrix?: TransformationMatrix
+  transformationMatrix?: TransformationMatrix,
 ): EllipticalArcShape {
   return {
     kind: 'elliptical-arc',

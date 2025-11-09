@@ -26,7 +26,7 @@ export class CreateScale extends GraphNode {
     for await (const [origin, x, y] of inputIterators.cycleValues(
       this.inputCenter,
       this.inputFactorX,
-      this.inputFactorY
+      this.inputFactorY,
     )) {
       const factor = { x, y };
       const scaled = createScale(origin, factor);

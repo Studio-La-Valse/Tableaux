@@ -39,7 +39,7 @@ export function createCubic(
   control1: XY,
   control2: XY,
   end: XY,
-  t?: TransformationMatrix
+  t?: TransformationMatrix,
 ): CubicShape {
   return {
     kind: 'cubic',

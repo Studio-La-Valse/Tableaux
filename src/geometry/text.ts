@@ -79,7 +79,7 @@ export const createText = (
   text: string,
   origin: XY,
   fontFamily: Font,
-  fontSize: number
+  fontSize: number,
 ): TextShape => {
   return {
     kind: 'text',

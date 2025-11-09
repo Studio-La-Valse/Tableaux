@@ -80,7 +80,7 @@ export default class FrameGenerator extends GraphNode {
     const [active, reset, delay] = inputIterators.singletonOnly(
       this.inputActive,
       this.inputReset,
-      this.inputDelay
+      this.inputDelay,
     );
 
     if (delay < 1) {

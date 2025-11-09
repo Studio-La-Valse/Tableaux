@@ -1,4 +1,4 @@
-import type { GraphNodeConstructor } from '../graph-nodes/graph-node-definition';
+import type { NodeClass } from '../graph-nodes/graph-node-definition';
 import type { ComponentState } from './component-state';
 import { CannotRemoveLastParamError } from './errors/cannot-remove-last-param-error';
 import { CannotRemoveSubscribedParamError } from './errors/cannot-remove-subscribed-param-error';
@@ -52,12 +52,12 @@ export interface IGraphNode {
  */
 export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
   /** Optional typed constructor accessor for metadata */
-  public get ctor(): GraphNodeConstructor {
-    return this.constructor as unknown as GraphNodeConstructor;
+  public get ctor(): NodeClass {
+    return this.constructor as unknown as NodeClass;
   }
 
   public get nodePath(): string[] {
-    return (this.constructor as GraphNodeConstructor).__graphNodePath!;
+    return (this.constructor as NodeClass).__graphNodePath!;
   }
 
   constructor(modelId: string) {
@@ -265,7 +265,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
 
   public registerBooleanInput(
     description: string,
-    defaultPayload?: boolean[]
+    defaultPayload?: boolean[],
   ): GraphNodeInputBoolean {
     this.assertNotInitialized();
     this.assertParamsHasNotBeenSet();
@@ -295,7 +295,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
 
   public registerObjectInput(
     description: string,
-    defaultPayload?: JsonObject[]
+    defaultPayload?: JsonObject[],
   ): GraphNodeInputObject {
     this.assertNotInitialized();
     this.assertParamsHasNotBeenSet();
@@ -307,7 +307,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
 
   public registerUnknownInput(
     description: string,
-    defaultPayload?: JsonValue[]
+    defaultPayload?: JsonValue[],
   ): GraphNodeInputUnknown {
     this.assertNotInitialized();
     this.assertParamsHasNotBeenSet();

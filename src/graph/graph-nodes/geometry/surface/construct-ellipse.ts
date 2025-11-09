@@ -28,7 +28,7 @@ export class Ellipse extends GraphNode {
       this.input1,
       this.input2,
       this.input3,
-      this.input4
+      this.input4,
     )) {
       const ellipse = createEllipseShape(xy, x, y, rotation);
       this.output.next(ellipse);

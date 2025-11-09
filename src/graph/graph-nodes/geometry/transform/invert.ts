@@ -16,7 +16,7 @@ export class Invert extends GraphNode {
     super(modelId);
 
     this.inputTransform = this.registerObjectInput('Transformation').validate(
-      assertIsTransformationMatrix
+      assertIsTransformationMatrix,
     );
     this.outputTransform = this.registerObjectOutput<TransformationMatrix>('Inverted Matrix');
   }

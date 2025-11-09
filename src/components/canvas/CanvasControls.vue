@@ -4,7 +4,9 @@
     <div class="field-group">
       <label for="preset">Preset</label>
       <select id="preset" v-model="selectedPreset">
-        <option value="custom">Custom</option>
+        <option value="custom">
+          Custom
+        </option>
         <optgroup v-for="group in presetGroups" :key="group.label" :label="group.label">
           <option v-for="p in group.items" :key="p.label" :value="p.label">
             {{ p.label }}
@@ -18,14 +20,26 @@
       <label for="zoom-mode">Zoom</label>
       <select id="zoom-mode" v-model="mode">
         <optgroup label="Auto">
-          <option value="fit">Fit</option>
+          <option value="fit">
+            Fit
+          </option>
         </optgroup>
         <optgroup label="Scale">
-          <option value="50">50 %</option>
-          <option value="75">75 %</option>
-          <option value="100">100 %</option>
-          <option value="150">150 %</option>
-          <option value="200">200 %</option>
+          <option value="50">
+            50 %
+          </option>
+          <option value="75">
+            75 %
+          </option>
+          <option value="100">
+            100 %
+          </option>
+          <option value="150">
+            150 %
+          </option>
+          <option value="200">
+            200 %
+          </option>
         </optgroup>
       </select>
     </div>
@@ -92,329 +106,329 @@
 </template>
 
 <script setup lang="ts">
-  import {
-    LockClosedIcon,
-    LockOpenIcon,
-    ArrowPathIcon,
-    ArrowsPointingOutIcon,
-  } from '@heroicons/vue/24/outline';
+import {
+  LockClosedIcon,
+  LockOpenIcon,
+  ArrowPathIcon,
+  ArrowsPointingOutIcon,
+} from '@heroicons/vue/24/outline';
 
-  import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
-  import { ref, toRefs, watch, computed } from 'vue';
+import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
+import { ref, toRefs, watch, computed } from 'vue';
 
-  const canvasProps = useDesignCanvasStore();
+const canvasProps = useDesignCanvasStore();
 
-  type optionItem = { label: string; w: number; h: number };
-  type option = { label: string; items: optionItem[] };
-  type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200';
+type optionItem = { label: string; w: number; h: number };
+type option = { label: string; items: optionItem[] };
+type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200';
 
-  // Props & Emits
-  const props = defineProps<{
-    zoomMode: ZoomMode;
-  }>();
-  const emit = defineEmits<{
-    (e: 'update:zoomMode', v: ZoomMode): void;
-    (e: 'fullScreen'): void;
-  }>();
+// Props & Emits
+const props = defineProps<{
+  zoomMode: ZoomMode;
+}>();
+const emit = defineEmits<{
+  (e: 'update:zoomMode', v: ZoomMode): void;
+  (e: 'fullScreen'): void;
+}>();
 
-  // Preset data
-  const presetGroups: option[] = [
-    {
-      label: '4:3',
-      items: [
-        { label: '640x480', w: 640, h: 480 },
-        { label: '800x600', w: 800, h: 600 },
-        { label: '1024x768', w: 1024, h: 768 },
-        { label: '1280x960', w: 1280, h: 960 },
-        { label: '1600x1200', w: 1600, h: 1200 },
-      ],
-    },
-    {
-      label: '16:10',
-      items: [
-        { label: '1280x800', w: 1280, h: 800 },
-        { label: '1440x900', w: 1440, h: 900 },
-        { label: '1680x1050', w: 1680, h: 1050 },
-        { label: '1920x1200', w: 1920, h: 1200 },
-      ],
-    },
-    {
-      label: '16:9',
-      items: [
-        { label: '1280x720', w: 1280, h: 720 },
-        { label: '1366x768', w: 1366, h: 768 },
-        { label: '1600x900', w: 1600, h: 900 },
-        { label: '1920x1080', w: 1920, h: 1080 },
-        { label: '2560x1440', w: 2560, h: 1440 },
-        { label: '3840x2160', w: 3840, h: 2160 },
-      ],
-    },
-    {
-      label: '21:9',
-      items: [
-        { label: '2560x1080', w: 2560, h: 1080 },
-        { label: '3440x1440', w: 3440, h: 1440 },
-        { label: '5120x2160', w: 5120, h: 2160 },
-      ],
-    },
-    {
-      label: 'Square',
-      items: [
-        { label: '256x256', w: 256, h: 256 },
-        { label: '512x512', w: 512, h: 512 },
-        { label: '1024x1024', w: 1024, h: 1024 },
-        { label: '2048x2048', w: 2048, h: 2048 },
-      ],
-    },
-  ] as const;
-  const allPresets = computed(() => presetGroups.flatMap((g) => g.items));
+// Preset data
+const presetGroups: option[] = [
+  {
+    label: '4:3',
+    items: [
+      { label: '640x480', w: 640, h: 480 },
+      { label: '800x600', w: 800, h: 600 },
+      { label: '1024x768', w: 1024, h: 768 },
+      { label: '1280x960', w: 1280, h: 960 },
+      { label: '1600x1200', w: 1600, h: 1200 },
+    ],
+  },
+  {
+    label: '16:10',
+    items: [
+      { label: '1280x800', w: 1280, h: 800 },
+      { label: '1440x900', w: 1440, h: 900 },
+      { label: '1680x1050', w: 1680, h: 1050 },
+      { label: '1920x1200', w: 1920, h: 1200 },
+    ],
+  },
+  {
+    label: '16:9',
+    items: [
+      { label: '1280x720', w: 1280, h: 720 },
+      { label: '1366x768', w: 1366, h: 768 },
+      { label: '1600x900', w: 1600, h: 900 },
+      { label: '1920x1080', w: 1920, h: 1080 },
+      { label: '2560x1440', w: 2560, h: 1440 },
+      { label: '3840x2160', w: 3840, h: 2160 },
+    ],
+  },
+  {
+    label: '21:9',
+    items: [
+      { label: '2560x1080', w: 2560, h: 1080 },
+      { label: '3440x1440', w: 3440, h: 1440 },
+      { label: '5120x2160', w: 5120, h: 2160 },
+    ],
+  },
+  {
+    label: 'Square',
+    items: [
+      { label: '256x256', w: 256, h: 256 },
+      { label: '512x512', w: 512, h: 512 },
+      { label: '1024x1024', w: 1024, h: 1024 },
+      { label: '2048x2048', w: 2048, h: 2048 },
+    ],
+  },
+] as const;
+const allPresets = computed(() => presetGroups.flatMap((g) => g.items));
 
-  // Reactive state
-  const { zoomMode } = toRefs(props);
-  const mode = ref<ZoomMode>(zoomMode.value);
-  const selectedPreset = ref('custom');
+// Reactive state
+const { zoomMode } = toRefs(props);
+const mode = ref<ZoomMode>(zoomMode.value);
+const selectedPreset = ref('custom');
 
-  // Aspect-ratio lock
-  const aspectLocked = ref(false);
-  const ratio = ref(canvasProps.dimensions.x / canvasProps.dimensions.y);
-  const displayRatio = computed(() => {
-    const w = canvasProps.dimensions.x;
-    const h = canvasProps.dimensions.y;
-    const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
-    const g = gcd(w, h);
-    return `${w / g}:${h / g}`;
-  });
+// Aspect-ratio lock
+const aspectLocked = ref(false);
+const ratio = ref(canvasProps.dimensions.x / canvasProps.dimensions.y);
+const displayRatio = computed(() => {
+  const w = canvasProps.dimensions.x;
+  const h = canvasProps.dimensions.y;
+  const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+  const g = gcd(w, h);
+  return `${w / g}:${h / g}`;
+});
 
-  // Toggle lock and capture current ratio
-  function toggleLock() {
-    aspectLocked.value = !aspectLocked.value;
-    if (aspectLocked.value) {
-      ratio.value = canvasProps.dimensions.x / canvasProps.dimensions.y;
-    }
+// Toggle lock and capture current ratio
+function toggleLock() {
+  aspectLocked.value = !aspectLocked.value;
+  if (aspectLocked.value) {
+    ratio.value = canvasProps.dimensions.x / canvasProps.dimensions.y;
+  }
+}
+
+// Input handlers that clamp to >=1 integer
+function onWidthInput(val: string) {
+  let newX = Math.round(Number(val));
+  if (isNaN(newX) || newX < 1) newX = 1;
+
+  let newY = canvasProps.dimensions.y;
+  if (aspectLocked.value) {
+    newY = Math.max(1, Math.round(newX / ratio.value));
   }
 
-  // Input handlers that clamp to >=1 integer
-  function onWidthInput(val: string) {
-    let newX = Math.round(Number(val));
-    if (isNaN(newX) || newX < 1) newX = 1;
+  canvasProps.setDimensions({ x: newX, y: newY });
+}
+function onHeightInput(val: string) {
+  let newY = Math.round(Number(val));
+  if (isNaN(newY) || newY < 1) newY = 1;
 
-    let newY = canvasProps.dimensions.y;
-    if (aspectLocked.value) {
-      newY = Math.max(1, Math.round(newX / ratio.value));
-    }
-
-    canvasProps.setDimensions({ x: newX, y: newY });
-  }
-  function onHeightInput(val: string) {
-    let newY = Math.round(Number(val));
-    if (isNaN(newY) || newY < 1) newY = 1;
-
-    let newX = canvasProps.dimensions.x;
-    if (aspectLocked.value) {
-      newX = Math.max(1, Math.round(newX * ratio.value));
-    }
-
-    canvasProps.setDimensions({ x: newX, y: newY });
+  let newX = canvasProps.dimensions.x;
+  if (aspectLocked.value) {
+    newX = Math.max(1, Math.round(newX * ratio.value));
   }
 
-  // Flip and Full-Screen
-  function onFlip() {
-    const oldX = canvasProps.dimensions.x;
-    const oldY = canvasProps.dimensions.y;
-    canvasProps.setDimensions({ x: oldY, y: oldX });
-    if (aspectLocked.value) {
-      ratio.value = canvasProps.dimensions.x / canvasProps.dimensions.y;
-    }
+  canvasProps.setDimensions({ x: newX, y: newY });
+}
+
+// Flip and Full-Screen
+function onFlip() {
+  const oldX = canvasProps.dimensions.x;
+  const oldY = canvasProps.dimensions.y;
+  canvasProps.setDimensions({ x: oldY, y: oldX });
+  if (aspectLocked.value) {
+    ratio.value = canvasProps.dimensions.x / canvasProps.dimensions.y;
   }
-  function onFullScreen() {
-    emit('fullScreen');
+}
+function onFullScreen() {
+  emit('fullScreen');
+}
+
+// Preset watcher (also re-compute ratio if locked)
+watch(selectedPreset, (label) => {
+  if (label === 'custom') return;
+
+  const p = allPresets.value.find((x) => x.label === label);
+  if (!p) return;
+
+  canvasProps.setDimensions({ x: p.w, y: p.h });
+  if (aspectLocked.value) {
+    ratio.value = p.w / p.h;
   }
+});
 
-  // Preset watcher (also re-compute ratio if locked)
-  watch(selectedPreset, (label) => {
-    if (label === 'custom') return;
+// Emit updates outward
+watch(mode, (v) => emit('update:zoomMode', v));
 
-    const p = allPresets.value.find((x) => x.label === label);
-    if (!p) return;
+// Sync if parent prop changes
+watch(zoomMode, (v) => (mode.value = v));
 
-    canvasProps.setDimensions({ x: p.w, y: p.h });
-    if (aspectLocked.value) {
-      ratio.value = p.w / p.h;
-    }
-  });
+let applyingPreset = false;
+let presetTimeout: number | undefined;
 
-  // Emit updates outward
-  watch(mode, (v) => emit('update:zoomMode', v));
+// 1) When selectedPreset changes, ONLY write dims if they really differ:
+watch(selectedPreset, (label) => {
+  if (label === 'custom') return;
 
-  // Sync if parent prop changes
-  watch(zoomMode, (v) => (mode.value = v));
+  const p = allPresets.value.find((x) => x.label === label);
+  if (!p) return;
 
-  let applyingPreset = false;
-  let presetTimeout: number | undefined;
+  // if dims already match, do nothing
+  if (canvasProps.dimensions.x === p.w && canvasProps.dimensions.y === p.h) return;
 
-  // 1) When selectedPreset changes, ONLY write dims if they really differ:
-  watch(selectedPreset, (label) => {
-    if (label === 'custom') return;
+  // otherwise, we’re “applying” a preset,
+  // so set the guard so our dims-watcher can ignore the next assignment
+  applyingPreset = true;
 
-    const p = allPresets.value.find((x) => x.label === label);
-    if (!p) return;
+  canvasProps.setDimensions({ x: p.w, y: p.h });
+  if (aspectLocked.value) {
+    ratio.value = p.w / p.h;
+  }
+  applyingPreset = false;
+});
 
-    // if dims already match, do nothing
-    if (canvasProps.dimensions.x === p.w && canvasProps.dimensions.y === p.h) return;
+// 2) In your dims-watcher, bail immediately if we're in the middle of applying a preset:
+watch(
+  () => ({ ...canvasProps.dimensions }),
+  (dim) => {
+    if (applyingPreset) return;
 
-    // otherwise, we’re “applying” a preset,
-    // so set the guard so our dims-watcher can ignore the next assignment
-    applyingPreset = true;
-
-    canvasProps.setDimensions({ x: p.w, y: p.h });
-    if (aspectLocked.value) {
-      ratio.value = p.w / p.h;
-    }
-    applyingPreset = false;
-  });
-
-  // 2) In your dims-watcher, bail immediately if we're in the middle of applying a preset:
-  watch(
-    () => ({ ...canvasProps.dimensions }),
-    (dim) => {
-      if (applyingPreset) return;
-
-      if (presetTimeout) clearTimeout(presetTimeout);
-      presetTimeout = window.setTimeout(() => {
-        const match = allPresets.value.find((p) => p.w === dim.x && p.h === dim.y);
-        const newLabel = match ? match.label : 'custom';
-        if (newLabel !== selectedPreset.value) {
-          selectedPreset.value = newLabel;
-        }
-      }, 200);
-    },
-    { deep: true }
-  );
+    if (presetTimeout) clearTimeout(presetTimeout);
+    presetTimeout = window.setTimeout(() => {
+      const match = allPresets.value.find((p) => p.w === dim.x && p.h === dim.y);
+      const newLabel = match ? match.label : 'custom';
+      if (newLabel !== selectedPreset.value) {
+        selectedPreset.value = newLabel;
+      }
+    }, 200);
+  },
+  { deep: true },
+);
 </script>
 
 <style scoped>
-  .canvas-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.5rem 1rem;
-    background: var(--color-background-mute);
-    border-bottom: 1px solid var(--color-border);
+.canvas-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--color-background-mute);
+  border-bottom: 1px solid var(--color-border);
 
-    /* temp width hack */
-    overflow-x: hidden;
-    white-space: nowrap;
+  /* temp width hack */
+  overflow-x: hidden;
+  white-space: nowrap;
 
-    height: 85px;
-  }
+  height: 85px;
+}
 
-  .field-group {
-    display: flex;
-    flex-direction: column;
-    width: 150px;
-    color: var(--color-text);
-  }
+.field-group {
+  display: flex;
+  flex-direction: column;
+  width: 150px;
+  color: var(--color-text);
+}
 
-  .field-group label {
-    font-size: 0.75rem;
-    color: var(--color-text);
-    margin-bottom: 4px;
-  }
+.field-group label {
+  font-size: 0.75rem;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
 
-  .field-group select,
-  .field-group input {
-    font-size: 0.9rem;
-    padding: 6px 8px;
-    background: var(--color-background-soft);
-    color: var(--color-text);
-    border: 1px solid var(--color-border-hover);
-    border-radius: 4px;
-  }
+.field-group select,
+.field-group input {
+  font-size: 0.9rem;
+  padding: 6px 8px;
+  background: var(--color-background-soft);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-hover);
+  border-radius: 4px;
+}
 
-  /* lock-ratio area */
-  .lock-group {
-    align-items: flex-start;
-    width: auto;
-    max-width: 80px;
-  }
+/* lock-ratio area */
+.lock-group {
+  align-items: flex-start;
+  width: auto;
+  max-width: 80px;
+}
 
-  .lock-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+.lock-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 
-  .lock-header button {
-    font-size: 1.2rem;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-  }
+.lock-header button {
+  font-size: 1.2rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
 
-  .lock-header button:hover {
-    background: var(--color-border);
-    transition: background 0.5s;
-  }
+.lock-header button:hover {
+  background: var(--color-border);
+  transition: background 0.5s;
+}
 
-  .ratio-display {
-    font-size: 0.9rem;
-    color: var(--color-text);
-    min-width: 3em;
-    text-align: left;
-  }
+.ratio-display {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  min-width: 3em;
+  text-align: left;
+}
 
-  /* flip & fullscreen */
-  .button-group {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    /* centers buttons vertically */
-    gap: 0.5rem;
-    font-size: inherit;
-  }
+/* flip & fullscreen */
+.button-group {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  /* centers buttons vertically */
+  gap: 0.5rem;
+  font-size: inherit;
+}
 
-  /* full control of size and alignment */
-  .button-group button {
-    width: 50px;
-    /* set to whatever you prefer */
-    height: 50px;
-    /* or any other height */
-    font-size: 1.2rem;
-    background: var(--color-background-soft);
-    color: var(--color-text);
-    border: 1px solid var(--color-border-hover);
-    border-radius: 4px;
-    cursor: pointer;
-    transition:
-      background-color 0.2s,
-      transform 0.1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+/* full control of size and alignment */
+.button-group button {
+  width: 50px;
+  /* set to whatever you prefer */
+  height: 50px;
+  /* or any other height */
+  font-size: 1.2rem;
+  background: var(--color-background-soft);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-hover);
+  border-radius: 4px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  /* optional hover/click effect */
-  .button-group button:hover {
-    background: var(--color-background-soft);
-  }
+/* optional hover/click effect */
+.button-group button:hover {
+  background: var(--color-background-soft);
+}
 
-  .button-group button:active {
-    transform: scale(0.97);
-  }
+.button-group button:active {
+  transform: scale(0.97);
+}
 
-  /* focus ring */
-  .field-group select:focus,
-  .field-group input:focus {
-    outline: none;
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 2px var(--color-text);
-  }
+/* focus ring */
+.field-group select:focus,
+.field-group input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-text);
+}
 
-  .icon {
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
-  }
+.icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
 </style>

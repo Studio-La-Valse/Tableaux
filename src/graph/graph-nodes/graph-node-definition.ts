@@ -3,7 +3,7 @@ import type { Component } from 'vue';
 import type { GraphNode } from '../../graph/core/graph-node';
 import type { CustomNodeDefinition } from './json/dynamic-graph-node';
 
-export interface GraphNodeConstructor {
+export interface NodeClass {
   new (modelId: string): GraphNode;
 
   __graphNodePath?: string[];
@@ -15,9 +15,7 @@ export interface GraphNodeConstructor {
   __graphNodeTypeLabel?: string;
   __graphNodeTypeDescription?: string;
   __graphNodeIcon?: string;
-}
 
-export type GraphNodeDefinition = {
-  NodeClass: GraphNodeConstructor;
-  customTemplate?: CustomNodeDefinition;
-};
+  /** Optional custom component definition */
+  __customNodeDefinition?: CustomNodeDefinition;
+}

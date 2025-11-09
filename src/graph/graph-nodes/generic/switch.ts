@@ -19,7 +19,7 @@ export class Switch extends GraphNode {
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [value, ...values] of inputIterators.cycleValues(
       this.input1,
-      ...this.params
+      ...this.params,
     )) {
       const res = values[value];
       this.output.next(res);

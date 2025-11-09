@@ -26,7 +26,7 @@ export class ConstructARGB extends GraphNode {
       this.input1,
       this.input2,
       this.input3,
-      this.input4
+      this.input4,
     )) {
       const res = { a, r, g, b };
       this.output.next(res);

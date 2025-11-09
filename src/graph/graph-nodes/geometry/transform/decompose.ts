@@ -18,7 +18,7 @@ export class Decompose extends GraphNode {
     super(modelId);
 
     this.input = this.registerObjectInput('Transformation Matrix').validate(
-      assertIsTransformationMatrix
+      assertIsTransformationMatrix,
     );
 
     this.outputTranslation = this.registerObjectOutput<XY>('Translation');

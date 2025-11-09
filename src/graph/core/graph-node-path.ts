@@ -14,7 +14,7 @@ export function sanitizeRawNodePath(raw: string): RawPathResult {
 
   // Detect and warn about trailing slash
   if (cleaned.endsWith('/')) {
-    errors.push("Node path may not end with '/'.");
+    errors.push('Node path may not end with \'/\'.');
     cleaned = cleaned.replace(/\/+$/, '');
   }
 

@@ -60,7 +60,7 @@ export function useSelectionArea() {
 
   function applySelection(
     rect: { x: number; y: number; width: number; height: number },
-    mode: mode
+    mode: mode,
   ) {
     if (mode === 'default') nodeSelectionStore.clearSelection();
 

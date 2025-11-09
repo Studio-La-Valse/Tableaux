@@ -22,7 +22,7 @@ export class Range extends GraphNode {
     const [start, stop, step] = inputIterators.singletonOnly(this.input1, this.input2, this.input3);
 
     if (step <= 0) {
-      const msg = `Invalid input, stepsize smaller or equal to 0`;
+      const msg = 'Invalid input, stepsize smaller or equal to 0';
       throw new Error(msg);
     }
 
