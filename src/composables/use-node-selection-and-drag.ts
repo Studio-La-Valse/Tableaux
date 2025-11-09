@@ -28,7 +28,7 @@ export function useNodeSelectionAndDrag() {
   // maps elements to drag with their original position
   const draggableElements: { node: IGraphNodeWrapper; startPos: XY }[] = [];
 
-  function onMouseDown(event: MouseEvent, nodeId: string) {
+  function onMouseDown(event: MouseEvent, modelId: string) {
     if (event.button !== 0) return;
 
     // Prevent default and propagation
@@ -43,17 +43,17 @@ export function useNodeSelectionAndDrag() {
 
     // ——— selection logic ———
     if (event.shiftKey) {
-      if (!selectionStore.isSelected(nodeId)) {
-        selectionStore.selectNode(nodeId);
+      if (!selectionStore.isSelected(modelId)) {
+        selectionStore.selectNode(modelId);
       }
     } else if (event.ctrlKey || event.metaKey) {
-      if (selectionStore.isSelected(nodeId)) {
-        selectionStore.unselectNode(nodeId);
+      if (selectionStore.isSelected(modelId)) {
+        selectionStore.unselectNode(modelId);
       }
     } else {
-      if (!selectionStore.isSelected(nodeId)) {
+      if (!selectionStore.isSelected(modelId)) {
         selectionStore.clearSelection();
-        selectionStore.selectNode(nodeId);
+        selectionStore.selectNode(modelId);
       }
     }
     // ————————————————

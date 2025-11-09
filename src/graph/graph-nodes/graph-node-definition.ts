@@ -21,16 +21,3 @@ export type GraphNodeDefinition = {
   NodeClass: GraphNodeConstructor;
   customTemplate?: CustomNodeDefinition;
 };
-
-export function isGraphNodeDefinition(value: unknown): value is GraphNodeDefinition {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'category' in value &&
-    Array.isArray(value.category) &&
-    'NodeClass' in value &&
-    typeof value.NodeClass === 'function' &&
-    (!('icon' in value) || typeof value.icon === 'string') &&
-    (!('description' in value) || typeof value.description === 'string')
-  );
-}

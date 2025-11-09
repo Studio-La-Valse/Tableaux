@@ -131,12 +131,12 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
   }
 
   /** Create an instance from a path */
-  function activate(path: string[], id: string): GraphNode {
+  function activate(path: string[], modelId: string): GraphNode {
     const activator = getFromPath(path);
     if (!activator) {
       throw Error(`No graph node registered with path ${path.join('/')}`);
     }
-    return new activator.definition.NodeClass(id);
+    return new activator.definition.NodeClass(modelId);
   }
 
   /**
