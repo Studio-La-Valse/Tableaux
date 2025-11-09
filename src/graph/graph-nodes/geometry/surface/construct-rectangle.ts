@@ -11,8 +11,8 @@ export class Rectangle extends GraphNode {
   private inputHeight;
   private outputRect;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputTopLeft = this.registerObjectInput('TopLeft').validate(assertIsXY);
     this.inputWidth = this.registerNumberInput('Width');

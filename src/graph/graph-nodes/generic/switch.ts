@@ -8,8 +8,8 @@ export class Switch extends GraphNode {
   private params;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerNumberInput('Filter');
     this.params = this.registerUnkownInputParams('Signal');

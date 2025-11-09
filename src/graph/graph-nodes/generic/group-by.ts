@@ -11,8 +11,8 @@ export default class GroupBy extends GraphNode {
   private outputDistinctGroupValue;
   private outputDistinctGroupIndex;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputObject = this.registerObjectInput('Objects');
     this.inputKey = this.registerStringInput('Key');

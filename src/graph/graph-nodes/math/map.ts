@@ -11,8 +11,8 @@ export class Map extends GraphNode {
   private toEnd;
   private result;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.numbers = this.registerNumberInput('Numbers');
     this.fromStart = this.registerNumberInput('From Start');

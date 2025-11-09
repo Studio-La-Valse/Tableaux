@@ -7,8 +7,8 @@ export class Add extends GraphNode {
   private params;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.params = this.registerNumberInputParams('First');
     this.output = this.registerNumberOutput('Result');

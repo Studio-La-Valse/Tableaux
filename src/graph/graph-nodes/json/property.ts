@@ -8,8 +8,8 @@ export default class Property extends GraphNode {
   private inputProperty;
   private outputValue;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputObject = this.registerObjectInput('Object');
     this.inputProperty = this.registerStringInput('Property');

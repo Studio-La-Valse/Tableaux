@@ -7,13 +7,13 @@
     <!-- Title -->
     <div class="title">
       <p>
-        {{ graphNode.innerNode.data.name || graphNode.nodePath[graphNode.nodePath.length - 1] }}
+        {{ graphNode.innerNode.data.name || graphNode.path[graphNode.path.length - 1] }}
       </p>
     </div>
 
     <!-- Main Content Panel -->
     <div class="content" :style="contentStyle">
-      <component :is="getPanel(graphNode.innerNode)" :graphNode="graphNode.innerNode" />
+      <component :is="resolveGraphNodePanel(graphNode)" :graphNode="graphNode.innerNode" />
 
       <!-- If we render the outputs first, the labels are not obstructed. -->
       <div class="outputs">
@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, type StyleValue } from 'vue';
+  import { computed, type Component, type StyleValue } from 'vue';
 
   import GraphNodeInputRenderer from './GraphNodeInputRenderer.vue';
   import GraphNodeOutputRenderer from './GraphNodeOutputRenderer.vue';
@@ -53,10 +53,15 @@
   import type { IGraphNodeWrapper } from '@/graph/core/graph-node-wrapper';
   import { GraphNodeInput, type IGraphNodeInput } from '@/graph/core/graph-node-input';
   import { type IGraphNodeOutput } from '@/graph/core/graph-node-output';
-  import { useGraphNodePanelStore } from '@/stores/use-graph-node-panel-store';
+  import GraphNodePanel from './GraphNodePanel.vue';
+  import type { GraphNodeConstructor } from '@/graph/graph-nodes/graph-node-definition';
 
   const { isSelected } = useGraphNodeSelectionStore();
-  const { getPanel } = useGraphNodePanelStore();
+
+  const resolveGraphNodePanel = (node: IGraphNodeWrapper): Component => {
+    const ctor = node.innerNode.constructor as GraphNodeConstructor;
+    return ctor.__graphNodePanel ?? GraphNodePanel;
+  };
 
   const props = defineProps<{
     graphNode: IGraphNodeWrapper;
@@ -94,7 +99,7 @@
   });
 
   // Determines visual styling based on whether the node is selected.
-  const _isSelected = computed(() => isSelected(props.graphNode.nodeId));
+  const _isSelected = computed(() => isSelected(props.graphNode.modelId));
 
   const borderStyle = computed(() => ({
     '--gradient-border': borderColor.value,

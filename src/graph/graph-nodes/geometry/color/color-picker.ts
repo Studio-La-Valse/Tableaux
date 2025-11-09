@@ -11,8 +11,8 @@ export class ColorPicker extends Emitter<string> {
 
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path, '#903c3c');
+  constructor(modelId: string) {
+    super(modelId, '#903c3c');
 
     this.output = this.registerObjectOutput<ColorARGB>('Color');
   }

@@ -10,8 +10,8 @@ export class DeconstructQuadratic extends GraphNode {
   private outputControl;
   private outputEnd;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerObjectInput('Quadratic Bézier').validate(asQuadratic);
 

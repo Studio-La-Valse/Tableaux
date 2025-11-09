@@ -24,7 +24,6 @@ export function createCustomNode(template: CustomNodeDefinition): void {
 
   const definition: GraphNodeDefinition = {
     NodeClass,
-    category: template.path,
     customTemplate: template,
   };
 
@@ -33,8 +32,8 @@ export function createCustomNode(template: CustomNodeDefinition): void {
 
 export function createCustomNodeClass(template: CustomNodeDefinition) {
   class CustomNode extends GraphNode {
-    constructor(id: string, path: string[]) {
-      super(id, path);
+    constructor(modelId: string) {
+      super(modelId);
       // register inputs
       for (const input of template.inputs) {
         switch (input.type) {

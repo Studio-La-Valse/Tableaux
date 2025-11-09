@@ -1,5 +1,5 @@
 <template>
-  <ResizablePanel :graph-node-id="props.graphNode.id">
+  <ResizablePanel :graph-node-id="props.graphNode.modelId">
     <textarea
       readonly
       class="text-input"

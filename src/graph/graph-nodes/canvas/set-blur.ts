@@ -11,8 +11,8 @@ export class SetBlur extends GraphNode {
 
   private outputGeometry;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputGeometry = this.registerObjectInput('Shape').validate(asShape);
     this.inputSize = this.registerNumberInput('Size');

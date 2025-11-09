@@ -18,8 +18,8 @@ export class SetTextFormat extends GraphNode {
 
   private outputGeometry;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.asConst = [
       this.registerObjectInput('Text').validate((v) => assertIsOfShapeKind(asShape(v), ['text'])),

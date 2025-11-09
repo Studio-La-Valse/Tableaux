@@ -125,8 +125,8 @@
 
   // --- Control buttons ---
   const zoom = (emitter: Emitter<JsonValue>) => {
-    zoomToNodes([emitter.id]);
-    selectNode(emitter.id);
+    zoomToNodes([emitter.modelId]);
+    selectNode(emitter.modelId);
   };
 
   const toggleVisible = (emitter: Emitter<JsonValue>) => {

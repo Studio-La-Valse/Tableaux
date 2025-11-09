@@ -1,8 +1,10 @@
+import { nanoid } from 'nanoid';
 import type { ComponentState } from './component-state';
 import type { GraphNodeInput } from './graph-node-input';
 import type { GraphNodeOutput } from './graph-node-output';
 import { InputIteratorsAsync } from './input-iterators-async';
 import type { JsonObject } from './models/json-value';
+import type { GraphNodeConstructor } from '../graph-nodes/graph-node-definition';
 
 /**
  * Abstract base class representing the core logic of a graph node.
@@ -65,21 +67,28 @@ export abstract class GraphNodeCore {
    */
   public readonly data: JsonObject = {};
 
+  /*
+   * The instance id of this node.
+   */
+  public readonly instanceId: string;
+
   /**
    * Constructs a new GraphNodeCore instance.
-   * @param id Unique identifier for this node
-   * @param path Hierarchical path for locating the node
    */
-  constructor(
-    public id: string,
-    public path: string[]
-  ) {}
+  constructor(public readonly modelId: string) {
+    this.instanceId = nanoid(11);
+  }
+
+  /** Optional typed constructor accessor for metadata */
+  protected get ctor(): GraphNodeConstructor {
+    return this.constructor as unknown as GraphNodeConstructor;
+  }
 
   /**
    * Subscribes each output to this node's ID (self-subscription).
    */
   public trySubscribeSelf(): void {
-    this.outputs.forEach((output) => output.trySubscribe(this.id));
+    this.outputs.forEach((output) => output.trySubscribe(this.instanceId));
   }
 
   /**
@@ -89,7 +98,7 @@ export abstract class GraphNodeCore {
    * @throws Error if subscribing to self
    */
   public trySubscribeParent(graphNodeId: string): void {
-    if (graphNodeId === this.id) {
+    if (graphNodeId === this.instanceId) {
       throw new Error(`Circular subscription detected for graph node ${graphNodeId}.`);
     }
 

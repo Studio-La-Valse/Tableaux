@@ -10,8 +10,8 @@ export class DeconstructXY extends GraphNode {
   private outputX;
   private outputY;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputXY = this.registerObjectInput('XY').validate(assertIsXY);
 

@@ -21,8 +21,8 @@ export default class MidiListener extends GraphNode {
   // ensure solve is called only once per batch
   private solveScheduled = false;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputActive = this.registerBooleanInput('Active');
 

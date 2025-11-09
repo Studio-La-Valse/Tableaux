@@ -8,8 +8,8 @@ export class Join extends GraphNode {
   private params;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.char = this.registerStringInput('Char');
     this.params = this.registerStringInputParams('Text');

@@ -12,8 +12,8 @@ export class Logger extends GraphNode {
 
   public readonly values = reactive<string[]>([]);
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerStringInput('Values');
   }

@@ -15,8 +15,8 @@ export class EllipticalArc extends GraphNode {
   private input7;
   private outputCircle;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerObjectInput('XY').validate(assertIsXY);
     this.input2 = this.registerNumberInput('Radius X');

@@ -32,7 +32,7 @@
 
   const visible = ref(false);
   const initialData = computed(
-    () => graphNodeRegistry.getDefinition(props.graphNode.path)?.customTemplate
+    () => graphNodeRegistry.getDefinition(props.graphNode.nodePath)?.customTemplate
   );
 
   const dblclick = () => {

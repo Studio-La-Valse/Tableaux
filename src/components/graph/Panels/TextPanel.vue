@@ -1,5 +1,5 @@
 <template>
-  <ResizablePanel :graph-node-id="graphNode.id">
+  <ResizablePanel :graph-node-id="graphNode.modelId">
     <xTextEmitter :graph-node="graphNode" />
   </ResizablePanel>
 </template>

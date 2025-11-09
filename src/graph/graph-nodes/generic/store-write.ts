@@ -9,8 +9,8 @@ export class StoreWriter extends GraphNode {
   private name;
   private input;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
     this.name = this.registerStringInput('Name');
     this.input = this.registerUnknownInput('Values');
   }

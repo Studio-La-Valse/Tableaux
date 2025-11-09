@@ -11,8 +11,8 @@ export class DeconstructAHSV extends GraphNode {
   private output3;
   private output4;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerObjectInput('Color').validate(assertIsColorARGB);
 

@@ -11,8 +11,8 @@ export class CreateScaleUniform extends GraphNode {
 
   private outputGeometry;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputCenter = this.registerObjectInput('Center').validate(assertIsXY);
     this.inputFactor = this.registerNumberInput('Scale Factor');

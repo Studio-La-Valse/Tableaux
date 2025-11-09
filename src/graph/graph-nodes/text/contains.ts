@@ -8,8 +8,8 @@ export class Includes extends GraphNode {
   private input;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.char = this.registerStringInput('Characters');
     this.input = this.registerStringInput('Value');

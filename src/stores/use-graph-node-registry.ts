@@ -13,7 +13,12 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
   function register(definition: GraphNodeDefinition) {
     let tree = activatorTree;
 
-    const { errors, sanitized } = validateNodePathParts(definition.category);
+    const path = definition.NodeClass.__graphNodePath;
+    if (!path) {
+      throw Error(`Trying to register a component that does not have path.`);
+    }
+
+    const { errors, sanitized } = validateNodePathParts(path);
     if (errors.length) {
       throw Error(`Invalid Node Path: ${errors[0]}`);
     }
@@ -31,9 +36,7 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
     const existing = tree.findActivator(leaf);
 
     if (existing) {
-      throw Error(
-        `A node with the path ${existing.definition.category} is already registered. No overrides allowed.`
-      );
+      throw Error(`A node with the path ${path} is already registered. No overrides allowed.`);
     }
 
     tree.activators.push(new Activator(leaf, definition));
@@ -133,7 +136,7 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
     if (!activator) {
       throw Error(`No graph node registered with path ${path.join('/')}`);
     }
-    return new activator.definition.NodeClass(id, path);
+    return new activator.definition.NodeClass(id);
   }
 
   /**

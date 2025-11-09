@@ -13,8 +13,8 @@ export class Preview extends GraphNode {
 
   private canvas: HTMLCanvasElement | null = null;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerObjectInput('Geometry').validate(asShape);
   }

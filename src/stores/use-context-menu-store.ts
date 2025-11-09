@@ -3,7 +3,6 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useGraphStore } from './use-graph-store';
 import { useGraphCanvasStore } from './use-graph-canvas-store';
-import { nanoid } from 'nanoid';
 
 export const useContextMenuStore = defineStore('contextMenu', () => {
   const graph = useGraphStore();
@@ -36,8 +35,8 @@ export const useContextMenuStore = defineStore('contextMenu', () => {
     visible.value = false;
   }
 
-  function onActivate(name: string[]) {
-    graph.addNode(name, { x: xCanvas.value, y: yCanvas.value }, nanoid(11));
+  function onActivate(name: string[], id: string) {
+    graph.addNode(name, { x: xCanvas.value, y: yCanvas.value }, id);
     close();
   }
 

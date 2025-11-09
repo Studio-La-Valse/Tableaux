@@ -8,8 +8,8 @@ export class Hypotenuse extends GraphNode {
   private inputB;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputA = this.registerNumberInput('Side A');
     this.inputB = this.registerNumberInput('Side B');

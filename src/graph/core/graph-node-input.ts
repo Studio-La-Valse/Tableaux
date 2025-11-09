@@ -43,16 +43,13 @@ export abstract class GraphNodeInput implements IGraphNodeInput {
   public abstract readonly isSubscribed: boolean;
   public abstract readonly payloadLength: number;
 
-  private _id: string;
-  public get id() {
-    return this._id;
-  }
+  public readonly id;
 
   protected _armed: boolean = true;
   public abstract get armed(): boolean;
 
   public get graphNodeId() {
-    return this.graphNode.id;
+    return this.graphNode.modelId;
   }
 
   public get index() {
@@ -65,7 +62,7 @@ export abstract class GraphNodeInput implements IGraphNodeInput {
     public readonly graphNode: GraphNode,
     public readonly description: string
   ) {
-    this._id = nanoid(11);
+    this.id = nanoid(11);
   }
 
   // used for params type input.
@@ -312,10 +309,6 @@ export class GraphNodeInputObject extends GraphNodeInputSubscriptionType<
 }
 
 export class GraphNodeInputValidatedObject<T extends JsonObject> extends GraphNodeInputObject {
-  public get id() {
-    return this.originalInput.id;
-  }
-
   public get armed() {
     return this.originalInput.armed;
   }

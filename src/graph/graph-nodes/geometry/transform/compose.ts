@@ -12,8 +12,8 @@ export class Compose extends GraphNode {
   private inputParams;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputParams = this.registerObjectInputParams('Transformation Matrix');
     this.output = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix');

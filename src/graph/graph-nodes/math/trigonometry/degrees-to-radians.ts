@@ -7,8 +7,8 @@ export class DegreesToRadians extends GraphNode {
   private input;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerNumberInput('Degrees');
     this.output = this.registerNumberOutput('Radians');

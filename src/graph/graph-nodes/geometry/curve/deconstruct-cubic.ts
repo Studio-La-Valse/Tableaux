@@ -11,8 +11,8 @@ export class DeconstructCubic extends GraphNode {
   private outputControl2;
   private outputEnd;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerObjectInput('Cubic Bézier').validate(asCubic);
 

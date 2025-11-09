@@ -9,8 +9,8 @@ export class GetSurfaceCenter extends GraphNode {
   private input;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerObjectInput('Surface').validate(asSurfaceLike);
     this.output = this.registerObjectOutput<XY>('Center');

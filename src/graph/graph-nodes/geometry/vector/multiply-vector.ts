@@ -9,8 +9,8 @@ export class MultiplyVector extends GraphNode {
   private factor;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.xy = this.registerObjectInput('XY').validate((v) => assertIsXY(v));
     this.factor = this.registerNumberInput('Factor');

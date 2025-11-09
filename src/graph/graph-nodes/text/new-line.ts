@@ -6,8 +6,8 @@ import { GraphNodeType } from '../decorators';
 export class NewLine extends GraphNode {
   private output: GraphNodeOutputType<string>;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.output = this.registerStringOutput('Character');
   }

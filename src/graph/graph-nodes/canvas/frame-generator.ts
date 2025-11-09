@@ -17,8 +17,8 @@ export default class FrameGenerator extends GraphNode {
     rafId?: number;
   };
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputActive = this.registerBooleanInput('Active');
     this.inputReset = this.registerBooleanInput('Reset');

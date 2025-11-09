@@ -1,4 +1,4 @@
-const PATH_PART_REGEX = /^[A-Za-z 0-9]+$/;
+const PATH_PART_REGEX = /^[\p{L}0-9 _\-\(\)\[\]\{\}]+$/u;
 
 export type RawPathResult = {
   raw: string;

@@ -74,15 +74,15 @@
   };
 
   const removerClick = () => {
-    removeInput(props.graphNode.nodeId, props.input.index);
+    removeInput(props.graphNode.modelId, props.input.index);
   };
 
   const adderClick = () => {
-    insertInput(props.graphNode.nodeId, props.input.index + 1);
+    insertInput(props.graphNode.modelId, props.input.index + 1);
   };
 
   const prependerClick = () => {
-    insertInput(props.graphNode.nodeId, props.input.index);
+    insertInput(props.graphNode.modelId, props.input.index);
   };
 </script>
 

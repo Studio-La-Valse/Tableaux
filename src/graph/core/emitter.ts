@@ -15,8 +15,8 @@ export abstract class Emitter<T extends JsonValue> extends GraphNode {
     order?: number;
   };
 
-  constructor(id: string, path: string[], defaultValue: T) {
-    super(id, path);
+  constructor(modelId: string, defaultValue: T) {
+    super(modelId);
 
     this.data = { value: defaultValue, name: '', hidden: false };
   }

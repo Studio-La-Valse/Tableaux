@@ -7,8 +7,8 @@ export class TextDirection extends GraphNode {
   private rtl;
   private inherit;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.ltr = this.registerStringOutput('LTR');
     this.rtl = this.registerStringOutput('RIL');

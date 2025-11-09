@@ -17,6 +17,7 @@ const app = createApp(App);
 app.config.errorHandler = (err, vm, info) => {
   const _err = err as Error;
   logError(`[Vue Error] ${_err.message} — ${info}`);
+  throw err;
 };
 
 // catches unhandled promise rejections

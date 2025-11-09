@@ -8,8 +8,8 @@ export class MinMax extends GraphNode {
   private largest;
   private smallest;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.numbers = this.registerNumberInput('Numbers');
     this.smallest = this.registerNumberOutput('Smallest');

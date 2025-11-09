@@ -13,8 +13,8 @@ export class Perlin2d extends GraphNode {
 
   private perlin;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerNumberInput('X');
     this.input2 = this.registerNumberInput('Y');

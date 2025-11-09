@@ -12,8 +12,8 @@ export class ConstructCubic extends GraphNode {
   private inputEnd;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputStart = this.registerObjectInput('Start').validate(assertIsXY);
     this.inputControl1 = this.registerObjectInput('Control 1').validate(assertIsXY);

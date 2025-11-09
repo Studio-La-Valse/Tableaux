@@ -6,8 +6,8 @@ import { GraphNodeType } from '../../decorators';
 export class Pi extends GraphNode {
   private readonly output: GraphNodeOutputType<number>;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.output = this.registerNumberOutput('Number');
   }

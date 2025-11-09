@@ -10,8 +10,8 @@ export class NumberEmitter extends Emitter<number> {
 
   private readonly output: GraphNodeOutputType<number>;
 
-  constructor(id: string, path: string[]) {
-    super(id, path, 0);
+  constructor(modelId: string) {
+    super(modelId, 0);
 
     this.output = this.registerNumberOutput('Number');
   }

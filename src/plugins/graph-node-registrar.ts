@@ -1,17 +1,14 @@
-import { isGraphNodeDefinition } from '@/graph/graph-nodes/graph-node-definition';
+import { graphNodeTypes } from '@/graph/graph-nodes/decorators';
 import { useGraphNodeRegistry } from '@/stores/use-graph-node-registry';
 
 const useGraphNodeRegistrar = () => {
   return {
     async install() {
-      const modules = import.meta.glob('@/graph/graph-nodes/**/*.ts');
+      import.meta.glob('@/graph/graph-nodes/**/*.ts', { eager: true });
       const registry = useGraphNodeRegistry();
 
-      for (const path in modules) {
-        const mod = (await modules[path]()) as { default?: unknown };
-        if (mod.default && isGraphNodeDefinition(mod.default)) {
-          registry.register(mod.default);
-        }
+      for (const definition of graphNodeTypes) {
+        registry.register(definition);
       }
     },
   };

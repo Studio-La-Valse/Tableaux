@@ -1,3 +1,4 @@
+import type { GraphNodeConstructor } from '../graph-nodes/graph-node-definition';
 import type { ComponentState } from './component-state';
 import { CannotRemoveLastParamError } from './errors/cannot-remove-last-param-error';
 import { CannotRemoveSubscribedParamError } from './errors/cannot-remove-subscribed-param-error';
@@ -26,6 +27,9 @@ import {
 import type { JsonObject, JsonValue } from './models/json-value';
 
 export interface IGraphNode {
+  readonly instanceId: string;
+  readonly modelId: string;
+
   readonly inputs: IGraphNodeInput[];
   readonly outputs: IGraphNodeOutput[];
 
@@ -47,11 +51,17 @@ export interface IGraphNode {
  * Handles input/output registration.
  */
 export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
-  constructor(
-    public readonly id: string,
-    public readonly path: string[]
-  ) {
-    super(id, path);
+  /** Optional typed constructor accessor for metadata */
+  public get ctor(): GraphNodeConstructor {
+    return this.constructor as unknown as GraphNodeConstructor;
+  }
+
+  public get nodePath(): string[] {
+    return (this.constructor as GraphNodeConstructor).__graphNodePath!;
+  }
+
+  constructor(modelId: string) {
+    super(modelId);
   }
 
   // --- Define params type input ---

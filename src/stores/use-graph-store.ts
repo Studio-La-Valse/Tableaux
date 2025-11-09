@@ -29,17 +29,17 @@ const useGraphInternal = defineStore('graph', () => {
   // ---------------------------------------------------------------------------
   // Add Node
   // ---------------------------------------------------------------------------
-  const addNode = (path: string[], position: XY, id: string) => {
-    const graphNode = graphNodeRegistry.activate(path, id);
+  const addNode = (path: string[], position: XY, modelId: string) => {
+    const graphNode = graphNodeRegistry.activate(path, modelId);
     const wrapper = reactive(new GraphNodeWrapper(graphNode));
 
     wrapper.xy = { x: position.x, y: position.y };
 
-    graphNode.onInitialize();
-    graphNode.arm();
-    graphNode.complete();
+    wrapper.innerNode.onInitialize();
+    wrapper.innerNode.arm();
+    wrapper.innerNode.complete();
 
-    nodeMap.value[id] = wrapper;
+    nodeMap.value[graphNode.modelId] = wrapper;
     return wrapper;
   };
 
@@ -52,11 +52,11 @@ const useGraphInternal = defineStore('graph', () => {
 
     // remove inbound/outbound edges
     edges.value = edges.value.filter((e) => {
-      if (e.rightGraphNode.nodeId === id) {
+      if (e.rightGraphNode.modelId === id) {
         e.rightGraphNode.innerNode.inputs[e.inputIndex].unsubscribe();
         return false;
       }
-      if (e.leftGraphNode.nodeId === id) {
+      if (e.leftGraphNode.modelId === id) {
         return false;
       }
       return true;
@@ -95,7 +95,7 @@ const useGraphInternal = defineStore('graph', () => {
 
     // remove existing edge to same input
     edges.value = edges.value.filter(
-      (e) => !(e.rightGraphNode.nodeId === rightId && e.inputIndex === inputIndex)
+      (e) => !(e.rightGraphNode.modelId === rightId && e.inputIndex === inputIndex)
     );
     edges.value.push(edge);
 
@@ -104,7 +104,7 @@ const useGraphInternal = defineStore('graph', () => {
 
   const removeEdge = (rightNodeId: string, inputIndex: number) => {
     const idx = edges.value.findIndex(
-      (e) => e.rightGraphNode.nodeId === rightNodeId && e.inputIndex === inputIndex
+      (e) => e.rightGraphNode.modelId === rightNodeId && e.inputIndex === inputIndex
     );
     if (idx === -1) return;
 
@@ -124,7 +124,7 @@ const useGraphInternal = defineStore('graph', () => {
     node.insertInput(index);
 
     edges.value.forEach((e) => {
-      if (e.rightGraphNode.nodeId === nodeId && e.inputIndex >= index) {
+      if (e.rightGraphNode.modelId === nodeId && e.inputIndex >= index) {
         e.inputIndex++;
       }
     });
@@ -135,7 +135,7 @@ const useGraphInternal = defineStore('graph', () => {
     node.removeInput(index);
 
     edges.value.forEach((e) => {
-      if (e.rightGraphNode.nodeId === nodeId && e.inputIndex > index) {
+      if (e.rightGraphNode.modelId === nodeId && e.inputIndex > index) {
         e.inputIndex--;
       }
     });
@@ -159,22 +159,22 @@ const useGraphInternal = defineStore('graph', () => {
       addNodeModel(model);
 
       const copy = getNode(newId);
-      idMap[orig.nodeId] = copy;
+      idMap[orig.modelId] = copy;
       return copy;
     });
 
     oldEdges.forEach((e) => {
-      const L = idMap[e.leftGraphNode.nodeId];
-      const R = idMap[e.rightGraphNode.nodeId];
+      const L = idMap[e.leftGraphNode.modelId];
+      const R = idMap[e.rightGraphNode.modelId];
       if (L && R) {
-        connect(L.nodeId, e.outputIndex, R.nodeId, e.inputIndex);
+        connect(L.modelId, e.outputIndex, R.modelId, e.inputIndex);
       }
     });
 
     oldEdges.forEach((e) => {
-      const targetClone = idMap[e.rightGraphNode.nodeId];
-      if (!idMap[e.leftGraphNode.nodeId] && targetClone) {
-        connect(e.leftGraphNode.nodeId, e.outputIndex, targetClone.nodeId, e.inputIndex);
+      const targetClone = idMap[e.rightGraphNode.modelId];
+      if (!idMap[e.leftGraphNode.modelId] && targetClone) {
+        connect(e.leftGraphNode.modelId, e.outputIndex, targetClone.modelId, e.inputIndex);
       }
     });
 
@@ -237,7 +237,7 @@ const useGraphInternal = defineStore('graph', () => {
     if (node.data?.params_length) node.setParamsLength(Number(node.data.params_length));
 
     node.onInitialize();
-    nodeMap.value[wrapper.nodeId] = wrapper;
+    nodeMap.value[wrapper.modelId] = wrapper;
   };
 
   // ---------------------------------------------------------------------------
@@ -334,7 +334,7 @@ export const useGraphStore = defineStore('graph-with-history', () => {
     const state = internalGraph.toModel();
     try {
       const edges = [...internalGraph.edges.filter((v) => ids.includes(v.id))];
-      edges.forEach((v) => internalGraph.removeEdge(v.rightGraphNode.nodeId, v.inputIndex));
+      edges.forEach((v) => internalGraph.removeEdge(v.rightGraphNode.modelId, v.inputIndex));
       commit();
     } catch {
       internalGraph.fromModel(state);

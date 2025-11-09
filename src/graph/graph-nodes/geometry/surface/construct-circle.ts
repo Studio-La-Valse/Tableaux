@@ -10,8 +10,8 @@ export class Circle extends GraphNode {
   private input2;
   private outputCircle;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerObjectInput('XY').validate(assertIsXY);
     this.input2 = this.registerNumberInput('Radius');

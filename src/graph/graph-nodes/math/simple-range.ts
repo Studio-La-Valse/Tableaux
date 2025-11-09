@@ -7,8 +7,8 @@ export class SimpleRange extends GraphNode {
   private input;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerNumberInput('Length');
     this.output = this.registerNumberOutput('Values');

@@ -43,6 +43,7 @@
   import ActivatorNode from '@/components/graph/NodeBrowser/ActivatorNode.vue';
   import { useGraphNodeRegistry } from '@/stores/use-graph-node-registry';
   import { useContextMenuStore } from '@/stores/use-context-menu-store';
+  import { nanoid } from 'nanoid';
 
   const menu = useContextMenuStore();
   const { filterTree } = useGraphNodeRegistry();
@@ -57,7 +58,7 @@
   });
 
   const clickNode = (evt: MouseEvent, nodeName: string) => {
-    menu.onActivate([nodeName]);
+    menu.onActivate([nodeName], nanoid(11));
   };
 
   const onWheel = (evt: WheelEvent) => {

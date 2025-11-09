@@ -13,8 +13,8 @@ export default class DeconstructChannelState extends GraphNode {
   private outputChannelPressure;
   private outputPitchBend;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputState = this.registerObjectInput('State').validate((v) => {
       if (!isMidiChannelState(v)) {

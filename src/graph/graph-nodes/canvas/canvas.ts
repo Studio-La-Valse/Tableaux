@@ -10,8 +10,8 @@ export class Canvas extends GraphNode {
   private clear;
   private input;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.clear = this.registerBooleanInput('Clear');
     this.input = this.registerObjectInput('Drawable Elements').validate(asShape);

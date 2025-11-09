@@ -16,8 +16,8 @@ export class StoreReader extends GraphNode {
     name: string;
   };
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
     this.initial = this.registerUnknownInput('Initial');
     this.reset = this.registerBooleanInput('Reset');
     this.registerUnknownInput('Trigger'); // ensures dependency

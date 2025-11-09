@@ -4,13 +4,13 @@ import { GraphNode } from '@/graph/core/graph-node';
 import { GraphNodeType } from '../decorators';
 import type { ClearRectShape } from '@/geometry/clear-rect';
 
-@GraphNodeType('Geometry', 'Surface', 'Construct Rectangle')
+@GraphNodeType('Geometry', 'Surface', 'Clear Rectangle')
 export class Rectangle extends GraphNode {
   private inputRect;
   private outputRect;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputRect = this.registerObjectInput('Rect').validate(asRectangle);
     this.outputRect = this.registerObjectOutput<ClearRectShape>('Rectangle');

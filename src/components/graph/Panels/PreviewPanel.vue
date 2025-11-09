@@ -1,5 +1,5 @@
 <template>
-  <ResizablePanel :graph-node-id="props.graphNode.id">
+  <ResizablePanel :graph-node-id="props.graphNode.modelId">
     <div ref="wrapper" class="canvas-container">
       <div :style="stripeStyle" class="stripe">
         <div :style="canvasStyle">

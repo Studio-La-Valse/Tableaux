@@ -22,7 +22,7 @@ export abstract class GraphNodeOutput implements IGraphNodeOutput {
   public targetInputs: Set<IGraphNodeInput> = new Set();
 
   public get graphNodeId() {
-    return this.graphNode.id;
+    return this.graphNode.modelId;
   }
 
   public abstract provides: ProviderType[];

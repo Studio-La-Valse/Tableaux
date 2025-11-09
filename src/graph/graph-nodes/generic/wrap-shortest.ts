@@ -9,8 +9,8 @@ export class WrapShortest extends GraphNode {
   private output1;
   private output2;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerUnknownInput('First');
     this.input2 = this.registerUnknownInput('Second');

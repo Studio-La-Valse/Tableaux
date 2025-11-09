@@ -11,8 +11,8 @@ export class ConstructARGB extends GraphNode {
   private input4;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerNumberInput('Alpha');
     this.input2 = this.registerNumberInput('Red');

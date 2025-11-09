@@ -17,9 +17,9 @@ export class GraphEdge {
 
   public toModel(): GraphEdgeModel {
     return {
-      leftId: this.leftGraphNode.nodeId,
+      leftId: this.leftGraphNode.modelId,
+      rightId: this.rightGraphNode.modelId,
       output: this.outputIndex,
-      rightId: this.rightGraphNode.nodeId,
       input: this.inputIndex,
     };
   }

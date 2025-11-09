@@ -9,8 +9,8 @@ export class Multiply extends GraphNode {
   private params: GraphNodeInputType<number>[];
   private output: GraphNodeOutputType<number>;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.params = this.registerNumberInputParams('First');
     this.output = this.registerNumberOutput('Result');

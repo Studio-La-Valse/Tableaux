@@ -78,9 +78,9 @@ export function useSelectionArea() {
       })
       .forEach((node) => {
         if (mode === 'add' || mode === 'default') {
-          nodeSelectionStore.selectNode(node.nodeId);
+          nodeSelectionStore.selectNode(node.modelId);
         } else if (mode === 'subtract') {
-          nodeSelectionStore.unselectNode(node.nodeId);
+          nodeSelectionStore.unselectNode(node.modelId);
         }
       });
   }

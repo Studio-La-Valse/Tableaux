@@ -12,8 +12,8 @@ export class Invert extends GraphNode {
   private inputTransform;
   private outputTransform;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputTransform = this.registerObjectInput('Transformation').validate(
       assertIsTransformationMatrix

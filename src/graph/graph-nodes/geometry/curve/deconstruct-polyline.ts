@@ -10,8 +10,8 @@ export class DeconstructPolyline extends GraphNode {
   private outputPoints;
   private outputLength;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerObjectInput('Polyline').validate(asPolyline);
 

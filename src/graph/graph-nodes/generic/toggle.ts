@@ -9,8 +9,8 @@ export class Toggle extends Emitter<boolean> {
 
   override type: EmitterKind = 'toggle';
 
-  constructor(id: string, path: string[]) {
-    super(id, path, false);
+  constructor(modelId: string) {
+    super(modelId, false);
 
     this.output = this.registerBooleanOutput('Value');
   }

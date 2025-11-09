@@ -32,6 +32,7 @@
   import { ref, computed, onMounted, watch } from 'vue';
   import type { ActivatorGroup } from '@/stores/use-graph-node-registry';
   import { useContextMenuStore } from '@/stores/use-context-menu-store';
+  import { nanoid } from 'nanoid';
 
   const menu = useContextMenuStore();
 
@@ -51,7 +52,7 @@
   }
 
   const clickNode = (evt: MouseEvent, nodeName: string) => {
-    menu.onActivate([...currentPath.value, nodeName]);
+    menu.onActivate([...currentPath.value, nodeName], nanoid(11));
   };
 
   onMounted(() => {

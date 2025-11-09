@@ -9,8 +9,8 @@ export class HexToColor extends GraphNode {
   private input1;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerStringInput('Hex');
     this.output = this.registerObjectOutput<ColorARGB>('Color');

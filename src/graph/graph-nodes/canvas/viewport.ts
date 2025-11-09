@@ -10,8 +10,8 @@ export class Viewport extends GraphNode {
 
   public override data: { dimensions: XY };
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.output = this.registerObjectOutput<Rectangle>('Viewport');
 

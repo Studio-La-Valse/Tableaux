@@ -13,8 +13,8 @@ export class MouseMove extends GraphNode {
     active: true,
   };
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.output = this.registerObjectOutput<XY>('Last Position');
     this.active = this.registerBooleanInput('Active');

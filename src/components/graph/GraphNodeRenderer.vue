@@ -1,5 +1,5 @@
 <template>
-  <div class="node" @mousedown="(e) => onMouseDown(e, graphNode.nodeId)" :style="style">
+  <div class="node" @mousedown="(e) => onMouseDown(e, graphNode.modelId)" :style="style">
     <PanelRenderer :graphNode="graphNode" :panel-style="panelStyle" />
   </div>
 </template>
