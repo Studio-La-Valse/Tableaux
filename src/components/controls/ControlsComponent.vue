@@ -8,10 +8,13 @@
         <button
           class="show-hidden-button"
           type="button"
-          @click.stop="showHidden = !showHidden"
           :title="showHidden ? 'Hide hidden' : 'Show hidden'"
+          @click.stop="showHidden = !showHidden"
         >
-          <component :is="showHidden ? EyeIcon : EyeSlashIcon" class="icon" />
+          <component
+            :is="showHidden ? EyeIcon : EyeSlashIcon"
+            class="icon"
+          />
         </button>
       </div>
     </div>
@@ -23,13 +26,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import ControlsList from './ControlsList.vue';
-
 // Heroicons (outline)
-import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/outline'
+import { ref } from 'vue'
 
-const showHidden = ref(false);
+import ControlsList from './ControlsList.vue'
+
+const showHidden = ref(false)
 </script>
 
 <style scoped>

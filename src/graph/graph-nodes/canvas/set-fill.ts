@@ -1,24 +1,25 @@
-import { GraphNode } from '../../core/graph-node';
-import { GraphNodeType } from '../decorators';
-import { asShape, type Shape } from '@/geometry/shape';
-import type { Fill } from '@/geometry/fill';
-import { assertIsColorARGB } from '@/geometry/color-rgb';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import type { Fill } from '@/geometry/fill'
+import type { Shape } from '@/geometry/shape'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { assertIsColorARGB } from '@/geometry/color-rgb'
+import { asShape } from '@/geometry/shape'
+import { GraphNode } from '../../core/graph-node'
+import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Canvas', 'Set Fill')
 export class SetFill extends GraphNode {
-  private inputGeometry;
-  private color;
+  private inputGeometry
+  private color
 
-  private outputGeometry;
+  private outputGeometry
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape);
-    this.color = this.registerObjectInput('Color').validate(assertIsColorARGB);
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape)
+    this.color = this.registerObjectInput('Color').validate(assertIsColorARGB)
 
-    this.outputGeometry = this.registerObjectOutput<Shape & Fill>('Geometry with fill');
+    this.outputGeometry = this.registerObjectOutput<Shape & Fill>('Geometry with fill')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -26,8 +27,8 @@ export class SetFill extends GraphNode {
       const withFill = {
         ...geom,
         fill,
-      };
-      this.outputGeometry.next(withFill);
+      }
+      this.outputGeometry.next(withFill)
     }
   }
 }

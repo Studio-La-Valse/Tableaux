@@ -1,45 +1,52 @@
 <template>
-  <div class="outer" :style="style">
-    <slot></slot>
+  <div
+    class="outer"
+    :style="style"
+  >
+    <slot />
 
     <!-- Resizer for the bottom right corner -->
-    <div class="resizer" @pointerdown="initResize"></div>
+    <div
+      class="resizer"
+      @pointerdown="initResize"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useNodeResize } from '@/composables/use-node-resize';
-import { computed, type StyleValue } from 'vue';
-import { useGraphStore } from '@/stores/use-graph-store';
+import type { StyleValue } from 'vue'
+import { computed } from 'vue'
+import { useNodeResize } from '@/composables/use-node-resize'
+import { useGraphStore } from '@/stores/use-graph-store'
 
 // `defineProps` gives you a typed `graphNode` in your template
 const props = defineProps<{
-  graphNodeId: string;
-}>();
+  graphNodeId: string
+}>()
 
-const graphNode = useGraphStore().getNode(props.graphNodeId);
+const graphNode = useGraphStore().getNode(props.graphNodeId)
 
 // Create computed reactive dimensions that read/write the graph node's properties.
 const width = computed({
   get: () => graphNode.width,
   set: (val) => {
-    graphNode.width = val;
+    graphNode.width = val
   },
-});
+})
 const height = computed({
   get: () => graphNode.height,
   set: (val) => {
-    graphNode.height = val;
+    graphNode.height = val
   },
-});
+})
 
 const style = computed<StyleValue>(() => ({
-  width: width.value + 'px',
-  height: height.value + 'px',
-}));
+  width: `${width.value}px`,
+  height: `${height.value}px`,
+}))
 
 // Integrate the resizable composable.
-const { initResize } = useNodeResize(width, height);
+const { initResize } = useNodeResize(width, height)
 </script>
 
 <style>

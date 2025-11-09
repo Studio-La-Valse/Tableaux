@@ -3,7 +3,10 @@
     <GraphControls />
 
     <!-- Split mode -->
-    <PanelGroup v-if="layout.mode === 'split'" direction="horizontal">
+    <PanelGroup
+      v-if="layout.mode === 'split'"
+      direction="horizontal"
+    >
       <Panel :default-size="70">
         <div
           ref="viewportRef"
@@ -13,8 +16,13 @@
           @mousedown="onMouseDown"
           @wheel="canvasTransform.onWheel"
         >
-          <div ref="canvasRef" class="canvas-content" :style="contentStyle">
+          <div
+            ref="canvasRef"
+            class="canvas-content"
+            :style="contentStyle"
+          >
             <GraphRenderer />
+
             <SelectionBorder />
           </div>
 
@@ -41,8 +49,13 @@
       @mousedown="onMouseDown"
       @wheel="canvasTransform.onWheel"
     >
-      <div ref="canvasRef" class="canvas-content" :style="contentStyle">
+      <div
+        ref="canvasRef"
+        class="canvas-content"
+        :style="contentStyle"
+      >
         <GraphRenderer />
+
         <SelectionBorder />
       </div>
 
@@ -52,79 +65,85 @@
     </div>
 
     <!-- Controls only -->
-    <ControlsComponent v-else-if="layout.mode === 'controls'" class="controls-only" />
+    <ControlsComponent
+      v-else-if="layout.mode === 'controls'"
+      class="controls-only"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { useGraphLayoutStore } from '@/stores/use-graph-layout-store';
-import { computed, onMounted, onUnmounted, type StyleValue } from 'vue';
+import type { StyleValue } from 'vue'
+import { storeToRefs } from 'pinia'
+import { computed, onMounted, onUnmounted } from 'vue'
 
-import ActivatorTree from '@/components/graph/NodeBrowser/ActivatorTree.vue';
-import GraphRenderer from '@/components/graph/GraphRenderer.vue';
-import SelectionBorder from '@/components/graph/SelectionBorder.vue';
-import GraphControls from '@/components/graph/GraphControls/GraphControls.vue';
+import { Panel, PanelGroup, PanelResizeHandle } from 'vue-resizable-panels'
+import GraphControls from '@/components/graph/GraphControls/GraphControls.vue'
+import GraphRenderer from '@/components/graph/GraphRenderer.vue'
+import ActivatorTree from '@/components/graph/NodeBrowser/ActivatorTree.vue'
 
-import { useSelectionArea } from '@/composables/use-selection-area';
-import { useClearSelection } from '@/composables/use-clear-selection';
-import { useCanvasTransform } from '@/composables/use-canvas-transform';
+import SelectionBorder from '@/components/graph/SelectionBorder.vue'
+import { useCanvasTransform } from '@/composables/use-canvas-transform'
+import { useClearSelection } from '@/composables/use-clear-selection'
 
-import { useContextMenuStore } from '@/stores/use-context-menu-store';
-import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store';
-import { useSelectionAreaStore } from '@/stores/use-selection-area-store';
-import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store';
-import { useGraphStore } from '@/stores/use-graph-store';
-import ControlsComponent from '../controls/ControlsComponent.vue';
-import { PanelGroup, PanelResizeHandle, Panel } from 'vue-resizable-panels';
-import { storeToRefs } from 'pinia';
+import { useSelectionArea } from '@/composables/use-selection-area'
+import { useContextMenuStore } from '@/stores/use-context-menu-store'
+import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
+import { useGraphLayoutStore } from '@/stores/use-graph-layout-store'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
+import { useGraphStore } from '@/stores/use-graph-store'
+import { useSelectionAreaStore } from '@/stores/use-selection-area-store'
+import ControlsComponent from '../controls/ControlsComponent.vue'
 
-const layout = useGraphLayoutStore();
+const layout = useGraphLayoutStore()
 
-const selectionArea = useSelectionArea();
-const selectionAreaStore = useSelectionAreaStore();
-const clearSelection = useClearSelection();
-const menu = useContextMenuStore();
-const selection = useGraphNodeSelectionStore();
-const graph = useGraphStore();
-const canvasTransform = useCanvasTransform();
-const canvasStore = useGraphCanvasStore();
+const selectionArea = useSelectionArea()
+const selectionAreaStore = useSelectionAreaStore()
+const clearSelection = useClearSelection()
+const menu = useContextMenuStore()
+const selection = useGraphNodeSelectionStore()
+const graph = useGraphStore()
+const canvasTransform = useCanvasTransform()
+const canvasStore = useGraphCanvasStore()
 
-const { viewportRef, canvasRef } = storeToRefs(canvasStore);
+const { viewportRef, canvasRef } = storeToRefs(canvasStore)
 
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({
   ...canvasTransform.style.value,
   pointerEvents: selectionAreaStore.selecting ? 'none' : 'all',
-}));
+}))
 
 function onMouseDown(event: MouseEvent) {
-  canvasTransform.onMouseDown(event);
-  selectionArea.onMouseDown(event);
-  clearSelection.onMouseDown(event);
+  canvasTransform.onMouseDown(event)
+  selectionArea.onMouseDown(event)
+  clearSelection.onMouseDown(event)
 
-  menu.close();
+  menu.close()
 }
 
 function onCanvasDblClick(evt: MouseEvent) {
-  if (evt.target !== viewportRef.value) return;
+  if (evt.target !== viewportRef.value)
+    return
 
-  menu.open(evt);
+  menu.open(evt)
 }
 
 function deleteSelectedNodes(evt: KeyboardEvent) {
-  if (evt.key != 'Delete') return;
+  if (evt.key !== 'Delete')
+    return
 
-  graph.removeNodes([...selection.selectedNodes]);
-  selection.clearSelection();
+  graph.removeNodes([...selection.selectedNodes])
+  selection.clearSelection()
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', deleteSelectedNodes);
-});
+  window.addEventListener('keydown', deleteSelectedNodes)
+})
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', deleteSelectedNodes);
-});
+  window.removeEventListener('keydown', deleteSelectedNodes)
+})
 </script>
 
 <style lang="css" scoped>

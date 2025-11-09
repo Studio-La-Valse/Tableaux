@@ -1,19 +1,19 @@
-import { GraphNode } from '../../core/graph-node';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { GraphNodeType } from '../decorators';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { GraphNode } from '../../core/graph-node'
+import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Generic', 'Switch')
 export class Switch extends GraphNode {
-  private input1;
-  private params;
-  private output;
+  private input1
+  private params
+  private output
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.input1 = this.registerNumberInput('Filter');
-    this.params = this.registerUnkownInputParams('Signal');
-    this.output = this.registerUnknownOutput('Values');
+    this.input1 = this.registerNumberInput('Filter')
+    this.params = this.registerUnkownInputParams('Signal')
+    this.output = this.registerUnknownOutput('Values')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -21,8 +21,8 @@ export class Switch extends GraphNode {
       this.input1,
       ...this.params,
     )) {
-      const res = values[value];
-      this.output.next(res);
+      const res = values[value]
+      this.output.next(res)
     }
   }
 }

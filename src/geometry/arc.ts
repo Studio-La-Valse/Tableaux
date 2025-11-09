@@ -1,40 +1,41 @@
-import { type XY } from './xy';
-import { type BaseShape } from './shape';
-import { circleAsArc, isCircle, type Circle } from './circle';
-import type { TransformationMatrix } from './transformation-matrix';
-import type { JsonObject } from '@/graph/core/models/json-value';
-import type { EllipticalArc } from './elliptical-arc';
+import type { Circle } from './circle'
+import type { EllipticalArc } from './elliptical-arc'
+import type { BaseShape } from './shape'
+import type { TransformationMatrix } from './transformation-matrix'
+import type { XY } from './xy'
+import type { JsonObject } from '@/graph/core/models/json-value'
+import { circleAsArc, isCircle } from './circle'
 
 export type Arc = Circle & {
-  startAngle: number;
-  endAngle: number;
-  counterclockwise: boolean;
-};
+  startAngle: number
+  endAngle: number
+  counterclockwise: boolean
+}
 
 export function isArc(object: JsonObject): object is Arc {
   return (
-    isCircle(object) &&
-    'startAngle' in object &&
-    typeof object.startAngle === 'number' &&
-    'endAngle' in object &&
-    typeof object.endAngle === 'number' &&
-    'counterclockwise' in object &&
-    typeof object.counterclockwise === 'boolean'
-  );
+    isCircle(object)
+    && 'startAngle' in object
+    && typeof object.startAngle === 'number'
+    && 'endAngle' in object
+    && typeof object.endAngle === 'number'
+    && 'counterclockwise' in object
+    && typeof object.counterclockwise === 'boolean'
+  )
 }
 
 export function asArc(object: JsonObject): Arc {
   if (isArc(object)) {
     return {
       ...object,
-    };
+    }
   }
 
   if (isCircle(object)) {
-    return circleAsArc(object);
+    return circleAsArc(object)
   }
 
-  throw Error('This object could not be cast to an arc shape.');
+  throw new Error('This object could not be cast to an arc shape.')
 }
 
 export function arcAsEllipticalArc(arc: Arc): EllipticalArc {
@@ -43,12 +44,12 @@ export function arcAsEllipticalArc(arc: Arc): EllipticalArc {
     radiusX: arc.radius,
     radiusY: arc.radius,
     rotation: 0,
-  };
+  }
 }
 
 export type ArcShape = BaseShape & {
-  kind: 'arc';
-} & Arc;
+  kind: 'arc'
+} & Arc
 
 export function createArc(
   origin: XY,
@@ -66,5 +67,5 @@ export function createArc(
     endAngle,
     counterclockwise,
     t,
-  };
+  }
 }

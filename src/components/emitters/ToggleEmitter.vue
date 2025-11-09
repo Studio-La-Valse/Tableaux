@@ -1,5 +1,8 @@
 <template>
-  <div class="toggle-icon" @click="toggleValue">
+  <div
+    class="toggle-icon"
+    @click="toggleValue"
+  >
     <component
       :is="graphNode.data.value ? CheckCircleIcon : XCircleIcon"
       class="icon"
@@ -9,22 +12,22 @@
 </template>
 
 <script setup lang="ts">
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
+import type { Emitter } from '@/graph/core/emitter'
 
-import { useGraphStore } from '@/stores/use-graph-store';
-import type { Emitter } from '@/graph/core/emitter';
-import type { JsonValue } from '@/graph/core/models/json-value';
-
-const graph = useGraphStore();
+import type { JsonValue } from '@/graph/core/models/json-value'
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid'
+import { useGraphStore } from '@/stores/use-graph-store'
 
 const props = defineProps<{
-  graphNode: Emitter<JsonValue>;
-}>();
+  graphNode: Emitter<JsonValue>
+}>()
 
-const toggleValue = () => {
-  props.graphNode.onChange(!props.graphNode.data.value);
-  graph.commit();
-};
+const graph = useGraphStore()
+
+function toggleValue() {
+  props.graphNode.onChange(!props.graphNode.data.value)
+  graph.commit()
+}
 </script>
 
 <style scoped>

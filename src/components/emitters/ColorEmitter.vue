@@ -12,46 +12,46 @@
     @touchstart.stop
     @touchmove.stop
     @touchend.stop
-  />
+  >
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useGraphStore } from '@/stores/use-graph-store';
-import type { JsonValue } from '@/graph/core/models/json-value';
-import type { Emitter } from '@/graph/core/emitter';
-
-const graph = useGraphStore();
+import type { Emitter } from '@/graph/core/emitter'
+import type { JsonValue } from '@/graph/core/models/json-value'
+import { onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
+import { useGraphStore } from '@/stores/use-graph-store'
 
 const props = defineProps<{
-  graphNode: Emitter<JsonValue>;
-}>();
+  graphNode: Emitter<JsonValue>
+}>()
 
-const inputRef = ref<HTMLInputElement | null>(null);
+const graph = useGraphStore()
 
-const handleInput = (e: Event) => {
-  const target = e.target as HTMLInputElement;
-  const colorValue = target.value;
-  props.graphNode.onChange(colorValue);
-};
+const inputRef = useTemplateRef<HTMLInputElement>('inputRef')
 
-const mouseUp = () => {
-  graph.commit();
-};
+function handleInput(e: Event) {
+  const target = e.target as HTMLInputElement
+  const colorValue = target.value
+  props.graphNode.onChange(colorValue)
+}
 
-const handleClickOutside = (event: MouseEvent) => {
+function mouseUp() {
+  graph.commit()
+}
+
+function handleClickOutside(event: MouseEvent) {
   if (inputRef.value && !inputRef.value.contains(event.target as Node)) {
-    inputRef.value.blur();
+    inputRef.value.blur()
   }
-};
+}
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
-});
+  document.addEventListener('click', handleClickOutside)
+})
 
 onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside);
-});
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <style scoped>

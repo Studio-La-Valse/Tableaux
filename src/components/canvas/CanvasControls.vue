@@ -3,12 +3,25 @@
     <!-- Presets dropdown -->
     <div class="field-group">
       <label for="preset">Preset</label>
-      <select id="preset" v-model="selectedPreset">
+
+      <select
+        id="preset"
+        v-model="selectedPreset"
+      >
         <option value="custom">
           Custom
         </option>
-        <optgroup v-for="group in presetGroups" :key="group.label" :label="group.label">
-          <option v-for="p in group.items" :key="p.label" :value="p.label">
+
+        <optgroup
+          v-for="group in presetGroups"
+          :key="group.label"
+          :label="group.label"
+        >
+          <option
+            v-for="p in group.items"
+            :key="p.label"
+            :value="p.label"
+          >
             {{ p.label }}
           </option>
         </optgroup>
@@ -18,27 +31,36 @@
     <!-- Zoom mode -->
     <div class="field-group">
       <label for="zoom-mode">Zoom</label>
-      <select id="zoom-mode" v-model="mode">
+
+      <select
+        id="zoom-mode"
+        v-model="mode"
+      >
         <optgroup label="Auto">
           <option value="fit">
             Fit
           </option>
         </optgroup>
+
         <optgroup label="Scale">
           <option value="50">
-            50 %
+            50 %
           </option>
+
           <option value="75">
-            75 %
+            75 %
           </option>
+
           <option value="100">
-            100 %
+            100 %
           </option>
+
           <option value="150">
-            150 %
+            150 %
           </option>
+
           <option value="200">
-            200 %
+            200 %
           </option>
         </optgroup>
       </select>
@@ -47,6 +69,7 @@
     <!-- Width input -->
     <div class="field-group">
       <label for="canvas-width">Width</label>
+
       <input
         id="canvas-width"
         type="number"
@@ -56,12 +79,13 @@
         pattern="\d+"
         :value="canvasProps.dimensions.x"
         @input="onWidthInput(($event.target as HTMLInputElement).value)"
-      />
+      >
     </div>
 
     <!-- Height input -->
     <div class="field-group">
       <label for="canvas-height">Height</label>
+
       <input
         id="canvas-height"
         type="number"
@@ -71,34 +95,51 @@
         pattern="\d+"
         :value="canvasProps.dimensions.y"
         @input="onHeightInput(($event.target as HTMLInputElement).value)"
-      />
+      >
     </div>
 
     <!-- Lock ratio toggle -->
     <div class="field-group lock-group">
       <label>Lock Ratio</label>
+
       <div class="lock-header">
         <button
           type="button"
           :class="{ locked: aspectLocked }"
           :aria-pressed="aspectLocked"
-          @click="toggleLock"
           :title="aspectLocked ? `Locked at ${displayRatio}` : 'Unlock ratio control'"
+          @click="toggleLock"
         >
-          <LockClosedIcon v-if="aspectLocked" class="icon" />
-          <LockOpenIcon v-else class="icon" />
+          <LockClosedIcon
+            v-if="aspectLocked"
+            class="icon"
+          />
+
+          <LockOpenIcon
+            v-else
+            class="icon"
+          />
         </button>
+
         <span class="ratio-display">{{ displayRatio }}</span>
       </div>
     </div>
 
     <!-- Flip & Full-screen buttons -->
     <div class="button-group">
-      <button type="button" @click="onFlip" title="Swap Width ↔ Height">
+      <button
+        type="button"
+        title="Swap Width ↔ Height"
+        @click="onFlip"
+      >
         <ArrowPathIcon class="icon" />
       </button>
 
-      <button type="button" @click="onFullScreen" title="Toggle Full Screen">
+      <button
+        type="button"
+        title="Toggle Full Screen"
+        @click="onFullScreen"
+      >
         <ArrowsPointingOutIcon class="icon" />
       </button>
     </div>
@@ -107,29 +148,30 @@
 
 <script setup lang="ts">
 import {
-  LockClosedIcon,
-  LockOpenIcon,
   ArrowPathIcon,
   ArrowsPointingOutIcon,
-} from '@heroicons/vue/24/outline';
+  LockClosedIcon,
+  LockOpenIcon,
+} from '@heroicons/vue/24/outline'
 
-import { useDesignCanvasStore } from '@/stores/use-design-canvas-store';
-import { ref, toRefs, watch, computed } from 'vue';
-
-const canvasProps = useDesignCanvasStore();
-
-type optionItem = { label: string; w: number; h: number };
-type option = { label: string; items: optionItem[] };
-type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200';
+import { computed, ref, toRefs, watch } from 'vue'
+import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 
 // Props & Emits
 const props = defineProps<{
-  zoomMode: ZoomMode;
-}>();
+  zoomMode: ZoomMode
+}>()
+
 const emit = defineEmits<{
-  (e: 'update:zoomMode', v: ZoomMode): void;
-  (e: 'fullScreen'): void;
-}>();
+  (e: 'update:zoomMode', v: ZoomMode): void
+  (e: 'fullScreen'): void
+}>()
+
+const canvasProps = useDesignCanvasStore()
+
+type optionItem = { label: string, w: number, h: number }
+type option = { label: string, items: optionItem[] }
+type ZoomMode = 'fit' | '50' | '75' | '100' | '150' | '200'
 
 // Preset data
 const presetGroups: option[] = [
@@ -180,130 +222,139 @@ const presetGroups: option[] = [
       { label: '2048x2048', w: 2048, h: 2048 },
     ],
   },
-] as const;
-const allPresets = computed(() => presetGroups.flatMap((g) => g.items));
+] as const
+const allPresets = computed(() => presetGroups.flatMap(g => g.items))
 
 // Reactive state
-const { zoomMode } = toRefs(props);
-const mode = ref<ZoomMode>(zoomMode.value);
-const selectedPreset = ref('custom');
+const { zoomMode } = toRefs(props)
+const mode = ref<ZoomMode>(zoomMode.value)
+const selectedPreset = ref('custom')
 
 // Aspect-ratio lock
-const aspectLocked = ref(false);
-const ratio = ref(canvasProps.dimensions.x / canvasProps.dimensions.y);
+const aspectLocked = ref(false)
+const ratio = ref(canvasProps.dimensions.x / canvasProps.dimensions.y)
 const displayRatio = computed(() => {
-  const w = canvasProps.dimensions.x;
-  const h = canvasProps.dimensions.y;
-  const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
-  const g = gcd(w, h);
-  return `${w / g}:${h / g}`;
-});
+  const w = canvasProps.dimensions.x
+  const h = canvasProps.dimensions.y
+  const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b))
+  const g = gcd(w, h)
+  return `${w / g}:${h / g}`
+})
 
 // Toggle lock and capture current ratio
 function toggleLock() {
-  aspectLocked.value = !aspectLocked.value;
+  aspectLocked.value = !aspectLocked.value
   if (aspectLocked.value) {
-    ratio.value = canvasProps.dimensions.x / canvasProps.dimensions.y;
+    ratio.value = canvasProps.dimensions.x / canvasProps.dimensions.y
   }
 }
 
 // Input handlers that clamp to >=1 integer
 function onWidthInput(val: string) {
-  let newX = Math.round(Number(val));
-  if (isNaN(newX) || newX < 1) newX = 1;
+  let newX = Math.round(Number(val))
+  if (Number.isNaN(newX) || newX < 1)
+    newX = 1
 
-  let newY = canvasProps.dimensions.y;
+  let newY = canvasProps.dimensions.y
   if (aspectLocked.value) {
-    newY = Math.max(1, Math.round(newX / ratio.value));
+    newY = Math.max(1, Math.round(newX / ratio.value))
   }
 
-  canvasProps.setDimensions({ x: newX, y: newY });
+  canvasProps.setDimensions({ x: newX, y: newY })
 }
 function onHeightInput(val: string) {
-  let newY = Math.round(Number(val));
-  if (isNaN(newY) || newY < 1) newY = 1;
+  let newY = Math.round(Number(val))
+  if (Number.isNaN(newY) || newY < 1)
+    newY = 1
 
-  let newX = canvasProps.dimensions.x;
+  let newX = canvasProps.dimensions.x
   if (aspectLocked.value) {
-    newX = Math.max(1, Math.round(newX * ratio.value));
+    newX = Math.max(1, Math.round(newX * ratio.value))
   }
 
-  canvasProps.setDimensions({ x: newX, y: newY });
+  canvasProps.setDimensions({ x: newX, y: newY })
 }
 
 // Flip and Full-Screen
 function onFlip() {
-  const oldX = canvasProps.dimensions.x;
-  const oldY = canvasProps.dimensions.y;
-  canvasProps.setDimensions({ x: oldY, y: oldX });
+  const oldX = canvasProps.dimensions.x
+  const oldY = canvasProps.dimensions.y
+  canvasProps.setDimensions({ x: oldY, y: oldX })
   if (aspectLocked.value) {
-    ratio.value = canvasProps.dimensions.x / canvasProps.dimensions.y;
+    ratio.value = canvasProps.dimensions.x / canvasProps.dimensions.y
   }
 }
 function onFullScreen() {
-  emit('fullScreen');
+  emit('fullScreen')
 }
 
 // Preset watcher (also re-compute ratio if locked)
 watch(selectedPreset, (label) => {
-  if (label === 'custom') return;
+  if (label === 'custom')
+    return
 
-  const p = allPresets.value.find((x) => x.label === label);
-  if (!p) return;
+  const p = allPresets.value.find(x => x.label === label)
+  if (!p)
+    return
 
-  canvasProps.setDimensions({ x: p.w, y: p.h });
+  canvasProps.setDimensions({ x: p.w, y: p.h })
   if (aspectLocked.value) {
-    ratio.value = p.w / p.h;
+    ratio.value = p.w / p.h
   }
-});
+})
 
 // Emit updates outward
-watch(mode, (v) => emit('update:zoomMode', v));
+watch(mode, v => emit('update:zoomMode', v))
 
 // Sync if parent prop changes
-watch(zoomMode, (v) => (mode.value = v));
+watch(zoomMode, v => (mode.value = v))
 
-let applyingPreset = false;
-let presetTimeout: number | undefined;
+let applyingPreset = false
+let presetTimeout: number | undefined
 
 // 1) When selectedPreset changes, ONLY write dims if they really differ:
 watch(selectedPreset, (label) => {
-  if (label === 'custom') return;
+  if (label === 'custom')
+    return
 
-  const p = allPresets.value.find((x) => x.label === label);
-  if (!p) return;
+  const p = allPresets.value.find(x => x.label === label)
+  if (!p)
+    return
 
   // if dims already match, do nothing
-  if (canvasProps.dimensions.x === p.w && canvasProps.dimensions.y === p.h) return;
+  if (canvasProps.dimensions.x === p.w && canvasProps.dimensions.y === p.h)
+    return
 
   // otherwise, we’re “applying” a preset,
   // so set the guard so our dims-watcher can ignore the next assignment
-  applyingPreset = true;
+  applyingPreset = true
 
-  canvasProps.setDimensions({ x: p.w, y: p.h });
+  canvasProps.setDimensions({ x: p.w, y: p.h })
   if (aspectLocked.value) {
-    ratio.value = p.w / p.h;
+    ratio.value = p.w / p.h
   }
-  applyingPreset = false;
-});
+  applyingPreset = false
+})
 
 // 2) In your dims-watcher, bail immediately if we're in the middle of applying a preset:
 watch(
   () => ({ ...canvasProps.dimensions }),
   (dim) => {
-    if (applyingPreset) return;
+    if (applyingPreset)
+      return
 
-    if (presetTimeout) clearTimeout(presetTimeout);
+    if (presetTimeout)
+      clearTimeout(presetTimeout)
     presetTimeout = window.setTimeout(() => {
-      const match = allPresets.value.find((p) => p.w === dim.x && p.h === dim.y);
-      const newLabel = match ? match.label : 'custom';
+      const match = allPresets.value.find(p => p.w === dim.x && p.h === dim.y)
+      const newLabel = match ? match.label : 'custom'
       if (newLabel !== selectedPreset.value) {
-        selectedPreset.value = newLabel;
+        selectedPreset.value = newLabel
       }
-    }, 200);
+    }, 200)
   },
   { deep: true },
-);
+)
 </script>
 
 <style scoped>

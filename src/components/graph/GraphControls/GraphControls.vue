@@ -1,65 +1,99 @@
 <template>
   <div class="canvas-toolbar">
     <div class="button-group">
-      <button @click="layout.mode = 'split'" :class="{ active: layout.mode === 'split' }">
+      <button
+        type="button"
+        :class="{ active: layout.mode === 'split' }"
+        @click="layout.mode = 'split'"
+      >
         <ArrowsRightLeftIcon class="icon" />
       </button>
 
-      <button @click="layout.mode = 'graph'" :class="{ active: layout.mode === 'graph' }">
+      <button
+        type="button"
+        :class="{ active: layout.mode === 'graph' }"
+        @click="layout.mode = 'graph'"
+      >
         <CodeBracketIcon class="icon" />
       </button>
 
-      <button @click="layout.mode = 'controls'" :class="{ active: layout.mode === 'controls' }">
+      <button
+        type="button"
+        :class="{ active: layout.mode === 'controls' }"
+        @click="layout.mode = 'controls'"
+      >
         <AdjustmentsHorizontalIcon class="icon" />
       </button>
 
-      <button type="button"
-              @click="zoomAll"
-              :disabled="!nodes.length"
-              title="Zoom All">
+      <button
+        type="button"
+        :disabled="!nodes.length"
+        title="Zoom All"
+        @click="zoomAll"
+      >
         <DocumentMagnifyingGlassIcon class="icon" />
       </button>
 
       <button
         type="button"
-        @click="zoomSelected"
         :disabled="!selectedNodes.size"
         title="Zoom Selected"
+        @click="zoomSelected"
       >
         <MagnifyingGlassIcon class="icon" />
       </button>
 
-      <button type="button" @click="() => (showCustomNodeModal = true)">
+      <button
+        type="button"
+        @click="() => (showCustomNodeModal = true)"
+      >
         <BeakerIcon class="icon" />
       </button>
 
-      <button type="button"
-              @click="undo"
-              :disabled="!hasUndo"
-              title="Undo">
+      <button
+        type="button"
+        :disabled="!hasUndo"
+        title="Undo"
+        @click="undo"
+      >
         <ArrowUturnLeftIcon class="icon" />
       </button>
 
-      <button type="button"
-              @click="redo"
-              :disabled="!hasRedo"
-              title="Redo">
+      <button
+        type="button"
+        :disabled="!hasRedo"
+        title="Redo"
+        @click="redo"
+      >
         <ArrowUturnRightIcon class="icon" />
       </button>
 
-      <button type="button" @click="save" title="Save">
+      <button
+        type="button"
+        title="Save"
+        @click="save"
+      >
         <ArrowDownOnSquareIcon class="icon" />
       </button>
 
-      <button type="button" @click="load" title="Load">
+      <button
+        type="button"
+        title="Load"
+        @click="load"
+      >
         <FolderOpenIcon class="icon" />
       </button>
 
-      <button type="button" @click="newDocument" title="New Document">
+      <button
+        type="button"
+        title="New Document"
+        @click="newDocument"
+      >
         <DocumentIcon class="icon" />
       </button>
     </div>
   </div>
+
   <Teleport to="body">
     <UnsavedChangesModal
       v-if="showUnsavedModal"
@@ -72,7 +106,7 @@
   <Teleport to="body">
     <CustomNodeComponent
       v-if="showCustomNodeModal"
-      :mode="'create'"
+      mode="create"
       @close="() => (showCustomNodeModal = false)"
       @save="addDynamic"
     />
@@ -80,90 +114,97 @@
 </template>
 
 <script setup lang="ts">
+import type { CustomNodeDefinition } from '@/graph/graph-nodes/json/dynamic-graph-node'
+
 import {
-  ArrowsRightLeftIcon,
-  CodeBracketIcon,
   AdjustmentsHorizontalIcon,
-  DocumentMagnifyingGlassIcon,
-  MagnifyingGlassIcon,
+  ArrowDownOnSquareIcon,
+  ArrowsRightLeftIcon,
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
-  ArrowDownOnSquareIcon,
-  FolderOpenIcon,
+  CodeBracketIcon,
   DocumentIcon,
-} from '@heroicons/vue/24/outline';
-
-import { storeToRefs } from 'pinia';
-import { useGraphHistoryStore } from '@/stores/use-graph-history-store';
-import { useGraphStore } from '@/stores/use-graph-store';
-import { ref } from 'vue';
-import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store';
-import { useZoomToNodes } from '@/composables/use-zoom-to-nodes';
-import UnsavedChangesModal from './UnsavedChangesModal.vue';
-import { useGraphLayoutStore } from '@/stores/use-graph-layout-store';
-import CustomNodeComponent from '../CustomNode/CustomNodeModal.vue';
+  DocumentMagnifyingGlassIcon,
+  FolderOpenIcon,
+  MagnifyingGlassIcon,
+} from '@heroicons/vue/24/outline'
+import { BeakerIcon } from '@heroicons/vue/24/solid'
+import { storeToRefs } from 'pinia'
+import { ref } from 'vue'
+import { useAlert } from '@/composables/use-alert'
+import { useZoomToNodes } from '@/composables/use-zoom-to-nodes'
 import {
   createAndRegisterCustomNode,
-  type CustomNodeDefinition,
-} from '@/graph/graph-nodes/json/dynamic-graph-node';
-import { BeakerIcon } from '@heroicons/vue/24/solid';
 
-const layout = useGraphLayoutStore();
+} from '@/graph/graph-nodes/json/dynamic-graph-node'
+import { useGraphHistoryStore } from '@/stores/use-graph-history-store'
+import { useGraphLayoutStore } from '@/stores/use-graph-layout-store'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
+import { useGraphStore } from '@/stores/use-graph-store'
+import CustomNodeComponent from '../CustomNode/CustomNodeModal.vue'
+import UnsavedChangesModal from './UnsavedChangesModal.vue'
 
-const history = useGraphHistoryStore();
-const { hasUndo, hasRedo } = storeToRefs(history);
+const alert = useAlert()
+const layout = useGraphLayoutStore()
 
-const graphStore = useGraphStore();
-const { init, toModel, fromModel, undo, redo } = graphStore;
-const { nodes } = storeToRefs(graphStore);
+const history = useGraphHistoryStore()
+const { hasUndo, hasRedo } = storeToRefs(history)
 
-const selectionStore = useGraphNodeSelectionStore();
-const { selectedNodes } = storeToRefs(selectionStore);
+const graphStore = useGraphStore()
+const { init, toModel, fromModel, undo, redo } = graphStore
+const { nodes } = storeToRefs(graphStore)
 
-const { zoomToNodes } = useZoomToNodes();
+const selectionStore = useGraphNodeSelectionStore()
+const { selectedNodes } = storeToRefs(selectionStore)
 
-const lastSavedModel = ref(toModel());
-const hasUnsavedChanges = () =>
-  hasRedo.value || JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel());
+const { zoomToNodes } = useZoomToNodes()
+
+const lastSavedModel = ref(toModel())
+function hasUnsavedChanges() {
+  return hasRedo.value || JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel())
+}
 
 /** --- Custom Node Modal --- */
-const showCustomNodeModal = ref(false);
+const showCustomNodeModal = ref(false)
 
-const addDynamic = (def: CustomNodeDefinition) => {
-  createAndRegisterCustomNode(def);
-  graphStore.commit();
-};
+function addDynamic(def: CustomNodeDefinition) {
+  createAndRegisterCustomNode(def)
+  graphStore.commit()
+}
 
 /** --- Modal state --- */
-const showUnsavedModal = ref(false);
-let pendingAction: null | (() => void) = null;
+const showUnsavedModal = ref(false)
+let pendingAction: null | (() => void) = null
 
-const requestAction = (action: () => void) => {
+function requestAction(action: () => void) {
   if (hasUnsavedChanges()) {
-    pendingAction = action;
-    showUnsavedModal.value = true;
-  } else {
-    action();
+    pendingAction = action
+    showUnsavedModal.value = true
   }
-};
+  else {
+    action()
+  }
+}
 
-const onSave = async () => {
-  const saved = await save();
-  if (saved && pendingAction) pendingAction();
-  closeModal();
-};
-const onDiscard = () => {
-  if (pendingAction) pendingAction();
-  closeModal();
-};
-const onCancel = () => closeModal();
-const closeModal = () => {
-  showUnsavedModal.value = false;
-  pendingAction = null;
-};
+async function onSave() {
+  const saved = await save()
+  if (saved && pendingAction)
+    pendingAction()
+  closeModal()
+}
+function onDiscard() {
+  if (pendingAction)
+    pendingAction()
+  closeModal()
+}
+const onCancel = () => closeModal()
+function closeModal() {
+  showUnsavedModal.value = false
+  pendingAction = null
+}
 
 /** --- File I/O helpers --- */
-const saveToFile = async (filename: string, content: string) => {
+async function saveToFile(filename: string, content: string) {
   try {
     const opts: SaveFilePickerOptions = {
       types: [
@@ -173,29 +214,32 @@ const saveToFile = async (filename: string, content: string) => {
         },
       ],
       suggestedName: filename,
-    };
-    const handle = await window.showSaveFilePicker(opts);
-    const writable = await handle.createWritable();
-    await writable.write(content);
-    await writable.close();
-    return true;
-  } catch (err) {
-    if ((err as Error).name === 'AbortError') return false;
-    alert('Failed to save file: ' + err);
-    return false;
+    }
+    const handle = await window.showSaveFilePicker(opts)
+    const writable = await handle.createWritable()
+    await writable.write(content)
+    await writable.close()
+    return true
   }
-};
+  catch (err) {
+    if ((err as Error).name === 'AbortError')
+      return false
+    await alert.show(`Failed to save file: ${err}`)
+    return false
+  }
+}
 
-const save = async () => {
-  const modelString = JSON.stringify(toModel(), null, 2);
-  const saved = await saveToFile('graph-model.json', modelString);
-  if (saved) lastSavedModel.value = toModel();
-  return saved;
-};
+async function save() {
+  const modelString = JSON.stringify(toModel(), null, 2)
+  const saved = await saveToFile('graph-model.json', modelString)
+  if (saved)
+    lastSavedModel.value = toModel()
+  return saved
+}
 
 /** --- Core actions --- */
-const load = () =>
-  requestAction(async () => {
+async function load() {
+  return requestAction(async () => {
     try {
       const [fileHandle] = await window.showOpenFilePicker({
         types: [
@@ -205,35 +249,40 @@ const load = () =>
           },
         ],
         multiple: false,
-      });
-      const file = await fileHandle.getFile();
-      const content = await file.text();
-      init();
-      fromModel(JSON.parse(content));
-      lastSavedModel.value = toModel();
-    } catch (err) {
+      })
+      const file = await fileHandle.getFile()
+      const content = await file.text()
+      init()
+      fromModel(JSON.parse(content))
+      lastSavedModel.value = toModel()
+    }
+    catch (err) {
       if ((err as Error).name !== 'AbortError') {
-        alert('Failed to load file: ' + err);
+        await alert.show(`Failed to load file: ${err}`)
       }
     }
-  });
+  })
+}
 
-const newDocument = () =>
-  requestAction(() => {
-    init();
-    lastSavedModel.value = toModel();
-  });
+function newDocument() {
+  return requestAction(() => {
+    init()
+    lastSavedModel.value = toModel()
+  })
+}
 
 /** --- Zoom --- */
-const zoomSelected = () => {
-  const selectedIds = selectedNodes.value;
-  if (selectedIds.size) zoomToNodes(selectedIds, 250);
-};
+function zoomSelected() {
+  const selectedIds = selectedNodes.value
+  if (selectedIds.size)
+    zoomToNodes(selectedIds, 250)
+}
 
-const zoomAll = () => {
-  const allIds = nodes.value.map((v) => v.modelId);
-  if (allIds.length) zoomToNodes(allIds, 100);
-};
+function zoomAll() {
+  const allIds = nodes.value.map(v => v.modelId)
+  if (allIds.length)
+    zoomToNodes(allIds, 100)
+}
 </script>
 
 <style scoped>

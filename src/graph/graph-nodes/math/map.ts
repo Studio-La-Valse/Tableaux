@@ -1,25 +1,25 @@
-import { GraphNode } from '@/graph/core/graph-node';
-import { GraphNodeType } from '../decorators';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { GraphNode } from '@/graph/core/graph-node'
+import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Math', 'Map')
 export class Map extends GraphNode {
-  private numbers;
-  private fromStart;
-  private fromEnd;
-  private toStart;
-  private toEnd;
-  private result;
+  private numbers
+  private fromStart
+  private fromEnd
+  private toStart
+  private toEnd
+  private result
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.numbers = this.registerNumberInput('Numbers');
-    this.fromStart = this.registerNumberInput('From Start');
-    this.fromEnd = this.registerNumberInput('From End');
-    this.toStart = this.registerNumberInput('To Start');
-    this.toEnd = this.registerNumberInput('To End');
-    this.result = this.registerNumberOutput('Result');
+    this.numbers = this.registerNumberInput('Numbers')
+    this.fromStart = this.registerNumberInput('From Start')
+    this.fromEnd = this.registerNumberInput('From End')
+    this.toStart = this.registerNumberInput('To Start')
+    this.toEnd = this.registerNumberInput('To End')
+    this.result = this.registerNumberOutput('Result')
   }
 
   protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
@@ -31,12 +31,12 @@ export class Map extends GraphNode {
       this.toEnd,
     )) {
       if (inMin === inMax) {
-        throw new Error('Input range cannot have the same min and max values');
+        throw new Error('Input range cannot have the same min and max values')
       }
 
-      const ratio = (value - inMin) / (inMax - inMin);
-      const result = outMin + ratio * (outMax - outMin);
-      this.result.next(result);
+      const ratio = (value - inMin) / (inMax - inMin)
+      const result = outMin + ratio * (outMax - outMin)
+      this.result.next(result)
     }
   }
 }

@@ -2,14 +2,15 @@
 <template>
   <div
     class="node-port input-port"
-    :style="{ top: positionY + 'px' }"
+    :style="{ top: `${positionY}px` }"
     @mousedown.stop
     @mouseup.stop="handleMouseUp"
   >
     <button
       v-if="
-        graphNode.paramsInputOrigin?.index == input.index && graphNode.canInsertInput(input.index)
+        graphNode.paramsInputOrigin?.index === input.index && graphNode.canInsertInput(input.index)
       "
+      type="button"
       class="prepender fade-toggle"
       :class="{ show: scale >= 3 }"
       @mouseup.stop
@@ -19,11 +20,14 @@
     </button>
 
     <HandleRenderer :description="input.description" />
+
     <div class="label">
       <span>{{ input.description[0] }}</span>
     </div>
+
     <button
       v-if="graphNode.canRemoveInput(input.index)"
+      type="button"
       class="remover fade-toggle"
       :class="{ show: scale >= 3 }"
       @mouseup.stop
@@ -34,6 +38,7 @@
 
     <button
       v-if="graphNode.canInsertInput(input.index + 1)"
+      type="button"
       class="extender fade-toggle"
       :class="{ show: scale >= 3 }"
       @mouseup.stop
@@ -45,45 +50,46 @@
 </template>
 
 <script setup lang="ts">
-import HandleRenderer from '@/components/graph/HandleRenderer.vue';
-import type { IGraphNodeInput } from '@/graph/core/graph-node-input';
-import { useEdgeDrag } from '@/composables/use-edge-drag';
-import { useGraphStore } from '@/stores/use-graph-store';
-import { useCanvasTransform } from '@/composables/use-canvas-transform';
-import { computed } from 'vue';
-import type { IGraphNodeWrapper } from '@/graph/core/graph-node-wrapper';
+import type { IGraphNodeInput } from '@/graph/core/graph-node-input'
+import type { IGraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
+import { computed } from 'vue'
+import HandleRenderer from '@/components/graph/HandleRenderer.vue'
+import { useCanvasTransform } from '@/composables/use-canvas-transform'
+import { useEdgeDrag } from '@/composables/use-edge-drag'
+import { useGraphStore } from '@/stores/use-graph-store'
 
 const props = defineProps<{
-  graphNode: IGraphNodeWrapper;
-  input: IGraphNodeInput;
-  positionY: number;
-}>();
+  graphNode: IGraphNodeWrapper
+  input: IGraphNodeInput
+  positionY: number
+}>()
 
-const canvasTransform = useCanvasTransform();
-const scale = computed(() => canvasTransform.scale.value);
+const canvasTransform = useCanvasTransform()
+const scale = computed(() => canvasTransform.scale.value)
 
-const { removeInput, insertInput } = useGraphStore();
-const { startConnect, finishConnect, tempEdge } = useEdgeDrag();
+const { removeInput, insertInput } = useGraphStore()
+const { startConnect, finishConnect, tempEdge } = useEdgeDrag()
 
-const handleMouseUp = (e: MouseEvent) => {
+function handleMouseUp(e: MouseEvent) {
   if (tempEdge.value) {
-    finishConnect(props.input.graphNodeId, props.input.index, e);
-  } else {
-    startConnect('reverse', props.input.graphNodeId, props.input.index, e);
+    finishConnect(props.input.graphNodeId, props.input.index, e)
   }
-};
+  else {
+    startConnect('reverse', props.input.graphNodeId, props.input.index, e)
+  }
+}
 
-const removerClick = () => {
-  removeInput(props.graphNode.modelId, props.input.index);
-};
+function removerClick() {
+  removeInput(props.graphNode.modelId, props.input.index)
+}
 
-const adderClick = () => {
-  insertInput(props.graphNode.modelId, props.input.index + 1);
-};
+function adderClick() {
+  insertInput(props.graphNode.modelId, props.input.index + 1)
+}
 
-const prependerClick = () => {
-  insertInput(props.graphNode.modelId, props.input.index);
-};
+function prependerClick() {
+  insertInput(props.graphNode.modelId, props.input.index)
+}
 </script>
 
 <style scoped>

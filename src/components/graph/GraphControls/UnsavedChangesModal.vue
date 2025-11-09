@@ -4,15 +4,24 @@
     role="dialog"
     aria-modal="true"
     aria-labelledby="unsaved-title"
-    @keydown.esc.prevent="$emit('cancel')"
     tabindex="0"
+    @keydown.esc.prevent="$emit('cancel')"
   >
-    <div class="modal" ref="modalRef">
+    <div
+      ref="modalRef"
+      class="modal"
+    >
       <header class="modal-header">
         <h3 id="unsaved-title">
           Unsaved Changes
         </h3>
-        <button class="close-btn" @click="$emit('cancel')" aria-label="Close">
+
+        <button
+          type="button"
+          class="close-btn"
+          aria-label="Close"
+          @click="$emit('cancel')"
+        >
           <XMarkIcon class="icon" />
         </button>
       </header>
@@ -20,15 +29,29 @@
       <p>You have unsaved changes. Save before continuing?</p>
 
       <div class="actions">
-        <button class="btn save" @click="$emit('save')">
+        <button
+          type="button"
+          class="btn save"
+          @click="$emit('save')"
+        >
           <ArrowDownTrayIcon class="icon" />
           Save
         </button>
-        <button class="btn discard" @click="$emit('discard')">
+
+        <button
+          type="button"
+          class="btn discard"
+          @click="$emit('discard')"
+        >
           <NoSymbolIcon class="icon" />
           Discard
         </button>
-        <button class="btn cancel" @click="$emit('cancel')">
+
+        <button
+          type="button"
+          class="btn cancel"
+          @click="$emit('cancel')"
+        >
           <XCircleIcon class="icon" />
           Cancel
         </button>
@@ -38,16 +61,22 @@
 </template>
 
 <script setup lang="ts">
-import { XMarkIcon, ArrowDownTrayIcon, XCircleIcon, NoSymbolIcon } from '@heroicons/vue/24/outline';
+import { ArrowDownTrayIcon, NoSymbolIcon, XCircleIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 
-import { onMounted, ref } from 'vue';
+import { onMounted, useTemplateRef } from 'vue'
 
-const modalRef = ref<HTMLElement | null>(null);
+defineEmits<{
+  (e: 'cancel'): void
+  (e: 'save'): void
+  (e: 'discard'): void
+}>()
+
+const modalRef = useTemplateRef<HTMLElement>('modalRef')
 
 onMounted(() => {
-  const firstButton = modalRef.value?.querySelector('button') as HTMLButtonElement | null;
-  firstButton?.focus();
-});
+  const firstButton = modalRef.value?.querySelector('button') as HTMLButtonElement | null
+  firstButton?.focus()
+})
 </script>
 
 <style scoped>
@@ -141,6 +170,7 @@ onMounted(() => {
   height: 20px;
   flex-shrink: 0;
 }
+
 .actions .btn {
   display: flex;
   align-items: center;

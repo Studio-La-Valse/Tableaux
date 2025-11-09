@@ -1,16 +1,23 @@
 <template>
-  <div class="handle" @mouseenter="showTip = true" @mouseleave="showTip = false">
-    <div v-show="showTip" class="tooltip">
+  <div
+    class="handle"
+    @mouseenter="showTip = true"
+    @mouseleave="showTip = false"
+  >
+    <div
+      v-show="showTip"
+      class="tooltip"
+    >
       {{ description }}
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 
-defineProps<{ description: string }>();
-const showTip = ref(false);
+defineProps<{ description: string }>()
+const showTip = ref(false)
 </script>
 
 <style scoped>

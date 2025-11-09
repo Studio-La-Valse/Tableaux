@@ -1,31 +1,31 @@
-import { GraphNode } from '@/graph/core/graph-node';
-import { GraphNodeType } from '../decorators';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { GraphNode } from '@/graph/core/graph-node'
+import { GraphNodeType } from '../decorators'
 
 @GraphNodeType('Math', 'Largest')
 export class Largest extends GraphNode {
-  private numbers;
-  private largest;
+  private numbers
+  private largest
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.numbers = this.registerNumberInput('Numbers');
-    this.largest = this.registerNumberOutput('Largest');
+    this.numbers = this.registerNumberInput('Numbers')
+    this.largest = this.registerNumberOutput('Largest')
   }
 
   protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
-    let largest;
+    let largest
     for await (const v of iterators.createGenerator(this.numbers)) {
       if (!largest || v > largest) {
-        largest = v;
+        largest = v
       }
     }
 
     if (!largest) {
-      throw Error('Sequence of numbers was empty');
+      throw new Error('Sequence of numbers was empty')
     }
 
-    this.largest.next(largest);
+    this.largest.next(largest)
   }
 }

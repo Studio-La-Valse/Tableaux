@@ -1,9 +1,14 @@
 <template>
-  <div class="controls-list" ref="wrapperRef">
-    <draggable :list="emitters"
-               item-key="id"
-               handle=".drag-handle"
-               @end="onDragEnd">
+  <div
+    ref="wrapperRef"
+    class="controls-list"
+  >
+    <draggable
+      :list="emitters"
+      item-key="id"
+      handle=".drag-handle"
+      @end="onDragEnd"
+    >
       <template #item="{ element: emitter }">
         <div class="emitter-row">
           <!-- Left: buttons + name -->
@@ -12,13 +17,27 @@
               <div class="drag-handle">
                 <Bars3Icon class="icon" />
               </div>
-              <button type="button" class="ctrl-btn" @click="zoom(emitter)">
+
+              <button
+                type="button"
+                class="ctrl-btn"
+                @click="zoom(emitter)"
+              >
                 <MagnifyingGlassIcon class="icon" />
               </button>
-              <button type="button" class="ctrl-btn" @click="toggleVisible(emitter)">
-                <component :is="emitter.data.hidden ? EyeSlashIcon : EyeIcon" class="icon" />
+
+              <button
+                type="button"
+                class="ctrl-btn"
+                @click="toggleVisible(emitter)"
+              >
+                <component
+                  :is="emitter.data.hidden ? EyeSlashIcon : EyeIcon"
+                  class="icon"
+                />
               </button>
             </div>
+
             <input
               type="text"
               :placeholder="emitter.id"
@@ -26,12 +45,15 @@
               @input="updateName(emitter, $event)"
               @keydown="handleKeyDown"
               @mousedown.stop
-            />
+            >
           </div>
 
           <!-- Right: dynamic emitter component -->
           <div class="value-cell">
-            <component :is="emitterComponents[emitter.type]" :graph-node="emitter" />
+            <component
+              :is="emitterComponents[emitter.type]"
+              :graph-node="emitter"
+            />
           </div>
         </div>
       </template>
@@ -40,34 +62,35 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount, type Component } from 'vue';
-import { storeToRefs } from 'pinia';
-import draggable from 'vuedraggable';
-import { MagnifyingGlassIcon, EyeIcon, EyeSlashIcon, Bars3Icon } from '@heroicons/vue/24/solid';
+import type { Component } from 'vue'
+import type { JsonValue } from '@/graph/core/models/json-value'
+import { Bars3Icon, EyeIcon, EyeSlashIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/solid'
+import { storeToRefs } from 'pinia'
+import { computed, onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
 
-import { Emitter } from '@/graph/core/emitter';
-import type { JsonValue } from '@/graph/core/models/json-value';
-import { useGraphStore } from '@/stores/use-graph-store';
-import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store';
-import { useZoomToNodes } from '@/composables/use-zoom-to-nodes';
+import draggable from 'vuedraggable'
+import { useZoomToNodes } from '@/composables/use-zoom-to-nodes'
+import { Emitter } from '@/graph/core/emitter'
+import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
+import { useGraphStore } from '@/stores/use-graph-store'
 
 // Emitter components
-import ButtonEmitter from '../emitters/ButtonEmitter.vue';
-import ToggleEmitter from '../emitters/ToggleEmitter.vue';
-import NumberEmitter from '../emitters/NumberEmitter.vue';
-import TextEmitter from '../emitters/TextEmitter.vue';
-import RangeEmitter from '../emitters/RangeEmitter.vue';
-import ColorEmitter from '../emitters/ColorEmitter.vue';
+import ButtonEmitter from '../emitters/ButtonEmitter.vue'
+import ColorEmitter from '../emitters/ColorEmitter.vue'
+import NumberEmitter from '../emitters/NumberEmitter.vue'
+import RangeEmitter from '../emitters/RangeEmitter.vue'
+import TextEmitter from '../emitters/TextEmitter.vue'
+import ToggleEmitter from '../emitters/ToggleEmitter.vue'
 
-const props = defineProps<{ showHidden: boolean }>();
+const props = defineProps<{ showHidden: boolean }>()
 
-const { selectNode } = useGraphNodeSelectionStore();
-const { zoomToNodes } = useZoomToNodes();
-const graphStore = useGraphStore();
-const graph = storeToRefs(graphStore);
+const { selectNode } = useGraphNodeSelectionStore()
+const { zoomToNodes } = useZoomToNodes()
+const graphStore = useGraphStore()
+const graph = storeToRefs(graphStore)
 
-const wrapperRef = ref<HTMLElement | null>(null);
-let changed = false;
+const wrapperRef = useTemplateRef<HTMLElement>('wrapperRef')
+let changed = false
 
 // Map emitter types to components
 const emitterComponents: Record<string, Component> = {
@@ -77,72 +100,74 @@ const emitterComponents: Record<string, Component> = {
   button: ButtonEmitter,
   range: RangeEmitter,
   color: ColorEmitter,
-};
+}
 
 // Filter emitters based on visibility
 const emitters = computed(() =>
   graph.nodes.value
-    .filter((v) => v.innerNode instanceof Emitter)
-    .map((v) => v.innerNode as Emitter<JsonValue>)
-    .filter((e) => props.showHidden || !e.data.hidden)
+    .filter(v => v.innerNode instanceof Emitter)
+    .map(v => v.innerNode as Emitter<JsonValue>)
+    .filter(e => props.showHidden || !e.data.hidden)
     .sort((a, b) => (a.data.order ?? 0) - (b.data.order ?? 0)),
-);
+)
 
 // --- Input handlers ---
-const updateName = (graphNode: Emitter<JsonValue>, event: Event) => {
-  graphNode.assignName((event.target as HTMLInputElement).value);
-  changed = true;
-};
+function updateName(graphNode: Emitter<JsonValue>, event: Event) {
+  graphNode.assignName((event.target as HTMLInputElement).value)
+  changed = true
+}
 
-const handleKeyDown = (event: KeyboardEvent) => {
-  if (event.key === 'Escape') (event.target as HTMLElement).blur();
-};
+function handleKeyDown(event: KeyboardEvent) {
+  if (event.key === 'Escape')
+    (event.target as HTMLElement).blur()
+}
 
 // --- Commit changes on outside click ---
-const handleClickOutside = (event: MouseEvent) => {
+function handleClickOutside(event: MouseEvent) {
   if (wrapperRef.value && !wrapperRef.value.contains(event.target as Node)) {
     wrapperRef.value
       .querySelectorAll<
         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >('input, textarea, select, button')
-      .forEach((el) => el.blur());
-    commitIfChanged();
+    >('input, textarea, select, button')
+      .forEach(el => el.blur())
+    commitIfChanged()
   }
-};
+}
 
-const commitIfChanged = () => {
-  if (changed) graphStore.commit();
-  changed = false;
-};
+function commitIfChanged() {
+  if (changed)
+    graphStore.commit()
+  changed = false
+}
 
 onMounted(() => {
   document.addEventListener('mousedown', handleClickOutside, {
     capture: true,
-  });
-});
+  })
+})
 onBeforeUnmount(() => {
   document.removeEventListener('mousedown', handleClickOutside, {
     capture: true,
-  });
-});
+  })
+})
 
 // --- Control buttons ---
-const zoom = (emitter: Emitter<JsonValue>) => {
-  zoomToNodes([emitter.modelId]);
-  selectNode(emitter.modelId);
-};
+function zoom(emitter: Emitter<JsonValue>) {
+  zoomToNodes([emitter.modelId])
+  selectNode(emitter.modelId)
+}
 
-const toggleVisible = (emitter: Emitter<JsonValue>) => {
-  emitter.data.hidden = !emitter.data.hidden;
-};
+function toggleVisible(emitter: Emitter<JsonValue>) {
+  emitter.data.hidden = !emitter.data.hidden
+}
 
 // --- Order drag drop logic ---
-const onDragEnd = () => {
+function onDragEnd() {
   emitters.value.forEach((emitter, index) => {
-    emitter.data.order = index;
-  });
-  graphStore.commit(); // persist the new order
-};
+    emitter.data.order = index
+  })
+  graphStore.commit() // persist the new order
+}
 </script>
 
 <style scoped>

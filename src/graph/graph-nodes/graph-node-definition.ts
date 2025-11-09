@@ -1,21 +1,21 @@
 // graph-node-types.ts
-import type { Component } from 'vue';
-import type { GraphNode } from '../../graph/core/graph-node';
-import type { CustomNodeDefinition } from './json/dynamic-graph-node';
+import type { Component } from 'vue'
+import type { GraphNode } from '../../graph/core/graph-node'
+import type { CustomNodeDefinition } from './json/dynamic-graph-node'
 
-export interface NodeClass {
-  new (modelId: string): GraphNode;
+export type NodeClass = {
+  new (modelId: string): GraphNode
 
-  __graphNodePath?: string[];
+  __graphNodePath?: string[]
 
   /** Panel component (optional, added by decorator) */
-  __graphNodePanel?: Component;
+  __graphNodePanel?: Component
 
   /** Optional metadata about the class (label, description, icon...) */
-  __graphNodeTypeLabel?: string;
-  __graphNodeTypeDescription?: string;
-  __graphNodeIcon?: string;
+  __graphNodeTypeLabel?: string
+  __graphNodeTypeDescription?: string
+  __graphNodeIcon?: string
 
   /** Optional custom component definition */
-  __customNodeDefinition?: CustomNodeDefinition;
+  __customNodeDefinition?: CustomNodeDefinition
 }

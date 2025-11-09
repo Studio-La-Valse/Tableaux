@@ -1,26 +1,27 @@
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
-import { assertIsXY, multiply, type XY } from '@/geometry/xy';
-import { GraphNode } from '@/graph/core/graph-node';
-import { GraphNodeType } from '../../decorators';
+import type { XY } from '@/geometry/xy'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { assertIsXY, multiply } from '@/geometry/xy'
+import { GraphNode } from '@/graph/core/graph-node'
+import { GraphNodeType } from '../../decorators'
 
 @GraphNodeType('Geometry', 'Vector', 'Multiply Vector')
 export class MultiplyVector extends GraphNode {
-  private xy;
-  private factor;
-  private output;
+  private xy
+  private factor
+  private output
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.xy = this.registerObjectInput('XY').validate((v) => assertIsXY(v));
-    this.factor = this.registerNumberInput('Factor');
-    this.output = this.registerObjectOutput<XY>('XY');
+    this.xy = this.registerObjectInput('XY').validate(v => assertIsXY(v))
+    this.factor = this.registerNumberInput('Factor')
+    this.output = this.registerObjectOutput<XY>('XY')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [vec, factor] of inputIterators.cycleValues(this.xy, this.factor)) {
-      const { x, y } = multiply(vec, factor);
-      this.output.next({ x, y });
+      const { x, y } = multiply(vec, factor)
+      this.output.next({ x, y })
     }
   }
 }

@@ -11,18 +11,18 @@
       @touchstart.stop
       @touchmove.stop
       @touchend.stop
-    ></textarea>
+    />
   </ResizablePanel>
 </template>
 
 <script setup lang="ts">
-import type { Logger } from '@/graph/graph-nodes/generic/logger';
-import ResizablePanel from './ResizablePanel.vue';
+import type { Logger } from '@/graph/graph-nodes/generic/logger'
+import ResizablePanel from './ResizablePanel.vue'
 
 // `defineProps` gives you a typed `graphNode` in your template
 const props = defineProps<{
-  graphNode: Logger;
-}>();
+  graphNode: Logger
+}>()
 </script>
 
 <style scoped>

@@ -1,12 +1,12 @@
-import { useGraphStore } from '@/stores/use-graph-store';
+import { useGraphStore } from '@/stores/use-graph-store'
 
-const useGraphInitializer = () => {
+function useGraphInitializer() {
   return {
     async install() {
-      const graph = useGraphStore();
-      graph.init();
+      const graph = useGraphStore()
+      graph.init()
     },
-  };
-};
+  }
+}
 
-export default useGraphInitializer;
+export default useGraphInitializer

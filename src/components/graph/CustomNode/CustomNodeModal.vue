@@ -3,15 +3,26 @@
     <div class="modal-container">
       <header class="modal-header">
         <h2>{{ mode === "create" ? "Create Custom Node" : "Edit Custom Node" }}</h2>
-        <button class="close-btn" @click="close">
+
+        <button
+          type="button"
+          class="close-btn"
+          @click="close"
+        >
           ×
         </button>
       </header>
 
       <section class="modal-body">
-        <div v-if="errors.length" class="error-panel">
+        <div
+          v-if="errors.length"
+          class="error-panel"
+        >
           <ul>
-            <li v-for="(e, i) in errors" :key="i">
+            <li
+              v-for="(e, i) in errors"
+              :key="i"
+            >
               {{ e }}
             </li>
           </ul>
@@ -20,43 +31,106 @@
         <!-- Node Name -->
         <div class="form-group">
           <label>Node Name</label>
-          <input v-model="nodeName" :disabled="mode === 'edit'" placeholder="Enter node name..." />
+
+          <input
+            v-model="nodeName"
+            :disabled="mode === 'edit'"
+            placeholder="Enter node name..."
+          >
         </div>
 
         <!-- Inputs & Outputs -->
         <div class="io-container">
           <div class="io-card">
             <h3>Inputs</h3>
-            <div v-for="(input, idx) in inputs" :key="idx" class="io-row">
-              <input v-model="input.name" placeholder="Input Name" :disabled="mode === 'edit'" />
-              <select v-model="input.type" :disabled="mode === 'edit'">
-                <option v-for="type in IOTypes" :key="type" :value="type">
+
+            <div
+              v-for="(input, idx) in inputs"
+              :key="idx"
+              class="io-row"
+            >
+              <input
+                v-model="input.name"
+                placeholder="Input Name"
+                :disabled="mode === 'edit'"
+              >
+
+              <select
+                v-model="input.type"
+                :disabled="mode === 'edit'"
+              >
+                <option
+                  v-for="type in IOTypes"
+                  :key="type"
+                  :value="type"
+                >
                   {{ type }}
                 </option>
               </select>
-              <button v-if="mode === 'create'" class="remove-btn" @click="removeInput(idx)">
+
+              <button
+                v-if="mode === 'create'"
+                type="button"
+                class="remove-btn"
+                @click="removeInput(idx)"
+              >
                 🗑️
               </button>
             </div>
-            <button v-if="mode === 'create'" class="add-btn" @click="addInput">
+
+            <button
+              v-if="mode === 'create'"
+              type="button"
+              class="add-btn"
+              @click="addInput"
+            >
               + Add Input
             </button>
           </div>
 
           <div class="io-card">
             <h3>Outputs</h3>
-            <div v-for="(output, idx) in outputs" :key="idx" class="io-row">
-              <input v-model="output.name" placeholder="Output Name" :disabled="mode === 'edit'" />
-              <select v-model="output.type" :disabled="mode === 'edit'">
-                <option v-for="type in IOTypes" :key="type" :value="type">
+
+            <div
+              v-for="(output, idx) in outputs"
+              :key="idx"
+              class="io-row"
+            >
+              <input
+                v-model="output.name"
+                placeholder="Output Name"
+                :disabled="mode === 'edit'"
+              >
+
+              <select
+                v-model="output.type"
+                :disabled="mode === 'edit'"
+              >
+                <option
+                  v-for="type in IOTypes"
+                  :key="type"
+                  :value="type"
+                >
                   {{ type }}
                 </option>
               </select>
-              <button v-if="mode === 'create'" class="remove-btn" @click="removeOutput(idx)">
+
+              <button
+                v-if="mode === 'create'"
+                type="button"
+                class="remove-btn"
+                @click="removeOutput(idx)"
+              >
                 🗑️
               </button>
             </div>
-            <button v-if="mode === 'create'" class="add-btn" @click="addOutput">
+
+            <button
+              v-if="mode === 'create'"
+              type="button"
+              class="add-btn"
+              @click="addOutput"
+            >
               + Add Output
             </button>
           </div>
@@ -65,15 +139,30 @@
         <!-- Code Editor -->
         <div class="form-group">
           <label>solve() Code</label>
-          <textarea v-model="code" rows="12" placeholder="Enter your node logic here..."></textarea>
+
+          <textarea
+            v-model="code"
+            rows="12"
+            placeholder="Enter your node logic here..."
+          />
         </div>
       </section>
 
       <footer class="modal-footer">
-        <button :disabled="!isValid" class="save-btn" @click="saveNode">
+        <button
+          type="button"
+          :disabled="!isValid"
+          class="save-btn"
+          @click="saveNode"
+        >
           {{ mode === "create" ? "Create Node" : "Update Node" }}
         </button>
-        <button class="cancel-btn" @click="close">
+
+        <button
+          type="button"
+          class="cancel-btn"
+          @click="close"
+        >
           Cancel
         </button>
       </footer>
@@ -82,81 +171,86 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, defineProps, defineEmits } from 'vue';
-import type { CustomNodeDefinition, NodeIO } from '@/graph/graph-nodes/json/dynamic-graph-node';
-import { IOTypes } from '@/graph/graph-nodes/json/dynamic-graph-node';
-import { validateFullNodePath } from '@/graph/core/graph-node-path';
+import type { CustomNodeDefinition, NodeIO } from '@/graph/graph-nodes/json/dynamic-graph-node'
+import { computed, defineEmits, defineProps, ref } from 'vue'
+import { validateFullNodePath } from '@/graph/core/graph-node-path'
+import { IOTypes } from '@/graph/graph-nodes/json/dynamic-graph-node'
 
 const props = defineProps<{
-  mode: 'create' | 'edit'; // Explicit mode
-  initialDef?: CustomNodeDefinition; // Optional node to edit
-}>();
+  mode: 'create' | 'edit' // Explicit mode
+  initialDef?: CustomNodeDefinition // Optional node to edit
+}>()
 
 const emit = defineEmits<{
-  (e: 'close'): void;
-  (e: 'save', payload: CustomNodeDefinition): void;
-}>();
+  (e: 'close'): void
+  (e: 'save', payload: CustomNodeDefinition): void
+}>()
 
 // State
-const nodeName = ref(props.initialDef?.path.join('/') ?? 'My Collection/Custom Node');
-const inputs = ref<Array<NodeIO>>(props.initialDef?.inputs ?? [{ name: 'In1', type: 'unknown' }]);
+const nodeName = ref(props.initialDef?.path.join('/') ?? 'My Collection/Custom Node')
+const inputs = ref<Array<NodeIO>>(props.initialDef?.inputs ?? [{ name: 'In1', type: 'unknown' }])
 const outputs = ref<Array<NodeIO>>(
   props.initialDef?.outputs ?? [{ name: 'Out1', type: 'unknown' }],
-);
-const code = ref(props.initialDef?.code ?? 'outputs[0].next(inputs[0].peek(0) + 1)');
-
-const isValid = computed(() => errors.value.length === 0);
+)
+const code = ref(props.initialDef?.code ?? 'outputs[0].next(inputs[0].peek(0) + 1)')
 
 const errors = computed(() => {
-  const list: string[] = [];
+  const list: string[] = []
 
-  const { errors } = validateFullNodePath(nodeName.value);
+  const { errors } = validateFullNodePath(nodeName.value)
   for (const error of errors) {
-    list.push(`Invalid path part: ${error}`);
+    list.push(`Invalid path part: ${error}`)
   }
 
-  if (nodeName.value.trim() === '') list.push('Node name cannot be empty.');
+  if (nodeName.value.trim() === '')
+    list.push('Node name cannot be empty.')
 
-  const names = inputs.value.map((i) => i.name.trim());
-  const uniqueNames = new Set(names);
+  const names = inputs.value.map(i => i.name.trim())
+  const uniqueNames = new Set(names)
 
-  if (names.some((n) => !n)) list.push('All input names must be filled in.');
+  if (names.some(n => !n))
+    list.push('All input names must be filled in.')
 
-  if (uniqueNames.size !== names.length) list.push('Input names must be unique.');
+  if (uniqueNames.size !== names.length)
+    list.push('Input names must be unique.')
 
-  if (outputs.value.some((o) => !o.name.trim())) list.push('All output names must be filled in.');
+  if (outputs.value.some(o => !o.name.trim()))
+    list.push('All output names must be filled in.')
 
-  return list;
-});
+  return list
+})
+
+const isValid = computed(() => errors.value.length === 0)
 
 // Methods
 function addInput() {
-  inputs.value.push({ name: '', type: 'unknown' });
+  inputs.value.push({ name: '', type: 'unknown' })
 }
 function removeInput(i: number) {
-  inputs.value.splice(i, 1);
+  inputs.value.splice(i, 1)
 }
 function addOutput() {
-  outputs.value.push({ name: '', type: 'unknown' });
+  outputs.value.push({ name: '', type: 'unknown' })
 }
 function removeOutput(i: number) {
-  outputs.value.splice(i, 1);
+  outputs.value.splice(i, 1)
 }
 
 function saveNode() {
-  if (!isValid.value) return;
-  const { sanitized } = validateFullNodePath(nodeName.value);
+  if (!isValid.value)
+    return
+  const { sanitized } = validateFullNodePath(nodeName.value)
   emit('save', {
     path: sanitized,
     inputs: inputs.value,
     outputs: outputs.value,
     code: code.value,
-  });
-  emit('close');
+  })
+  emit('close')
 }
 
 function close() {
-  emit('close');
+  emit('close')
 }
 </script>
 
@@ -292,6 +386,7 @@ function close() {
 .add-btn {
   background: var(--color-accent);
 }
+
 .remove-btn {
   background: var(--color-background-mute);
 }
@@ -312,6 +407,7 @@ function close() {
   border-radius: 6px;
   cursor: pointer;
 }
+
 .save-btn:disabled {
   background: var(--color-border);
   cursor: not-allowed;

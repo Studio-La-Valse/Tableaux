@@ -1,25 +1,25 @@
-import type { ColorARGB } from '@/geometry/color';
-import { GraphNode } from '../../../core/graph-node';
-import { GraphNodeType } from '../../decorators';
-import { toColorRGB } from '@/geometry/color-hsl';
-import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import type { ColorARGB } from '@/geometry/color'
+import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { toColorRGB } from '@/geometry/color-hsl'
+import { GraphNode } from '../../../core/graph-node'
+import { GraphNodeType } from '../../decorators'
 
 @GraphNodeType('Geometry', 'Color', 'Construct AHSL')
 export class ConstructAHSL extends GraphNode {
-  private input1;
-  private input2;
-  private input3;
-  private input4;
-  private output;
+  private input1
+  private input2
+  private input3
+  private input4
+  private output
 
   constructor(modelId: string) {
-    super(modelId);
+    super(modelId)
 
-    this.input1 = this.registerNumberInput('Alpha');
-    this.input2 = this.registerNumberInput('Hue');
-    this.input3 = this.registerNumberInput('Saturation');
-    this.input4 = this.registerNumberInput('Luminance');
-    this.output = this.registerObjectOutput<ColorARGB>('Color');
+    this.input1 = this.registerNumberInput('Alpha')
+    this.input2 = this.registerNumberInput('Hue')
+    this.input3 = this.registerNumberInput('Saturation')
+    this.input4 = this.registerNumberInput('Luminance')
+    this.output = this.registerObjectOutput<ColorARGB>('Color')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -29,8 +29,8 @@ export class ConstructAHSL extends GraphNode {
       this.input3,
       this.input4,
     )) {
-      const v = { a, ...toColorRGB({ h, s, l }) };
-      this.output.next(v);
+      const v = { a, ...toColorRGB({ h, s, l }) }
+      this.output.next(v)
     }
   }
 }

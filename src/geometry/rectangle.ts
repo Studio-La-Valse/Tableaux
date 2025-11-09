@@ -1,41 +1,41 @@
-import { type XY } from './xy';
-import { type BaseShape } from './shape';
-import type { Polyline } from './polyline';
-import type { JsonObject } from '@/graph/core/models/json-value';
+import type { Polyline } from './polyline'
+import type { BaseShape } from './shape'
+import type { XY } from './xy'
+import type { JsonObject } from '@/graph/core/models/json-value'
 
 export type Rectangle = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  radii?: number | number[];
-};
+  x: number
+  y: number
+  width: number
+  height: number
+  radii?: number | number[]
+}
 
 export function isRectangle(object: object): object is Rectangle {
   return (
-    'x' in object &&
-    typeof object.x === 'number' &&
-    'y' in object &&
-    typeof object.y === 'number' &&
-    'width' in object &&
-    typeof object.width === 'number' &&
-    'height' in object &&
-    typeof object.height === 'number'
-  );
+    'x' in object
+    && typeof object.x === 'number'
+    && 'y' in object
+    && typeof object.y === 'number'
+    && 'width' in object
+    && typeof object.width === 'number'
+    && 'height' in object
+    && typeof object.height === 'number'
+  )
 }
 
 export function asRectangle(shape: JsonObject): Rectangle {
   if (isRectangle(shape)) {
     return {
       ...shape,
-    };
+    }
   }
 
-  throw Error('Provided value could not be cast to a rectangle');
+  throw new Error('Provided value could not be cast to a rectangle')
 }
 
 export function rectangleAsPolyline(rectangle: Rectangle): Polyline {
-  const { x, y, width, height } = rectangle;
+  const { x, y, width, height } = rectangle
   return {
     ...rectangle,
     start: { x, y },
@@ -45,10 +45,10 @@ export function rectangleAsPolyline(rectangle: Rectangle): Polyline {
       { x: x + width, y: y + height },
       { x, y: y + height },
     ],
-  };
+  }
 }
 
-export type RectangleShape = BaseShape & { kind: 'rectangle' } & Rectangle;
+export type RectangleShape = BaseShape & { kind: 'rectangle' } & Rectangle
 
 export function createRectangleShape(
   topLeft: XY,
@@ -62,5 +62,5 @@ export function createRectangleShape(
     width,
     height,
     radii,
-  };
+  }
 }
