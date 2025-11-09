@@ -1,32 +1,19 @@
 import 'reflect-metadata';
-import type { GraphNode } from '../core/graph-node';
 import type { Component } from 'vue';
+import type { NodeClass } from './graph-node-definition';
 
-export interface GraphNodeConstructor {
-  new (id: string, path: string[]): GraphNode;
-  __graphNodePanel?: Component;
-  __emitterInput?: Component;
-}
-
-export const graphNodeTypes: Array<{
-  category: string[];
-  ctor: GraphNodeConstructor;
-}> = [];
+export const graphNodeTypes: Array<NodeClass> = [];
 
 export function GraphNodeType(...category: string[]) {
-  return function (target: GraphNodeConstructor) {
-    graphNodeTypes.push({ category, ctor: target });
+  return function (target: NodeClass) {
+    target.__graphNodePath = category;
+
+    graphNodeTypes.push(target);
   };
 }
 
 export function GraphNodePanel(component: Component) {
-  return function (target: GraphNodeConstructor) {
+  return function (target: NodeClass) {
     target.__graphNodePanel = component;
-  };
-}
-
-export function EmitterInput(component: Component) {
-  return function (target: GraphNodeConstructor) {
-    target.__emitterInput = component;
   };
 }

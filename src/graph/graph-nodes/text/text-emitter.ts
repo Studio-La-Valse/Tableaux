@@ -10,8 +10,8 @@ export class TextEmitter extends Emitter<string> {
 
   private output: GraphNodeOutputType<string>;
 
-  constructor(id: string, path: string[]) {
-    super(id, path, 'Hello, world!');
+  constructor(modelId: string) {
+    super(modelId, 'Hello, world!');
 
     this.output = this.registerStringOutput('Text');
   }

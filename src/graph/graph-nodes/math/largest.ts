@@ -7,8 +7,8 @@ export class Largest extends GraphNode {
   private numbers;
   private largest;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.numbers = this.registerNumberInput('Numbers');
     this.largest = this.registerNumberOutput('Largest');

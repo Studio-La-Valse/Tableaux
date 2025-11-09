@@ -6,8 +6,8 @@ import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 export class Ceiling extends GraphNode {
   private numbers;
   private output;
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
     this.numbers = this.registerNumberInput('Numbers');
     this.output = this.registerNumberOutput('Round');
   }

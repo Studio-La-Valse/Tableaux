@@ -10,8 +10,8 @@ export class DeconstructFont extends GraphNode {
   private outputFamily;
   private outputStyle;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputFont = this.registerObjectInput('Font').validate(assertIsFont);
 

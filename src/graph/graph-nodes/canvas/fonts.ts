@@ -6,8 +6,8 @@ import { formatCtx, type Font } from '@/geometry/font';
 export class Fonts extends GraphNode {
   private fonts;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.fonts = this.registerObjectOutput<Font>('Fonts');
   }

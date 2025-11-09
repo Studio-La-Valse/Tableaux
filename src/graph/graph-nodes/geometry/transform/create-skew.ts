@@ -11,8 +11,8 @@ export class CreateSkew extends GraphNode {
 
   private outputGeometry;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputCenter = this.registerObjectInput('Center').validate(assertIsXY);
     this.inputFactor = this.registerNumberInput('Skew Factor');
@@ -23,7 +23,7 @@ export class CreateSkew extends GraphNode {
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [origin, factor] of inputIterators.cycleValues(
       this.inputCenter,
-      this.inputFactor
+      this.inputFactor,
     )) {
       const skewed = createSkew(origin, { x: factor, y: 0 });
       this.outputGeometry.next(skewed);

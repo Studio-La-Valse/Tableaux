@@ -10,8 +10,8 @@ export class PointAtParameter extends GraphNode {
   private tInput;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.curveInput = this.registerObjectInput('Curve').validate(asCurveLike);
 

@@ -12,8 +12,8 @@ export class ConstructAHSV extends GraphNode {
   private input4;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerNumberInput('Alpha');
     this.input2 = this.registerNumberInput('Hue');
@@ -27,7 +27,7 @@ export class ConstructAHSV extends GraphNode {
       this.input1,
       this.input2,
       this.input3,
-      this.input4
+      this.input4,
     )) {
       const r = { a, ...toColorRGB({ h, s, v }) };
       this.output.next(r);

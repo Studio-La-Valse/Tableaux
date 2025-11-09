@@ -9,8 +9,8 @@ export default class ChannelState extends GraphNode {
   private inputChannel;
   private outputState;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputState = this.registerObjectInput('State').validate((v) => {
       if (!isMidiState(v)) {

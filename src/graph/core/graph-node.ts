@@ -1,3 +1,4 @@
+import type { NodeClass } from '../graph-nodes/graph-node-definition';
 import type { ComponentState } from './component-state';
 import { CannotRemoveLastParamError } from './errors/cannot-remove-last-param-error';
 import { CannotRemoveSubscribedParamError } from './errors/cannot-remove-subscribed-param-error';
@@ -26,6 +27,9 @@ import {
 import type { JsonObject, JsonValue } from './models/json-value';
 
 export interface IGraphNode {
+  readonly instanceId: string;
+  readonly modelId: string;
+
   readonly inputs: IGraphNodeInput[];
   readonly outputs: IGraphNodeOutput[];
 
@@ -47,11 +51,17 @@ export interface IGraphNode {
  * Handles input/output registration.
  */
 export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
-  constructor(
-    public readonly id: string,
-    public readonly path: string[]
-  ) {
-    super(id, path);
+  /** Optional typed constructor accessor for metadata */
+  public get ctor(): NodeClass {
+    return this.constructor as unknown as NodeClass;
+  }
+
+  public get nodePath(): string[] {
+    return (this.constructor as NodeClass).__graphNodePath!;
+  }
+
+  constructor(modelId: string) {
+    super(modelId);
   }
 
   // --- Define params type input ---
@@ -255,7 +265,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
 
   public registerBooleanInput(
     description: string,
-    defaultPayload?: boolean[]
+    defaultPayload?: boolean[],
   ): GraphNodeInputBoolean {
     this.assertNotInitialized();
     this.assertParamsHasNotBeenSet();
@@ -285,7 +295,7 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
 
   public registerObjectInput(
     description: string,
-    defaultPayload?: JsonObject[]
+    defaultPayload?: JsonObject[],
   ): GraphNodeInputObject {
     this.assertNotInitialized();
     this.assertParamsHasNotBeenSet();
@@ -295,9 +305,9 @@ export abstract class GraphNode extends GraphNodeCore implements IGraphNode {
     return input;
   }
 
-  public registerUnkownInput(
+  public registerUnknownInput(
     description: string,
-    defaultPayload?: JsonValue[]
+    defaultPayload?: JsonValue[],
   ): GraphNodeInputUnknown {
     this.assertNotInitialized();
     this.assertParamsHasNotBeenSet();

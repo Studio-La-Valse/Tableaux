@@ -8,10 +8,10 @@ export class RepeatUntil extends GraphNode {
   private input2;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
-    this.input1 = this.registerUnkownInput('Values');
+    this.input1 = this.registerUnknownInput('Values');
     this.input2 = this.registerNumberInput('Count');
     this.output = this.registerUnknownOutput('Values');
   }

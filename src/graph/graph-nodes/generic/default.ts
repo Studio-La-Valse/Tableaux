@@ -6,11 +6,11 @@ export class Default extends GraphNode {
   private default;
   private out;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
-    this.in = this.registerUnkownInput('Input');
-    this.default = this.registerUnkownInput('Default Value');
+    this.in = this.registerUnknownInput('Input');
+    this.default = this.registerUnknownInput('Default Value');
     this.out = this.registerUnknownOutput('Output');
   }
 

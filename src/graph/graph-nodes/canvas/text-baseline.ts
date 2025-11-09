@@ -10,8 +10,8 @@ export class TextBaseline extends GraphNode {
   private ideographic;
   private bottom;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.top = this.registerStringOutput('Top');
     this.hanging = this.registerStringOutput('Hanging');

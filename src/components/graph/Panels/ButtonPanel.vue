@@ -3,10 +3,10 @@
 </template>
 
 <script setup lang="ts">
-  import type { Toggle } from '@/graph/graph-nodes/generic/toggle';
-  import ButtonEmitter from '@/components/emitters/ButtonEmitter.vue';
+import type { Toggle } from '@/graph/graph-nodes/generic/toggle';
+import ButtonEmitter from '@/components/emitters/ButtonEmitter.vue';
 
-  defineProps<{
-    graphNode: Toggle;
-  }>();
+defineProps<{
+  graphNode: Toggle;
+}>();
 </script>

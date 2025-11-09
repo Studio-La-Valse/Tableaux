@@ -13,8 +13,8 @@ export class Arc extends GraphNode {
   private input5;
   private outputCircle;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerObjectInput('XY').validate(assertIsXY);
     this.input2 = this.registerNumberInput('Radius');
@@ -31,7 +31,7 @@ export class Arc extends GraphNode {
       this.input2,
       this.input3,
       this.input4,
-      this.input5
+      this.input5,
     )) {
       const arc = createArc(xy, radius, start, end, clockwise);
       this.outputCircle.next(arc);

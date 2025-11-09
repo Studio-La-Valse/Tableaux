@@ -8,10 +8,10 @@ export class At extends GraphNode {
   private input2;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
-    this.input = this.registerUnkownInput('Input');
+    this.input = this.registerUnknownInput('Input');
     this.input2 = this.registerNumberInput('Index');
     this.output = this.registerUnknownOutput('Value');
   }

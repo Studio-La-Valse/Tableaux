@@ -80,58 +80,58 @@ export function update(state: MidiState, message: MidiMessage): MidiState {
   if (!pedalPressed) delete newChannelState.sustainedNotes;
 
   switch (message.type) {
-    case 'noteOn':
-      newChannelState.notes[message.key] = message.velocity;
-      delete newChannelState.sustainedNotes?.[message.key];
-      break;
+  case 'noteOn':
+    newChannelState.notes[message.key] = message.velocity;
+    delete newChannelState.sustainedNotes?.[message.key];
+    break;
 
-    case 'noteOff':
-      if (pedalPressed) {
-        newChannelState.sustainedNotes = {
-          ...newChannelState.sustainedNotes,
-          [message.key]: newChannelState.notes[message.key],
-        };
-      } else {
-        delete newChannelState.notes[message.key];
+  case 'noteOff':
+    if (pedalPressed) {
+      newChannelState.sustainedNotes = {
+        ...newChannelState.sustainedNotes,
+        [message.key]: newChannelState.notes[message.key],
+      };
+    } else {
+      delete newChannelState.notes[message.key];
+    }
+    break;
+
+  case 'keyPressure':
+    newChannelState.keyPressure[message.key] = message.pressure;
+    break;
+
+  case 'controllerChange':
+    if (message.controllerValue > 0) {
+      newChannelState.controllerValues[message.controllerNumber] = message.controllerValue;
+
+      // Handle sustain pedal release
+      if (message.controllerNumber === 64 && message.controllerValue < 64) {
+        const sustainedKeys = Object.keys(newChannelState.sustainedNotes ?? {}).map(Number);
+        const filteredNotes: Record<number, number> = Object.fromEntries(
+          Object.entries(newChannelState.notes).filter(
+            ([k]) => !sustainedKeys.includes(Number(k)),
+          ),
+        );
+        newChannelState.notes = filteredNotes;
+        delete newChannelState.sustainedNotes;
       }
-      break;
+    } else {
+      const { [message.controllerNumber]: _, ...rest } = newChannelState.controllerValues;
+      newChannelState.controllerValues = rest;
+    }
+    break;
 
-    case 'keyPressure':
-      newChannelState.keyPressure[message.key] = message.pressure;
-      break;
+  case 'programChange':
+    newChannelState.program = message.program;
+    break;
 
-    case 'controllerChange':
-      if (message.controllerValue > 0) {
-        newChannelState.controllerValues[message.controllerNumber] = message.controllerValue;
+  case 'channelPressure':
+    newChannelState.channelPressure = message.pressure;
+    break;
 
-        // Handle sustain pedal release
-        if (message.controllerNumber === 64 && message.controllerValue < 64) {
-          const sustainedKeys = Object.keys(newChannelState.sustainedNotes ?? {}).map(Number);
-          const filteredNotes: Record<number, number> = Object.fromEntries(
-            Object.entries(newChannelState.notes).filter(
-              ([k]) => !sustainedKeys.includes(Number(k))
-            )
-          );
-          newChannelState.notes = filteredNotes;
-          delete newChannelState.sustainedNotes;
-        }
-      } else {
-        const { [message.controllerNumber]: _, ...rest } = newChannelState.controllerValues;
-        newChannelState.controllerValues = rest;
-      }
-      break;
-
-    case 'programChange':
-      newChannelState.program = message.program;
-      break;
-
-    case 'channelPressure':
-      newChannelState.channelPressure = message.pressure;
-      break;
-
-    case 'pitchBendChange':
-      newChannelState.pitchBend = message.pitchBend;
-      break;
+  case 'pitchBendChange':
+    newChannelState.pitchBend = message.pitchBend;
+    break;
   }
 
   return {

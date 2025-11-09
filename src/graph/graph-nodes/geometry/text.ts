@@ -13,8 +13,8 @@ export class Text extends GraphNode {
   private inputFontSize;
   private outputText;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputText = this.registerStringInput('Text');
     this.inputOrigin = this.registerObjectInput('Origin').validate(assertIsXY);
@@ -27,7 +27,7 @@ export class Text extends GraphNode {
       this.inputText,
       this.inputOrigin,
       this.inputFontFamily,
-      this.inputFontSize
+      this.inputFontSize,
     )) {
       const v = createText(t, o, ff, si);
       this.outputText.next(v);

@@ -17,8 +17,8 @@ export default class FrameGenerator extends GraphNode {
     rafId?: number;
   };
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputActive = this.registerBooleanInput('Active');
     this.inputReset = this.registerBooleanInput('Reset');
@@ -80,7 +80,7 @@ export default class FrameGenerator extends GraphNode {
     const [active, reset, delay] = inputIterators.singletonOnly(
       this.inputActive,
       this.inputReset,
-      this.inputDelay
+      this.inputDelay,
     );
 
     if (delay < 1) {

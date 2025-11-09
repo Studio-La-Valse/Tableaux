@@ -11,8 +11,8 @@ export class DeconstructEllipse extends GraphNode {
   private outputRadiusY;
   private outputRotation;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerObjectInput('Ellipse').validate(asEllipse);
 

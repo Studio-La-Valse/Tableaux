@@ -18,8 +18,8 @@ export class SetTextFormat extends GraphNode {
 
   private outputGeometry;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.asConst = [
       this.registerObjectInput('Text').validate((v) => assertIsOfShapeKind(asShape(v), ['text'])),
@@ -33,7 +33,7 @@ export class SetTextFormat extends GraphNode {
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [text, alignment, baseline, direction] of inputIterators.cycleValues(
-      ...this.asConst
+      ...this.asConst,
     )) {
       if (!textAlignments.includes(alignment as AlignmentKind)) {
         throw new Error('Provided alignment is not valid.');

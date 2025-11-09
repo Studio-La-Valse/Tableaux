@@ -13,8 +13,8 @@ export class SetStroke extends GraphNode {
 
   private outputGeometry;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape);
     this.color = this.registerObjectInput('Color').validate(assertIsColorARGB);
@@ -27,7 +27,7 @@ export class SetStroke extends GraphNode {
     for await (const [geom, stroke, strokeWidth] of inputIterators.cycleValues(
       this.inputGeometry,
       this.color,
-      this.strokeWidth
+      this.strokeWidth,
     )) {
       const withStroke = {
         ...geom,

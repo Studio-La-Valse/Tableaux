@@ -10,8 +10,8 @@ export class CreateTranslation extends GraphNode {
 
   private outputGeometry;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputOffset = this.registerObjectInput('Offset').validate(assertIsXY);
 

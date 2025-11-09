@@ -9,11 +9,11 @@ export class CarthesianProduct extends GraphNode {
   private output1;
   private output2;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
-    this.input1 = this.registerUnkownInput('Left');
-    this.input2 = this.registerUnkownInput('Right');
+    this.input1 = this.registerUnknownInput('Left');
+    this.input2 = this.registerUnknownInput('Right');
 
     this.output1 = this.registerUnknownOutput('Left');
     this.output2 = this.registerUnknownOutput('Right');

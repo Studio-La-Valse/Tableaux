@@ -11,8 +11,8 @@ export class CreateScaleUniform extends GraphNode {
 
   private outputGeometry;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputCenter = this.registerObjectInput('Center').validate(assertIsXY);
     this.inputFactor = this.registerNumberInput('Scale Factor');
@@ -23,7 +23,7 @@ export class CreateScaleUniform extends GraphNode {
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [origin, factor] of inputIterators.cycleValues(
       this.inputCenter,
-      this.inputFactor
+      this.inputFactor,
     )) {
       const scaled = createScale(origin, { x: factor, y: factor });
       this.outputGeometry.next(scaled);

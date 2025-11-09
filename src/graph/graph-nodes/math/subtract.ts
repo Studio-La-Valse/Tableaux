@@ -8,8 +8,8 @@ export class Subtract extends GraphNode {
   private input2;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerNumberInput('Left');
     this.input2 = this.registerNumberInput('Right');

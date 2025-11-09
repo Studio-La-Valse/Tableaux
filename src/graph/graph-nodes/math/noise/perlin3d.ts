@@ -14,8 +14,8 @@ export class Perlin3d extends GraphNode {
 
   private perlin;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerNumberInput('X');
     this.input2 = this.registerNumberInput('Y');
@@ -30,7 +30,7 @@ export class Perlin3d extends GraphNode {
       this.input1,
       this.input2,
       this.input3,
-      this.inputScale
+      this.inputScale,
     )) {
       const v = this.perlin.perlin3(x / scale, y / scale, z / scale);
       this.output.next(v);

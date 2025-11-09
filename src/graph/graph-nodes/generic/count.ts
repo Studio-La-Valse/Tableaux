@@ -6,10 +6,10 @@ export class Count extends GraphNode {
   private input;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
-    this.input = this.registerUnkownInput('Signal');
+    this.input = this.registerUnknownInput('Signal');
     this.output = this.registerNumberOutput('Count');
   }
 

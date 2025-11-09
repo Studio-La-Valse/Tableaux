@@ -14,8 +14,8 @@ export class DeconstructEllipticalArc extends GraphNode {
   private outputEndAngle;
   private outputCounterClockwise;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerObjectInput('Elliptical Arc').validate(asEllipticalArc);
 

@@ -12,8 +12,8 @@ export class Split extends GraphNode {
   private input2: GraphNodeInputString;
   private output: GraphNodeOutputType<string>;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerStringInput('Text');
     this.input2 = this.registerStringInput('Character');

@@ -9,8 +9,8 @@ export class DeconstructCircle extends GraphNode {
   private outputCenter;
   private outputRadius;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerObjectInput('Circle').validate(asCircle);
 

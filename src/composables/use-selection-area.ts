@@ -60,7 +60,7 @@ export function useSelectionArea() {
 
   function applySelection(
     rect: { x: number; y: number; width: number; height: number },
-    mode: mode
+    mode: mode,
   ) {
     if (mode === 'default') nodeSelectionStore.clearSelection();
 
@@ -78,9 +78,9 @@ export function useSelectionArea() {
       })
       .forEach((node) => {
         if (mode === 'add' || mode === 'default') {
-          nodeSelectionStore.selectNode(node.nodeId);
+          nodeSelectionStore.selectNode(node.modelId);
         } else if (mode === 'subtract') {
-          nodeSelectionStore.unselectNode(node.nodeId);
+          nodeSelectionStore.unselectNode(node.modelId);
         }
       });
   }

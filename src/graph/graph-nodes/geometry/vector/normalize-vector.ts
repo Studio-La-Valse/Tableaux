@@ -8,8 +8,8 @@ export class NormalizeVector extends GraphNode {
   private xy;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.xy = this.registerObjectInput('XY').validate((v) => assertIsXY(v));
     this.output = this.registerObjectOutput<XY>('XY');

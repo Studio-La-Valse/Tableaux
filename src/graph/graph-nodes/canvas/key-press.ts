@@ -12,8 +12,8 @@ export class KeyPress extends GraphNode {
     active: true,
   };
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.output = this.registerStringOutput('Key');
     this.active = this.registerBooleanInput('Active');

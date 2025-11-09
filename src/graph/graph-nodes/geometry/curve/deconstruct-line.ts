@@ -11,8 +11,8 @@ export class DeconstructLine extends GraphNode {
   private outputStart;
   private outputEnd;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputLine = this.registerObjectInput('Line').validate(asLine);
 

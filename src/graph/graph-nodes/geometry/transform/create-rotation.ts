@@ -11,8 +11,8 @@ export class CreateRotation extends GraphNode {
 
   private outputGeometry;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.origin = this.registerObjectInput('Origin').validate(assertIsXY);
     this.angle = this.registerNumberInput('Angle (Radians)');

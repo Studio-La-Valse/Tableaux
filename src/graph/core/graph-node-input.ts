@@ -43,16 +43,13 @@ export abstract class GraphNodeInput implements IGraphNodeInput {
   public abstract readonly isSubscribed: boolean;
   public abstract readonly payloadLength: number;
 
-  private _id: string;
-  public get id() {
-    return this._id;
-  }
+  public readonly id;
 
   protected _armed: boolean = true;
   public abstract get armed(): boolean;
 
   public get graphNodeId() {
-    return this.graphNode.id;
+    return this.graphNode.modelId;
   }
 
   public get index() {
@@ -63,9 +60,9 @@ export abstract class GraphNodeInput implements IGraphNodeInput {
 
   constructor(
     public readonly graphNode: GraphNode,
-    public readonly description: string
+    public readonly description: string,
   ) {
-    this._id = nanoid(11);
+    this.id = nanoid(11);
   }
 
   // used for params type input.
@@ -134,7 +131,7 @@ export abstract class GraphNodeInputSubscriptionType<
       }
 
       throw new Error(
-        'Input cannot peek because it is not subscribed and does not have a default payload.'
+        'Input cannot peek because it is not subscribed and does not have a default payload.',
       );
     }
 
@@ -144,7 +141,7 @@ export abstract class GraphNodeInputSubscriptionType<
   constructor(
     graphNode: GraphNode,
     description: string,
-    public readonly defaultPayload?: T[]
+    public readonly defaultPayload?: T[],
   ) {
     super(graphNode, description);
 
@@ -181,7 +178,7 @@ export class GraphNodeInputBoolean extends GraphNodeInputSubscriptionType<
     return new GraphNodeInputBoolean(
       this.graphNode,
       this.description,
-      this.defaultPayload ? [...this.defaultPayload] : undefined
+      this.defaultPayload ? [...this.defaultPayload] : undefined,
     );
   }
 
@@ -214,7 +211,7 @@ export class GraphNodeInputNumber extends GraphNodeInputSubscriptionType<number,
     return new GraphNodeInputNumber(
       this.graphNode,
       this.description,
-      this.defaultPayload ? [...this.defaultPayload] : undefined
+      this.defaultPayload ? [...this.defaultPayload] : undefined,
     );
   }
 
@@ -247,7 +244,7 @@ export class GraphNodeInputString extends GraphNodeInputSubscriptionType<string,
     return new GraphNodeInputString(
       this.graphNode,
       this.description,
-      this.defaultPayload ? [...this.defaultPayload] : undefined
+      this.defaultPayload ? [...this.defaultPayload] : undefined,
     );
   }
 
@@ -283,7 +280,7 @@ export class GraphNodeInputObject extends GraphNodeInputSubscriptionType<
     return new GraphNodeInputObject(
       this.graphNode,
       this.description,
-      this.defaultPayload ? [...this.defaultPayload] : undefined
+      this.defaultPayload ? [...this.defaultPayload] : undefined,
     );
   }
 
@@ -312,10 +309,6 @@ export class GraphNodeInputObject extends GraphNodeInputSubscriptionType<
 }
 
 export class GraphNodeInputValidatedObject<T extends JsonObject> extends GraphNodeInputObject {
-  public get id() {
-    return this.originalInput.id;
-  }
-
   public get armed() {
     return this.originalInput.armed;
   }
@@ -338,12 +331,12 @@ export class GraphNodeInputValidatedObject<T extends JsonObject> extends GraphNo
 
   constructor(
     private readonly originalInput: GraphNodeInputObject,
-    private readonly validator: (o: JsonObject) => T
+    private readonly validator: (o: JsonObject) => T,
   ) {
     super(
       originalInput.graphNode,
       originalInput.description,
-      originalInput.defaultPayload ? [...originalInput.defaultPayload] : undefined
+      originalInput.defaultPayload ? [...originalInput.defaultPayload] : undefined,
     );
   }
 
@@ -394,7 +387,7 @@ export class GraphNodeInputUnknown extends GraphNodeInputSubscriptionType<
     return new GraphNodeInputUnknown(
       this.graphNode,
       this.description,
-      this.defaultPayload ? [...this.defaultPayload] : undefined
+      this.defaultPayload ? [...this.defaultPayload] : undefined,
     );
   }
 

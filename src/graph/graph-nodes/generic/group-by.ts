@@ -11,8 +11,8 @@ export default class GroupBy extends GraphNode {
   private outputDistinctGroupValue;
   private outputDistinctGroupIndex;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputObject = this.registerObjectInput('Objects');
     this.inputKey = this.registerStringInput('Key');
@@ -40,7 +40,7 @@ export default class GroupBy extends GraphNode {
       const value = object[key];
       if (!this.isValidGroupKey(value)) {
         throw new Error(
-          `GroupBy: value for key "${key}" must be string or number, got ${typeof value}`
+          `GroupBy: value for key "${key}" must be string or number, got ${typeof value}`,
         );
       }
 

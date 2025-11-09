@@ -16,11 +16,11 @@ export class StoreReader extends GraphNode {
     name: string;
   };
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
-    this.initial = this.registerUnkownInput('Initial');
+  constructor(modelId: string) {
+    super(modelId);
+    this.initial = this.registerUnknownInput('Initial');
     this.reset = this.registerBooleanInput('Reset');
-    this.registerUnkownInput('Trigger'); // ensures dependency
+    this.registerUnknownInput('Trigger'); // ensures dependency
 
     this.name = this.registerStringOutput('Name');
     this.values = this.registerUnknownOutput('Values');

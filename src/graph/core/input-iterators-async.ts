@@ -65,7 +65,7 @@ export class InputIteratorsAsync {
    * Forward iteration over a single input.
    */
   public async *createGenerator<Input extends IGraphNodeInputType<unknown>>(
-    input: Input
+    input: Input,
   ): AsyncGenerator<InputOf<Input>> {
     for await (const i of this.createRange(0, input.payloadLength, 1)) {
       yield input.peek(i) as InputOf<Input>;
@@ -76,7 +76,7 @@ export class InputIteratorsAsync {
    * Reverse iteration over a single input.
    */
   public async *createGeneratorReversed<Input extends IGraphNodeInputType<unknown>>(
-    input: Input
+    input: Input,
   ): AsyncGenerator<InputOf<Input>> {
     const len = input.payloadLength;
     for await (const offset of this.createRange(0, len, 1)) {
@@ -96,7 +96,7 @@ export class InputIteratorsAsync {
 
     if (inputs.length >= 2 && maxLen > 0 && lengths.some((len) => len === 0)) {
       throw new Error(
-        `cycleInputsValues: all payloads must be non-empty. Got lengths=[${lengths.join(',')}]`
+        `cycleInputsValues: all payloads must be non-empty. Got lengths=[${lengths.join(',')}]`,
       );
     }
 
@@ -116,7 +116,7 @@ export class InputIteratorsAsync {
 
     if (inputs.length >= 2 && lengths.some((len) => len === 0 || maxLen % len !== 0)) {
       throw new Error(
-        `cycleInputsMultiples: payload lengths [${lengths.join(',')}] must all be >0 and divide ${maxLen}`
+        `cycleInputsMultiples: payload lengths [${lengths.join(',')}] must all be >0 and divide ${maxLen}`,
       );
     }
 
@@ -136,7 +136,7 @@ export class InputIteratorsAsync {
 
     if (inputs.length >= 2 && lengths.some((len) => len === 0)) {
       throw new Error(
-        `cycleInputsFillLast: all payloads must be non-empty. Got lengths=[${lengths.join(',')}]`
+        `cycleInputsFillLast: all payloads must be non-empty. Got lengths=[${lengths.join(',')}]`,
       );
     }
 
@@ -197,7 +197,7 @@ export class InputIteratorsAsync {
     const lengths = inputs.map((i) => i.payloadLength);
     if (lengths.some((len) => len !== 1)) {
       throw new Error(
-        `cycleInputsSingleton: all payloads must be length 1. Got lengths=[${lengths.join(',')}]`
+        `cycleInputsSingleton: all payloads must be length 1. Got lengths=[${lengths.join(',')}]`,
       );
     }
     return inputs.map((i) => i.peek(0)) as RowOf<Inputs>;

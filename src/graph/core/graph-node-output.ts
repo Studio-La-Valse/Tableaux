@@ -22,7 +22,7 @@ export abstract class GraphNodeOutput implements IGraphNodeOutput {
   public targetInputs: Set<IGraphNodeInput> = new Set();
 
   public get graphNodeId() {
-    return this.graphNode.id;
+    return this.graphNode.modelId;
   }
 
   public abstract provides: ProviderType[];
@@ -31,7 +31,7 @@ export abstract class GraphNodeOutput implements IGraphNodeOutput {
   constructor(
     private readonly graphNode: GraphNode,
     public readonly index: number,
-    public readonly description: string
+    public readonly description: string,
   ) {}
 
   public acceptIncoming(graphNodeInput: IGraphNodeInput) {

@@ -5,10 +5,10 @@ export class Reverse extends GraphNode {
   private in;
   private out;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
-    this.in = this.registerUnkownInput('Input');
+    this.in = this.registerUnknownInput('Input');
     this.out = this.registerUnknownOutput('Output');
   }
 

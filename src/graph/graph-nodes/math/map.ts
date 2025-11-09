@@ -11,8 +11,8 @@ export class Map extends GraphNode {
   private toEnd;
   private result;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.numbers = this.registerNumberInput('Numbers');
     this.fromStart = this.registerNumberInput('From Start');
@@ -28,7 +28,7 @@ export class Map extends GraphNode {
       this.fromStart,
       this.fromEnd,
       this.toStart,
-      this.toEnd
+      this.toEnd,
     )) {
       if (inMin === inMax) {
         throw new Error('Input range cannot have the same min and max values');

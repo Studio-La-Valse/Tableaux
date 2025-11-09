@@ -12,8 +12,8 @@ export class CreateScale extends GraphNode {
 
   private outputGeometry;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputCenter = this.registerObjectInput('Center').validate(assertIsXY);
     this.inputFactorX = this.registerNumberInput('X Scale Factor');
@@ -26,7 +26,7 @@ export class CreateScale extends GraphNode {
     for await (const [origin, x, y] of inputIterators.cycleValues(
       this.inputCenter,
       this.inputFactorX,
-      this.inputFactorY
+      this.inputFactorY,
     )) {
       const factor = { x, y };
       const scaled = createScale(origin, factor);

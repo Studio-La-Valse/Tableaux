@@ -12,8 +12,8 @@ export class DeconstructRectangle extends GraphNode {
   private width;
   private height;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputShape = this.registerObjectInput('Shape').validate(asRectangle);
 

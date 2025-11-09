@@ -10,8 +10,8 @@ export class ConstructPolyline extends GraphNode {
   private inputPoints;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputPoints = this.registerObjectInput('Points').validate(assertIsXY);
     this.inputTargetLength = this.registerNumberInput('Target Length');

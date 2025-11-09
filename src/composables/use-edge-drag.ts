@@ -29,7 +29,7 @@ export function useEdgeDrag() {
     direction: EdgeDirection,
     nodeId: string,
     portIndex: number,
-    e: MouseEvent
+    e: MouseEvent,
   ) {
     if (e.button !== 0) return;
     e.stopPropagation();

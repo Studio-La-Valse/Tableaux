@@ -8,11 +8,11 @@ export class Includes extends GraphNode {
   private testValues;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
-    this.values = this.registerUnkownInput('Values');
-    this.testValues = this.registerUnkownInput('Contains');
+    this.values = this.registerUnknownInput('Values');
+    this.testValues = this.registerUnknownInput('Contains');
     this.output = this.registerBooleanOutput('Contains');
   }
 

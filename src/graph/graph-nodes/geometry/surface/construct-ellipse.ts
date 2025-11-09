@@ -12,8 +12,8 @@ export class Ellipse extends GraphNode {
   private input4;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerObjectInput('XY').validate((v) => assertIsXY(v));
     this.input2 = this.registerNumberInput('Radius X');
@@ -28,7 +28,7 @@ export class Ellipse extends GraphNode {
       this.input1,
       this.input2,
       this.input3,
-      this.input4
+      this.input4,
     )) {
       const ellipse = createEllipseShape(xy, x, y, rotation);
       this.output.next(ellipse);

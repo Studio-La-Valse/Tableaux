@@ -9,8 +9,8 @@ export class Range extends GraphNode {
   private input3;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerNumberInput('Start');
     this.input2 = this.registerNumberInput('Stop');
@@ -22,7 +22,7 @@ export class Range extends GraphNode {
     const [start, stop, step] = inputIterators.singletonOnly(this.input1, this.input2, this.input3);
 
     if (step <= 0) {
-      const msg = `Invalid input, stepsize smaller or equal to 0`;
+      const msg = 'Invalid input, stepsize smaller or equal to 0';
       throw new Error(msg);
     }
 

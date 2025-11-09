@@ -70,7 +70,7 @@ export function applyDropShadow(
   shape: Shape,
   offset: XY,
   color: ColorARGB,
-  size: number
+  size: number,
 ): Shape & { dropShadow: DropShadow } {
   const dropShadow = { offset, color, size };
   return { ...shape, dropShadow };

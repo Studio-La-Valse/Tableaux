@@ -14,8 +14,8 @@ export class DeconstructArc extends GraphNode {
   private endAngle;
   private counterclockwise;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputCircle = this.registerObjectInput('Circle').validate(asArc);
 

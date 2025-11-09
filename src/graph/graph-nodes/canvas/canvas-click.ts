@@ -1,9 +1,9 @@
 import { GraphNode } from '../../core/graph-node';
-import { GraphNodeType } from '../decorators';
 import { type XY } from '@/geometry/xy';
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
+import { GraphNodeType } from '../decorators';
 
-@GraphNodeType('Canvas', 'Canvas Click')
+@GraphNodeType('Canvas', 'CanvasClick')
 export class CanvasClick extends GraphNode {
   private output;
   private active;
@@ -13,8 +13,8 @@ export class CanvasClick extends GraphNode {
     active: true,
   };
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.output = this.registerObjectOutput<XY>('Last Click');
     this.active = this.registerBooleanInput('Active');

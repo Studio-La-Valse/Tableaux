@@ -27,7 +27,7 @@ export class MidiListenerService {
 
     this.listeners.forEach((callback) => {
       this.midiAccess!.inputs.forEach((input) =>
-        input.removeEventListener('midimessage', callback)
+        input.removeEventListener('midimessage', callback),
       );
     });
 

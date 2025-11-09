@@ -10,8 +10,8 @@ export class Sort extends GraphNode {
   private sorted;
   private indices;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
     this.numbers = this.registerNumberInput('Values');
     this.sorted = this.registerNumberOutput('Sorted');
     this.indices = this.registerNumberOutput('Index');

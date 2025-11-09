@@ -18,7 +18,7 @@ const DEFAULT_MATRIX = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 };
 export function init(
   canvasRef: HTMLCanvasElement,
   width: number,
-  height: number
+  height: number,
 ): CanvasRenderingContext2D {
   // Ensure the canvas matches the intended drawing surface
   canvasRef.width = width;
@@ -45,32 +45,32 @@ export function clear(ctx: CanvasRenderingContext2D) {
 
 export function draw(ctx: CanvasRenderingContext2D, element: Shape) {
   switch (element.kind) {
-    case 'clear-rect':
-      clearRect(ctx, element);
-      return;
-    case 'polyline':
-      drawPolyline(ctx, element);
-      return;
-    case 'circle':
-    case 'arc':
-      drawArc(ctx, element);
-      return;
-    case 'ellipse':
-    case 'elliptical-arc':
-      drawEllipse(ctx, element);
-      return;
-    case 'rectangle':
-      drawRectangle(ctx, element);
-      return;
-    case 'text':
-      drawText(ctx, element);
-      return;
-    case 'cubic':
-      drawCubic(ctx, element);
-      return;
-    case 'quadratic':
-      drawQuadratic(ctx, element);
-      return;
+  case 'clear-rect':
+    clearRect(ctx, element);
+    return;
+  case 'polyline':
+    drawPolyline(ctx, element);
+    return;
+  case 'circle':
+  case 'arc':
+    drawArc(ctx, element);
+    return;
+  case 'ellipse':
+  case 'elliptical-arc':
+    drawEllipse(ctx, element);
+    return;
+  case 'rectangle':
+    drawRectangle(ctx, element);
+    return;
+  case 'text':
+    drawText(ctx, element);
+    return;
+  case 'cubic':
+    drawCubic(ctx, element);
+    return;
+  case 'quadratic':
+    drawQuadratic(ctx, element);
+    return;
   }
 }
 
@@ -114,7 +114,7 @@ function applyStroke(ctx: CanvasRenderingContext2D, element: BaseShape) {
 function drawShape<T extends BaseShape>(
   ctx: CanvasRenderingContext2D,
   element: T,
-  _drawShape: () => void
+  _drawShape: () => void,
 ) {
   ctx.save();
 

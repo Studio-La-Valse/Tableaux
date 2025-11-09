@@ -7,8 +7,8 @@ export class All extends GraphNode {
   private input1;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerBooleanInput('Values');
     this.output = this.registerBooleanOutput('All');

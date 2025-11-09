@@ -11,8 +11,8 @@ export class SetBlur extends GraphNode {
 
   private outputGeometry;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputGeometry = this.registerObjectInput('Shape').validate(asShape);
     this.inputSize = this.registerNumberInput('Size');
@@ -23,7 +23,7 @@ export class SetBlur extends GraphNode {
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [geom, size] of inputIterators.cycleValues(
       this.inputGeometry,
-      this.inputSize
+      this.inputSize,
     )) {
       const withStroke = applyBlur(geom, size);
       this.outputGeometry.next(withStroke);

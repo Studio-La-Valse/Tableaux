@@ -9,8 +9,8 @@ export class TextAlginment extends GraphNode {
   private right;
   private center;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.start = this.registerStringOutput('Start');
     this.end = this.registerStringOutput('End');

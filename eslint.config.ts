@@ -1,12 +1,6 @@
-import { globalIgnores } from 'eslint/config'
-import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
-import pluginVue from 'eslint-plugin-vue'
-import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
-
-// To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
-// import { configureVueProject } from '@vue/eslint-config-typescript'
-// configureVueProject({ scriptLangs: ['ts', 'tsx'] })
-// More info at https://github.com/vuejs/eslint-config-typescript/#advanced-setup
+import { globalIgnores } from 'eslint/config';
+import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
+import pluginVue from 'eslint-plugin-vue';
 
 export default defineConfigWithVueTs(
   {
@@ -18,5 +12,24 @@ export default defineConfigWithVueTs(
 
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
-  skipFormatting,
-)
+
+  {
+    rules: {
+      // General JS/TS style
+      'semi': ['error', 'always'],
+      'quotes': ['error', 'single'],
+      'indent': ['error', 2],
+      'object-curly-spacing': ['error', 'always'],
+      'comma-dangle': ['error', 'always-multiline'],
+
+      // Vue-specific style
+      'vue/html-indent': ['error', 2],
+      'vue/max-attributes-per-line': ['error', { singleline: 3 }],
+      'vue/multiline-html-element-content-newline': ['error'],
+      'vue/singleline-html-element-content-newline': ['error'],
+      'vue/html-self-closing': ['error', {
+        html: { void: 'always', normal: 'never', component: 'always' },
+      }],
+    },
+  },
+);

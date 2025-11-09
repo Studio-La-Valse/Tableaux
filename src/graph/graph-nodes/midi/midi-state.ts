@@ -12,8 +12,8 @@ export default class MidiState extends GraphNode {
 
   public data: state = { channels: {} };
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.inputReset = this.registerBooleanInput('Reset');
     this.inputMessages = this.registerObjectInput('Messages').validate((v) => {

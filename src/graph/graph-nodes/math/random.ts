@@ -6,8 +6,8 @@ import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async';
 export class Random extends GraphNode {
   private numbers;
   private output;
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
     this.numbers = this.registerNumberInput('Seed');
     this.output = this.registerNumberOutput('Random');
   }

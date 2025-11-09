@@ -9,11 +9,11 @@ export class Dispatch extends GraphNode {
   private output1;
   private output2;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerBooleanInput('Filter');
-    this.input2 = this.registerUnkownInput('Signal');
+    this.input2 = this.registerUnknownInput('Signal');
     this.output1 = this.registerUnknownOutput('Values (False)');
     this.output2 = this.registerUnknownOutput('Values (True)');
   }

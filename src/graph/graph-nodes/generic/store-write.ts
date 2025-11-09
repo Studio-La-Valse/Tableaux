@@ -9,10 +9,10 @@ export class StoreWriter extends GraphNode {
   private name;
   private input;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
     this.name = this.registerStringInput('Name');
-    this.input = this.registerUnkownInput('Values');
+    this.input = this.registerUnknownInput('Values');
   }
 
   protected override async solve(iterators: InputIteratorsAsync): Promise<void> {
@@ -24,7 +24,7 @@ export class StoreWriter extends GraphNode {
 
     // Auto-initialize if store doesn't exist yet
     if (!listStores().includes(name)) {
-      throw Error(`Store with name {name} does not exist! Please initialize it first.`);
+      throw Error('Store with name {name} does not exist! Please initialize it first.');
     } else {
       read(name).update(values);
     }

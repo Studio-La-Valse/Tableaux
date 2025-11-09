@@ -9,8 +9,8 @@ export class Merge extends GraphNode {
   private params: GraphNodeInputType<unknown>[];
   private output: GraphNodeOutputType<unknown>;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.params = this.registerUnkownInputParams('Values');
     this.output = this.registerUnknownOutput('Values');

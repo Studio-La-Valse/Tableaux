@@ -9,8 +9,8 @@ export class Sum extends GraphNode {
   private input: GraphNodeInputNumber;
   private output: GraphNodeOutputType<number>;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input = this.registerNumberInput('Values');
     this.output = this.registerNumberOutput('Sum');

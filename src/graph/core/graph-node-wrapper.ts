@@ -1,14 +1,13 @@
 import type { XY } from '@/geometry/xy';
 import type { GraphNodeModel } from './models/graph-node-model';
-import { nanoid } from 'nanoid';
 import type { GraphNode, IGraphNode } from './graph-node';
 import type { IGraphNodeInput } from './graph-node-input';
 
 export interface IGraphNodeWrapper {
-  readonly nodeId: string;
-  readonly nodePath: string[];
-
   readonly instanceId: string;
+  readonly modelId: string;
+  readonly path: string[];
+
   readonly minHeight: number;
   readonly minWidth: number;
 
@@ -35,12 +34,16 @@ export class GraphNodeWrapper implements IGraphNodeWrapper {
   private _handlePadStartStop = 20;
   private _handlePad = 30;
 
-  public readonly instanceId;
-  public get nodeId() {
-    return this.innerNode.id;
+  public get instanceId() {
+    return this.innerNode.instanceId;
   }
-  public get nodePath() {
-    return this.innerNode.path;
+
+  public get modelId() {
+    return this.innerNode.modelId;
+  }
+
+  public get path() {
+    return this.innerNode.ctor.__graphNodePath!;
   }
 
   public xy: XY = { x: 0, y: 0 };
@@ -75,18 +78,18 @@ export class GraphNodeWrapper implements IGraphNodeWrapper {
     return 100;
   }
 
-  constructor(public readonly innerNode: GraphNode) {
-    this.instanceId = nanoid(11);
-  }
+  constructor(public readonly innerNode: GraphNode) {}
 
   public toModel(): GraphNodeModel {
+    const innerNode: GraphNode = this.innerNode;
+
     const result = {
-      id: this.innerNode.id,
-      path: this.innerNode.path,
+      id: this.modelId,
+      path: this.path,
       x: this.xy.x,
       y: this.xy.y,
-      ...(Object.keys(this.innerNode.data).length > 0 && {
-        data: this.innerNode.data,
+      ...(Object.keys(innerNode.data).length > 0 && {
+        data: innerNode.data,
       }),
       ...(this.width !== this.minWidth && { width: this.width }),
       ...(this.height !== this.minHeight && { height: this.height }),

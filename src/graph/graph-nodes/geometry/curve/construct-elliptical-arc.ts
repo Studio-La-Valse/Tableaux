@@ -15,8 +15,8 @@ export class EllipticalArc extends GraphNode {
   private input7;
   private outputCircle;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.input1 = this.registerObjectInput('XY').validate(assertIsXY);
     this.input2 = this.registerNumberInput('Radius X');
@@ -39,14 +39,14 @@ export class EllipticalArc extends GraphNode {
       end,
       counterclockwise,
     ] of inputIterators.cycleValues(
-      this.input1,
-      this.input2,
-      this.input3,
-      this.input4,
-      this.input5,
-      this.input6,
-      this.input7
-    )) {
+        this.input1,
+        this.input2,
+        this.input3,
+        this.input4,
+        this.input5,
+        this.input6,
+        this.input7,
+      )) {
       const arc = createEllipticalArc(xy, radiusx, radiusy, rotation, start, end, counterclockwise);
       this.outputCircle.next(arc);
     }

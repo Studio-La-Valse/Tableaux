@@ -8,8 +8,8 @@ export class Concatenate extends GraphNode {
   private input;
   private output;
 
-  constructor(id: string, path: string[]) {
-    super(id, path);
+  constructor(modelId: string) {
+    super(modelId);
 
     this.char = this.registerStringInput('Separator');
     this.input = this.registerStringInput('Values');

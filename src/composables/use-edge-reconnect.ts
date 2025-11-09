@@ -30,10 +30,10 @@ export const useEdgeReconnect = () => {
 
     tempEdges.value = [];
     edges
-      .filter((v) => v.leftGraphNode.nodeId == fromNodeId && v.outputIndex == fromOutputIndex)
+      .filter((v) => v.leftGraphNode.modelId == fromNodeId && v.outputIndex == fromOutputIndex)
       .map((v) => ({
         edgeId: v.id,
-        toNodeId: v.rightGraphNode.nodeId,
+        toNodeId: v.rightGraphNode.modelId,
         toInputIndex: v.inputIndex,
         currentX: x,
         currentY: y,
