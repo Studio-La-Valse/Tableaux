@@ -10,6 +10,7 @@ import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
 import { GraphEdge } from '@/graph/core/graph-edge'
 import { GraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
+import { cloneFrozen } from '@/graph/core/models/json-value'
 import { useGraphHistoryStore } from './use-graph-history-store'
 import { useGraphNodeRegistry } from './use-graph-node-registry'
 
@@ -162,7 +163,7 @@ const useGraphInternal = defineStore('graph', () => {
     if (model.height)
       wrapper.height = model.height
     if (model.data)
-      Object.assign(wrapper.innerNode.data, JSON.parse(JSON.stringify(model.data)))
+      Object.assign(wrapper.innerNode.data, cloneFrozen(model.data))
     if (model.data?.params_length)
       node.setParamsLength(Number(wrapper.innerNode.data.params_length))
 
