@@ -2,6 +2,8 @@ import type { GraphNode } from './graph-node'
 import type { IGraphNodeInput } from './graph-node-input'
 import type { JsonObject, JsonValue } from './models/json-value'
 import type { Unsubscriber } from './unsubscriber'
+import { nanoid } from 'nanoid'
+import { cloneFrozen } from './models/json-value'
 import { Subscription } from './subscription'
 
 export const providerTypes = ['boolean', 'number', 'string', 'object', 'unknown'] as const
@@ -21,6 +23,8 @@ export type IGraphNodeOutput = {
 export abstract class GraphNodeOutput implements IGraphNodeOutput {
   public targetInputs: Set<IGraphNodeInput> = new Set()
 
+  public readonly id: string
+
   public get graphNodeId() {
     return this.graphNode.modelId
   }
@@ -32,7 +36,9 @@ export abstract class GraphNodeOutput implements IGraphNodeOutput {
     private readonly graphNode: GraphNode,
     public readonly index: number,
     public readonly description: string,
-  ) {}
+  ) {
+    this.id = nanoid(11)
+  }
 
   public acceptIncoming(graphNodeInput: IGraphNodeInput) {
     // Create the subscription
@@ -138,7 +144,7 @@ export class GraphNodeOutputBoolean
   }
 
   public provideUnknown(index: number): JsonValue {
-    return this.payload[index]
+    return cloneFrozen(this.payload[index])
   }
 }
 
@@ -160,7 +166,7 @@ export class GraphNodeOutputNumber
   }
 
   public provideUnknown(index: number): JsonValue {
-    return this.payload[index]
+    return cloneFrozen(this.payload[index])
   }
 }
 
@@ -178,7 +184,7 @@ export class GraphNodeOutputString
   }
 
   public provideUnknown(index: number): JsonValue {
-    return this.payload[index]
+    return cloneFrozen(this.payload[index])
   }
 }
 
@@ -196,11 +202,11 @@ export class GraphNodeOutputObject<T extends JsonObject>
   }
 
   public provideObject(index: number): JsonObject {
-    return this.payload[index]
+    return cloneFrozen(this.payload[index])
   }
 
   public provideUnknown(index: number): JsonValue {
-    return this.payload[index]
+    return cloneFrozen(this.payload[index])
   }
 }
 
@@ -226,10 +232,10 @@ export class GraphNodeOutputUnknown
   }
 
   public provideObject(index: number): JsonObject {
-    return this.payload[index] as JsonObject
+    return cloneFrozen(this.payload[index]) as JsonObject
   }
 
   public provideUnknown(index: number): JsonValue {
-    return this.payload[index]
+    return cloneFrozen(this.payload[index])
   }
 }

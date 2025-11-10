@@ -1,6 +1,7 @@
 import type { GraphModel } from '@/graph/core/models/graph-model'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { cloneFrozen } from '@/graph/core/models/json-value'
 
 export type HistoryOptions = {
   maxHistory?: number
@@ -17,7 +18,7 @@ export const useGraphHistoryStore = defineStore('history', () => {
 
   // 3) deep‐clone helper
   function duplicate(model: GraphModel): GraphModel {
-    return JSON.parse(JSON.stringify(model))
+    return cloneFrozen(model)
   }
 
   // 4) initialize (or re‐initialize) history
