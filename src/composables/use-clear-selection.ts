@@ -1,4 +1,3 @@
-// src/composables/useSelectionInteraction.ts
 import { onMounted, onUnmounted } from 'vue'
 import { useEdgeSelectionStore } from '@/stores/use-edge-selection-store'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'

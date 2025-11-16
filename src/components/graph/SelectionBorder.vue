@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="store.selecting"
+    v-if="selecting"
     class="selection-border-overlay"
   >
     <div
@@ -13,20 +13,24 @@
 <script setup lang="ts">
 import type { StyleValue } from 'vue'
 import { computed } from 'vue'
-import { useSelectionAreaStore } from '@/stores/use-selection-area-store'
+import { useSelectionArea } from '@/composables/use-selection-area'
 
-const store = useSelectionAreaStore()
-const borderStyle = computed<StyleValue>(() => ({
-  position: 'absolute',
-  left: `${store.rect.x}px`,
-  top: `${store.rect.y}px`,
-  width: `${store.rect.width}px`,
-  height: `${store.rect.height}px`,
-  border: '2px dashed #2196F3',
-  backgroundColor: 'rgba(33,150,243,0.1)',
-  pointerEvents: 'none',
-  zIndex: 1000,
-}))
+const { rect, selecting } = useSelectionArea()
+
+const borderStyle = computed<StyleValue>(() => {
+  return {
+    position: 'absolute',
+    left: `${rect.value.x}px`,
+    top: `${rect.value.y}px`,
+    width: `${rect.value.width}px`,
+    height: `${rect.value.height}px`,
+    border: '2px dashed #2196F3',
+    backgroundColor: 'rgba(33,150,243,0.1)',
+    pointerEvents: 'none',
+    zIndex: 1000,
+
+  }
+})
 </script>
 
 <style scoped>

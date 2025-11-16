@@ -1,4 +1,3 @@
-// graph-node-types.ts
 import type { Component } from 'vue'
 import type { GraphNode } from '../../graph/core/graph-node'
 import type { CustomNodeDefinition } from './json/dynamic-graph-node'

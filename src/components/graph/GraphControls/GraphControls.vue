@@ -3,24 +3,24 @@
     <div class="button-group">
       <button
         type="button"
-        :class="{ active: layout.mode === 'split' }"
-        @click="layout.mode = 'split'"
+        :class="{ active: mode === 'split' }"
+        @click="mode = 'split'"
       >
         <ArrowsRightLeftIcon class="icon" />
       </button>
 
       <button
         type="button"
-        :class="{ active: layout.mode === 'graph' }"
-        @click="layout.mode = 'graph'"
+        :class="{ active: mode === 'graph' }"
+        @click="mode = 'graph'"
       >
         <CodeBracketIcon class="icon" />
       </button>
 
       <button
         type="button"
-        :class="{ active: layout.mode === 'controls' }"
-        @click="layout.mode = 'controls'"
+        :class="{ active: mode === 'controls' }"
+        @click="mode = 'controls'"
       >
         <AdjustmentsHorizontalIcon class="icon" />
       </button>
@@ -137,15 +137,14 @@ import {
   createAndRegisterCustomNode,
 
 } from '@/graph/graph-nodes/json/dynamic-graph-node'
+import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useGraphHistoryStore } from '@/stores/use-graph-history-store'
-import { useGraphLayoutStore } from '@/stores/use-graph-layout-store'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { useGraphStore } from '@/stores/use-graph-store'
 import CustomNodeComponent from '../CustomNode/CustomNodeModal.vue'
 import UnsavedChangesModal from './UnsavedChangesModal.vue'
 
 const alert = useAlert()
-const layout = useGraphLayoutStore()
 
 const history = useGraphHistoryStore()
 const { hasUndo, hasRedo } = storeToRefs(history)
@@ -153,6 +152,9 @@ const { hasUndo, hasRedo } = storeToRefs(history)
 const graphStore = useGraphStore()
 const { init, toModel, fromModel, undo, redo } = graphStore
 const { nodes } = storeToRefs(graphStore)
+
+const canvasStore = useGraphCanvasStore()
+const { mode } = storeToRefs(canvasStore)
 
 const selectionStore = useGraphNodeSelectionStore()
 const { selectedNodes } = storeToRefs(selectionStore)

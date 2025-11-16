@@ -4,7 +4,7 @@
 
     <!-- Split mode -->
     <PanelGroup
-      v-if="layout.mode === 'split'"
+      v-if="mode === 'split'"
       direction="horizontal"
     >
       <Panel :default-size="70">
@@ -41,7 +41,7 @@
 
     <!-- Graph only -->
     <div
-      v-else-if="layout.mode === 'graph'"
+      v-else-if="mode === 'graph'"
       ref="viewportRef"
       class="canvas-container"
       @contextmenu.prevent
@@ -66,7 +66,7 @@
 
     <!-- Controls only -->
     <ControlsComponent
-      v-else-if="layout.mode === 'controls'"
+      v-else-if="mode === 'controls'"
       class="controls-only"
     />
   </div>
@@ -89,16 +89,11 @@ import { useClearSelection } from '@/composables/use-clear-selection'
 import { useSelectionArea } from '@/composables/use-selection-area'
 import { useContextMenuStore } from '@/stores/use-context-menu-store'
 import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
-import { useGraphLayoutStore } from '@/stores/use-graph-layout-store'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { useGraphStore } from '@/stores/use-graph-store'
-import { useSelectionAreaStore } from '@/stores/use-selection-area-store'
 import ControlsComponent from '../controls/ControlsComponent.vue'
 
-const layout = useGraphLayoutStore()
-
 const selectionArea = useSelectionArea()
-const selectionAreaStore = useSelectionAreaStore()
 const clearSelection = useClearSelection()
 const menu = useContextMenuStore()
 const selection = useGraphNodeSelectionStore()
@@ -106,12 +101,12 @@ const graph = useGraphStore()
 const canvasTransform = useCanvasTransform()
 const canvasStore = useGraphCanvasStore()
 
-const { viewportRef, canvasRef } = storeToRefs(canvasStore)
+const { mode, viewportRef, canvasRef } = storeToRefs(canvasStore)
 
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({
   ...canvasTransform.style.value,
-  pointerEvents: selectionAreaStore.selecting ? 'none' : 'all',
+  pointerEvents: selectionArea.selecting.value ? 'none' : 'all',
 }))
 
 function onMouseDown(event: MouseEvent) {

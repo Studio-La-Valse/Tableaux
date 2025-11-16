@@ -1,4 +1,3 @@
-// src/stores/selection-store.ts
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 

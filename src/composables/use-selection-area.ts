@@ -1,34 +1,61 @@
-import { onUnmounted } from 'vue'
+import { onUnmounted, ref } from 'vue'
 import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { useGraphStore } from '@/stores/use-graph-store'
-import { useSelectionAreaStore } from '@/stores/use-selection-area-store'
 import { useEdgeDrag } from './use-edge-drag'
 import { useEdgeReconnect } from './use-edge-reconnect'
 
-type mode = 'default' | 'add' | 'subtract'
+type Mode = 'default' | 'add' | 'subtract'
+const selecting = ref(false)
+const rect = ref({ x: 0, y: 0, width: 0, height: 0 })
 
 export function useSelectionArea() {
-  const selectionAreaStore = useSelectionAreaStore()
-  const nodeSelectionStore = useGraphNodeSelectionStore()
+  const start = { x: 0, y: 0 }
+  const threshold = 5
+
   const canvasRefStore = useGraphCanvasStore()
+  const nodeSelectionStore = useGraphNodeSelectionStore()
   const graphStore = useGraphStore()
   const edgeDrag = useEdgeDrag()
   const edgeReconnect = useEdgeReconnect()
 
+  function begin(x: number, y: number) {
+    start.x = x
+    start.y = y
+    rect.value = { x, y, width: 0, height: 0 }
+    selecting.value = false
+  }
+
+  function update(x: number, y: number) {
+    const dx = x - start.x
+    const dy = y - start.y
+    if (!selecting.value && Math.hypot(dx, dy) > threshold) {
+      selecting.value = true
+    }
+    if (selecting.value) {
+      rect.value = {
+        x: Math.min(start.x, x),
+        y: Math.min(start.y, y),
+        width: Math.abs(dx),
+        height: Math.abs(dy),
+      }
+    }
+  }
+
+  function end() {
+    selecting.value = false
+    return rect.value
+  }
+
   function onMouseDown(e: MouseEvent) {
-    if (e.button !== 0)
-      return
-    if (edgeDrag.tempEdge.value)
-      return
-    if (edgeReconnect.tempEdges.value.length)
+    if (e.button !== 0 || edgeDrag.tempEdge.value || edgeReconnect.tempEdges.value.length)
       return
 
     e.preventDefault()
     e.stopPropagation()
 
     const { x, y } = canvasRefStore.clientToCanvas(e)
-    selectionAreaStore.begin(x, y)
+    begin(x, y)
 
     document.addEventListener('mousemove', onMouseMove)
     document.addEventListener('mouseup', onMouseUp)
@@ -36,7 +63,7 @@ export function useSelectionArea() {
 
   function onMouseMove(e: MouseEvent) {
     const { x, y } = canvasRefStore.clientToCanvas(e)
-    selectionAreaStore.update(x, y)
+    update(x, y)
 
     e.preventDefault()
     e.stopPropagation()
@@ -46,9 +73,9 @@ export function useSelectionArea() {
     if (e.button !== 0)
       return
 
-    const finalRect = selectionAreaStore.end()
+    const finalRect = end()
     if (finalRect.width > 0 && finalRect.height > 0) {
-      let mode: mode = 'default'
+      let mode: Mode = 'default'
       if (e.ctrlKey || e.metaKey)
         mode = 'subtract'
       if (e.shiftKey)
@@ -66,7 +93,7 @@ export function useSelectionArea() {
 
   function applySelection(
     rect: { x: number, y: number, width: number, height: number },
-    mode: mode,
+    mode: Mode,
   ) {
     if (mode === 'default')
       nodeSelectionStore.clearSelection()
@@ -98,5 +125,5 @@ export function useSelectionArea() {
     document.removeEventListener('mouseup', onMouseUp)
   })
 
-  return { onMouseDown }
+  return { selecting, rect, onMouseDown }
 }

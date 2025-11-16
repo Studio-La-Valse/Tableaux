@@ -2,9 +2,12 @@ import type { XY } from '@/geometry/xy'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
+export type GraphLayoutMode = 'split' | 'graph' | 'controls'
+
 export const useGraphCanvasStore = defineStore('graph-canvas-store', () => {
   const viewportRef = ref<HTMLElement | null>(null)
   const canvasRef = ref<HTMLElement | null>(null)
+  const mode = ref<GraphLayoutMode>('split')
 
   function clientToViewport(event: MouseEvent): XY {
     const rect = viewportRef.value?.getBoundingClientRect()
@@ -33,6 +36,7 @@ export const useGraphCanvasStore = defineStore('graph-canvas-store', () => {
   }
 
   return {
+    mode,
     viewportRef,
     canvasRef,
     clientToViewport,
