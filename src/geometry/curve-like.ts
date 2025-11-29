@@ -21,7 +21,7 @@ export const curveKinds = ['arc', 'elliptical-arc', 'polyline', 'quadratic', 'cu
 export type CurveKind = (typeof curveKinds)[number]
 
 export function isCurveKind(str: string): str is CurveKind {
-  return str in curveKinds
+  return curveKinds.includes(str as CurveKind)
 }
 
 export type CurveLike = ArcShape | EllipticalArcShape | PolylineShape | QuadraticShape | CubicShape
