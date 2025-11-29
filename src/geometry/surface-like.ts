@@ -15,7 +15,7 @@ export const surfaceKinds = ['circle', 'ellipse', 'rectangle', 'clear-rect'] as 
 export type SurfaceKind = (typeof surfaceKinds)[number]
 
 export function isSurfaceKind(str: string): str is SurfaceKind {
-  return str in surfaceKinds
+  return surfaceKinds.includes(str as SurfaceKind)
 }
 
 export type SurfaceLike = CircleShape | EllipseShape | RectangleShape | ClearRectShape

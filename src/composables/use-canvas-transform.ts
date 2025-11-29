@@ -1,6 +1,5 @@
 import { storeToRefs } from 'pinia'
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
-// src/composables/usePanZoom.ts
 import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 
 type Position = {

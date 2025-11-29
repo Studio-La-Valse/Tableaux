@@ -9,6 +9,9 @@ import { useGraphStore } from '@/stores/use-graph-store'
 import { useEdgeDrag } from './use-edge-drag'
 import { useEdgeReconnect } from './use-edge-reconnect'
 
+const dragging = ref(false)
+const wasDragged = ref(false)
+
 export function useNodeSelectionAndDrag() {
   const selectionStore = useGraphNodeSelectionStore()
   const edgeSelectionStore = useEdgeSelectionStore()
@@ -19,8 +22,6 @@ export function useNodeSelectionAndDrag() {
   const { clientToCanvas } = useGraphCanvasStore()
   const graph = useGraphStore()
 
-  const dragging = ref(false)
-  const wasDragged = ref(false)
   const threshold = 5
 
   let startPointerPos: XY = { x: 0, y: 0 }

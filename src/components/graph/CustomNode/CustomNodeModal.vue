@@ -172,7 +172,7 @@
 
 <script lang="ts" setup>
 import type { CustomNodeDefinition, NodeIO } from '@/graph/graph-nodes/json/dynamic-graph-node'
-import { computed, defineEmits, defineProps, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { validateFullNodePath } from '@/graph/core/graph-node-path'
 import { IOTypes } from '@/graph/graph-nodes/json/dynamic-graph-node'
 

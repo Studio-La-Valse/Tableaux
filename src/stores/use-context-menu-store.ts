@@ -1,4 +1,3 @@
-// stores/contextMenu.ts
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useGraphCanvasStore } from './use-graph-canvas-store'
