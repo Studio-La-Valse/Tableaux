@@ -4,6 +4,7 @@ import { getPointAt } from '@/geometry/drawable/shapes/curves/analysis'
 import { asCurveLike } from '@/geometry/drawable/shapes/curves/curve-like'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
+import { getOpsFor } from '@/geometry/primitives/union/curve-ops'
 
 @GraphNodeType('Geometry', 'Curve', 'Point At Parameter')
 export class PointAtParameter extends GraphNode {
@@ -23,7 +24,8 @@ export class PointAtParameter extends GraphNode {
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [curve, t] of inputIterators.cycleValues(this.curveInput, this.tInput)) {
-      const point = getPointAt(curve, t)
+      const ops = getOpsFor(curve)
+      const point = ops.pointAt(curve, t)
       this.output.next(point)
     }
   }
