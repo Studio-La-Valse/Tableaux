@@ -1,7 +1,7 @@
-import type { Rectangle as rect } from '@/geometry/rectangle'
+import type { Rectangle as rect } from '@/geometry/primitives/rectangle'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createRectangleShape } from '@/geometry/rectangle'
-import { assertIsXY } from '@/geometry/xy'
+import { createRectangleShape } from '@/geometry/drawable/shapes/curves/rectangle-shape'
+import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsFont } from '@/geometry/font'
+import { assertIsFont } from '@/geometry/text/font'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 

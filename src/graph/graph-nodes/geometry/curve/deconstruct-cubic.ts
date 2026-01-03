@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asCubic } from '@/geometry/cubic'
+import { asCubic } from '@/geometry/primitives/cubic'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

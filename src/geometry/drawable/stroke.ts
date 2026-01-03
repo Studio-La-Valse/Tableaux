@@ -1,6 +1,6 @@
-import type { Shape } from './shape'
-import type { ColorRGB } from '@/geometry/color'
-import { isColorRGB } from '@/geometry/color-rgb'
+import type { Shape } from './shapes/shape'
+import type { ColorRGB } from '@/geometry/color/color'
+import { isColorRGB } from '@/geometry/color/color-rgb'
 
 export type Stroke = { stroke: ColorRGB, strokeWidth: number }
 

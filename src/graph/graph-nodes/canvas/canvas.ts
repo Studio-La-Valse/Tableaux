@@ -1,6 +1,6 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { clear, draw, init } from '@/bitmap-painters/bitmap-painter'
-import { asShape } from '@/geometry/shape'
+import { asShape } from '@/geometry/drawable/shapes/shape'
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'

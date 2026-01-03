@@ -1,4 +1,4 @@
-import type { TransformationMatrix } from './transformation-matrix'
+import type { TransformationMatrix } from '../transform/transformation-matrix'
 
 export type XY = { x: number, y: number }
 

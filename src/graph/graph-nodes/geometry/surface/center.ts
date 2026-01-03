@@ -1,6 +1,7 @@
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asSurfaceLike, getSurfaceCenter } from '@/geometry/surface-like'
+import { getSurfaceCenter } from '@/geometry/drawable/shapes/surfaces/analysis'
+import { asSurfaceLike } from '@/geometry/drawable/shapes/surfaces/surface-like'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

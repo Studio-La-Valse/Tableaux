@@ -1,7 +1,7 @@
-import type { Rectangle } from './rectangle'
 import type { BaseShape } from './shape'
+import type { Rectangle } from '@/geometry/primitives/rectangle'
 import type { JsonObject } from '@/graph/core/models/json-value'
-import { isRectangle } from './rectangle'
+import { isRectangle } from '@/geometry/primitives/rectangle'
 
 export type ClearRectShape = BaseShape & Rectangle & { kind: 'clear-rect' }
 

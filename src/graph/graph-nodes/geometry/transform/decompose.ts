@@ -1,7 +1,7 @@
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { decomposeMatrix } from '@/geometry/decomposed-transformation-matrix'
-import { assertIsTransformationMatrix } from '@/geometry/transformation-matrix'
+import { decomposeMatrix } from '@/geometry/transform/decomposed-transformation-matrix'
+import { assertIsTransformationMatrix } from '@/geometry/transform/transformation-matrix'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 

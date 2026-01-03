@@ -1,6 +1,6 @@
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asArc } from '@/geometry/arc'
+import { asArc } from '@/geometry/primitives/arc'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

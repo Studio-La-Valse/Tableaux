@@ -1,7 +1,7 @@
-import type { Shape } from '@/geometry/shape'
+import type { Shape } from '@/geometry/drawable/shapes/shape'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asShape } from '@/geometry/shape'
-import { assertIsTransformationMatrix, compose, identity } from '@/geometry/transformation-matrix'
+import { asShape } from '@/geometry/drawable/shapes/shape'
+import { assertIsTransformationMatrix, compose, identity } from '@/geometry/transform/transformation-matrix'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 

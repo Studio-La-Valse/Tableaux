@@ -1,6 +1,6 @@
-import type { Rectangle } from '@/geometry/rectangle'
+import type { Rectangle } from '@/geometry/primitives/rectangle'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsOfShapeKind, asShape } from '@/geometry/shape'
+import { assertIsOfShapeKind, asShape } from '@/geometry/drawable/shapes/shape'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 

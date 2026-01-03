@@ -1,7 +1,7 @@
-import type { CubicShape } from '@/geometry/cubic'
+import type { CubicShape } from '@/geometry/drawable/shapes/curves/cubic-shape'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createCubic } from '@/geometry/cubic'
-import { assertIsXY } from '@/geometry/xy'
+import { createCubic } from '@/geometry/drawable/shapes/curves/cubic-shape'
+import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

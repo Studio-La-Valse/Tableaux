@@ -1,7 +1,7 @@
-import type { PolylineShape } from '@/geometry/polyline'
+import type { PolylineShape } from '@/geometry/drawable/shapes/curves/polyline-shape'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createPolyline } from '@/geometry/polyline'
-import { assertIsXY } from '@/geometry/xy'
+import { createPolyline } from '@/geometry/drawable/shapes/curves/polyline-shape'
+import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

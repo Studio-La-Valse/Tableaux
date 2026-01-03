@@ -1,4 +1,4 @@
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 

@@ -1,5 +1,5 @@
 import type { Ref } from 'vue'
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import type { GraphEdgePrototype } from '@/graph/core/graph-edge'
 import type { IGraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 import type { GraphEdgeModel } from '@/graph/core/models/graph-edge-model'

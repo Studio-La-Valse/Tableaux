@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import type { StyleValue } from 'vue'
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import type { IGraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 import { computed } from 'vue'
 import { useNodeSelectionAndDrag } from '@/composables/use-node-selection-and-drag'

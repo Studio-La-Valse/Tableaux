@@ -1,7 +1,7 @@
-import type { CircleShape } from '@/geometry/circle'
+import type { CircleShape } from '@/geometry/drawable/shapes/circle-shape'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createCircle } from '@/geometry/circle'
-import { assertIsXY } from '@/geometry/xy'
+import { createCircle } from '@/geometry/drawable/shapes/circle-shape'
+import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

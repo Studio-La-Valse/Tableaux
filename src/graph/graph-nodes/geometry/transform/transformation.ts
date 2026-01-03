@@ -1,7 +1,7 @@
-import type { TransformationMatrix } from '@/geometry/transformation-matrix'
+import type { TransformationMatrix } from '@/geometry/transform/transformation-matrix'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asShape } from '@/geometry/shape'
-import { identity } from '@/geometry/transformation-matrix'
+import { asShape } from '@/geometry/drawable/shapes/shape'
+import { identity } from '@/geometry/transform/transformation-matrix'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 

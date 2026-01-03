@@ -1,7 +1,7 @@
-import type { EllipticalArcShape } from '@/geometry/elliptical-arc'
+import type { EllipticalArcShape } from '@/geometry/drawable/shapes/elliptical-arc-shape'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createEllipticalArc } from '@/geometry/elliptical-arc'
-import { assertIsXY } from '@/geometry/xy'
+import { createEllipticalArc } from '@/geometry/drawable/shapes/elliptical-arc-shape'
+import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

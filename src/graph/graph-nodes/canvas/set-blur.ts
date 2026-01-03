@@ -1,8 +1,8 @@
-import type { Blur } from '@/geometry/filter'
-import type { Shape } from '@/geometry/shape'
+import type { Blur } from '@/geometry/drawable/filter'
+import type { Shape } from '@/geometry/drawable/shapes/shape'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { applyBlur } from '@/geometry/filter'
-import { asShape } from '@/geometry/shape'
+import { applyBlur } from '@/geometry/drawable/filter'
+import { asShape } from '@/geometry/drawable/shapes/shape'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 

@@ -1,8 +1,8 @@
-import type { Shape } from '@/geometry/shape'
-import type { Stroke } from '@/geometry/stroke'
+import type { Shape } from '@/geometry/drawable/shapes/shape'
+import type { Stroke } from '@/geometry/drawable/stroke'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsColorARGB } from '@/geometry/color-rgb'
-import { asShape } from '@/geometry/shape'
+import { assertIsColorARGB } from '@/geometry/color/color-rgb'
+import { asShape } from '@/geometry/drawable/shapes/shape'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 

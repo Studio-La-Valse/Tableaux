@@ -1,4 +1,4 @@
-import type { ColorARGB } from '@/geometry/color'
+import type { ColorARGB } from '@/geometry/color/color'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'

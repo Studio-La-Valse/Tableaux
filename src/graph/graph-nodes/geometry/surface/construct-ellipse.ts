@@ -1,7 +1,7 @@
-import type { EllipseShape } from '@/geometry/ellipse'
+import type { EllipseShape } from '@/geometry/drawable/shapes/ellipse-shape'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createEllipseShape } from '@/geometry/ellipse'
-import { assertIsXY } from '@/geometry/xy'
+import { createEllipseShape } from '@/geometry/drawable/shapes/ellipse-shape'
+import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

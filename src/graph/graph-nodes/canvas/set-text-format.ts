@@ -1,13 +1,7 @@
-import type { AlignmentKind, BaselineKind, DirectionKind, TextShape } from '@/geometry/text'
+import type { AlignmentKind, BaselineKind, DirectionKind, TextShape } from '@/geometry/text/text'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsOfShapeKind, asShape } from '@/geometry/shape'
-import {
-
-  textAlignments,
-  textBaselines,
-  textDirections,
-
-} from '@/geometry/text'
+import { assertIsOfShapeKind, asShape } from '@/geometry/drawable/shapes/shape'
+import { textAlignments, textBaselines, textDirections } from '@/geometry/text/text'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 

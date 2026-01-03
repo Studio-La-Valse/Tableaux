@@ -1,14 +1,13 @@
+import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Polyline } from './polyline'
-import type { BaseShape } from './shape'
-import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
+import { applyMatrix } from './xy'
 
 export type Rectangle = {
   x: number
   y: number
   width: number
   height: number
-  radii?: number | number[]
 }
 
 export function isRectangle(object: object): object is Rectangle {
@@ -48,19 +47,41 @@ export function rectangleAsPolyline(rectangle: Rectangle): Polyline {
   }
 }
 
-export type RectangleShape = BaseShape & { kind: 'rectangle' } & Rectangle
+export function getBoundingBoxRectangle(rect: Rectangle, t?: TransformationMatrix) {
+  const { x, y, width, height } = rect
 
-export function createRectangleShape(
-  topLeft: XY,
-  width: number,
-  height: number,
-  radii?: number | number[],
-): RectangleShape {
+  // Four corners of the rectangle
+  let pts = [
+    { x, y },
+    { x: x + width, y },
+    { x: x + width, y: y + height },
+    { x, y: y + height },
+  ]
+
+  // Apply transform if present
+  if (t) {
+    pts = pts.map(p => applyMatrix(p, t))
+  }
+
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+
+  for (const p of pts) {
+    if (p.x < minX)
+      minX = p.x
+    if (p.y < minY)
+      minY = p.y
+    if (p.x > maxX)
+      maxX = p.x
+    if (p.y > maxY)
+      maxY = p.y
+  }
+
   return {
-    kind: 'rectangle',
-    ...topLeft,
-    width,
-    height,
-    radii,
+    min: { x: minX, y: minY },
+    width: maxX - minX,
+    height: maxY - minY,
   }
 }

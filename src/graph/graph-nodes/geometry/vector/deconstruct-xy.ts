@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsXY } from '@/geometry/xy'
+import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

@@ -1,4 +1,4 @@
-import type { XY } from './xy'
+import type { XY } from '../primitives/xy'
 
 export type TransformationMatrix = {
   a: number

@@ -1,6 +1,6 @@
-import type { CurveLike } from '@/geometry/curve-like'
+import type { CurveLike } from '@/geometry/drawable/shapes/curves/curve-like'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asCurveLike } from '@/geometry/curve-like'
+import { asCurveLike } from '@/geometry/drawable/shapes/curves/curve-like'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

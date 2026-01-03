@@ -1,8 +1,8 @@
-import type { TextShape } from '@/geometry/text'
+import type { TextShape } from '@/geometry/text/text'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsFont } from '@/geometry/font'
-import { createText } from '@/geometry/text'
-import { assertIsXY } from '@/geometry/xy'
+import { assertIsXY } from '@/geometry/primitives/xy'
+import { assertIsFont } from '@/geometry/text/font'
+import { createText } from '@/geometry/text/text'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
 

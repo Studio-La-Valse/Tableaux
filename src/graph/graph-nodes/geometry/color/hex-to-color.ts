@@ -1,6 +1,6 @@
-import type { ColorARGB } from '@/geometry/color'
+import type { ColorARGB } from '@/geometry/color/color'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { isValidHexColor, toColorARGB } from '@/geometry/color-hex'
+import { isValidHexColor, toColorARGB } from '@/geometry/color/color-hex'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

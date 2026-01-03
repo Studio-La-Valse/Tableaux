@@ -1,72 +1,8 @@
-import type { CircleShape } from './circle'
-import type { ClearRectShape } from './clear-rect'
-import type { EllipseShape } from './ellipse'
-import type { RectangleShape } from './rectangle'
-import type { XY } from './xy'
-import type { JsonObject } from '@/graph/core/models/json-value'
-import { isCircle } from './circle'
-import { isEllipse } from './ellipse'
-import { isRectangle } from './rectangle'
-import { identity, invert } from './transformation-matrix'
-import { applyMatrix } from './xy'
-
-export const surfaceKinds = ['circle', 'ellipse', 'rectangle', 'clear-rect'] as const
-
-export type SurfaceKind = (typeof surfaceKinds)[number]
-
-export function isSurfaceKind(str: string): str is SurfaceKind {
-  return surfaceKinds.includes(str as SurfaceKind)
-}
-
-export type SurfaceLike = CircleShape | EllipseShape | RectangleShape | ClearRectShape
-
-export function asSurfaceLike(value: JsonObject): SurfaceLike {
-  if (isCircle(value)) {
-    return {
-      ...value,
-      kind: 'circle',
-    }
-  }
-
-  if (isEllipse(value)) {
-    return {
-      ...value,
-      kind: 'ellipse',
-    }
-  }
-
-  if (isRectangle(value)) {
-    let kind: 'rectangle' | 'clear-rect' = 'rectangle'
-    if ('kind' in value && typeof value.kind === 'string' && value.kind === 'clear-rect') {
-      kind = 'clear-rect'
-    }
-    return {
-      ...value,
-      kind,
-    }
-  }
-
-  throw new Error('Shape is not surface like.')
-}
-
-export function isSurfaceLike(object: JsonObject): object is SurfaceLike {
-  if (!('kind' in object))
-    return false
-  if (!(typeof object.kind === 'string'))
-    return false
-  if (!isSurfaceKind(object.kind))
-    return false
-
-  switch (object.kind) {
-    case 'circle':
-      return isCircle(object)
-    case 'ellipse':
-      return isEllipse(object)
-    case 'clear-rect':
-    case 'rectangle':
-      return isRectangle(object)
-  }
-}
+import type { SurfaceLike } from './surface-like'
+import type { XY } from '@/geometry/primitives/xy'
+import { applyMatrix } from '@/geometry/primitives/xy'
+import { mulberry32 } from '@/geometry/random'
+import { identity, invert } from '@/geometry/transform/transformation-matrix'
 
 export function pointOnSurface(surface: SurfaceLike, point: XY, epsilon = 1e-6): boolean {
   // Transform point into local coordinates
@@ -185,4 +121,84 @@ export function getSurfaceCenter(surface: SurfaceLike): XY {
 
   // Apply optional transform
   return applyMatrix(local, surface.t ?? identity())
+}
+
+// ===== Sampling points utilities
+
+export function samplePointsOnSurface(
+  surface: SurfaceLike,
+  count: number,
+  seed: number,
+): XY[] {
+  const rand = mulberry32(seed)
+  const pts: XY[] = []
+
+  for (let i = 0; i < count; i++) {
+    pts.push(sampleOne(surface, rand))
+  }
+
+  return pts
+}
+
+export function sampleOne(surface: SurfaceLike, rand: () => number): XY {
+  // Initialize with a placeholder; will always be overwritten
+  let p: XY = { x: 0, y: 0 }
+
+  switch (surface.kind) {
+    case 'circle': {
+      const { x, y, radius } = surface
+      const angle = rand() * Math.PI * 2
+      p = {
+        x: x + radius * Math.cos(angle),
+        y: y + radius * Math.sin(angle),
+      }
+      break
+    }
+
+    case 'ellipse': {
+      const { x, y, radiusX, radiusY, rotation } = surface
+      const angle = rand() * Math.PI * 2
+
+      const xr = radiusX * Math.cos(angle)
+      const yr = radiusY * Math.sin(angle)
+
+      const cosR = Math.cos(rotation)
+      const sinR = Math.sin(rotation)
+
+      p = {
+        x: x + xr * cosR - yr * sinR,
+        y: y + xr * sinR + yr * cosR,
+      }
+      break
+    }
+
+    case 'rectangle':
+    case 'clear-rect': {
+      const { x, y, width, height } = surface
+
+      const edge = Math.floor(rand() * 4)
+      const t = rand()
+
+      switch (edge) {
+        case 0:
+          p = { x: x + t * width, y }
+          break
+        case 1:
+          p = { x: x + t * width, y: y + height }
+          break
+        case 2:
+          p = { x, y: y + t * height }
+          break
+        case 3:
+          p = { x: x + width, y: y + t * height }
+          break
+      }
+      break
+    }
+
+    default:
+      throw new Error(`Unsupported surface kind: ${(surface as any).kind}`)
+  }
+
+  return surface.t ? applyMatrix(p, surface.t) : p
 }

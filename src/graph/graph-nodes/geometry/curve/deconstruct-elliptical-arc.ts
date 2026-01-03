@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asEllipticalArc } from '@/geometry/elliptical-arc'
+import { asEllipticalArc } from '@/geometry/primitives/elliptical-arc'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

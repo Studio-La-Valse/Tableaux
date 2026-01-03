@@ -1,5 +1,5 @@
+import type { XY } from '../primitives/xy'
 import type { TransformationMatrix } from './transformation-matrix'
-import type { XY } from './xy'
 
 export type DecomposedMatrix = {
   translation: XY // e, f

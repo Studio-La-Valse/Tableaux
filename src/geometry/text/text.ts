@@ -1,8 +1,8 @@
-import type { BaseShape } from '../geometry/shape'
-import type { XY } from '../geometry/xy'
+import type { BaseShape } from '../drawable/shapes/shape'
+import type { XY } from '../primitives/xy'
 import type { Font } from './font'
 import type { JsonObject } from '@/graph/core/models/json-value'
-import { isXY } from '../geometry/xy'
+import { isXY } from '../primitives/xy'
 import { isFont } from './font'
 
 export const textAlignments = ['start', 'end', 'left', 'right', 'center'] as const

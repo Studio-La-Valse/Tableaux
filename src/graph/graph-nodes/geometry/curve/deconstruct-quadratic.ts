@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asQuadratic } from '@/geometry/quadratic'
+import { asQuadratic } from '@/geometry/primitives/quadratic'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

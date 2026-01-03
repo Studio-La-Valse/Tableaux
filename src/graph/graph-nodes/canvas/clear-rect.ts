@@ -1,6 +1,6 @@
-import type { ClearRectShape } from '@/geometry/clear-rect'
+import type { ClearRectShape } from '@/geometry/drawable/shapes/clear-rect'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asRectangle } from '@/geometry/rectangle'
+import { asRectangle } from '@/geometry/primitives/rectangle'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
 

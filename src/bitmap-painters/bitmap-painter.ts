@@ -1,17 +1,17 @@
-import type { ArcShape } from '../geometry/arc'
-import type { EllipticalArcShape } from '../geometry/elliptical-arc'
-import type { PolylineShape } from '../geometry/polyline'
-import type { RectangleShape } from '../geometry/rectangle'
-import type { CircleShape } from '@/geometry/circle'
-import type { ClearRectShape } from '@/geometry/clear-rect'
-import type { CubicShape } from '@/geometry/cubic'
-import type { EllipseShape } from '@/geometry/ellipse'
-import type { QuadraticShape } from '@/geometry/quadratic'
-import type { BaseShape, Shape } from '@/geometry/shape'
-import type { TextShape } from '@/geometry/text'
-import { formatCtx } from '@/geometry/font'
-import { formatCSSRGBA } from '../geometry/color-rgb'
-import { formatCtxFilter } from '../geometry/filter'
+import type { ArcShape } from '@/geometry/drawable/shapes/arc-shape'
+import type { CircleShape } from '@/geometry/drawable/shapes/circle-shape'
+import type { ClearRectShape } from '@/geometry/drawable/shapes/clear-rect'
+import type { CubicShape } from '@/geometry/drawable/shapes/curves/cubic-shape'
+import type { PolylineShape } from '@/geometry/drawable/shapes/curves/polyline-shape'
+import type { QuadraticShape } from '@/geometry/drawable/shapes/curves/quadratic-shape'
+import type { RectangleShape } from '@/geometry/drawable/shapes/curves/rectangle-shape'
+import type { EllipseShape } from '@/geometry/drawable/shapes/ellipse-shape'
+import type { EllipticalArcShape } from '@/geometry/drawable/shapes/elliptical-arc-shape'
+import type { BaseShape, Shape } from '@/geometry/drawable/shapes/shape'
+import type { TextShape } from '@/geometry/text/text'
+import { formatCtx } from '@/geometry/text/font'
+import { formatCSSRGBA } from '../geometry/color/color-rgb'
+import { formatCtxFilter } from '../geometry/drawable/filter'
 
 const DEFAULT_MATRIX = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }
 
@@ -137,7 +137,7 @@ function drawPolyline(ctx: CanvasRenderingContext2D, element: PolylineShape) {
   drawShape(ctx, element, () => {
     const { start, end, points } = element
     ctx.moveTo(start.x, start.y)
-    for (const p of points) {
+    for (const p of points ?? []) {
       ctx.lineTo(p.x, p.y)
     }
     ctx.lineTo(end.x, end.y)

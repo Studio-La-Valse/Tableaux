@@ -1,112 +1,8 @@
-import type { ArcShape } from './arc'
-import type { CubicShape } from './cubic'
-import type { EllipticalArcShape } from './elliptical-arc'
-import type { PolylineShape } from './polyline'
-import type { QuadraticShape } from './quadratic'
-import type { XY } from './xy'
-import type { JsonObject } from '@/graph/core/models/json-value'
-import { isArc } from './arc'
-import { circleAsArc, isCircle } from './circle'
-import { isCubic } from './cubic'
-import { ellipseAsEllipticalArc, isEllipse } from './ellipse'
-import { isEllipticalArc } from './elliptical-arc'
-import { isPolyline } from './polyline'
-import { isQuadratic } from './quadratic'
-import { isRectangle, rectangleAsPolyline } from './rectangle'
-import { identity } from './transformation-matrix'
-import { applyMatrix, distance } from './xy'
-
-export const curveKinds = ['arc', 'elliptical-arc', 'polyline', 'quadratic', 'cubic'] as const
-
-export type CurveKind = (typeof curveKinds)[number]
-
-export function isCurveKind(str: string): str is CurveKind {
-  return curveKinds.includes(str as CurveKind)
-}
-
-export type CurveLike = ArcShape | EllipticalArcShape | PolylineShape | QuadraticShape | CubicShape
-
-export function isCurveLike(value: JsonObject): value is CurveLike {
-  if (!('kind' in value))
-    return false
-  if (!(typeof value.kind === 'string'))
-    return false
-  if (!isCurveKind(value.kind))
-    return false
-
-  switch (value.kind) {
-    case 'arc':
-      return isArc(value)
-    case 'elliptical-arc':
-      return isEllipticalArc(value)
-    case 'polyline':
-      return isPolyline(value)
-    case 'quadratic':
-      return isQuadratic(value)
-    case 'cubic':
-      return isCubic(value)
-  }
-}
-
-export function asCurveLike(value: JsonObject): CurveLike {
-  if (isArc(value)) {
-    return {
-      ...value,
-      kind: 'arc',
-    }
-  }
-
-  if (isEllipticalArc(value)) {
-    return {
-      ...value,
-      kind: 'elliptical-arc',
-    }
-  }
-
-  if (isPolyline(value)) {
-    return {
-      ...value,
-      kind: 'polyline',
-    }
-  }
-
-  if (isQuadratic(value)) {
-    return {
-      ...value,
-      kind: 'quadratic',
-    }
-  }
-
-  if (isCubic(value)) {
-    return {
-      ...value,
-      kind: 'cubic',
-    }
-  }
-
-  if (isCircle(value)) {
-    return {
-      ...circleAsArc(value),
-      kind: 'arc',
-    }
-  }
-
-  if (isEllipse(value)) {
-    return {
-      ...ellipseAsEllipticalArc(value),
-      kind: 'elliptical-arc',
-    }
-  }
-
-  if (isRectangle(value)) {
-    return {
-      ...rectangleAsPolyline(value),
-      kind: 'polyline',
-    }
-  }
-
-  throw new Error('Value is not a shape that can be cast to curve.')
-}
+import type { CurveLike } from './curve-like'
+import type { XY } from '@/geometry/primitives/xy'
+import { applyMatrix, distance } from '@/geometry/primitives/xy'
+import { mulberry32 } from '@/geometry/random'
+import { identity } from '@/geometry/transform/transformation-matrix'
 
 export function getPointAt(shape: CurveLike, t: number): XY {
   switch (shape.kind) {
@@ -138,7 +34,7 @@ export function getPointAt(shape: CurveLike, t: number): XY {
 
     case 'polyline': {
       const { start, end, points } = shape
-      const vertices = [start, ...points, end]
+      const vertices = [start, ...points ?? [], end]
 
       // Compute segment lengths
       const segLengths: number[] = []
@@ -199,4 +95,22 @@ export function getPointAt(shape: CurveLike, t: number): XY {
       return applyMatrix(localResult, shape.t ?? identity())
     }
   }
+}
+
+// ==== Random sampling:
+
+export function samplePointsOnCurve(
+  shape: CurveLike,
+  count: number,
+  seed: number,
+): XY[] {
+  const rand = mulberry32(seed)
+  const pts: XY[] = []
+
+  for (let i = 0; i < count; i++) {
+    const t = rand() // uniform in [0,1)
+    pts.push(getPointAt(shape, t))
+  }
+
+  return pts
 }

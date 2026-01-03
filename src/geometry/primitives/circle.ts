@@ -1,12 +1,10 @@
+import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Arc } from './arc'
 import type { EllipticalArc } from './elliptical-arc'
-import type { BaseShape } from './shape'
-import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
-import { isXY } from './xy'
+import { applyMatrix, isXY } from './xy'
 
 export type Circle = { x: number, y: number, radius: number }
-export type CircleShape = BaseShape & { kind: 'circle' } & Circle
 
 export function isCircle(object: JsonObject): object is Circle {
   return isXY(object) && 'radius' in object && typeof object.radius === 'number'
@@ -43,11 +41,42 @@ export function circleAsEllipticalArc(circle: Circle): EllipticalArc {
   }
 }
 
-export function createCircle(origin: XY, radius: number): CircleShape {
-  const circle: CircleShape = {
-    kind: 'circle',
-    ...origin,
-    radius,
+// Utilities
+
+export function getBoundingBox(circle: Circle, t?: TransformationMatrix) {
+  const { x, y, radius } = circle
+
+  // Cardinal points of the circle
+  let pts = [
+    { x: x + radius, y },
+    { x: x - radius, y },
+    { x, y: y + radius },
+    { x, y: y - radius },
+  ]
+
+  if (t) {
+    pts = pts.map(p => applyMatrix(p, t))
   }
-  return circle
+
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+
+  for (const p of pts) {
+    if (p.x < minX)
+      minX = p.x
+    if (p.y < minY)
+      minY = p.y
+    if (p.x > maxX)
+      maxX = p.x
+    if (p.y > maxY)
+      maxY = p.y
+  }
+
+  return {
+    min: { x: minX, y: minY },
+    width: maxX - minX,
+    height: maxY - minY,
+  }
 }

@@ -1,7 +1,7 @@
-import type { QuadraticShape } from '@/geometry/quadratic'
+import type { QuadraticShape } from '@/geometry/drawable/shapes/curves/quadratic-shape'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createQuadratic } from '@/geometry/quadratic'
-import { assertIsXY } from '@/geometry/xy'
+import { createQuadratic } from '@/geometry/drawable/shapes/curves/quadratic-shape'
+import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

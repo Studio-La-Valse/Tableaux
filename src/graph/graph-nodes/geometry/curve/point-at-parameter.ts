@@ -1,6 +1,7 @@
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asCurveLike, getPointAt } from '@/geometry/curve-like'
+import { getPointAt } from '@/geometry/drawable/shapes/curves/analysis'
+import { asCurveLike } from '@/geometry/drawable/shapes/curves/curve-like'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

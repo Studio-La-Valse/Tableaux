@@ -1,8 +1,8 @@
-import type { Shape } from './shape'
-import type { ColorARGB } from '@/geometry/color'
-import type { XY } from '@/geometry/xy'
-import { formatCSSRGBA, isColorARGB } from '@/geometry/color-rgb'
-import { isXY } from '@/geometry/xy'
+import type { Shape } from './shapes/shape'
+import type { ColorARGB } from '@/geometry/color/color'
+import type { XY } from '@/geometry/primitives/xy'
+import { formatCSSRGBA, isColorARGB } from '@/geometry/color/color-rgb'
+import { isXY } from '@/geometry/primitives/xy'
 
 export type Filter = { blur?: Blur, dropShadow?: DropShadow }
 

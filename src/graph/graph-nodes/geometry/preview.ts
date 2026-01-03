@@ -1,7 +1,7 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { clear, draw, init } from '@/bitmap-painters/bitmap-painter'
 import PreviewPanel from '@/components/graph/Panels/PreviewPanel.vue'
-import { asShape } from '@/geometry/shape'
+import { asShape } from '@/geometry/drawable/shapes/shape'
 import { GraphNode } from '@/graph/core/graph-node'
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 import { GraphNodePanel, GraphNodeType } from '../decorators'

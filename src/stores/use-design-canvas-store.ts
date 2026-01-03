@@ -1,4 +1,4 @@
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import { defineStore, storeToRefs } from 'pinia'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { Canvas } from '@/graph/graph-nodes/canvas/canvas'

@@ -1,6 +1,6 @@
-import type { SurfaceLike } from '@/geometry/surface-like'
+import type { SurfaceLike } from '@/geometry/drawable/shapes/surfaces/surface-like'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asSurfaceLike } from '@/geometry/surface-like'
+import { asSurfaceLike } from '@/geometry/drawable/shapes/surfaces/surface-like'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

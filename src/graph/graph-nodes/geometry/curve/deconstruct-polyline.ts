@@ -1,6 +1,6 @@
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asPolyline } from '@/geometry/polyline'
+import { asPolyline } from '@/geometry/primitives/polyline'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -24,7 +24,7 @@ export class DeconstructPolyline extends GraphNode {
       const { start, points, end } = polyline
 
       this.outputPoints.next(start)
-      for (const point of points) {
+      for (const point of points ?? []) {
         this.outputPoints.next(point)
       }
       this.outputPoints.next(end)

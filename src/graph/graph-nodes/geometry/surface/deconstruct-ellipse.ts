@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asEllipse } from '@/geometry/ellipse'
+import { asEllipse } from '@/geometry/primitives/ellipse'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
