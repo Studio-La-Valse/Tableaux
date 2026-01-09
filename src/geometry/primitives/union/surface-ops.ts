@@ -33,7 +33,7 @@ export const surfaceRegistry = [
 export function getOpsFor<S extends Surface>(shape: JsonObject): SurfaceOps<S> {
   for (const entry of surfaceRegistry) {
     // `guard` expects JsonObject; if your Surface is also JsonObject, this is fine
-    if (entry.guard(shape)) {
+    if (entry.match(shape)) {
       return entry as any as SurfaceOps<S>
     }
   }
@@ -44,7 +44,7 @@ export function getOpsFor<S extends Surface>(shape: JsonObject): SurfaceOps<S> {
 export const surfaceOps: SurfaceOps<Surface> = {
   guard(value: JsonObject): value is Surface {
     for (const entry of surfaceRegistry) {
-      if (entry.guard(value)) {
+      if (entry.match(value)) {
         return true
       }
     }
@@ -55,10 +55,10 @@ export const surfaceOps: SurfaceOps<Surface> = {
     return getOpsFor(object).cast(object)
   },
   circumference(object: Surface, m?: TransformationMatrix): number {
-    throw new Error('Function not implemented.')
+    return getOpsFor(object).circumference(object, m)
   },
   area(object: Surface, m?: TransformationMatrix): number {
-    throw new Error('Function not implemented.')
+    return getOpsFor(object).area(object, m)
   },
   boundingBox(shape: Surface, m?: TransformationMatrix): Rectangle {
     return getOpsFor(shape).boundingBox(shape, m)

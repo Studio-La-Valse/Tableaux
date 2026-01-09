@@ -1,6 +1,5 @@
 import type { Rectangle } from '@/geometry/primitives/rectangle'
 import type { XY } from '@/geometry/primitives/xy'
-import { createRectangleShape } from '@/geometry/drawable/shapes/curves/rectangle-shape'
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
@@ -34,11 +33,12 @@ export class Viewport extends GraphNode {
   }
 
   protected async solve(): Promise<void> {
-    const rectangle = createRectangleShape(
-      { x: 0, y: 0 },
-      this.data.dimensions.x,
-      this.data.dimensions.y,
-    )
+    const rectangle = {
+      x: 0,
+      y: 0,
+      width: this.data.dimensions.x,
+      height: this.data.dimensions.y,
+    }
     this.output.next(rectangle)
   }
 }

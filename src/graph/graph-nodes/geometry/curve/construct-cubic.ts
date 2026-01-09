@@ -1,6 +1,5 @@
-import type { CubicShape } from '@/geometry/drawable/shapes/curves/cubic-shape'
+import type { Cubic } from '@/geometry/primitives/cubic'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createCubic } from '@/geometry/drawable/shapes/curves/cubic-shape'
 import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
@@ -21,7 +20,7 @@ export class ConstructCubic extends GraphNode {
     this.inputControl2 = this.registerObjectInput('Control 2').validate(assertIsXY)
     this.inputEnd = this.registerObjectInput('End').validate(assertIsXY)
 
-    this.output = this.registerObjectOutput<CubicShape>('Cubic Bézier')
+    this.output = this.registerObjectOutput<Cubic>('Cubic Bézier')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -31,7 +30,12 @@ export class ConstructCubic extends GraphNode {
       this.inputControl2,
       this.inputEnd,
     )) {
-      const cubic = createCubic(start, control1, control2, end)
+      const cubic = {
+        start,
+        control1,
+        control2,
+        end,
+      }
       this.output.next(cubic)
     }
   }

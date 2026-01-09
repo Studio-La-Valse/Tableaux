@@ -2,19 +2,21 @@ import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { EllipticalArc } from './elliptical-arc'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
+import type { DrawableOps } from './union/drawable/drawable-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
+import { drawShape } from '@/bitmap-painters/bitmap-painter'
 import { arcOps } from './arc-ops'
 import { circleOps } from './circle-ops'
 import { ellipseOps } from './ellipse-ops'
 import { applyMatrix } from './xy'
 
-export type EllipticalArcOps = CurveOps<EllipticalArc> & {
+export type EllipticalArcOps = CurveOps<EllipticalArc> & DrawableOps<EllipticalArc> & {
 
 }
 
 export const ellipticalArcOps: EllipticalArcOps = {
-  guard(object: JsonObject): object is EllipticalArc {
+  match(object: JsonObject): object is EllipticalArc {
     return (
       typeof object === 'object'
       && object !== null
@@ -30,11 +32,11 @@ export const ellipticalArcOps: EllipticalArcOps = {
   },
 
   cast(object: JsonObject): EllipticalArc {
-    if (this.guard(object)) {
+    if (this.match(object)) {
       return { ...object }
     }
 
-    if (ellipseOps.guard(object)) {
+    if (ellipseOps.match(object)) {
       return {
         ...object,
         radiusX: object.radiusX,
@@ -46,7 +48,7 @@ export const ellipticalArcOps: EllipticalArcOps = {
       }
     }
 
-    if (circleOps.guard(object)) {
+    if (circleOps.match(object)) {
       return {
         ...object,
         radiusX: object.radius,
@@ -58,7 +60,7 @@ export const ellipticalArcOps: EllipticalArcOps = {
       }
     }
 
-    if (arcOps.guard(object)) {
+    if (arcOps.match(object)) {
       return {
         ...object,
         radiusX: object.radius,
@@ -258,5 +260,15 @@ export const ellipticalArcOps: EllipticalArcOps = {
       width: maxX - minX,
       height: maxY - minY,
     }
+  },
+  draw(ctx: CanvasRenderingContext2D, element: EllipticalArc) {
+    drawShape(ctx, element, () => {
+      const { x, y, radiusX, radiusY, rotation } = element
+      const startAngle = element.startAngle
+      const endAngle = element.endAngle ?? Math.PI * 2
+      const counterclockwise = element.counterclockwise ?? false
+
+      ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise)
+    })
   },
 }

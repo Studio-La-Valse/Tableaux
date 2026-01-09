@@ -1,10 +1,10 @@
-import type { Shape } from './shapes/shape'
 import type { ColorRGB } from '@/geometry/color/color'
+import type { JsonObject } from '@/graph/core/models/json-value'
 import { isColorRGB } from '@/geometry/color/color-rgb'
 
 export type Stroke = { stroke: ColorRGB, strokeWidth: number }
 
-export function hasStroke(value: Shape): value is Shape & Stroke {
+export function hasStroke(value: JsonObject): value is Stroke {
   return (
     'stroke' in value
     && typeof value.stroke === 'object'

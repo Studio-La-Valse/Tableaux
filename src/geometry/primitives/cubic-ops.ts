@@ -2,16 +2,18 @@ import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Cubic } from './cubic'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
+import type { DrawableOps } from './union/drawable/drawable-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
+import { drawShape } from '@/bitmap-painters/bitmap-painter'
 import { applyMatrix, isXY } from './xy'
 
-export type CubicOps = CurveOps<Cubic> & {
+export type CubicOps = CurveOps<Cubic> & DrawableOps<Cubic> & {
 
 }
 
 export const cubicOps: CubicOps = {
-  guard(object: JsonObject): object is Cubic {
+  match(object: JsonObject): object is Cubic {
     return (
       typeof object === 'object'
       && object !== null
@@ -27,7 +29,7 @@ export const cubicOps: CubicOps = {
   },
 
   cast(object: JsonObject): Cubic {
-    if (this.guard(object)) {
+    if (this.match(object)) {
       return {
         start: { ...object.start },
         end: { ...object.end },
@@ -255,6 +257,13 @@ export const cubicOps: CubicOps = {
       width: maxX - minX,
       height: maxY - minY,
     }
+  },
+  draw(ctx: CanvasRenderingContext2D, element: Cubic) {
+    drawShape(ctx, element, () => {
+      const { start, control1, control2, end } = element
+      ctx.moveTo(start.x, start.y)
+      ctx.bezierCurveTo(control1.x, control1.y, control2.x, control2.y, end.x, end.y)
+    })
   },
 }
 

@@ -1,6 +1,5 @@
-import type { ArcShape } from '@/geometry/drawable/shapes/arc-shape'
+import type { Arc as _Arc } from '@/geometry/primitives/arc'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createArc } from '@/geometry/drawable/shapes/arc-shape'
 import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
@@ -23,18 +22,18 @@ export class Arc extends GraphNode {
     this.input4 = this.registerNumberInput('End Angle')
     this.input5 = this.registerBooleanInput('Clockwise', [false])
 
-    this.outputCircle = this.registerObjectOutput<ArcShape>('Circle')
+    this.outputCircle = this.registerObjectOutput<_Arc>('Circle')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [xy, radius, start, end, clockwise] of inputIterators.cycleValues(
+    for await (const [xy, radius, startAngle, endAngle, clockwise] of inputIterators.cycleValues(
       this.input1,
       this.input2,
       this.input3,
       this.input4,
       this.input5,
     )) {
-      const arc = createArc(xy, radius, start, end, clockwise)
+      const arc = { ...xy, radius, startAngle, endAngle, counterclockwise: !clockwise }
       this.outputCircle.next(arc)
     }
   }

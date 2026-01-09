@@ -1,9 +1,8 @@
-import type { DropShadow } from '@/geometry/drawable/filter'
-import type { Shape } from '@/geometry/drawable/shapes/shape'
+import type { Drawable } from '@/geometry/primitives/union/drawable/drawable'
+import type { DropShadow } from '@/geometry/primitives/union/drawable/filter'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { assertIsColorARGB } from '@/geometry/color/color-rgb'
-import { applyDropShadow } from '@/geometry/drawable/filter'
-import { asShape } from '@/geometry/drawable/shapes/shape'
+import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
 import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
@@ -20,12 +19,12 @@ export class SetDropShadow extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputGeometry = this.registerObjectInput('Shape').validate(asShape)
+    this.inputGeometry = this.registerObjectInput('Shape').validate(drawableOps.cast)
     this.inputOffset = this.registerObjectInput('Offset').validate(assertIsXY)
     this.inputColor = this.registerObjectInput('Color').validate(assertIsColorARGB)
     this.inputSize = this.registerNumberInput('Size')
 
-    this.outputGeometry = this.registerObjectOutput<Shape & { dropShadow: DropShadow }>(
+    this.outputGeometry = this.registerObjectOutput<Drawable & { dropShadow: DropShadow }>(
       'Geometry with shadow',
     )
   }
@@ -37,7 +36,14 @@ export class SetDropShadow extends GraphNode {
       this.inputColor,
       this.inputSize,
     )) {
-      const withStroke = applyDropShadow(geom, offset, color, size)
+      const withStroke = {
+        ...geom,
+        dropShadow: {
+          offset,
+          color,
+          size,
+        },
+      }
       this.outputGeometry.next(withStroke)
     }
   }

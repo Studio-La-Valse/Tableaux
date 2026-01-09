@@ -1,6 +1,6 @@
-import type { CurveLike } from '@/geometry/drawable/shapes/curves/curve-like'
+import type { Curve as _Curve } from '@/geometry/primitives/union/curve'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asCurveLike } from '@/geometry/drawable/shapes/curves/curve-like'
+import { curveOps } from '@/geometry/primitives/union/curve-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -12,9 +12,9 @@ export class Curve extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Shape').validate(asCurveLike)
+    this.input = this.registerObjectInput('Shape').validate(curveOps.cast)
 
-    this.output = this.registerObjectOutput<CurveLike>('Curve')
+    this.output = this.registerObjectOutput<_Curve>('Curve')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

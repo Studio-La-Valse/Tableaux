@@ -2,19 +2,21 @@ import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Arc } from './arc'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
+import type { DrawableOps } from './union/drawable/drawable-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
+import { drawShape } from '@/bitmap-painters/bitmap-painter'
 import { circleOps } from './circle-ops'
 import { applyMatrix } from './xy'
 
-export type ArcOps = CurveOps<Arc> & {
+export type ArcOps = CurveOps<Arc> & DrawableOps<Arc> & {
 
 }
 
 export const arcOps: ArcOps = {
-  guard(object: JsonObject): object is Arc {
+  match(object: JsonObject): object is Arc {
     return (
-      circleOps.guard(object)
+      circleOps.match(object)
       && 'startAngle' in object
       && typeof object.startAngle === 'number'
       && 'endAngle' in object
@@ -25,11 +27,11 @@ export const arcOps: ArcOps = {
   },
 
   cast(object: JsonObject): Arc {
-    if (this.guard(object)) {
+    if (this.match(object)) {
       return { ...object }
     }
 
-    if (circleOps.guard(object)) {
+    if (circleOps.match(object)) {
       return {
         ...object,
         startAngle: 0,
@@ -204,5 +206,15 @@ export const arcOps: ArcOps = {
       width: maxX - minX,
       height: maxY - minY,
     }
+  },
+  draw(ctx: CanvasRenderingContext2D, element: Arc) {
+    drawShape(ctx, element, () => {
+      const { x, y, radius } = element
+      const startAngle = element.startAngle ?? 0
+      const endAngle = element.endAngle ?? Math.PI * 2
+      const counterclockwise = element.counterclockwise ?? false
+
+      ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise)
+    })
   },
 }

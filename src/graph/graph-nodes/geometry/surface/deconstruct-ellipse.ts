@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asEllipse } from '@/geometry/primitives/ellipse'
+import { ellipseOps } from '@/geometry/primitives/ellipse-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -14,7 +14,7 @@ export class DeconstructEllipse extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Ellipse').validate(asEllipse)
+    this.input = this.registerObjectInput('Ellipse').validate(ellipseOps.cast)
 
     this.outputCenter = this.registerObjectOutput('Center')
     this.outputRadiusX = this.registerNumberOutput('Radius X')

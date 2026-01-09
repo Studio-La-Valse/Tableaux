@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asQuadratic } from '@/geometry/primitives/quadratic'
+import { quadraticOps } from '@/geometry/primitives/quadratic-ops'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -13,7 +13,7 @@ export class DeconstructQuadratic extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Quadratic Bézier').validate(asQuadratic)
+    this.input = this.registerObjectInput('Quadratic Bézier').validate(quadraticOps.cast)
 
     this.outputStart = this.registerObjectOutput('Start')
     this.outputControl = this.registerObjectOutput('Control')

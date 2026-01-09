@@ -1,8 +1,8 @@
-import type { Fill } from '@/geometry/drawable/fill'
-import type { Shape } from '@/geometry/drawable/shapes/shape'
+import type { Drawable } from '@/geometry/primitives/union/drawable/drawable'
+import type { Fill } from '@/geometry/primitives/union/drawable/fill'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { assertIsColorARGB } from '@/geometry/color/color-rgb'
-import { asShape } from '@/geometry/drawable/shapes/shape'
+import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 
@@ -16,10 +16,10 @@ export class SetFill extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape)
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(drawableOps.cast)
     this.color = this.registerObjectInput('Color').validate(assertIsColorARGB)
 
-    this.outputGeometry = this.registerObjectOutput<Shape & Fill>('Geometry with fill')
+    this.outputGeometry = this.registerObjectOutput<Drawable & Fill>('Geometry with fill')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

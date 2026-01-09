@@ -1,6 +1,5 @@
 import type { Rectangle as rect } from '@/geometry/primitives/rectangle'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createRectangleShape } from '@/geometry/drawable/shapes/curves/rectangle-shape'
 import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
@@ -28,7 +27,7 @@ export class Rectangle extends GraphNode {
       this.inputWidth,
       this.inputHeight,
     )) {
-      const rectangle = createRectangleShape(topLeft, width, height)
+      const rectangle = { x: topLeft.x, y: topLeft.y, width, height }
       this.outputRect.next(rectangle)
     }
   }

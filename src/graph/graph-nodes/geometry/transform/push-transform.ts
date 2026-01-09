@@ -1,6 +1,6 @@
-import type { Shape } from '@/geometry/drawable/shapes/shape'
+import type { Drawable } from '@/geometry/primitives/union/drawable/drawable'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asShape } from '@/geometry/drawable/shapes/shape'
+import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
 import { assertIsTransformationMatrix, compose, identity } from '@/geometry/transform/transformation-matrix'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
@@ -15,12 +15,12 @@ export class PushTransform extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape)
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(drawableOps.cast)
     this.inputTransform = this.registerObjectInput('Transformation').validate(
       assertIsTransformationMatrix,
     )
 
-    this.outputGeometry = this.registerObjectOutput<Shape>('Translated Geometry')
+    this.outputGeometry = this.registerObjectOutput<Drawable>('Translated Geometry')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

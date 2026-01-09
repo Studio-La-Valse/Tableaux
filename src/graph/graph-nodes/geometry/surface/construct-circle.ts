@@ -1,6 +1,5 @@
-import type { CircleShape } from '@/geometry/drawable/shapes/circle-shape'
+import type { Circle as _Circle } from '@/geometry/primitives/circle'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createCircle } from '@/geometry/drawable/shapes/circle-shape'
 import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
@@ -17,12 +16,12 @@ export class Circle extends GraphNode {
     this.input1 = this.registerObjectInput('XY').validate(assertIsXY)
     this.input2 = this.registerNumberInput('Radius')
 
-    this.outputCircle = this.registerObjectOutput<CircleShape>('Circle')
+    this.outputCircle = this.registerObjectOutput<_Circle>('Circle')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [xy, radius] of inputIterators.cycleValues(this.input1, this.input2)) {
-      const circle = createCircle(xy, radius)
+      const circle = { ...xy, radius }
       this.outputCircle.next(circle)
     }
   }

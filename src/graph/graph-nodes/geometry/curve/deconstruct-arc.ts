@@ -1,6 +1,6 @@
 import type { XY } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asArc } from '@/geometry/primitives/arc'
+import { arcOps } from '@/geometry/primitives/arc-ops'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -17,7 +17,7 @@ export class DeconstructArc extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputCircle = this.registerObjectInput('Circle').validate(asArc)
+    this.inputCircle = this.registerObjectInput('Circle').validate(arcOps.cast)
 
     this.outputOrigin = this.registerObjectOutput<XY>('Origin')
     this.outputRadius = this.registerNumberOutput('Radius')

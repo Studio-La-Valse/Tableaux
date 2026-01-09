@@ -2,16 +2,18 @@ import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Circle } from './circle'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
+import type { DrawableOps } from './union/drawable/drawable-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
+import { drawShape } from '@/bitmap-painters/bitmap-painter'
 import { isXY } from './xy'
 
-export type CircleOps = CurveOps<Circle> & {
+export type CircleOps = CurveOps<Circle> & DrawableOps<Circle> & {
 
 }
 
 export const circleOps: CircleOps = {
-  guard(object: JsonObject): object is Circle {
+  match(object: JsonObject): object is Circle {
     return (
       isXY(object)
       && 'radius' in object
@@ -20,7 +22,7 @@ export const circleOps: CircleOps = {
   },
 
   cast(object: JsonObject): Circle {
-    if (this.guard(object)) {
+    if (this.match(object)) {
       return { ...object }
     }
     throw new Error('Object could not be cast to a circle')
@@ -133,5 +135,15 @@ export const circleOps: CircleOps = {
       width: maxX - minX,
       height: maxY - minY,
     }
+  },
+  draw(ctx: CanvasRenderingContext2D, element: Circle) {
+    drawShape(ctx, element, () => {
+      const { x, y, radius } = element
+      const startAngle = 0
+      const endAngle = Math.PI * 2
+      const counterclockwise = false
+
+      ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise)
+    })
   },
 }

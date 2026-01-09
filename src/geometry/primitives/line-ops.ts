@@ -2,16 +2,18 @@ import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Line } from './line'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
+import type { DrawableOps } from './union/drawable/drawable-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
+import { drawShape } from '@/bitmap-painters/bitmap-painter'
 import { applyMatrix, isXY } from './xy'
 
-export type LineOps = CurveOps<Line> & {
+export type LineOps = CurveOps<Line> & DrawableOps<Line> & {
 
 }
 
 export const lineOps: LineOps = {
-  guard(object: JsonObject): object is Line {
+  match(object: JsonObject): object is Line {
     return (
       typeof object === 'object'
       && object !== null
@@ -25,7 +27,7 @@ export const lineOps: LineOps = {
   },
 
   cast(object: JsonObject): Line {
-    if (this.guard(object)) {
+    if (this.match(object)) {
       return {
         start: { ...object.start },
         end: { ...object.end },
@@ -103,5 +105,13 @@ export const lineOps: LineOps = {
       width: maxX - minX,
       height: maxY - minY,
     }
+  },
+
+  draw(ctx: CanvasRenderingContext2D, element: Line) {
+    drawShape(ctx, element, () => {
+      const { start, end } = element
+      ctx.moveTo(start.x, start.y)
+      ctx.lineTo(end.x, end.y)
+    })
   },
 }

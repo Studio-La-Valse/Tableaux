@@ -1,8 +1,8 @@
-import type { Shape } from '@/geometry/drawable/shapes/shape'
-import type { Stroke } from '@/geometry/drawable/stroke'
+import type { Drawable } from '@/geometry/primitives/union/drawable/drawable'
+import type { Stroke } from '@/geometry/primitives/union/drawable/stroke'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { assertIsColorARGB } from '@/geometry/color/color-rgb'
-import { asShape } from '@/geometry/drawable/shapes/shape'
+import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 
@@ -17,11 +17,11 @@ export class SetStroke extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape)
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(drawableOps.cast)
     this.color = this.registerObjectInput('Color').validate(assertIsColorARGB)
     this.strokeWidth = this.registerNumberInput('Stroke Width')
 
-    this.outputGeometry = this.registerObjectOutput<Shape & Stroke>('Geometry with stroke')
+    this.outputGeometry = this.registerObjectOutput<Drawable & Stroke>('Geometry with stroke')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

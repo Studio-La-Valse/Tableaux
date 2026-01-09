@@ -2,18 +2,20 @@ import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Polyline } from './polyline'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
+import type { DrawableOps } from './union/drawable/drawable-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
+import { drawShape } from '@/bitmap-painters/bitmap-painter'
 import { lineOps } from './line-ops'
 import { rectangleOps } from './rectangle-ops'
 import { applyMatrix, isXY } from './xy'
 
-export type PolylineOps = CurveOps<Polyline> & {
+export type PolylineOps = CurveOps<Polyline> & DrawableOps<Polyline> & {
 
 }
 
 export const polylineOps: PolylineOps = {
-  guard(object: JsonObject): object is Polyline {
+  match(object: JsonObject): object is Polyline {
     if (
       typeof object !== 'object'
       || object === null
@@ -39,7 +41,7 @@ export const polylineOps: PolylineOps = {
   },
 
   cast(object: JsonObject): Polyline {
-    if (this.guard(object)) {
+    if (this.match(object)) {
       return {
         start: { ...object.start },
         end: { ...object.end },
@@ -47,14 +49,14 @@ export const polylineOps: PolylineOps = {
       }
     }
 
-    if (lineOps.guard(object)) {
+    if (lineOps.match(object)) {
       return {
         ...object,
         points: [],
       }
     }
 
-    if (rectangleOps.guard(object)) {
+    if (rectangleOps.match(object)) {
       const { x, y, width, height } = object
       return {
         ...object,
@@ -199,5 +201,16 @@ export const polylineOps: PolylineOps = {
       width: maxX - minX,
       height: maxY - minY,
     }
+  },
+
+  draw(ctx: CanvasRenderingContext2D, element: Polyline) {
+    drawShape(ctx, element, () => {
+      const { start, end, points } = element
+      ctx.moveTo(start.x, start.y)
+      for (const p of points ?? []) {
+        ctx.lineTo(p.x, p.y)
+      }
+      ctx.lineTo(end.x, end.y)
+    })
   },
 }

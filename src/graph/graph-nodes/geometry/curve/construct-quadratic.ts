@@ -1,6 +1,5 @@
-import type { QuadraticShape } from '@/geometry/drawable/shapes/curves/quadratic-shape'
+import type { Quadratic as _Quadratic } from '@/geometry/primitives/quadratic'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createQuadratic } from '@/geometry/drawable/shapes/curves/quadratic-shape'
 import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
@@ -19,7 +18,7 @@ export class ConstructQuadratic extends GraphNode {
     this.inputControl = this.registerObjectInput('Control').validate(assertIsXY)
     this.inputEnd = this.registerObjectInput('End').validate(assertIsXY)
 
-    this.output = this.registerObjectOutput<QuadraticShape>('Quadratic Bézier')
+    this.output = this.registerObjectOutput<_Quadratic>('Quadratic Bézier')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -28,7 +27,7 @@ export class ConstructQuadratic extends GraphNode {
       this.inputControl,
       this.inputEnd,
     )) {
-      const quadratic = createQuadratic(start, control, end)
+      const quadratic = { start, control, end }
       this.output.next(quadratic)
     }
   }

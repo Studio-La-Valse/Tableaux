@@ -2,16 +2,18 @@ import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Quadratic } from './quadratic'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
+import type { DrawableOps } from './union/drawable/drawable-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
+import { drawShape } from '@/bitmap-painters/bitmap-painter'
 import { applyMatrix, isXY } from './xy'
 
-export type QuadraticOps = CurveOps<Quadratic> & {
+export type QuadraticOps = CurveOps<Quadratic> & DrawableOps<Quadratic> & {
 
 }
 
 export const quadraticOps: QuadraticOps = {
-  guard(object: JsonObject): object is Quadratic {
+  match(object: JsonObject): object is Quadratic {
     return (
       typeof object === 'object'
       && object !== null
@@ -25,7 +27,7 @@ export const quadraticOps: QuadraticOps = {
   },
 
   cast(object: JsonObject): Quadratic {
-    if (this.guard(object)) {
+    if (this.match(object)) {
       return {
         start: { ...object.start },
         end: { ...object.end },
@@ -201,5 +203,12 @@ export const quadraticOps: QuadraticOps = {
       width: maxX - minX,
       height: maxY - minY,
     }
+  },
+  draw(ctx: CanvasRenderingContext2D, element: Quadratic) {
+    drawShape(ctx, element, () => {
+      const { start, control, end } = element
+      ctx.moveTo(start.x, start.y)
+      ctx.quadraticCurveTo(control.x, control.y, end.x, end.y)
+    })
   },
 }

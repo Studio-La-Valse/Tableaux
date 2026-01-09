@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asCubic } from '@/geometry/primitives/cubic'
+import { cubicOps } from '@/geometry/primitives/cubic-ops'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -14,7 +14,7 @@ export class DeconstructCubic extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Cubic Bézier').validate(asCubic)
+    this.input = this.registerObjectInput('Cubic Bézier').validate(cubicOps.cast)
 
     this.outputStart = this.registerObjectOutput('Start')
     this.outputControl1 = this.registerObjectOutput('Control 1')

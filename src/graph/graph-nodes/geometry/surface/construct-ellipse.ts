@@ -1,6 +1,5 @@
-import type { EllipseShape } from '@/geometry/drawable/shapes/ellipse-shape'
+import type { Ellipse as _Ellipse } from '@/geometry/primitives/ellipse'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createEllipseShape } from '@/geometry/drawable/shapes/ellipse-shape'
 import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
@@ -16,22 +15,22 @@ export class Ellipse extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input1 = this.registerObjectInput('XY').validate(v => assertIsXY(v))
+    this.input1 = this.registerObjectInput('XY').validate(assertIsXY)
     this.input2 = this.registerNumberInput('Radius X')
     this.input3 = this.registerNumberInput('Radius Y')
     this.input4 = this.registerNumberInput('Rotation')
 
-    this.output = this.registerObjectOutput<EllipseShape>('Circle')
+    this.output = this.registerObjectOutput<_Ellipse>('Circle')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [xy, x, y, rotation] of inputIterators.cycleValues(
+    for await (const [xy, radiusX, radiusY, rotation] of inputIterators.cycleValues(
       this.input1,
       this.input2,
       this.input3,
       this.input4,
     )) {
-      const ellipse = createEllipseShape(xy, x, y, rotation)
+      const ellipse = { ...xy, radiusX, radiusY, rotation }
       this.output.next(ellipse)
     }
   }

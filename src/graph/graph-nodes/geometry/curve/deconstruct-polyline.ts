@@ -1,6 +1,6 @@
 import type { XY } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asPolyline } from '@/geometry/primitives/polyline'
+import { polylineOps } from '@/geometry/primitives/polyline-ops'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -13,7 +13,7 @@ export class DeconstructPolyline extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Polyline').validate(asPolyline)
+    this.input = this.registerObjectInput('Polyline').validate(polylineOps.cast)
 
     this.outputPoints = this.registerObjectOutput<XY>('Points')
     this.outputLength = this.registerNumberOutput('Length')

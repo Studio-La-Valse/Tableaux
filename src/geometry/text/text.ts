@@ -1,9 +1,6 @@
-import type { BaseShape } from '../drawable/shapes/shape'
-import type { XY } from '../primitives/xy'
+import type { Fill } from '../primitives/union/drawable/fill'
+import type { Stroke } from '../primitives/union/drawable/stroke'
 import type { Font } from './font'
-import type { JsonObject } from '@/graph/core/models/json-value'
-import { isXY } from '../primitives/xy'
-import { isFont } from './font'
 
 export const textAlignments = ['start', 'end', 'left', 'right', 'center'] as const
 export type AlignmentKind = (typeof textAlignments)[number]
@@ -41,48 +38,4 @@ export type Text = {
   text: string
   fontFamily: Font
   fontSize: number
-}
-
-export function isText(object: JsonObject): object is Text {
-  return (
-    isXY(object)
-    && 'text' in object
-    && typeof object.text === 'string'
-    && 'fontFamily' in object
-    && isFont(object.fontFamily)
-    && 'fontSize' in object
-    && typeof object.fontSize === 'number'
-  )
-}
-
-export type TextShape = BaseShape & {
-  kind: 'text'
-} & Text
-& TextFormat
-
-export function isTextShape(object: JsonObject): object is TextShape {
-  return (
-    isText(object) && 'kind' in object && typeof object.kind === 'string' && object.kind === 'text'
-  )
-}
-
-export function asTextShape(object: JsonObject): TextShape {
-  if (isText(object)) {
-    return {
-      ...object,
-      kind: 'text',
-    }
-  }
-
-  throw new Error('Object could not be cast to text shape')
-}
-
-export function createText(text: string, origin: XY, fontFamily: Font, fontSize: number): TextShape {
-  return {
-    kind: 'text',
-    text,
-    ...origin,
-    fontFamily,
-    fontSize,
-  }
-}
+} & TextFormat & Partial<Fill & Stroke>

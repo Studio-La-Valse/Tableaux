@@ -1,6 +1,6 @@
 import type { XY as xy } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asRectangle } from '@/geometry/primitives/rectangle'
+import { rectangleOps } from '@/geometry/primitives/rectangle-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -15,7 +15,7 @@ export class DeconstructRectangle extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputShape = this.registerObjectInput('Shape').validate(asRectangle)
+    this.inputShape = this.registerObjectInput('Shape').validate(rectangleOps.cast)
 
     this.topLeft = this.registerObjectOutput<xy>('Top Left')
     this.width = this.registerNumberOutput('Width')

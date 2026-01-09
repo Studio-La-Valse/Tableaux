@@ -1,6 +1,5 @@
-import type { PolylineShape } from '@/geometry/drawable/shapes/curves/polyline-shape'
+import type { Line as _Line } from '@/geometry/primitives/line'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createPolyline } from '@/geometry/drawable/shapes/curves/polyline-shape'
 import { assertIsXY } from '@/geometry/primitives/xy'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
@@ -16,12 +15,12 @@ export class Line extends GraphNode {
 
     this.input1 = this.registerObjectInput('Start').validate(assertIsXY)
     this.input2 = this.registerObjectInput('End').validate(assertIsXY)
-    this.output = this.registerObjectOutput<PolylineShape>('Line')
+    this.output = this.registerObjectOutput<_Line>('Line')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [start, end] of inputIterators.cycleValues(this.input1, this.input2)) {
-      const v = createPolyline(start, end)
+      const v = { start, end }
       this.output.next(v)
     }
   }

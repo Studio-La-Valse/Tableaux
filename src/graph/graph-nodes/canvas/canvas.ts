@@ -1,6 +1,6 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { clear, draw, init } from '@/bitmap-painters/bitmap-painter'
-import { asShape } from '@/geometry/drawable/shapes/shape'
+import { clear, init } from '@/bitmap-painters/bitmap-painter'
+import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
@@ -14,7 +14,7 @@ export class Canvas extends GraphNode {
     super(modelId)
 
     this.clear = this.registerBooleanInput('Clear')
-    this.input = this.registerObjectInput('Drawable Elements').validate(asShape)
+    this.input = this.registerObjectInput('Drawable Elements').validate(drawableOps.cast)
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -26,7 +26,7 @@ export class Canvas extends GraphNode {
     }
 
     for await (const v of inputIterators.createGenerator(this.input)) {
-      draw(canvas, v)
+      drawableOps.draw(canvas, v)
     }
   }
 

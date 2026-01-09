@@ -2,16 +2,18 @@ import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Ellipse } from './ellipse'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
+import type { DrawableOps } from './union/drawable/drawable-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
+import { drawShape } from '@/bitmap-painters/bitmap-painter'
 import { applyMatrix } from './xy'
 
-export type EllipseOps = CurveOps<Ellipse> & {
+export type EllipseOps = CurveOps<Ellipse> & DrawableOps<Ellipse> & {
 
 }
 
 export const ellipseOps: EllipseOps = {
-  guard(object: JsonObject): object is Ellipse {
+  match(object: JsonObject): object is Ellipse {
     return (
       typeof object === 'object'
       && object !== null
@@ -24,7 +26,7 @@ export const ellipseOps: EllipseOps = {
   },
 
   cast(object: JsonObject): Ellipse {
-    if (this.guard(object)) {
+    if (this.match(object)) {
       return { ...object }
     }
     throw new Error('This object could not be cast to an ellipse shape.')
@@ -152,5 +154,15 @@ export const ellipseOps: EllipseOps = {
       width: maxX - minX,
       height: maxY - minY,
     }
+  },
+  draw(ctx: CanvasRenderingContext2D, element: Ellipse) {
+    drawShape(ctx, element, () => {
+      const { x, y, radiusX, radiusY, rotation } = element
+      const startAngle = 0
+      const endAngle = Math.PI * 2
+      const counterclockwise = false
+
+      ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise)
+    })
   },
 }

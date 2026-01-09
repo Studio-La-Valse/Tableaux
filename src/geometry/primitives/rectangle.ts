@@ -3,4 +3,5 @@ export type Rectangle = {
   y: number
   width: number
   height: number
+  radii?: number | number[]
 }

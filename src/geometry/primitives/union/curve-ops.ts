@@ -16,7 +16,7 @@ import { rectangleOps } from '../rectangle-ops'
 // ----------------- Core type -----------------
 
 export type CurveOps<S extends Curve> = {
-  guard: (value: JsonObject) => value is S
+  match: (value: JsonObject) => value is S
   cast: (object: JsonObject) => S
   pointAt: (shape: S, t: number, m?: TransformationMatrix) => XY
   length: (shape: S, m?: TransformationMatrix) => number
@@ -42,7 +42,7 @@ export const curveRegistry = [
 export function getOpsFor<S extends Curve>(shape: JsonObject): CurveOps<S> {
   for (const entry of curveRegistry) {
     // `guard` expects JsonObject; if your Curve is also JsonObject, this is fine
-    if (entry.guard(shape)) {
+    if (entry.match(shape)) {
       return entry as any as CurveOps<S>
     }
   }
@@ -51,9 +51,9 @@ export function getOpsFor<S extends Curve>(shape: JsonObject): CurveOps<S> {
 }
 
 export const curveOps: CurveOps<Curve> = {
-  guard(value: JsonObject): value is Curve {
+  match(value: JsonObject): value is Curve {
     for (const entry of curveRegistry) {
-      if (entry.guard(value)) {
+      if (entry.match(value)) {
         return true
       }
     }
