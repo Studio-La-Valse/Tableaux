@@ -1,6 +1,6 @@
 import type { Ellipse as _Ellipse } from '@/geometry/primitives/ellipse'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsXY } from '@/geometry/primitives/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -15,7 +15,7 @@ export class Ellipse extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input1 = this.registerObjectInput('XY').validate(assertIsXY)
+    this.input1 = this.registerObjectInput('XY').validate(xyOps.cast)
     this.input2 = this.registerNumberInput('Radius X')
     this.input3 = this.registerNumberInput('Radius Y')
     this.input4 = this.registerNumberInput('Rotation')

@@ -3,7 +3,7 @@ import type { Text } from './text'
 import type { JsonObject } from '@/graph/core/models/json-value'
 import { setFilter, setTextFormat, setTransform } from '@/bitmap-painters/bitmap-painter'
 import { formatCSSRGBA } from '../color/color-rgb'
-import { isXY } from '../primitives/xy'
+import { xyOps } from '../primitives/xy-ops'
 import { isFont } from './font'
 
 export type TextOps = DrawableOps<Text> & { }
@@ -11,7 +11,7 @@ export type TextOps = DrawableOps<Text> & { }
 export const textOps: TextOps = {
   match(object: JsonObject): object is Text {
     return (
-      isXY(object)
+      xyOps.match(object)
       && 'text' in object
       && typeof object.text === 'string'
       && 'fontFamily' in object

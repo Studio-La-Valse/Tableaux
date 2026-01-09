@@ -1,6 +1,6 @@
 import type { TransformationMatrix } from '@/geometry/transform/transformation-matrix'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsXY } from '@/geometry/primitives/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
 import { createTranslation } from '@/geometry/transform/transformation-matrix'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
@@ -14,7 +14,7 @@ export class CreateTranslation extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputOffset = this.registerObjectInput('Offset').validate(assertIsXY)
+    this.inputOffset = this.registerObjectInput('Offset').validate(xyOps.cast)
 
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')
   }

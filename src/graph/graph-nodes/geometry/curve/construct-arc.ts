@@ -1,6 +1,6 @@
 import type { Arc as _Arc } from '@/geometry/primitives/arc'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsXY } from '@/geometry/primitives/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -16,7 +16,7 @@ export class Arc extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input1 = this.registerObjectInput('XY').validate(assertIsXY)
+    this.input1 = this.registerObjectInput('XY').validate(xyOps.cast)
     this.input2 = this.registerNumberInput('Radius')
     this.input3 = this.registerNumberInput('Start Angle')
     this.input4 = this.registerNumberInput('End Angle')

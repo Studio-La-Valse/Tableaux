@@ -1,4 +1,3 @@
-import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Arc } from './arc'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
@@ -7,7 +6,6 @@ import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
 import { drawShape } from '@/bitmap-painters/bitmap-painter'
 import { circleOps } from './circle-ops'
-import { applyMatrix } from './xy'
 
 export type ArcOps = CurveOps<Arc> & DrawableOps<Arc> & {
 
@@ -46,7 +44,7 @@ export const arcOps: ArcOps = {
   /**
    * Return the point at parameter t ∈ [0,1] along the arc.
    */
-  pointAt(shape: Arc, t: number, m?: TransformationMatrix): XY {
+  pointAt(shape: Arc, t: number): XY {
     if (t < 0 || t > 1) {
       throw new Error(`ArcOps.pointAt: parameter t=${t} is outside [0,1].`)
     }
@@ -57,7 +55,6 @@ export const arcOps: ArcOps = {
       throw new Error('ArcOps.pointAt: arc radius must be > 0.')
     }
 
-    // Normalize angles
     const twoPi = Math.PI * 2
     const norm = (a: number) => {
       a = a % twoPi
@@ -80,18 +77,16 @@ export const arcOps: ArcOps = {
 
     const angle = a0 + sweep * t
 
-    const p: XY = {
+    return {
       x: x + Math.cos(angle) * radius,
       y: y + Math.sin(angle) * radius,
     }
-
-    return m ? applyMatrix(p, m) : p
   },
 
   /**
    * Arc length = |sweepAngle| * radius
    */
-  length(shape: Arc, m?: TransformationMatrix): number {
+  length(shape: Arc): number {
     const { radius, startAngle, endAngle, counterclockwise } = shape
 
     if (radius <= 0) {
@@ -117,30 +112,15 @@ export const arcOps: ArcOps = {
         sweep -= twoPi
     }
 
-    const length = Math.abs(sweep) * radius
-
-    // If a transform is present, we approximate length by scaling radius.
-    // Only uniform scale is supported — anything else is ambiguous.
-    if (m) {
-      const sx = Math.hypot(m.a, m.b)
-      const sy = Math.hypot(m.c, m.d)
-
-      if (Math.abs(sx - sy) > 1e-9) {
-        throw new Error(
-          'ArcOps.length: non-uniform scaling matrix makes arc length undefined.',
-        )
-      }
-
-      return length * sx
-    }
-
-    return length
+    return Math.abs(sweep) * radius
   },
 
-  boundingBox(arc: Arc, t?: TransformationMatrix): Rectangle {
+  /**
+   * Axis-aligned bounding box of the arc.
+   */
+  boundingBox(arc: Arc): Rectangle {
     const { x, y, radius, startAngle, endAngle, counterclockwise } = arc
 
-    // Normalize angles to [0, 2π)
     const norm = (a: number) => {
       a = a % (Math.PI * 2)
       return a < 0 ? a + Math.PI * 2 : a
@@ -149,7 +129,6 @@ export const arcOps: ArcOps = {
     const a0 = norm(startAngle)
     const a1 = norm(endAngle)
 
-    // Check if angle 'a' lies within the arc sweep
     const angleInArc = (a: number) => {
       if (counterclockwise) {
         if (a0 <= a1)
@@ -163,7 +142,6 @@ export const arcOps: ArcOps = {
       }
     }
 
-    // Candidate angles: start, end, and cardinal angles
     const candidates = [a0, a1]
 
     const cardinals = [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2]
@@ -172,18 +150,11 @@ export const arcOps: ArcOps = {
         candidates.push(c)
     }
 
-    // Convert angle → point on arc
-    let pts = candidates.map(a => ({
+    const pts = candidates.map(a => ({
       x: x + Math.cos(a) * radius,
       y: y + Math.sin(a) * radius,
     }))
 
-    // Apply transform if present
-    if (t) {
-      pts = pts.map(p => applyMatrix(p, t))
-    }
-
-    // Compute AABB
     let minX = Infinity
     let minY = Infinity
     let maxX = -Infinity
@@ -207,14 +178,17 @@ export const arcOps: ArcOps = {
       height: maxY - minY,
     }
   },
+
   draw(ctx: CanvasRenderingContext2D, element: Arc) {
     drawShape(ctx, element, () => {
-      const { x, y, radius } = element
-      const startAngle = element.startAngle ?? 0
-      const endAngle = element.endAngle ?? Math.PI * 2
-      const counterclockwise = element.counterclockwise ?? false
-
-      ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise)
+      ctx.arc(
+        element.x,
+        element.y,
+        element.radius,
+        element.startAngle,
+        element.endAngle,
+        element.counterclockwise,
+      )
     })
   },
 }

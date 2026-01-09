@@ -36,7 +36,7 @@ export function assertIsTransformationMatrix(value: unknown): TransformationMatr
   return value
 }
 
-export function identity() {
+export function identity(): TransformationMatrix {
   return {
     a: 1,
     b: 0,

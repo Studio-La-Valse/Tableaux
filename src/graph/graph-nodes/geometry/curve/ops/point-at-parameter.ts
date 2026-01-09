@@ -1,10 +1,10 @@
 import type { XY } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { curveOps } from '@/geometry/primitives/union/curve-ops'
-import { GraphNode } from '../../../core/graph-node'
-import { GraphNodeType } from '../../decorators'
+import { GraphNode } from '../../../../core/graph-node'
+import { GraphNodeType } from '../../../decorators'
 
-@GraphNodeType('Geometry', 'Curve', 'Point At Parameter')
+@GraphNodeType('Geometry', 'Curve', 'Ops', 'Point At Parameter')
 export class PointAtParameter extends GraphNode {
   private curveInput
   private tInput

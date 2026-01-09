@@ -1,13 +1,12 @@
-import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
 import type { DrawableOps } from './union/drawable/drawable-ops'
+import type { SurfaceOps } from './union/surface-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
 import { drawShape } from '@/bitmap-painters/bitmap-painter'
-import { applyMatrix } from './xy'
 
-export type RectangleOps = CurveOps<Rectangle> & DrawableOps<Rectangle> & {
+export type RectangleOps = SurfaceOps<Rectangle> & CurveOps<Rectangle> & DrawableOps<Rectangle> & {
 
 }
 
@@ -33,7 +32,7 @@ export const rectangleOps: RectangleOps = {
   /**
    * Parameter t ∈ [0,1] walks the perimeter clockwise starting at (x, y).
    */
-  pointAt(rect: Rectangle, t: number, m?: TransformationMatrix): XY {
+  pointAt(rect: Rectangle, t: number): XY {
     if (t < 0 || t > 1) {
       throw new Error(`RectangleOps.pointAt: parameter t=${t} is outside [0,1].`)
     }
@@ -48,7 +47,7 @@ export const rectangleOps: RectangleOps = {
     if (p === 0) {
       // Degenerate rectangle → single point
       const pt = { x, y }
-      return m ? applyMatrix(pt, m) : pt
+      return pt
     }
 
     let d = t * p
@@ -56,25 +55,25 @@ export const rectangleOps: RectangleOps = {
     // Walk edges clockwise
     if (d <= width) {
       const pt = { x: x + d, y }
-      return m ? applyMatrix(pt, m) : pt
+      return pt
     }
     d -= width
 
     if (d <= height) {
       const pt = { x: x + width, y: y + d }
-      return m ? applyMatrix(pt, m) : pt
+      return pt
     }
     d -= height
 
     if (d <= width) {
       const pt = { x: x + width - d, y: y + height }
-      return m ? applyMatrix(pt, m) : pt
+      return pt
     }
     d -= width
 
     // Last edge
     const pt = { x, y: y + height - d }
-    return m ? applyMatrix(pt, m) : pt
+    return pt
   },
 
   /**
@@ -83,7 +82,7 @@ export const rectangleOps: RectangleOps = {
    *   - uniform scale supported
    *   - non-uniform scale or shear rejected
    */
-  length(rect: Rectangle, m?: TransformationMatrix): number {
+  length(rect: Rectangle): number {
     const { width, height } = rect
 
     if (width < 0 || height < 0) {
@@ -92,19 +91,7 @@ export const rectangleOps: RectangleOps = {
 
     const base = 2 * (width + height)
 
-    if (!m)
-      return base
-
-    const sx = Math.hypot(m.a, m.b)
-    const sy = Math.hypot(m.c, m.d)
-
-    if (Math.abs(sx - sy) > 1e-9) {
-      throw new Error(
-        'RectangleOps.length: non-uniform scaling or shear makes perimeter undefined.',
-      )
-    }
-
-    return base * sx
+    return base
   },
 
   /**
@@ -112,17 +99,15 @@ export const rectangleOps: RectangleOps = {
    * If no transform: trivial.
    * If transform: transform all 4 corners and compute AABB.
    */
-  boundingBox(rect: Rectangle, m?: TransformationMatrix): Rectangle {
+  boundingBox(rect: Rectangle): Rectangle {
     const { x, y, width, height } = rect
 
-    const corners: XY[] = [
+    const pts: XY[] = [
       { x, y },
       { x: x + width, y },
       { x: x + width, y: y + height },
       { x, y: y + height },
     ]
-
-    const pts = m ? corners.map(p => applyMatrix(p, m)) : corners
 
     let minX = Infinity
     let minY = Infinity
@@ -147,6 +132,22 @@ export const rectangleOps: RectangleOps = {
       height: maxY - minY,
     }
   },
+
+  circumference(object: Rectangle): number {
+    return this.length(object)
+  },
+
+  area(object: Rectangle): number {
+    return object.height * object.width
+  },
+
+  center(object: Rectangle): XY {
+    return {
+      x: object.x + object.width / 2,
+      y: object.y + object.height / 2,
+    }
+  },
+
   draw(ctx: CanvasRenderingContext2D, element: Rectangle) {
     drawShape(ctx, element, () => {
       const { x, y, width, height, radii } = element

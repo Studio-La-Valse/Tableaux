@@ -1,7 +1,6 @@
 import type { Rectangle } from '../rectangle'
 import type { XY } from '../xy'
 import type { Curve } from './curve'
-import type { TransformationMatrix } from '@/geometry/transform/transformation-matrix'
 import type { JsonObject } from '@/graph/core/models/json-value'
 import { arcOps } from '../arc-ops'
 import { circleOps } from '../circle-ops'
@@ -18,9 +17,9 @@ import { rectangleOps } from '../rectangle-ops'
 export type CurveOps<S extends Curve> = {
   match: (value: JsonObject) => value is S
   cast: (object: JsonObject) => S
-  pointAt: (shape: S, t: number, m?: TransformationMatrix) => XY
-  length: (shape: S, m?: TransformationMatrix) => number
-  boundingBox: (shape: S, m?: TransformationMatrix) => Rectangle
+  pointAt: (shape: S, t: number) => XY
+  length: (shape: S) => number
+  boundingBox: (shape: S) => Rectangle
 }
 
 // ----------------- Registry -----------------
@@ -63,13 +62,13 @@ export const curveOps: CurveOps<Curve> = {
   cast(object: JsonObject): Curve {
     return getOpsFor(object).cast(object)
   },
-  pointAt(shape: Curve, t: number, m?: TransformationMatrix): XY {
-    return getOpsFor(shape).pointAt(shape, t, m)
+  pointAt(shape: Curve, t: number): XY {
+    return getOpsFor(shape).pointAt(shape, t)
   },
-  length(shape: Curve, m?: TransformationMatrix): number {
-    return getOpsFor(shape).length(shape, m)
+  length(shape: Curve): number {
+    return getOpsFor(shape).length(shape)
   },
-  boundingBox(shape: Curve, m?: TransformationMatrix): Rectangle {
-    return getOpsFor(shape).boundingBox(shape, m)
+  boundingBox(shape: Curve): Rectangle {
+    return getOpsFor(shape).boundingBox(shape)
   },
 }

@@ -1,4 +1,3 @@
-import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Polyline } from './polyline'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
@@ -8,7 +7,7 @@ import type { JsonObject } from '@/graph/core/models/json-value'
 import { drawShape } from '@/bitmap-painters/bitmap-painter'
 import { lineOps } from './line-ops'
 import { rectangleOps } from './rectangle-ops'
-import { applyMatrix, isXY } from './xy'
+import { xyOps } from './xy-ops'
 
 export type PolylineOps = CurveOps<Polyline> & DrawableOps<Polyline> & {
 
@@ -25,14 +24,14 @@ export const polylineOps: PolylineOps = {
       return false
     }
 
-    if (!isXY(object.start) || !isXY(object.end))
+    if (!xyOps.match(object.start) || !xyOps.match(object.end))
       return false
 
     if ('points' in object && object.points !== undefined) {
       if (!Array.isArray(object.points))
         return false
       for (const p of object.points) {
-        if (!isXY(p))
+        if (!xyOps.match(p))
           return false
       }
     }
@@ -77,7 +76,7 @@ export const polylineOps: PolylineOps = {
    * Parameter t ∈ [0,1] moves along the entire polyline.
    * We compute cumulative segment lengths and find which segment t falls into.
    */
-  pointAt(shape: Polyline, t: number, m?: TransformationMatrix): XY {
+  pointAt(shape: Polyline, t: number): XY {
     if (t < 0 || t > 1) {
       throw new Error(`PolylineOps.pointAt: parameter t=${t} is outside [0,1].`)
     }
@@ -128,7 +127,7 @@ export const polylineOps: PolylineOps = {
       y: p0.y + (p1.y - p0.y) * localT,
     }
 
-    return m ? applyMatrix(p, m) : p
+    return p
   },
 
   /**
@@ -137,7 +136,7 @@ export const polylineOps: PolylineOps = {
    *   - uniform scale is supported
    *   - non-uniform scale or shear is rejected
    */
-  length(shape: Polyline, m?: TransformationMatrix): number {
+  length(shape: Polyline): number {
     const pts: XY[] = [
       shape.start,
       ...(shape.points ?? []),
@@ -151,33 +150,20 @@ export const polylineOps: PolylineOps = {
       total += Math.hypot(dx, dy)
     }
 
-    if (!m)
-      return total
-
-    // Extract scale from matrix
-    const sx = Math.hypot(m.a, m.b)
-    const sy = Math.hypot(m.c, m.d)
-
-    if (Math.abs(sx - sy) > 1e-9) {
-      throw new Error(
-        'PolylineOps.length: non-uniform scaling or shear makes length undefined.',
-      )
-    }
-
-    return total * sx
+    return total
   },
 
   /**
    * AABB of all transformed points.
    */
-  boundingBox(shape: Polyline, m?: TransformationMatrix): Rectangle {
+  boundingBox(shape: Polyline): Rectangle {
     const pts: XY[] = [
       shape.start,
       ...(shape.points ?? []),
       shape.end,
     ]
 
-    const transformed = m ? pts.map(p => applyMatrix(p, m)) : pts
+    const transformed = pts
 
     let minX = Infinity
     let minY = Infinity

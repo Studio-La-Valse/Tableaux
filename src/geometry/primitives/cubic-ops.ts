@@ -1,4 +1,3 @@
-import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Cubic } from './cubic'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
@@ -6,7 +5,7 @@ import type { DrawableOps } from './union/drawable/drawable-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
 import { drawShape } from '@/bitmap-painters/bitmap-painter'
-import { applyMatrix, isXY } from './xy'
+import { xyOps } from './xy-ops'
 
 export type CubicOps = CurveOps<Cubic> & DrawableOps<Cubic> & {
 
@@ -21,10 +20,10 @@ export const cubicOps: CubicOps = {
       && 'end' in object
       && 'control1' in object
       && 'control2' in object
-      && isXY(object.start)
-      && isXY(object.end)
-      && isXY(object.control1)
-      && isXY(object.control2)
+      && xyOps.match(object.start)
+      && xyOps.match(object.end)
+      && xyOps.match(object.control1)
+      && xyOps.match(object.control2)
     )
   },
 
@@ -43,7 +42,7 @@ export const cubicOps: CubicOps = {
   /**
    * Evaluate cubic Bézier at t ∈ [0,1].
    */
-  pointAt(shape: Cubic, t: number, m?: TransformationMatrix): XY {
+  pointAt(shape: Cubic, t: number): XY {
     if (t < 0 || t > 1) {
       throw new Error(`CubicOps.pointAt: parameter t=${t} is outside [0,1].`)
     }
@@ -69,7 +68,7 @@ export const cubicOps: CubicOps = {
         + ttt * P3.y,
     }
 
-    return m ? applyMatrix(p, m) : p
+    return p
   },
 
   /**
@@ -84,7 +83,7 @@ export const cubicOps: CubicOps = {
    *   - uniform scale is supported
    *   - non-uniform scale or shear is rejected
    */
-  length(shape: Cubic, m?: TransformationMatrix): number {
+  length(shape: Cubic): number {
     const { start: P0, control1: P1, control2: P2, end: P3 } = shape
 
     const chord = Math.hypot(P3.x - P0.x, P3.y - P0.y)
@@ -96,17 +95,7 @@ export const cubicOps: CubicOps = {
     // If nearly straight, approximate with chord
     if (contNet - chord < 1e-6) {
       const base = chord
-      if (!m)
-        return base
-
-      const sx = Math.hypot(m.a, m.b)
-      const sy = Math.hypot(m.c, m.d)
-      if (Math.abs(sx - sy) > 1e-9) {
-        throw new Error(
-          'CubicOps.length: non-uniform scaling or shear makes length undefined.',
-        )
-      }
-      return base * sx
+      return base
     }
 
     // Otherwise subdivide recursively
@@ -141,18 +130,7 @@ export const cubicOps: CubicOps = {
 
     const baseLength = subdivide(P0, P1, P2, P3, 0)
 
-    if (!m)
-      return baseLength
-
-    const sx = Math.hypot(m.a, m.b)
-    const sy = Math.hypot(m.c, m.d)
-    if (Math.abs(sx - sy) > 1e-9) {
-      throw new Error(
-        'CubicOps.length: non-uniform scaling or shear makes length undefined.',
-      )
-    }
-
-    return baseLength * sx
+    return baseLength
   },
 
   /**
@@ -164,11 +142,8 @@ export const cubicOps: CubicOps = {
    *   - sample at t = 0..1 in small steps
    *   - transform if needed
    */
-  boundingBox(cubic: Cubic, t?: TransformationMatrix): Rectangle {
+  boundingBox(cubic: Cubic): Rectangle {
     const { start, control1, control2, end } = cubic
-
-    // Helper: apply transform
-    const apply = (p: XY) => (t ? applyMatrix(p, t) : p)
 
     // Cubic Bézier interpolation
     const bezier = (p0: number, p1: number, p2: number, p3: number, t: number) => {
@@ -223,16 +198,13 @@ export const cubicOps: CubicOps = {
     const candidates = new Set<number>([0, 1, ...tx, ...ty])
 
     // Evaluate all candidate points
-    let pts: XY[] = []
+    const pts: XY[] = []
     for (const tVal of candidates) {
       pts.push({
         x: bezier(start.x, control1.x, control2.x, end.x, tVal),
         y: bezier(start.y, control1.y, control2.y, end.y, tVal),
       })
     }
-
-    // Apply transform if present
-    pts = pts.map(apply)
 
     // Compute AABB
     let minX = Infinity
@@ -258,6 +230,7 @@ export const cubicOps: CubicOps = {
       height: maxY - minY,
     }
   },
+
   draw(ctx: CanvasRenderingContext2D, element: Cubic) {
     drawShape(ctx, element, () => {
       const { start, control1, control2, end } = element

@@ -1,4 +1,3 @@
-import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { EllipticalArc } from './elliptical-arc'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
@@ -9,7 +8,6 @@ import { drawShape } from '@/bitmap-painters/bitmap-painter'
 import { arcOps } from './arc-ops'
 import { circleOps } from './circle-ops'
 import { ellipseOps } from './ellipse-ops'
-import { applyMatrix } from './xy'
 
 export type EllipticalArcOps = CurveOps<EllipticalArc> & DrawableOps<EllipticalArc> & {
 
@@ -81,7 +79,7 @@ export const ellipticalArcOps: EllipticalArcOps = {
    *   x = cx + rx * cosθ * cosφ - ry * sinθ * sinφ
    *   y = cy + rx * cosθ * sinφ + ry * sinθ * cosφ
    */
-  pointAt(shape: EllipticalArc, t: number, m?: TransformationMatrix): XY {
+  pointAt(shape: EllipticalArc, t: number): XY {
     if (t < 0 || t > 1) {
       throw new Error(`EllipticalArcOps.pointAt: parameter t=${t} is outside [0,1].`)
     }
@@ -132,7 +130,7 @@ export const ellipticalArcOps: EllipticalArcOps = {
     const py = cy + rx * cosT * sinR + ry * sinT * cosR
 
     const p: XY = { x: px, y: py }
-    return m ? applyMatrix(p, m) : p
+    return p
   },
 
   /**
@@ -144,7 +142,7 @@ export const ellipticalArcOps: EllipticalArcOps = {
    *   - uniform scale supported
    *   - non-uniform scale or shear rejected
    */
-  length(shape: EllipticalArc, m?: TransformationMatrix): number {
+  length(shape: EllipticalArc): number {
     const steps = 64
     let total = 0
 
@@ -157,19 +155,7 @@ export const ellipticalArcOps: EllipticalArcOps = {
       prev = p
     }
 
-    if (!m)
-      return total
-
-    const sx = Math.hypot(m.a, m.b)
-    const sy = Math.hypot(m.c, m.d)
-
-    if (Math.abs(sx - sy) > 1e-9) {
-      throw new Error(
-        'EllipticalArcOps.length: non-uniform scaling or shear makes arc length undefined.',
-      )
-    }
-
-    return total * sx
+    return total
   },
 
   /**
@@ -178,7 +164,7 @@ export const ellipticalArcOps: EllipticalArcOps = {
    *   - transform if needed
    *   - compute AABB
    */
-  boundingBox(a: EllipticalArc, t?: TransformationMatrix): Rectangle {
+  boundingBox(a: EllipticalArc): Rectangle {
     const { x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise } = a
 
     // Normalize angles to [0, 2π)
@@ -230,12 +216,7 @@ export const ellipticalArcOps: EllipticalArcOps = {
     }
 
     // Compute points
-    let pts = candidates.map(ellipsePoint)
-
-    // Apply transform if present
-    if (t) {
-      pts = pts.map(p => applyMatrix(p, t))
-    }
+    const pts = candidates.map(ellipsePoint)
 
     // Compute AABB
     let minX = Infinity
@@ -261,6 +242,7 @@ export const ellipticalArcOps: EllipticalArcOps = {
       height: maxY - minY,
     }
   },
+
   draw(ctx: CanvasRenderingContext2D, element: EllipticalArc) {
     drawShape(ctx, element, () => {
       const { x, y, radiusX, radiusY, rotation } = element

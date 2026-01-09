@@ -1,4 +1,3 @@
-import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Quadratic } from './quadratic'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
@@ -6,7 +5,7 @@ import type { DrawableOps } from './union/drawable/drawable-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
 import { drawShape } from '@/bitmap-painters/bitmap-painter'
-import { applyMatrix, isXY } from './xy'
+import { xyOps } from './xy-ops'
 
 export type QuadraticOps = CurveOps<Quadratic> & DrawableOps<Quadratic> & {
 
@@ -20,9 +19,9 @@ export const quadraticOps: QuadraticOps = {
       && 'start' in object
       && 'end' in object
       && 'control' in object
-      && isXY(object.start)
-      && isXY(object.end)
-      && isXY(object.control)
+      && xyOps.match(object.start)
+      && xyOps.match(object.end)
+      && xyOps.match(object.control)
     )
   },
 
@@ -40,7 +39,7 @@ export const quadraticOps: QuadraticOps = {
   /**
    * Evaluate quadratic Bézier at t ∈ [0,1].
    */
-  pointAt(shape: Quadratic, t: number, m?: TransformationMatrix): XY {
+  pointAt(shape: Quadratic, t: number): XY {
     if (t < 0 || t > 1) {
       throw new Error(`QuadraticOps.pointAt: parameter t=${t} is outside [0,1].`)
     }
@@ -56,7 +55,7 @@ export const quadraticOps: QuadraticOps = {
       y: uu * P0.y + 2 * u * t * P1.y + tt * P2.y,
     }
 
-    return m ? applyMatrix(p, m) : p
+    return p
   },
 
   /**
@@ -65,7 +64,7 @@ export const quadraticOps: QuadraticOps = {
    *   - uniform scale supported
    *   - non-uniform scale or shear rejected
    */
-  length(shape: Quadratic, m?: TransformationMatrix): number {
+  length(shape: Quadratic): number {
     const { start: P0, control: P1, end: P2 } = shape
 
     const chord = Math.hypot(P2.x - P0.x, P2.y - P0.y)
@@ -76,17 +75,7 @@ export const quadraticOps: QuadraticOps = {
     // Nearly straight → approximate with chord
     if (contNet - chord < 1e-6) {
       const base = chord
-      if (!m)
-        return base
-
-      const sx = Math.hypot(m.a, m.b)
-      const sy = Math.hypot(m.c, m.d)
-      if (Math.abs(sx - sy) > 1e-9) {
-        throw new Error(
-          'QuadraticOps.length: non-uniform scaling or shear makes length undefined.',
-        )
-      }
-      return base * sx
+      return base
     }
 
     // Recursive subdivision
@@ -122,28 +111,14 @@ export const quadraticOps: QuadraticOps = {
 
     const baseLength = subdivide(P0, P1, P2, 0)
 
-    if (!m)
-      return baseLength
-
-    const sx = Math.hypot(m.a, m.b)
-    const sy = Math.hypot(m.c, m.d)
-    if (Math.abs(sx - sy) > 1e-9) {
-      throw new Error(
-        'QuadraticOps.length: non-uniform scaling or shear makes length undefined.',
-      )
-    }
-
-    return baseLength * sx
+    return baseLength
   },
 
   /**
    * Bounding box via sampling + control points.
    */
-  boundingBox(q: Quadratic, t?: TransformationMatrix): Rectangle {
+  boundingBox(q: Quadratic): Rectangle {
     const { start, control, end } = q
-
-    // Apply transform helper
-    const apply = (p: XY) => (t ? applyMatrix(p, t) : p)
 
     // Quadratic Bézier interpolation
     const bezier = (p0: number, p1: number, p2: number, t: number) => {
@@ -169,16 +144,13 @@ export const quadraticOps: QuadraticOps = {
     const candidates = new Set<number>([0, 1, ...tx, ...ty])
 
     // Evaluate all candidate points
-    let pts: XY[] = []
+    const pts: XY[] = []
     for (const tVal of candidates) {
       pts.push({
         x: bezier(start.x, control.x, end.x, tVal),
         y: bezier(start.y, control.y, end.y, tVal),
       })
     }
-
-    // Apply transform if present
-    pts = pts.map(apply)
 
     // Compute AABB
     let minX = Infinity
@@ -204,6 +176,7 @@ export const quadraticOps: QuadraticOps = {
       height: maxY - minY,
     }
   },
+
   draw(ctx: CanvasRenderingContext2D, element: Quadratic) {
     drawShape(ctx, element, () => {
       const { start, control, end } = element

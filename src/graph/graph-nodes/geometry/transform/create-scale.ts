@@ -1,6 +1,6 @@
 import type { TransformationMatrix } from '@/geometry/transform/transformation-matrix'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsXY } from '@/geometry/primitives/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
 import { createScale } from '@/geometry/transform/transformation-matrix'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
@@ -16,7 +16,7 @@ export class CreateScale extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputCenter = this.registerObjectInput('Center').validate(assertIsXY)
+    this.inputCenter = this.registerObjectInput('Center').validate(xyOps.cast)
     this.inputFactorX = this.registerNumberInput('X Scale Factor')
     this.inputFactorY = this.registerNumberInput('Y Scale Factor')
 

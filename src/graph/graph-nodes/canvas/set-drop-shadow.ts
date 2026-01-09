@@ -3,7 +3,7 @@ import type { DropShadow } from '@/geometry/primitives/union/drawable/filter'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { assertIsColorARGB } from '@/geometry/color/color-rgb'
 import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
-import { assertIsXY } from '@/geometry/primitives/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 
@@ -20,7 +20,7 @@ export class SetDropShadow extends GraphNode {
     super(modelId)
 
     this.inputGeometry = this.registerObjectInput('Shape').validate(drawableOps.cast)
-    this.inputOffset = this.registerObjectInput('Offset').validate(assertIsXY)
+    this.inputOffset = this.registerObjectInput('Offset').validate(xyOps.cast)
     this.inputColor = this.registerObjectInput('Color').validate(assertIsColorARGB)
     this.inputSize = this.registerNumberInput('Size')
 

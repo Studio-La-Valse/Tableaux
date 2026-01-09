@@ -1,14 +1,13 @@
-import type { TransformationMatrix } from '../transform/transformation-matrix'
 import type { Ellipse } from './ellipse'
 import type { Rectangle } from './rectangle'
 import type { CurveOps } from './union/curve-ops'
 import type { DrawableOps } from './union/drawable/drawable-ops'
+import type { SurfaceOps } from './union/surface-ops'
 import type { XY } from './xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
 import { drawShape } from '@/bitmap-painters/bitmap-painter'
-import { applyMatrix } from './xy'
 
-export type EllipseOps = CurveOps<Ellipse> & DrawableOps<Ellipse> & {
+export type EllipseOps = SurfaceOps<Ellipse> & CurveOps<Ellipse> & DrawableOps<Ellipse> & {
 
 }
 
@@ -39,7 +38,7 @@ export const ellipseOps: EllipseOps = {
    * x = cx + rx * cosθ * cosφ - ry * sinθ * sinφ
    * y = cy + rx * cosθ * sinφ + ry * sinθ * cosφ
    */
-  pointAt(shape: Ellipse, t: number, m?: TransformationMatrix): XY {
+  pointAt(shape: Ellipse, t: number): XY {
     if (t < 0 || t > 1) {
       throw new Error(`EllipseOps.pointAt: parameter t=${t} is outside [0,1].`)
     }
@@ -60,7 +59,7 @@ export const ellipseOps: EllipseOps = {
     const py = cy + rx * cosT * sinR + ry * sinT * cosR
 
     const p: XY = { x: px, y: py }
-    return m ? applyMatrix(p, m) : p
+    return p
   },
 
   /**
@@ -73,7 +72,7 @@ export const ellipseOps: EllipseOps = {
    *   - uniform scale supported
    *   - non-uniform scale or shear rejected
    */
-  length(shape: Ellipse, m?: TransformationMatrix): number {
+  length(shape: Ellipse): number {
     const { radiusX: rx, radiusY: ry } = shape
 
     if (rx <= 0 || ry <= 0) {
@@ -84,19 +83,7 @@ export const ellipseOps: EllipseOps = {
     const base
       = Math.PI * (rx + ry) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h)))
 
-    if (!m)
-      return base
-
-    const sx = Math.hypot(m.a, m.b)
-    const sy = Math.hypot(m.c, m.d)
-
-    if (Math.abs(sx - sy) > 1e-9) {
-      throw new Error(
-        'EllipseOps.length: non-uniform scaling or shear makes circumference undefined.',
-      )
-    }
-
-    return base * sx
+    return base
   },
 
   /**
@@ -104,7 +91,7 @@ export const ellipseOps: EllipseOps = {
    *   - sample ellipse at N angles
    *   - include transformed points if matrix present
    */
-  boundingBox(e: Ellipse, t?: TransformationMatrix): Rectangle {
+  boundingBox(e: Ellipse): Rectangle {
     const { x, y, radiusX, radiusY, rotation } = e
 
     // Precompute rotation
@@ -119,17 +106,12 @@ export const ellipseOps: EllipseOps = {
 
     // Cardinal points before rotation:
     // (±radiusX, 0), (0, ±radiusY)
-    let pts = [
+    const pts = [
       rotatePoint(radiusX, 0),
       rotatePoint(-radiusX, 0),
       rotatePoint(0, radiusY),
       rotatePoint(0, -radiusY),
     ]
-
-    // Apply transform if present
-    if (t) {
-      pts = pts.map(p => applyMatrix(p, t))
-    }
 
     // Compute AABB
     let minX = Infinity
@@ -155,6 +137,26 @@ export const ellipseOps: EllipseOps = {
       height: maxY - minY,
     }
   },
+
+  circumference(object: Ellipse): number {
+    return this.length(object)
+  },
+
+  area(object: Ellipse): number {
+    const { radiusX, radiusY } = object
+
+    if (radiusX < 0 || radiusY < 0) {
+      throw new Error('Ellipse radii must be non‑negative')
+    }
+
+    return Math.PI * radiusX * radiusY
+  },
+
+  center(object: Ellipse): { x: number, y: number } {
+    const { x, y } = object
+    return { x, y }
+  },
+
   draw(ctx: CanvasRenderingContext2D, element: Ellipse) {
     drawShape(ctx, element, () => {
       const { x, y, radiusX, radiusY, rotation } = element

@@ -1,30 +1,27 @@
 import type { Rectangle } from '../rectangle'
+import type { XY } from '../xy'
 import type { Surface } from './surface'
-import type { TransformationMatrix } from '@/geometry/transform/transformation-matrix'
 import type { JsonObject } from '@/graph/core/models/json-value'
-import { arcOps } from '../arc-ops'
 import { circleOps } from '../circle-ops'
 import { ellipseOps } from '../ellipse-ops'
-import { ellipticalArcOps } from '../elliptical-arc-ops'
 import { rectangleOps } from '../rectangle-ops'
 
 // ----------------- Core type -----------------
 
 export type SurfaceOps<S extends Surface> = {
-  guard: (value: JsonObject) => value is S
+  match: (value: JsonObject) => value is S
   cast: (object: JsonObject) => S
-  circumference: (object: S, m?: TransformationMatrix) => number
-  area: (object: S, m?: TransformationMatrix) => number
-  boundingBox: (object: S, m?: TransformationMatrix) => Rectangle
+  circumference: (object: S) => number
+  area: (object: S) => number
+  center: (object: S) => XY
+  boundingBox: (object: S) => Rectangle
 }
 
 // ----------------- Registry -----------------
 
 export const surfaceRegistry = [
-  arcOps,
   circleOps,
   ellipseOps,
-  ellipticalArcOps,
   rectangleOps,
 ] as const
 
@@ -42,7 +39,7 @@ export function getOpsFor<S extends Surface>(shape: JsonObject): SurfaceOps<S> {
 }
 
 export const surfaceOps: SurfaceOps<Surface> = {
-  guard(value: JsonObject): value is Surface {
+  match(value: JsonObject): value is Surface {
     for (const entry of surfaceRegistry) {
       if (entry.match(value)) {
         return true
@@ -54,13 +51,16 @@ export const surfaceOps: SurfaceOps<Surface> = {
   cast(object: JsonObject): Surface {
     return getOpsFor(object).cast(object)
   },
-  circumference(object: Surface, m?: TransformationMatrix): number {
-    return getOpsFor(object).circumference(object, m)
+  circumference(object: Surface): number {
+    return getOpsFor(object).circumference(object)
   },
-  area(object: Surface, m?: TransformationMatrix): number {
-    return getOpsFor(object).area(object, m)
+  area(object: Surface): number {
+    return getOpsFor(object).area(object)
   },
-  boundingBox(shape: Surface, m?: TransformationMatrix): Rectangle {
-    return getOpsFor(shape).boundingBox(shape, m)
+  boundingBox(shape: Surface): Rectangle {
+    return getOpsFor(shape).boundingBox(shape)
+  },
+  center(object: Surface): XY {
+    return getOpsFor(object).center(object)
   },
 }
