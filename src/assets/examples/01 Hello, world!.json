@@ -138,7 +138,7 @@
       "x": 886.9130266186471,
       "y": 186.80707257952284,
       "data": {
-        "value": false,
+        "value": true,
         "name": "",
         "hidden": false
       }
@@ -161,11 +161,11 @@
       "x": -376.1758064371025,
       "y": 423.8523396604219,
       "data": {
-        "lastFrame": 70869,
+        "lastFrame": 72456,
         "active": true,
-        "delay": 16,
-        "lastTimestamp": 1057701.9,
-        "rafId": 63207
+        "delay": 100,
+        "lastTimestamp": 62442.1,
+        "rafId": 3711
       }
     },
     {
@@ -200,7 +200,7 @@
       "x": -512.4080592944455,
       "y": 570.3662719786964,
       "data": {
-        "value": 16,
+        "value": 100,
         "name": "",
         "hidden": false
       }

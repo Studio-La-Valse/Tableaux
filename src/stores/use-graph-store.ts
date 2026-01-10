@@ -5,9 +5,11 @@ import type { IGraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 import type { GraphEdgeModel } from '@/graph/core/models/graph-edge-model'
 import type { GraphModel } from '@/graph/core/models/graph-model'
 import type { GraphNodeModel } from '@/graph/core/models/graph-node-model'
+import type { JsonObject } from '@/graph/core/models/json-value'
 import { nanoid } from 'nanoid'
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
+import { useExampleTiles } from '@/composables/use-example-files'
 import { GraphEdge } from '@/graph/core/graph-edge'
 import { GraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 import { cloneFrozen } from '@/graph/core/models/json-value'
@@ -15,6 +17,7 @@ import { useGraphHistoryStore } from './use-graph-history-store'
 import { useGraphNodeRegistry } from './use-graph-node-registry'
 
 const useGraphInternal = defineStore('graph', () => {
+  const { show } = useExampleTiles()
   const nodeMap: Ref<Record<string, IGraphNodeWrapper>> = ref({})
   const nodes = computed(() => [...Object.values(nodeMap.value)])
   const edges: Ref<GraphEdge[]> = ref([])
@@ -64,17 +67,28 @@ const useGraphInternal = defineStore('graph', () => {
   // ---------------------------------------------------------------------------
   // Add Node
   // ---------------------------------------------------------------------------
-  const addNode = (path: string[], position: XY, modelId: string) => {
+  const addNode = (path: string[], position: XY, modelId: string, width?: number, height?: number, data?: JsonObject) => {
     const graphNode = graphNodeRegistry.activate(path, modelId)
     const wrapper = reactive(new GraphNodeWrapper(graphNode))
 
     wrapper.xy = { x: position.x, y: position.y }
 
-    wrapper.innerNode.onInitialize()
-    wrapper.innerNode.arm()
-    wrapper.innerNode.complete()
+    if (width)
+      wrapper.width = width
+    if (height)
+      wrapper.height = height
+    if (data)
+      Object.assign(wrapper.innerNode.data, cloneFrozen(data))
+
+    if (data?.params_length)
+      wrapper.innerNode.setParamsLength(Number(wrapper.innerNode.data.params_length))
 
     nodeMap.value[graphNode.modelId] = wrapper
+
+    show.value = false
+
+    wrapper.innerNode.onInitialize()
+
     return wrapper
   }
 
@@ -154,21 +168,8 @@ const useGraphInternal = defineStore('graph', () => {
   // Add Node From Model
   // ---------------------------------------------------------------------------
   const addNodeModel = (model: GraphNodeModel) => {
-    const node = graphNodeRegistry.activate(model.path, model.id)
-    const wrapper = reactive(new GraphNodeWrapper(node))
-
-    wrapper.xy = { x: model.x, y: model.y }
-    if (model.width)
-      wrapper.width = model.width
-    if (model.height)
-      wrapper.height = model.height
-    if (model.data)
-      Object.assign(wrapper.innerNode.data, cloneFrozen(model.data))
-    if (model.data?.params_length)
-      node.setParamsLength(Number(wrapper.innerNode.data.params_length))
-
-    wrapper.innerNode.onInitialize()
-    nodeMap.value[wrapper.modelId] = wrapper
+    const wrapper = addNode(model.path, model, model.id, model.width, model.height, model.data)
+    return wrapper
   }
 
   // ---------------------------------------------------------------------------
@@ -186,9 +187,7 @@ const useGraphInternal = defineStore('graph', () => {
       model.x += 10 * pasteEvents
       model.y += 10 * pasteEvents
 
-      addNodeModel(model)
-
-      const copy = getNode(newId)
+      const copy = addNodeModel(model)
       idMap[orig.modelId] = copy
       return copy
     })
@@ -251,12 +250,12 @@ const useGraphInternal = defineStore('graph', () => {
     model.edges.forEach(addEdgeModel)
 
     // Run emitters
-    nodes.value.forEach((v) => {
-      if (v.innerNode.inputs.length === 0) {
-        v.innerNode.arm()
-        v.innerNode.complete()
-      }
-    })
+    const emitters = nodes.value
+      .filter(v => v.innerNode.inputs.length === 0)
+      .map(v => v.innerNode)
+
+    emitters.forEach(v => v.arm())
+    emitters.forEach(v => v.complete())
   }
 
   return {
@@ -321,8 +320,9 @@ export const useGraphStore = defineStore('graph-with-history', () => {
   const addNode = (nodePath: string[], position: XY, id: string) => {
     const state = internalGraph.toModel()
     try {
-      internalGraph.addNode(nodePath, position, id)
+      const node = internalGraph.addNode(nodePath, position, id)
       commit()
+      return node
     }
     catch {
       internalGraph.fromModel(state)

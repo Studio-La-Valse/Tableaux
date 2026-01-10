@@ -26,10 +26,7 @@
             <SelectionBorder />
           </div>
 
-          <ExampleTiles
-            v-if="showThumbnails"
-            @load="showThumbnails = false"
-          />
+          <ExampleTiles v-if="show" />
 
           <Teleport to="body">
             <ActivatorTree />
@@ -80,7 +77,7 @@
 <script setup lang="ts">
 import type { StyleValue } from 'vue'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
 
 import { Panel, PanelGroup, PanelResizeHandle } from 'vue-resizable-panels'
 import GraphControls from '@/components/graph/GraphControls/GraphControls.vue'
@@ -90,8 +87,9 @@ import SelectionBorder from '@/components/graph/SelectionBorder.vue'
 
 import { useCanvasTransform } from '@/composables/use-canvas-transform'
 import { useClearSelection } from '@/composables/use-clear-selection'
-import { useSelectionArea } from '@/composables/use-selection-area'
+import { useExampleTiles } from '@/composables/use-example-files'
 
+import { useSelectionArea } from '@/composables/use-selection-area'
 import { useContextMenuStore } from '@/stores/use-context-menu-store'
 import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
@@ -108,8 +106,7 @@ const canvasTransform = useCanvasTransform()
 const canvasStore = useGraphCanvasStore()
 
 const { mode, viewportRef, canvasRef } = storeToRefs(canvasStore)
-
-const showThumbnails = ref(true)
+const { show } = useExampleTiles()
 
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({
@@ -118,11 +115,6 @@ const contentStyle = computed<StyleValue>(() => ({
 }))
 
 function onMouseDown(event: MouseEvent) {
-  if (showThumbnails.value) {
-    showThumbnails.value = false
-    return
-  }
-
   canvasTransform.onMouseDown(event)
   selectionArea.onMouseDown(event)
   clearSelection.onMouseDown(event)
@@ -131,11 +123,6 @@ function onMouseDown(event: MouseEvent) {
 }
 
 function onCanvasDblClick(evt: MouseEvent) {
-  if (showThumbnails.value) {
-    showThumbnails.value = false
-    return
-  }
-
   if (evt.target !== viewportRef.value)
     return
 

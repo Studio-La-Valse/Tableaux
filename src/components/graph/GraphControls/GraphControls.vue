@@ -132,6 +132,7 @@ import { BeakerIcon } from '@heroicons/vue/24/solid'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 import { useAlert } from '@/composables/use-alert'
+import { useExampleTiles } from '@/composables/use-example-files'
 import { useZoomToNodes } from '@/composables/use-zoom-to-nodes'
 import {
   createAndRegisterCustomNode,
@@ -165,6 +166,8 @@ const lastSavedModel = ref(toModel())
 function hasUnsavedChanges() {
   return hasRedo.value || JSON.stringify(lastSavedModel.value) !== JSON.stringify(toModel())
 }
+
+const { show } = useExampleTiles()
 
 /** --- Custom Node Modal --- */
 const showCustomNodeModal = ref(false)
@@ -270,6 +273,7 @@ function newDocument() {
   return requestAction(() => {
     init()
     lastSavedModel.value = toModel()
+    show.value = true
   })
 }
 
