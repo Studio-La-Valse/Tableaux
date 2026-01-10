@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { clear, init } from '@/bitmap-painters/bitmap-painter'
+import { clear } from '@/bitmap-painters/bitmap-painter'
 import PreviewPanel from '@/components/graph/Panels/PreviewPanel.vue'
 import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
 import { GraphNode } from '@/graph/core/graph-node'
@@ -56,12 +56,8 @@ export class Preview extends GraphNode {
   }
 
   private getCanvas(): CanvasRenderingContext2D | null {
-    const { dimensions } = useDesignCanvasStore()
-    if (!this.canvas) {
-      return null
-    }
-
-    const canvasContext = init(this.canvas, dimensions.x, dimensions.y)
-    return canvasContext
+    const { canvasRef } = useDesignCanvasStore()
+    const canvas = canvasRef?.getContext('2d')
+    return canvas ?? null
   }
 }

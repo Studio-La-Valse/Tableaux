@@ -23,7 +23,7 @@ export const rectangleOps: RectangleOps = {
   },
 
   cast(object: JsonObject): Rectangle {
-    if (this.match(object)) {
+    if (rectangleOps.match(object)) {
       return { ...object }
     }
     throw new Error('This object could not be cast to a rectangle shape.')

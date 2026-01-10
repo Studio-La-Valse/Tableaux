@@ -25,7 +25,7 @@ export const ellipseOps: EllipseOps = {
   },
 
   cast(object: JsonObject): Ellipse {
-    if (this.match(object)) {
+    if (ellipseOps.match(object)) {
       return { ...object }
     }
     throw new Error('This object could not be cast to an ellipse shape.')

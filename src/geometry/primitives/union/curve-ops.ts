@@ -40,7 +40,6 @@ export const curveRegistry = [
 
 export function getOpsFor<S extends Curve>(shape: JsonObject): CurveOps<S> {
   for (const entry of curveRegistry) {
-    // `guard` expects JsonObject; if your Curve is also JsonObject, this is fine
     if (entry.match(shape)) {
       return entry as any as CurveOps<S>
     }

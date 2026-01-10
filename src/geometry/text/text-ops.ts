@@ -21,7 +21,7 @@ export const textOps: TextOps = {
     )
   },
   cast(object: JsonObject): Text {
-    if (this.match(object)) {
+    if (textOps.match(object)) {
       return {
         ...object,
       }

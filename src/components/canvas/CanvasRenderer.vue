@@ -6,13 +6,11 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { onMounted } from 'vue'
+import { onMounted, useTemplateRef } from 'vue'
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 
-const canvasStore = useDesignCanvasStore()
-const { canvasRef } = storeToRefs(canvasStore)
-const { attachCanvas } = canvasStore
+const canvasRef = useTemplateRef<HTMLCanvasElement>('canvasRef')
+const { attachCanvas } = useDesignCanvasStore()
 
 onMounted(() => {
   if (canvasRef.value)

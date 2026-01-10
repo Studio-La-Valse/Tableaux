@@ -26,6 +26,11 @@
             <SelectionBorder />
           </div>
 
+          <ExampleTiles
+            v-if="showThumbnails"
+            @load="showThumbnails = false"
+          />
+
           <Teleport to="body">
             <ActivatorTree />
           </Teleport>
@@ -75,23 +80,24 @@
 <script setup lang="ts">
 import type { StyleValue } from 'vue'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 
 import { Panel, PanelGroup, PanelResizeHandle } from 'vue-resizable-panels'
 import GraphControls from '@/components/graph/GraphControls/GraphControls.vue'
 import GraphRenderer from '@/components/graph/GraphRenderer.vue'
 import ActivatorTree from '@/components/graph/NodeBrowser/ActivatorTree.vue'
-
 import SelectionBorder from '@/components/graph/SelectionBorder.vue'
+
 import { useCanvasTransform } from '@/composables/use-canvas-transform'
 import { useClearSelection } from '@/composables/use-clear-selection'
-
 import { useSelectionArea } from '@/composables/use-selection-area'
+
 import { useContextMenuStore } from '@/stores/use-context-menu-store'
 import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { useGraphStore } from '@/stores/use-graph-store'
 import ControlsComponent from '../controls/ControlsComponent.vue'
+import ExampleTiles from './ExampleTiles.vue'
 
 const selectionArea = useSelectionArea()
 const clearSelection = useClearSelection()
@@ -103,6 +109,8 @@ const canvasStore = useGraphCanvasStore()
 
 const { mode, viewportRef, canvasRef } = storeToRefs(canvasStore)
 
+const showThumbnails = ref(true)
+
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({
   ...canvasTransform.style.value,
@@ -110,6 +118,11 @@ const contentStyle = computed<StyleValue>(() => ({
 }))
 
 function onMouseDown(event: MouseEvent) {
+  if (showThumbnails.value) {
+    showThumbnails.value = false
+    return
+  }
+
   canvasTransform.onMouseDown(event)
   selectionArea.onMouseDown(event)
   clearSelection.onMouseDown(event)
@@ -118,6 +131,11 @@ function onMouseDown(event: MouseEvent) {
 }
 
 function onCanvasDblClick(evt: MouseEvent) {
+  if (showThumbnails.value) {
+    showThumbnails.value = false
+    return
+  }
+
   if (evt.target !== viewportRef.value)
     return
 

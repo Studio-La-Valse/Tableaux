@@ -30,7 +30,7 @@ export const ellipticalArcOps: EllipticalArcOps = {
   },
 
   cast(object: JsonObject): EllipticalArc {
-    if (this.match(object)) {
+    if (ellipticalArcOps.match(object)) {
       return { ...object }
     }
 

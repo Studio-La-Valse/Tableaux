@@ -16,7 +16,7 @@ export const useGraphCanvasStore = defineStore('graph-canvas-store', () => {
 
   function clientToCanvas(event: MouseEvent): XY {
     if (!canvasRef.value)
-      return { x: 0, y: 0 }
+      throw new Error('Canvas not yet initialized!')
 
     const pointInViewport = clientToViewport(event)
 

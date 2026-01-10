@@ -40,7 +40,7 @@ export const polylineOps: PolylineOps = {
   },
 
   cast(object: JsonObject): Polyline {
-    if (this.match(object)) {
+    if (polylineOps.match(object)) {
       return {
         start: { ...object.start },
         end: { ...object.end },

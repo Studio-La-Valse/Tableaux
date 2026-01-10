@@ -1,6 +1,15 @@
 import type { Drawable } from './drawable'
 import type { JsonObject } from '@/graph/core/models/json-value'
 import { textOps } from '@/geometry/text/text-ops'
+import { arcOps } from '../../arc-ops'
+import { circleOps } from '../../circle-ops'
+import { cubicOps } from '../../cubic-ops'
+import { ellipseOps } from '../../ellipse-ops'
+import { ellipticalArcOps } from '../../elliptical-arc-ops'
+import { lineOps } from '../../line-ops'
+import { polylineOps } from '../../polyline-ops'
+import { quadraticOps } from '../../quadratic-ops'
+import { rectangleOps } from '../../rectangle-ops'
 
 // ----------------- Types ----------------------
 
@@ -13,6 +22,15 @@ export type DrawableOps<S extends Drawable> = {
 // ----------------- Registry -----------------
 
 export const drawableRegistry = [
+  arcOps,
+  circleOps,
+  cubicOps,
+  ellipseOps,
+  ellipticalArcOps,
+  lineOps,
+  polylineOps,
+  quadraticOps,
+  rectangleOps,
   textOps,
 ] as const
 
@@ -25,7 +43,7 @@ export function getOpsFor<S extends Drawable>(shape: JsonObject): DrawableOps<S>
     }
   }
 
-  throw new Error('No surface ops registered for this shape')
+  throw new Error('No drawable ops registered for this shape')
 }
 
 export const drawableOps: DrawableOps<Drawable> = {

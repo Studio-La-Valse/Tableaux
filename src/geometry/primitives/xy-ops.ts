@@ -17,7 +17,7 @@ export const xyOps: XYOps = {
   },
 
   cast(value: unknown): XY {
-    if (this.match(value)) {
+    if (xyOps.match(value)) {
       return { ...value }
     }
 

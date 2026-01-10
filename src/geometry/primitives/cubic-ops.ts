@@ -28,7 +28,7 @@ export const cubicOps: CubicOps = {
   },
 
   cast(object: JsonObject): Cubic {
-    if (this.match(object)) {
+    if (cubicOps.match(object)) {
       return {
         start: { ...object.start },
         end: { ...object.end },
@@ -112,6 +112,11 @@ export const cubicOps: CubicOps = {
 
       if (contNet - chord < 1e-6) {
         return chord
+      }
+
+      // Helper
+      function mid(a: XY, b: XY): XY {
+        return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
       }
 
       // De Casteljau subdivision
@@ -238,9 +243,4 @@ export const cubicOps: CubicOps = {
       ctx.bezierCurveTo(control1.x, control1.y, control2.x, control2.y, end.x, end.y)
     })
   },
-}
-
-// Helper
-function mid(a: XY, b: XY): XY {
-  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
 }

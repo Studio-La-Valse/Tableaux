@@ -20,7 +20,7 @@ export const circleOps: CircleOps = {
   },
 
   cast(object: JsonObject): Circle {
-    if (this.match(object)) {
+    if (circleOps.match(object)) {
       return { ...object }
     }
     throw new Error('Object could not be cast to a circle')

@@ -21,27 +21,6 @@ export function formatCtxFilter(filter: Filter): string {
   return parts.join(' ')
 }
 
-export function init(
-  canvasRef: HTMLCanvasElement,
-  width: number,
-  height: number,
-): CanvasRenderingContext2D {
-  // Ensure the canvas matches the intended drawing surface
-  canvasRef.width = width
-  canvasRef.height = height
-
-  const ctx = canvasRef.getContext('2d')
-  if (!ctx) {
-    throw new Error('A 2d context could not be created from an HTML Canvas Element.')
-  }
-
-  ctx.imageSmoothingEnabled = false
-  const { a, b, c, d, e, f } = identity()
-  ctx.setTransform(a, b, c, d, e, f)
-
-  return ctx
-}
-
 export function clear(ctx: CanvasRenderingContext2D) {
   const width = ctx.canvas.width
   const height = ctx.canvas.height

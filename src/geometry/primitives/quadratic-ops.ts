@@ -26,7 +26,7 @@ export const quadraticOps: QuadraticOps = {
   },
 
   cast(object: JsonObject): Quadratic {
-    if (this.match(object)) {
+    if (quadraticOps.match(object)) {
       return {
         start: { ...object.start },
         end: { ...object.end },

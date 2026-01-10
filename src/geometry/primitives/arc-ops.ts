@@ -25,7 +25,7 @@ export const arcOps: ArcOps = {
   },
 
   cast(object: JsonObject): Arc {
-    if (this.match(object)) {
+    if (arcOps.match(object)) {
       return { ...object }
     }
 

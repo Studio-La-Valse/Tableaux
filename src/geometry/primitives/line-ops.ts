@@ -26,7 +26,7 @@ export const lineOps: LineOps = {
   },
 
   cast(object: JsonObject): Line {
-    if (this.match(object)) {
+    if (lineOps.match(object)) {
       return {
         start: { ...object.start },
         end: { ...object.end },
