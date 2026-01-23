@@ -40,7 +40,7 @@
 
             <input
               type="text"
-              :placeholder="emitter.id"
+              :placeholder="emitter.modelId"
               :value="emitter.data.name"
               @input="updateName(emitter, $event)"
               @keydown="handleKeyDown"
