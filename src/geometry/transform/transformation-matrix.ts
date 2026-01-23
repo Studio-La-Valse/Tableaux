@@ -1,5 +1,5 @@
-import type { JsonObject } from '@/graph/core/models/json-value'
 import type { XY } from '../primitives/xy'
+import type { JsonObject } from '@/graph/core/models/json-value'
 
 export type TransformationMatrix = {
   a: number

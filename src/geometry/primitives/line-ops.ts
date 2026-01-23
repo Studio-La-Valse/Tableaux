@@ -28,7 +28,7 @@ export const lineOps: LineOps = {
   cast(object: JsonObject): Line {
     if (lineOps.match(object)) {
       return {
-        ...object
+        ...object,
       }
     }
     throw new Error('This object could not be cast to a line shape.')
