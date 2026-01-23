@@ -1,3 +1,4 @@
+import type { JsonObject } from '@/graph/core/models/json-value'
 import type { XY } from '../primitives/xy'
 
 export type TransformationMatrix = {
@@ -9,11 +10,9 @@ export type TransformationMatrix = {
   f: number // translation
 }
 
-export function isTransformationMatrix(value: unknown): value is TransformationMatrix {
+export function isTransformationMatrix(value: JsonObject): value is TransformationMatrix {
   return (
-    typeof value === 'object'
-    && value !== null
-    && 'a' in value
+    'a' in value
     && typeof value.a === 'number'
     && 'b' in value
     && typeof value.b === 'number'
@@ -28,7 +27,7 @@ export function isTransformationMatrix(value: unknown): value is TransformationM
   )
 }
 
-export function assertIsTransformationMatrix(value: unknown): TransformationMatrix {
+export function assertIsTransformationMatrix(value: JsonObject): TransformationMatrix {
   if (!isTransformationMatrix(value)) {
     throw new Error('Provided value is not a transformation matrix.')
   }
