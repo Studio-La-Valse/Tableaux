@@ -1,6 +1,6 @@
 export type JsonPrimitive = string | number | boolean
 
-export type JsonArray = JsonValue[]
+export type JsonArray = JsonValue[] | readonly JsonValue[]
 
 export type JsonObject = {
   [key: string]: JsonValue

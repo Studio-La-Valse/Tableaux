@@ -9,7 +9,6 @@ import type { JsonObject } from '@/graph/core/models/json-value'
 import { nanoid } from 'nanoid'
 import { defineStore } from 'pinia'
 import { computed, reactive, ref } from 'vue'
-import { useExampleTiles } from '@/composables/use-example-files'
 import { GraphEdge } from '@/graph/core/graph-edge'
 import { GraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 import { cloneFrozen } from '@/graph/core/models/json-value'
@@ -17,7 +16,6 @@ import { useGraphHistoryStore } from './use-graph-history-store'
 import { useGraphNodeRegistry } from './use-graph-node-registry'
 
 const useGraphInternal = defineStore('graph', () => {
-  const { show } = useExampleTiles()
   const nodeMap: Ref<Record<string, IGraphNodeWrapper>> = ref({})
   const nodes = computed(() => [...Object.values(nodeMap.value)])
   const edges: Ref<GraphEdge[]> = ref([])
@@ -84,9 +82,6 @@ const useGraphInternal = defineStore('graph', () => {
       wrapper.innerNode.setParamsLength(Number(wrapper.innerNode.data.params_length))
 
     nodeMap.value[graphNode.modelId] = wrapper
-
-    show.value = false
-
     wrapper.innerNode.onInitialize()
 
     return wrapper

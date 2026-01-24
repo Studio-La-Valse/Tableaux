@@ -47,6 +47,8 @@ export function useExampleTiles() {
       const allIds = nodes.value.map(v => v.modelId)
       if (allIds.length)
         zoomToNodes(allIds, 100)
+
+      show.value = false
     })
   }
 
