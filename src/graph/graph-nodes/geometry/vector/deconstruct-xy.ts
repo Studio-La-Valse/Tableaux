@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsXY } from '@/geometry/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -13,7 +13,7 @@ export class DeconstructXY extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputXY = this.registerObjectInput('XY').validate(assertIsXY)
+    this.inputXY = this.registerObjectInput('XY').validate(xyOps.cast)
 
     this.outputX = this.registerNumberOutput('X')
     this.outputY = this.registerNumberOutput('Y')

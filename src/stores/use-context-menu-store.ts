@@ -35,7 +35,9 @@ export const useContextMenuStore = defineStore('contextMenu', () => {
   }
 
   function onActivate(name: string[], id: string) {
-    graph.addNode(name, { x: xCanvas.value, y: yCanvas.value }, id)
+    const node = graph.addNode(name, { x: xCanvas.value, y: yCanvas.value }, id)
+    node?.innerNode.arm()
+    node?.innerNode.complete()
     close()
   }
 

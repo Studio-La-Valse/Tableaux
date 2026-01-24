@@ -1,7 +1,6 @@
-import type { Rectangle as rect } from '@/geometry/rectangle'
+import type { Rectangle as rect } from '@/geometry/primitives/rectangle'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createRectangleShape } from '@/geometry/rectangle'
-import { assertIsXY } from '@/geometry/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -15,7 +14,7 @@ export class Rectangle extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputTopLeft = this.registerObjectInput('TopLeft').validate(assertIsXY)
+    this.inputTopLeft = this.registerObjectInput('TopLeft').validate(xyOps.cast)
     this.inputWidth = this.registerNumberInput('Width')
     this.inputHeight = this.registerNumberInput('Height')
 
@@ -28,7 +27,7 @@ export class Rectangle extends GraphNode {
       this.inputWidth,
       this.inputHeight,
     )) {
-      const rectangle = createRectangleShape(topLeft, width, height)
+      const rectangle = { x: topLeft.x, y: topLeft.y, width, height }
       this.outputRect.next(rectangle)
     }
   }

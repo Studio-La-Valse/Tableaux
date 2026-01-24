@@ -1,39 +1,24 @@
-import type { ArcShape } from '../geometry/arc'
-import type { EllipticalArcShape } from '../geometry/elliptical-arc'
-import type { PolylineShape } from '../geometry/polyline'
-import type { RectangleShape } from '../geometry/rectangle'
-import type { CircleShape } from '@/geometry/circle'
-import type { ClearRectShape } from '@/geometry/clear-rect'
-import type { CubicShape } from '@/geometry/cubic'
-import type { EllipseShape } from '@/geometry/ellipse'
-import type { QuadraticShape } from '@/geometry/quadratic'
-import type { BaseShape, Shape } from '@/geometry/shape'
-import type { TextShape } from '@/geometry/text'
-import { formatCtx } from '@/geometry/font'
-import { formatCSSRGBA } from '../geometry/color-rgb'
-import { formatCtxFilter } from '../geometry/filter'
+import type { Drawable } from '@/geometry/primitives/union/drawable/drawable'
+import type { Filter } from '@/geometry/primitives/union/drawable/filter'
+import type { Text } from '@/geometry/text/text'
+import { formatCtx } from '@/geometry/text/font'
+import { identity } from '@/geometry/transform/transformation-matrix'
+import { formatCSSRGBA } from '../geometry/color/color-rgb'
 
-const DEFAULT_MATRIX = { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }
+export function formatCtxFilter(filter: Filter): string {
+  const parts: string[] = []
 
-export function init(
-  canvasRef: HTMLCanvasElement,
-  width: number,
-  height: number,
-): CanvasRenderingContext2D {
-  // Ensure the canvas matches the intended drawing surface
-  canvasRef.width = width
-  canvasRef.height = height
-
-  const ctx = canvasRef.getContext('2d')
-  if (!ctx) {
-    throw new Error('A 2d context could not be created from an HTML Canvas Element.')
+  if (filter.blur) {
+    parts.push(`blur(${filter.blur.size}px)`)
   }
 
-  ctx.imageSmoothingEnabled = false
-  const { a, b, c, d, e, f } = DEFAULT_MATRIX
-  ctx.setTransform(a, b, c, d, e, f)
+  if (filter.dropShadow) {
+    const { offset, color, size } = filter.dropShadow
+    const cssArgb = formatCSSRGBA(color)
+    parts.push(`drop-shadow(${offset.x}px ${offset.y}px ${size}px ${cssArgb})`)
+  }
 
-  return ctx
+  return parts.join(' ')
 }
 
 export function clear(ctx: CanvasRenderingContext2D) {
@@ -43,48 +28,18 @@ export function clear(ctx: CanvasRenderingContext2D) {
   ctx.clearRect(0, 0, width, height)
 }
 
-export function draw(ctx: CanvasRenderingContext2D, element: Shape) {
-  switch (element.kind) {
-    case 'clear-rect':
-      clearRect(ctx, element)
-      return
-    case 'polyline':
-      drawPolyline(ctx, element)
-      return
-    case 'circle':
-    case 'arc':
-      drawArc(ctx, element)
-      return
-    case 'ellipse':
-    case 'elliptical-arc':
-      drawEllipse(ctx, element)
-      return
-    case 'rectangle':
-      drawRectangle(ctx, element)
-      return
-    case 'text':
-      drawText(ctx, element)
-      return
-    case 'cubic':
-      drawCubic(ctx, element)
-      return
-    case 'quadratic':
-      drawQuadratic(ctx, element)
-  }
-}
-
 // --- shared helpers ---
 
-function setTransform(ctx: CanvasRenderingContext2D, element: BaseShape) {
-  const { a, b, c, d, e, f } = element.t ?? DEFAULT_MATRIX
+export function setTransform(ctx: CanvasRenderingContext2D, element: Drawable) {
+  const { a, b, c, d, e, f } = element.t ?? identity()
   ctx.setTransform(a, b, c, d, e, f)
 }
 
-function setFilter(ctx: CanvasRenderingContext2D, element: BaseShape) {
+export function setFilter(ctx: CanvasRenderingContext2D, element: Drawable) {
   ctx.filter = formatCtxFilter(element)
 }
 
-function setTextFormat(ctx: CanvasRenderingContext2D, element: TextShape) {
+export function setTextFormat(ctx: CanvasRenderingContext2D, element: Text) {
   const { fontFamily, fontSize, align, baseline, direction } = element
 
   ctx.font = formatCtx(fontFamily, fontSize)
@@ -93,7 +48,7 @@ function setTextFormat(ctx: CanvasRenderingContext2D, element: TextShape) {
   ctx.direction = direction ?? 'inherit'
 }
 
-function applyFill(ctx: CanvasRenderingContext2D, element: BaseShape) {
+function applyFill(ctx: CanvasRenderingContext2D, element: Drawable) {
   const { fill } = element
   if (!fill)
     return
@@ -102,7 +57,7 @@ function applyFill(ctx: CanvasRenderingContext2D, element: BaseShape) {
   ctx.fill()
 }
 
-function applyStroke(ctx: CanvasRenderingContext2D, element: BaseShape) {
+function applyStroke(ctx: CanvasRenderingContext2D, element: Drawable) {
   const { stroke, strokeWidth } = element
   if (!stroke || !strokeWidth)
     return
@@ -112,10 +67,10 @@ function applyStroke(ctx: CanvasRenderingContext2D, element: BaseShape) {
   ctx.stroke()
 }
 
-function drawShape<T extends BaseShape>(
+export function drawShape<T extends Drawable>(
   ctx: CanvasRenderingContext2D,
   element: T,
-  _drawShape: () => void,
+  _drawShape: (ctx: CanvasRenderingContext2D, element: T) => void,
 ) {
   ctx.save()
 
@@ -123,103 +78,10 @@ function drawShape<T extends BaseShape>(
   setFilter(ctx, element)
 
   ctx.beginPath()
-  _drawShape()
+  _drawShape(ctx, element)
 
   applyFill(ctx, element)
   applyStroke(ctx, element)
 
   ctx.restore()
-}
-
-// --- shapes ---
-
-function drawPolyline(ctx: CanvasRenderingContext2D, element: PolylineShape) {
-  drawShape(ctx, element, () => {
-    const { start, end, points } = element
-    ctx.moveTo(start.x, start.y)
-    for (const p of points) {
-      ctx.lineTo(p.x, p.y)
-    }
-    ctx.lineTo(end.x, end.y)
-  })
-}
-
-function drawArc(ctx: CanvasRenderingContext2D, element: ArcShape | CircleShape) {
-  drawShape(ctx, element, () => {
-    const { x, y, radius } = element
-    const startAngle = (element as ArcShape).startAngle ?? 0
-    const endAngle = (element as ArcShape).endAngle ?? Math.PI * 2
-    const counterclockwise = (element as ArcShape).counterclockwise ?? false
-
-    ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise)
-  })
-}
-
-function drawEllipse(ctx: CanvasRenderingContext2D, element: EllipticalArcShape | EllipseShape) {
-  drawShape(ctx, element, () => {
-    const { x, y, radiusX, radiusY, rotation } = element
-    const startAngle = (element as EllipticalArcShape).startAngle ?? 0
-    const endAngle = (element as EllipticalArcShape).endAngle ?? Math.PI * 2
-    const counterclockwise = (element as EllipticalArcShape).counterclockwise ?? false
-
-    ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise)
-  })
-}
-
-function drawRectangle(ctx: CanvasRenderingContext2D, element: RectangleShape) {
-  drawShape(ctx, element, () => {
-    const { x, y, width, height, radii } = element
-    if (radii) {
-      ctx.roundRect(x, y, width, height, radii)
-    }
-    else {
-      ctx.rect(x, y, width, height)
-    }
-  })
-}
-
-function drawText(ctx: CanvasRenderingContext2D, element: TextShape) {
-  ctx.save()
-  setTransform(ctx, element)
-  setFilter(ctx, element)
-  setTextFormat(ctx, element)
-
-  const { x, y, text, stroke, strokeWidth, fill } = element
-
-  if (stroke && strokeWidth) {
-    ctx.strokeStyle = formatCSSRGBA(stroke)
-    ctx.lineWidth = strokeWidth
-    ctx.strokeText(text, x, y)
-  }
-  if (fill) {
-    ctx.fillStyle = formatCSSRGBA(fill)
-    ctx.fillText(text, x, y)
-  }
-
-  ctx.restore()
-}
-
-function drawCubic(ctx: CanvasRenderingContext2D, element: CubicShape) {
-  drawShape(ctx, element, () => {
-    const { start, control1, control2, end } = element
-    ctx.moveTo(start.x, start.y)
-    ctx.bezierCurveTo(control1.x, control1.y, control2.x, control2.y, end.x, end.y)
-  })
-}
-
-function drawQuadratic(ctx: CanvasRenderingContext2D, element: QuadraticShape) {
-  drawShape(ctx, element, () => {
-    const { start, control, end } = element
-    ctx.moveTo(start.x, start.y)
-    ctx.quadraticCurveTo(control.x, control.y, end.x, end.y)
-  })
-}
-
-// --- clear rect ---
-
-export function clearRect(ctx: CanvasRenderingContext2D, element: ClearRectShape) {
-  drawShape(ctx, element, () => {
-    const { x, y, width, height } = element
-    ctx.clearRect(x, y, width, height)
-  })
 }

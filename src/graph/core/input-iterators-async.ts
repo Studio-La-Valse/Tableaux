@@ -53,6 +53,25 @@ export class InputIteratorsAsync {
   constructor(public readonly options: CycleOptions = {}) { }
 
   /**
+   * Core async generator for iterating over an array.
+   * Handles abort + cooperative yielding.
+   */
+  public async* fromArray<T>(arr: Array<T>) {
+    const { signal, yieldEvery = 10_000 } = this.options
+
+    let count = 0
+    for (const i of arr) {
+      if (signal?.aborted)
+        throw toAbortError()
+      if (count !== 0 && count % yieldEvery === 0) {
+        await nextTick(signal)
+      }
+      yield i
+      count++
+    }
+  }
+
+  /**
    * Core async generator for producing integer ranges.
    * Handles abort + cooperative yielding.
    */

@@ -1,4 +1,4 @@
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import type { IGraphNodeWrapper } from '@/graph/core/graph-node-wrapper'
 import { ref } from 'vue'
 import { useContextMenuStore } from '@/stores/use-context-menu-store'

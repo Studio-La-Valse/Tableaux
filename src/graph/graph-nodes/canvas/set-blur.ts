@@ -1,8 +1,7 @@
-import type { Blur } from '@/geometry/filter'
-import type { Shape } from '@/geometry/shape'
+import type { Drawable } from '@/geometry/primitives/union/drawable/drawable'
+import type { Blur } from '@/geometry/primitives/union/drawable/filter'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { applyBlur } from '@/geometry/filter'
-import { asShape } from '@/geometry/shape'
+import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 
@@ -16,10 +15,10 @@ export class SetBlur extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputGeometry = this.registerObjectInput('Shape').validate(asShape)
+    this.inputGeometry = this.registerObjectInput('Shape').validate(drawableOps.cast)
     this.inputSize = this.registerNumberInput('Size')
 
-    this.outputGeometry = this.registerObjectOutput<Shape & { blur: Blur }>('Geometry with blur')
+    this.outputGeometry = this.registerObjectOutput<Drawable & { blur: Blur }>('Geometry with blur')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -27,7 +26,12 @@ export class SetBlur extends GraphNode {
       this.inputGeometry,
       this.inputSize,
     )) {
-      const withStroke = applyBlur(geom, size)
+      const withStroke = {
+        ...geom,
+        blur: {
+          size,
+        },
+      }
       this.outputGeometry.next(withStroke)
     }
   }

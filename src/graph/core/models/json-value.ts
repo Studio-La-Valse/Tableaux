@@ -1,6 +1,6 @@
 export type JsonPrimitive = string | number | boolean
 
-export type JsonArray = JsonValue[]
+export type JsonArray = JsonValue[] | readonly JsonValue[]
 
 export type JsonObject = {
   [key: string]: JsonValue
@@ -95,4 +95,64 @@ export function cloneFrozen<T extends JsonValue>(value: T, seen = new WeakMap())
   }
 
   return Object.freeze(clone)
+}
+
+// ==== Json Struct (immutable json values and objects)
+
+declare const jsonStructBrand: unique symbol
+
+export type JsonStruct = JsonValue & {
+  readonly [jsonStructBrand]: true
+}
+
+function deepFreeze<T extends JsonValue>(value: T, seen = new WeakSet()): T {
+  if (value === null || typeof value !== 'object') {
+    return value
+  }
+
+  if (seen.has(value)) {
+    return value
+  }
+  seen.add(value)
+
+  if (Array.isArray(value)) {
+    for (let i = 0; i < value.length; i++) {
+      deepFreeze(value[i], seen)
+    }
+  }
+  else {
+    for (const key of Object.keys(value)) {
+      deepFreeze((value as any)[key], seen)
+    }
+  }
+
+  return Object.freeze(value)
+}
+
+export function asJsonStruct<T extends JsonValue>(value: T): JsonStruct {
+  if (!isJsonValue(value)) {
+    throw new Error('Value is not valid JSON')
+  }
+
+  // Freeze in place (safe because JSON has no functions or prototypes)
+  const frozen = deepFreeze(value)
+
+  return frozen as JsonStruct
+}
+
+export function isJsonStruct(value: unknown): value is JsonStruct {
+  return (
+    typeof value === 'object'
+    && value !== null
+    && (value as any)[jsonStructBrand] === true
+  )
+}
+
+export function updateStruct<T extends JsonStruct, U extends JsonValue>(
+  struct: T,
+  updates: U,
+): JsonStruct {
+  const clone = cloneJson(struct)
+  Object.assign(clone as any, updates)
+  return asJsonStruct(clone)
 }

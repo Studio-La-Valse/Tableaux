@@ -1,10 +1,10 @@
-import type { TransformationMatrix } from '@/geometry/transformation-matrix'
+import type { TransformationMatrix } from '@/geometry/transform/transformation-matrix'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import {
   assertIsTransformationMatrix,
   invert,
 
-} from '@/geometry/transformation-matrix'
+} from '@/geometry/transform/transformation-matrix'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 

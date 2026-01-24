@@ -1,8 +1,7 @@
-import type { PolylineShape } from '@/geometry/polyline'
-import type { XY } from '@/geometry/xy'
+import type { Polyline as _Polyline } from '@/geometry/primitives/polyline'
+import type { XY } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createPolyline } from '@/geometry/polyline'
-import { assertIsXY } from '@/geometry/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -15,9 +14,9 @@ export class ConstructPolyline extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputPoints = this.registerObjectInput('Points').validate(assertIsXY)
+    this.inputPoints = this.registerObjectInput('Points').validate(xyOps.cast)
     this.inputTargetLength = this.registerNumberInput('Target Length')
-    this.output = this.registerObjectOutput<PolylineShape>('Polyline')
+    this.output = this.registerObjectOutput<_Polyline>('Polyline')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -43,7 +42,11 @@ export class ConstructPolyline extends GraphNode {
       }
 
       // Construct polyline: start, end, optional transform, intermediate points
-      const polyline = createPolyline(pts[0], pts[pts.length - 1], undefined, ...pts.slice(1, -1))
+      const polyline = {
+        start: pts[0],
+        end: pts[pts.length - 1],
+        points: pts.slice(1, -1),
+      }
 
       this.output.next(polyline)
     }

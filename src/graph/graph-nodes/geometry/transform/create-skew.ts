@@ -1,7 +1,7 @@
-import type { TransformationMatrix } from '@/geometry/transformation-matrix'
+import type { TransformationMatrix } from '@/geometry/transform/transformation-matrix'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createSkew } from '@/geometry/transformation-matrix'
-import { assertIsXY } from '@/geometry/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
+import { createSkew } from '@/geometry/transform/transformation-matrix'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 
@@ -15,7 +15,7 @@ export class CreateSkew extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputCenter = this.registerObjectInput('Center').validate(assertIsXY)
+    this.inputCenter = this.registerObjectInput('Center').validate(xyOps.cast)
     this.inputFactor = this.registerNumberInput('Skew Factor')
 
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')

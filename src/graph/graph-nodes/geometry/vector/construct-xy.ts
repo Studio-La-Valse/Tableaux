@@ -1,4 +1,4 @@
-import type { XY as xy } from '@/geometry/xy'
+import type { XY as xy } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'

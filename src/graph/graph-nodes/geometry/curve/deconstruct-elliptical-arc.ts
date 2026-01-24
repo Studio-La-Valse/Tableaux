@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asEllipticalArc } from '@/geometry/elliptical-arc'
+import { ellipticalArcOps } from '@/geometry/primitives/elliptical-arc-ops'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -17,7 +17,7 @@ export class DeconstructEllipticalArc extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Elliptical Arc').validate(asEllipticalArc)
+    this.input = this.registerObjectInput('Elliptical Arc').validate(ellipticalArcOps.cast)
 
     this.outputCenter = this.registerObjectOutput('Center')
     this.outputRadiusX = this.registerNumberOutput('Radius X')

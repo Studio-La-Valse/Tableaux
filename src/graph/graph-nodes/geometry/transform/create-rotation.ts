@@ -1,7 +1,7 @@
-import type { TransformationMatrix } from '@/geometry/transformation-matrix'
+import type { TransformationMatrix } from '@/geometry/transform/transformation-matrix'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createRotation } from '@/geometry/transformation-matrix'
-import { assertIsXY } from '@/geometry/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
+import { createRotation } from '@/geometry/transform/transformation-matrix'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -15,7 +15,7 @@ export class CreateRotation extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.origin = this.registerObjectInput('Origin').validate(assertIsXY)
+    this.origin = this.registerObjectInput('Origin').validate(xyOps.cast)
     this.angle = this.registerNumberInput('Angle (Radians)')
 
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Transformation Matrix')

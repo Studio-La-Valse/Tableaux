@@ -1,6 +1,6 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { clear, draw, init } from '@/bitmap-painters/bitmap-painter'
-import { asShape } from '@/geometry/shape'
+import { clear } from '@/bitmap-painters/bitmap-painter'
+import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
@@ -14,19 +14,19 @@ export class Canvas extends GraphNode {
     super(modelId)
 
     this.clear = this.registerBooleanInput('Clear')
-    this.input = this.registerObjectInput('Drawable Elements').validate(asShape)
+    this.input = this.registerObjectInput('Drawable Elements').validate(drawableOps.cast)
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const canvas = this.getCanvasContext()
 
-    const _clear = inputIterators.singletonOnly(this.clear)
+    const [_clear] = inputIterators.singletonOnly(this.clear)
     if (_clear) {
       clear(canvas)
     }
 
     for await (const v of inputIterators.createGenerator(this.input)) {
-      draw(canvas, v)
+      drawableOps.draw(canvas, v)
     }
   }
 
@@ -38,12 +38,11 @@ export class Canvas extends GraphNode {
   }
 
   private getCanvasContext(): CanvasRenderingContext2D {
-    const { canvasRef, dimensions } = useDesignCanvasStore()
-    if (!canvasRef) {
+    const { canvasRef } = useDesignCanvasStore()
+    const canvas = canvasRef?.getContext('2d')
+    if (!canvas) {
       throw new Error('A design canvas has not been initialized.')
     }
-
-    const canvas = init(canvasRef, dimensions.x, dimensions.y)
     return canvas
   }
 }

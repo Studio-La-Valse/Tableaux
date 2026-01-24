@@ -1,8 +1,7 @@
-import type { TextShape } from '@/geometry/text'
+import type { Text as _Text } from '@/geometry/text/text'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsFont } from '@/geometry/font'
-import { createText } from '@/geometry/text'
-import { assertIsXY } from '@/geometry/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
+import { assertIsFont } from '@/geometry/text/font'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
 
@@ -18,20 +17,20 @@ export class Text extends GraphNode {
     super(modelId)
 
     this.inputText = this.registerStringInput('Text')
-    this.inputOrigin = this.registerObjectInput('Origin').validate(assertIsXY)
+    this.inputOrigin = this.registerObjectInput('Origin').validate(xyOps.cast)
     this.inputFontFamily = this.registerObjectInput('Family').validate(assertIsFont)
     this.inputFontSize = this.registerNumberInput('Size')
-    this.outputText = this.registerObjectOutput<TextShape>('Text')
+    this.outputText = this.registerObjectOutput<_Text>('Text')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
-    for await (const [t, o, ff, si] of inputIterators.cycleValues(
+    for await (const [text, origin, fontFamily, fontSize] of inputIterators.cycleValues(
       this.inputText,
       this.inputOrigin,
       this.inputFontFamily,
       this.inputFontSize,
     )) {
-      const v = createText(t, o, ff, si)
+      const v = { text, ...origin, fontFamily, fontSize }
       this.outputText.next(v)
     }
   }

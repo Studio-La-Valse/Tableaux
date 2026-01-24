@@ -1,7 +1,7 @@
-import type { TransformationMatrix } from '@/geometry/transformation-matrix'
+import type { TransformationMatrix } from '@/geometry/transform/transformation-matrix'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asShape } from '@/geometry/shape'
-import { identity } from '@/geometry/transformation-matrix'
+import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
+import { identity } from '@/geometry/transform/transformation-matrix'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '@/graph/graph-nodes/decorators'
 
@@ -14,7 +14,7 @@ export class Transformation extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputGeometry = this.registerObjectInput('Geometry').validate(asShape)
+    this.inputGeometry = this.registerObjectInput('Geometry').validate(drawableOps.cast)
 
     this.outputGeometry = this.registerObjectOutput<TransformationMatrix>('Translated Geometry')
   }

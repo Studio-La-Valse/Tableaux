@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asCircle } from '@/geometry/circle'
+import { circleOps } from '@/geometry/primitives/circle-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -12,7 +12,7 @@ export class DeconstructCircle extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Circle').validate(asCircle)
+    this.input = this.registerObjectInput('Circle').validate(circleOps.cast)
 
     this.outputCenter = this.registerObjectOutput('Center')
     this.outputRadius = this.registerNumberOutput('Radius')

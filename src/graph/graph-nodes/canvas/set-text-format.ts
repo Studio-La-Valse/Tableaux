@@ -1,13 +1,7 @@
-import type { AlignmentKind, BaselineKind, DirectionKind, TextShape } from '@/geometry/text'
+import type { AlignmentKind, BaselineKind, DirectionKind, Text } from '@/geometry/text/text'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsOfShapeKind, asShape } from '@/geometry/shape'
-import {
-
-  textAlignments,
-  textBaselines,
-  textDirections,
-
-} from '@/geometry/text'
+import { textAlignments, textBaselines, textDirections } from '@/geometry/text/text'
+import { textOps } from '@/geometry/text/text-ops'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 
@@ -21,13 +15,13 @@ export class SetTextFormat extends GraphNode {
     super(modelId)
 
     this.asConst = [
-      this.registerObjectInput('Text').validate(v => assertIsOfShapeKind(asShape(v), ['text'])),
+      this.registerObjectInput('Text').validate(textOps.cast),
       this.registerStringInput('Alignment', ['start']),
       this.registerStringInput('Baseline', ['alphabetic']),
       this.registerStringInput('Direction', ['inherit']),
     ] as const
 
-    this.outputGeometry = this.registerObjectOutput<TextShape>('Geometry with stroke')
+    this.outputGeometry = this.registerObjectOutput<Text>('Geometry with stroke')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsColorARGB, toColorHex } from '@/geometry/color-rgb'
+import { assertIsColorARGB, toColorHex } from '@/geometry/color/color-rgb'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 

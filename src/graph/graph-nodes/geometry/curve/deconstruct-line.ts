@@ -1,6 +1,6 @@
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asLine } from '@/geometry/polyline'
+import { lineOps } from '@/geometry/primitives/line-ops'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -14,7 +14,7 @@ export class DeconstructLine extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputLine = this.registerObjectInput('Line').validate(asLine)
+    this.inputLine = this.registerObjectInput('Line').validate(lineOps.cast)
 
     this.outputStart = this.registerObjectOutput<XY>('Start')
     this.outputEnd = this.registerObjectOutput<XY>('End')

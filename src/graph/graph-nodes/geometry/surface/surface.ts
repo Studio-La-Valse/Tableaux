@@ -1,6 +1,6 @@
-import type { SurfaceLike } from '@/geometry/surface-like'
+import type { Surface as _Surface } from '@/geometry/primitives/union/surface'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { asSurfaceLike } from '@/geometry/surface-like'
+import { surfaceOps } from '@/geometry/primitives/union/surface-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -12,9 +12,9 @@ export class Surface extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Shape').validate(asSurfaceLike)
+    this.input = this.registerObjectInput('Shape').validate(surfaceOps.cast)
 
-    this.output = this.registerObjectOutput<SurfaceLike>('Curve')
+    this.output = this.registerObjectOutput<_Surface>('Curve')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {

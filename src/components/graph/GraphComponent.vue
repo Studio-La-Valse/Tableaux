@@ -26,6 +26,8 @@
             <SelectionBorder />
           </div>
 
+          <ExampleTiles v-if="show" />
+
           <Teleport to="body">
             <ActivatorTree />
           </Teleport>
@@ -81,10 +83,11 @@ import { Panel, PanelGroup, PanelResizeHandle } from 'vue-resizable-panels'
 import GraphControls from '@/components/graph/GraphControls/GraphControls.vue'
 import GraphRenderer from '@/components/graph/GraphRenderer.vue'
 import ActivatorTree from '@/components/graph/NodeBrowser/ActivatorTree.vue'
-
 import SelectionBorder from '@/components/graph/SelectionBorder.vue'
+
 import { useCanvasTransform } from '@/composables/use-canvas-transform'
 import { useClearSelection } from '@/composables/use-clear-selection'
+import { useExampleTiles } from '@/composables/use-example-files'
 
 import { useSelectionArea } from '@/composables/use-selection-area'
 import { useContextMenuStore } from '@/stores/use-context-menu-store'
@@ -92,6 +95,7 @@ import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { useGraphStore } from '@/stores/use-graph-store'
 import ControlsComponent from '../controls/ControlsComponent.vue'
+import ExampleTiles from './ExampleTiles.vue'
 
 const selectionArea = useSelectionArea()
 const clearSelection = useClearSelection()
@@ -102,6 +106,7 @@ const canvasTransform = useCanvasTransform()
 const canvasStore = useGraphCanvasStore()
 
 const { mode, viewportRef, canvasRef } = storeToRefs(canvasStore)
+const { show } = useExampleTiles()
 
 // merge pointer‐events with zoomStyle
 const contentStyle = computed<StyleValue>(() => ({

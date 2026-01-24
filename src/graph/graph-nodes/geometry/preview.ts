@@ -1,7 +1,7 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { clear, draw, init } from '@/bitmap-painters/bitmap-painter'
+import { clear } from '@/bitmap-painters/bitmap-painter'
 import PreviewPanel from '@/components/graph/Panels/PreviewPanel.vue'
-import { asShape } from '@/geometry/shape'
+import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
 import { GraphNode } from '@/graph/core/graph-node'
 import { useDesignCanvasStore } from '@/stores/use-design-canvas-store'
 import { GraphNodePanel, GraphNodeType } from '../decorators'
@@ -16,7 +16,7 @@ export class Preview extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Geometry').validate(asShape)
+    this.input = this.registerObjectInput('Geometry').validate(drawableOps.cast)
   }
 
   public setCanvas(canvas: HTMLCanvasElement | null) {
@@ -42,7 +42,7 @@ export class Preview extends GraphNode {
       return
 
     for await (const e of iterators.createGenerator(this.input)) {
-      draw(painter, e)
+      drawableOps.draw(painter, e)
     }
   }
 
@@ -56,12 +56,8 @@ export class Preview extends GraphNode {
   }
 
   private getCanvas(): CanvasRenderingContext2D | null {
-    const { dimensions } = useDesignCanvasStore()
-    if (!this.canvas) {
-      return null
-    }
-
-    const canvasContext = init(this.canvas, dimensions.x, dimensions.y)
-    return canvasContext
+    const { canvasRef } = useDesignCanvasStore()
+    const canvas = canvasRef?.getContext('2d')
+    return canvas ?? null
   }
 }

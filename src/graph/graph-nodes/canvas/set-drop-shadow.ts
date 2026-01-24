@@ -1,10 +1,9 @@
-import type { DropShadow } from '@/geometry/filter'
-import type { Shape } from '@/geometry/shape'
+import type { Drawable } from '@/geometry/primitives/union/drawable/drawable'
+import type { DropShadow } from '@/geometry/primitives/union/drawable/filter'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsColorARGB } from '@/geometry/color-rgb'
-import { applyDropShadow } from '@/geometry/filter'
-import { asShape } from '@/geometry/shape'
-import { assertIsXY } from '@/geometry/xy'
+import { assertIsColorARGB } from '@/geometry/color/color-rgb'
+import { drawableOps } from '@/geometry/primitives/union/drawable/drawable-ops'
+import { xyOps } from '@/geometry/primitives/xy-ops'
 import { GraphNode } from '../../core/graph-node'
 import { GraphNodeType } from '../decorators'
 
@@ -20,12 +19,12 @@ export class SetDropShadow extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.inputGeometry = this.registerObjectInput('Shape').validate(asShape)
-    this.inputOffset = this.registerObjectInput('Offset').validate(assertIsXY)
+    this.inputGeometry = this.registerObjectInput('Shape').validate(drawableOps.cast)
+    this.inputOffset = this.registerObjectInput('Offset').validate(xyOps.cast)
     this.inputColor = this.registerObjectInput('Color').validate(assertIsColorARGB)
     this.inputSize = this.registerNumberInput('Size')
 
-    this.outputGeometry = this.registerObjectOutput<Shape & { dropShadow: DropShadow }>(
+    this.outputGeometry = this.registerObjectOutput<Drawable & { dropShadow: DropShadow }>(
       'Geometry with shadow',
     )
   }
@@ -37,7 +36,14 @@ export class SetDropShadow extends GraphNode {
       this.inputColor,
       this.inputSize,
     )) {
-      const withStroke = applyDropShadow(geom, offset, color, size)
+      const withStroke = {
+        ...geom,
+        dropShadow: {
+          offset,
+          color,
+          size,
+        },
+      }
       this.outputGeometry.next(withStroke)
     }
   }

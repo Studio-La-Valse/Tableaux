@@ -1,4 +1,4 @@
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -16,7 +16,7 @@ export const useGraphCanvasStore = defineStore('graph-canvas-store', () => {
 
   function clientToCanvas(event: MouseEvent): XY {
     if (!canvasRef.value)
-      return { x: 0, y: 0 }
+      throw new Error('Canvas not yet initialized!')
 
     const pointInViewport = clientToViewport(event)
 

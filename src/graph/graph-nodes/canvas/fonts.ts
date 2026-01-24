@@ -1,5 +1,5 @@
-import type { Font } from '@/geometry/font'
-import { formatCtx } from '@/geometry/font'
+import type { Font } from '@/geometry/text/font'
+import { formatCtx } from '@/geometry/text/font'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../decorators'
 

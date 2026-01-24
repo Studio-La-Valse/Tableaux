@@ -1,7 +1,6 @@
-import type { EllipticalArcShape } from '@/geometry/elliptical-arc'
+import type { EllipticalArc as _EllipticalArc } from '@/geometry/primitives/elliptical-arc'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { createEllipticalArc } from '@/geometry/elliptical-arc'
-import { assertIsXY } from '@/geometry/xy'
+import { xyOps } from '@/geometry/primitives/xy-ops'
 import { GraphNode } from '@/graph/core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -19,7 +18,7 @@ export class EllipticalArc extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input1 = this.registerObjectInput('XY').validate(assertIsXY)
+    this.input1 = this.registerObjectInput('XY').validate(xyOps.cast)
     this.input2 = this.registerNumberInput('Radius X')
     this.input3 = this.registerNumberInput('Radius Y')
     this.input4 = this.registerNumberInput('Rotation')
@@ -27,17 +26,17 @@ export class EllipticalArc extends GraphNode {
     this.input6 = this.registerNumberInput('End Angle')
     this.input7 = this.registerBooleanInput('Counter Clockwise', [false])
 
-    this.outputCircle = this.registerObjectOutput<EllipticalArcShape>('Circle')
+    this.outputCircle = this.registerObjectOutput<_EllipticalArc>('Circle')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [
       xy,
-      radiusx,
-      radiusy,
+      radiusX,
+      radiusY,
       rotation,
-      start,
-      end,
+      startAngle,
+      endAngle,
       counterclockwise,
     ] of inputIterators.cycleValues(
         this.input1,
@@ -48,7 +47,7 @@ export class EllipticalArc extends GraphNode {
         this.input6,
         this.input7,
       )) {
-      const arc = createEllipticalArc(xy, radiusx, radiusy, rotation, start, end, counterclockwise)
+      const arc = { ...xy, radiusX, radiusY, rotation, startAngle, endAngle, counterclockwise }
       this.outputCircle.next(arc)
     }
   }

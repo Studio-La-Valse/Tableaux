@@ -1,7 +1,7 @@
 import type { GraphNode, IGraphNode } from './graph-node'
 import type { IGraphNodeInput } from './graph-node-input'
 import type { GraphNodeModel } from './models/graph-node-model'
-import type { XY } from '@/geometry/xy'
+import type { XY } from '@/geometry/primitives/xy'
 
 export type IGraphNodeWrapper = {
   readonly instanceId: string
