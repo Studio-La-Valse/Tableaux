@@ -1,12 +1,7 @@
 import type { GraphNode } from '@/graph/core/graph-node'
 import type { NodeClass } from '@/graph/graph-nodes/graph-node-definition'
-import type { CustomNodeDefinition } from '@/graph/graph-nodes/json/dynamic-graph-node'
 import { defineStore } from 'pinia'
 import { validateNodePathParts } from '@/graph/core/graph-node-path'
-import {
-  createAndRegisterCustomNode,
-
-} from '@/graph/graph-nodes/json/dynamic-graph-node'
 
 export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
   const activatorTree = new ActivatorGroup('root')
@@ -33,57 +28,6 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
 
     // ✅ Overwrite existing activator instead of rejecting
     tree.activators.set(leaf, new Activator(leaf, NodeClass))
-  }
-
-  function loadCustomDefinitions(defs: CustomNodeDefinition[]) {
-    _clearCustomDefinitions()
-    defs.forEach(def => createAndRegisterCustomNode(def)) // automatically registers NodeClass with template
-  }
-
-  function _clearCustomDefinitions() {
-    function traverseAndClean(group: ActivatorGroup): boolean {
-      // Remove custom activators
-      for (const [key, a] of group.activators) {
-        if (a.NodeClass.__customNodeDefinition) {
-          group.activators.delete(key)
-        }
-      }
-
-      // Recursively clean children
-      for (const [key, child] of group.children) {
-        const keep = traverseAndClean(child)
-        if (!keep) {
-          group.children.delete(key)
-        }
-      }
-
-      const hasActivators = group.activators.size > 0
-      const hasChildren = group.children.size > 0
-
-      if (group === activatorTree)
-        return true
-      return hasActivators || hasChildren
-    }
-
-    traverseAndClean(activatorTree)
-  }
-
-  function getCustomDefinitions() {
-    const result: CustomNodeDefinition[] = []
-
-    function traverse(group: ActivatorGroup) {
-      for (const a of group.activators.values()) {
-        if (a.NodeClass.__customNodeDefinition) {
-          result.push(a.NodeClass.__customNodeDefinition)
-        }
-      }
-      for (const child of group.children.values()) {
-        traverse(child)
-      }
-    }
-
-    traverse(activatorTree)
-    return result
   }
 
   /** Returns the activator (definition + NodeClass) from a path */
@@ -169,13 +113,11 @@ export const useGraphNodeRegistry = defineStore('graph-node-registry', () => {
     activatorTree,
 
     register,
-
-    loadCustomDefinitions,
-    getCustomDefinitions,
-
     has,
+
     getDefinition,
     getAll,
+
     activate,
     filterTree,
   }

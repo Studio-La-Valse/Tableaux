@@ -17,10 +17,22 @@ export class Canvas extends GraphNode {
     this.input = this.registerObjectInput('Drawable Elements').validate(drawableOps.cast)
   }
 
+  override arm(): void {
+    const canvas = this.getCanvasContext()
+
+    const _clear = this.clear.peek(0)
+    if (_clear) {
+      clear(canvas)
+    }
+
+    super.arm()
+  }
+
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     const canvas = this.getCanvasContext()
 
     const [_clear] = inputIterators.singletonOnly(this.clear)
+
     if (_clear) {
       clear(canvas)
     }

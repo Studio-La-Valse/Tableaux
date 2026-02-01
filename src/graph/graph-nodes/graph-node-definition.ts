@@ -1,6 +1,5 @@
 import type { Component } from 'vue'
 import type { GraphNode } from '../../graph/core/graph-node'
-import type { CustomNodeDefinition } from './json/dynamic-graph-node'
 
 export type NodeClass = {
   new (modelId: string): GraphNode
@@ -14,7 +13,4 @@ export type NodeClass = {
   __graphNodeTypeLabel?: string
   __graphNodeTypeDescription?: string
   __graphNodeIcon?: string
-
-  /** Optional custom component definition */
-  __customNodeDefinition?: CustomNodeDefinition
 }

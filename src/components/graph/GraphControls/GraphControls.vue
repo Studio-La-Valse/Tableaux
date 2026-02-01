@@ -45,13 +45,6 @@
 
       <button
         type="button"
-        @click="() => (showCustomNodeModal = true)"
-      >
-        <BeakerIcon class="icon" />
-      </button>
-
-      <button
-        type="button"
         :disabled="!hasUndo"
         title="Undo"
         @click="undo"
@@ -102,20 +95,9 @@
       @cancel="onCancel"
     />
   </Teleport>
-
-  <Teleport to="body">
-    <CustomNodeComponent
-      v-if="showCustomNodeModal"
-      mode="create"
-      @close="() => (showCustomNodeModal = false)"
-      @save="addDynamic"
-    />
-  </Teleport>
 </template>
 
 <script setup lang="ts">
-import type { CustomNodeDefinition } from '@/graph/graph-nodes/json/dynamic-graph-node'
-
 import {
   AdjustmentsHorizontalIcon,
   ArrowDownOnSquareIcon,
@@ -134,15 +116,11 @@ import { ref } from 'vue'
 import { useAlert } from '@/composables/use-alert'
 import { useExampleTiles } from '@/composables/use-example-files'
 import { useZoomToNodes } from '@/composables/use-zoom-to-nodes'
-import {
-  createAndRegisterCustomNode,
 
-} from '@/graph/graph-nodes/json/dynamic-graph-node'
 import { useGraphCanvasStore } from '@/stores/use-graph-canvas-store'
 import { useGraphHistoryStore } from '@/stores/use-graph-history-store'
 import { useGraphNodeSelectionStore } from '@/stores/use-graph-node-selection-store'
 import { useGraphStore } from '@/stores/use-graph-store'
-import CustomNodeComponent from '../CustomNode/CustomNodeModal.vue'
 import UnsavedChangesModal from './UnsavedChangesModal.vue'
 
 const alert = useAlert()
@@ -168,14 +146,6 @@ function hasUnsavedChanges() {
 }
 
 const { show } = useExampleTiles()
-
-/** --- Custom Node Modal --- */
-const showCustomNodeModal = ref(false)
-
-function addDynamic(def: CustomNodeDefinition) {
-  createAndRegisterCustomNode(def)
-  graphStore.commit()
-}
 
 /** --- Modal state --- */
 const showUnsavedModal = ref(false)

@@ -213,11 +213,10 @@ const useGraphInternal = defineStore('graph', () => {
   }
 
   // ---------------------------------------------------------------------------
-  // ✅ GRAPH SERIALIZATION (updated for custom defs)
+  // ✅ GRAPH SERIALIZATION
   // ---------------------------------------------------------------------------
   const toModel = (): GraphModel => {
     return {
-      defs: graphNodeRegistry.getCustomDefinitions(),
       nodes: nodes.value.map(n => n.toModel()),
       edges: edges.value.map(e => e.toModel()),
     }
@@ -231,15 +230,10 @@ const useGraphInternal = defineStore('graph', () => {
   }
 
   // ---------------------------------------------------------------------------
-  // ✅ GRAPH DESERIALIZATION (updated for custom defs)
+  // ✅ GRAPH DESERIALIZATION
   // ---------------------------------------------------------------------------
   const fromModel = (model: GraphModel) => {
     clear()
-
-    // Load custom definitions before creating any nodes
-    if (model.defs) {
-      graphNodeRegistry.loadCustomDefinitions(model.defs)
-    }
 
     model.nodes.forEach(addNodeModel)
     model.edges.forEach(addEdgeModel)
