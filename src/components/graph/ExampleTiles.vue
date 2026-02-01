@@ -48,8 +48,6 @@ const { sortedExamplePaths, loadExample, getThumbnailFor } = useExampleTiles()
   pointer-events: none; /* panel is click-through */
 }
 
-.welcome-banner,
-.example-grid,
 .tile {
   pointer-events: auto; /* children can receive clicks */
 }

@@ -1,11 +1,13 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useExampleTiles } from '@/composables/use-example-files'
 import { useGraphCanvasStore } from './use-graph-canvas-store'
 import { useGraphStore } from './use-graph-store'
 
 export const useContextMenuStore = defineStore('contextMenu', () => {
   const graph = useGraphStore()
   const canvasTransform = useGraphCanvasStore()
+  const exampleMenu = useExampleTiles()
 
   // state
   const visible = ref(false)
@@ -38,6 +40,7 @@ export const useContextMenuStore = defineStore('contextMenu', () => {
     const node = graph.addNode(name, { x: xCanvas.value, y: yCanvas.value }, id)
     node?.innerNode.arm()
     node?.innerNode.complete()
+    exampleMenu.show.value = false
     close()
   }
 

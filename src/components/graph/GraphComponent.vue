@@ -61,6 +61,8 @@
         <SelectionBorder />
       </div>
 
+      <ExampleTiles v-if="show" />
+
       <Teleport to="body">
         <ActivatorTree />
       </Teleport>
