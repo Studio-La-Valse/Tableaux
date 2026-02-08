@@ -1,7 +1,7 @@
-import type { ColorARGB } from '@/geometry/color/color'
+import type { ColorRGB } from '@/geometry/color/color-rgb'
 import type { EmitterKind } from '@/graph/core/emitter'
 import ColorPickerPanel from '@/components/graph/Panels/ColorPickerPanel.vue'
-import { isValidHexColor, toColorARGB } from '@/geometry/color/color-hex'
+import { hexOps } from '@/geometry/color/color-hex-ops'
 import { Emitter } from '@/graph/core/emitter'
 import { GraphNodePanel, GraphNodeType } from '../../decorators'
 
@@ -15,14 +15,14 @@ export class ColorPicker extends Emitter<string> {
   constructor(modelId: string) {
     super(modelId, '#903c3c')
 
-    this.output = this.registerObjectOutput<ColorARGB>('Color')
+    this.output = this.registerObjectOutput<ColorRGB>('Color')
   }
 
   protected async solve(): Promise<void> {
-    if (!isValidHexColor(this.data.value))
+    if (!hexOps.match(this.data.value))
       throw new Error('Expected valid hex format.')
 
-    const argb = toColorARGB(this.data.value)
+    const argb = hexOps.convert.rgb(this.data.value)
     this.output.next(argb)
   }
 }

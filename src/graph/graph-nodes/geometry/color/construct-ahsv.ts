@@ -1,6 +1,7 @@
-import type { ColorARGB } from '@/geometry/color/color'
+import type { ColorRGB } from '@/geometry/color/color-rgb'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { toColorRGB } from '@/geometry/color/color-hsv'
+import { clamp } from '@/geometry/color/alpha'
+import { hsvOps } from '@/geometry/color/color-hsv-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -19,7 +20,7 @@ export class ConstructAHSV extends GraphNode {
     this.input2 = this.registerNumberInput('Hue')
     this.input3 = this.registerNumberInput('Saturation')
     this.input4 = this.registerNumberInput('Brightness')
-    this.output = this.registerObjectOutput<ColorARGB>('Color')
+    this.output = this.registerObjectOutput<ColorRGB>('Color')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -29,7 +30,7 @@ export class ConstructAHSV extends GraphNode {
       this.input3,
       this.input4,
     )) {
-      const r = { a, ...toColorRGB({ h, s, v }) }
+      const r = { ...hsvOps.convert.rgb({ h, s, v }), a: clamp(a) }
       this.output.next(r)
     }
   }

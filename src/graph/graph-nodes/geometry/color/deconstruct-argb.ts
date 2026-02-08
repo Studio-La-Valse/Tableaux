@@ -1,5 +1,5 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsColorARGB } from '@/geometry/color/color-rgb'
+import { rgbOps } from '@/geometry/color/color-rgb-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -14,7 +14,7 @@ export class DeconstructARGB extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Color').validate(assertIsColorARGB)
+    this.input = this.registerObjectInput('Color').validate(rgbOps.cast)
     this.output1 = this.registerNumberOutput('Alpha')
     this.output2 = this.registerNumberOutput('Red')
     this.output3 = this.registerNumberOutput('Green')
@@ -23,7 +23,7 @@ export class DeconstructARGB extends GraphNode {
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [argb] of inputIterators.cycleValues(this.input)) {
-      this.output1.next(argb.a)
+      this.output1.next(rgbOps.extractAlpha(argb))
       this.output2.next(argb.r)
       this.output3.next(argb.g)
       this.output4.next(argb.b)

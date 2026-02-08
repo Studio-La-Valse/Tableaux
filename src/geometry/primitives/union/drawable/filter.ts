@@ -1,7 +1,7 @@
-import type { ColorARGB } from '@/geometry/color/color'
+import type { ColorRGB } from '@/geometry/color/color-rgb'
 import type { XY } from '@/geometry/primitives/xy'
 import type { JsonObject } from '@/graph/core/models/json-value'
-import { isColorARGB } from '@/geometry/color/color-rgb'
+import { rgbOps } from '@/geometry/color/color-rgb-ops'
 import { xyOps } from '../../xy-ops'
 
 export type Filter = { blur?: Blur, dropShadow?: DropShadow }
@@ -28,7 +28,7 @@ export function hasBlur(object: JsonObject): object is { blur: Blur } {
 
 export type DropShadow = {
   offset: XY
-  color: ColorARGB
+  color: ColorRGB
   size: number
 }
 
@@ -40,7 +40,7 @@ export function hasDropShadow(object: JsonObject): object is { dropShadow: DropS
     && 'offset' in object.dropShadow
     && xyOps.match(object.dropShadow.offset)
     && 'color' in object.dropShadow
-    && isColorARGB(object.dropShadow.color)
+    && rgbOps.match(object.dropShadow.color)
     && 'size' in object.dropShadow
     && typeof object.dropShadow.size === 'number'
   )

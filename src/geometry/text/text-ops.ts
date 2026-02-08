@@ -2,7 +2,7 @@ import type { DrawableOps } from '../primitives/union/drawable/drawable-ops'
 import type { Text } from './text'
 import type { JsonObject } from '@/graph/core/models/json-value'
 import { setFilter, setTextFormat, setTransform } from '@/bitmap-painters/bitmap-painter'
-import { formatCSSRGBA } from '../color/color-rgb'
+import { colorOps } from '../color/color-ops'
 import { xyOps } from '../primitives/xy-ops'
 import { isFont } from './font'
 
@@ -38,12 +38,12 @@ export const textOps: TextOps = {
     const { x, y, text, stroke, strokeWidth, fill } = element
 
     if (stroke && strokeWidth) {
-      ctx.strokeStyle = formatCSSRGBA(stroke)
+      ctx.strokeStyle = colorOps.convert.css(stroke)
       ctx.lineWidth = strokeWidth
       ctx.strokeText(text, x, y)
     }
     if (fill) {
-      ctx.fillStyle = formatCSSRGBA(fill)
+      ctx.fillStyle = colorOps.convert.css(fill)
       ctx.fillText(text, x, y)
     }
 

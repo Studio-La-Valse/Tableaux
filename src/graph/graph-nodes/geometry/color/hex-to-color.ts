@@ -1,6 +1,6 @@
-import type { ColorARGB } from '@/geometry/color/color'
+import type { ColorRGB } from '@/geometry/color/color-rgb'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { isValidHexColor, toColorARGB } from '@/geometry/color/color-hex'
+import { hexOps } from '@/geometry/color/color-hex-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -13,14 +13,13 @@ export class HexToColor extends GraphNode {
     super(modelId)
 
     this.input1 = this.registerStringInput('Hex')
-    this.output = this.registerObjectOutput<ColorARGB>('Color')
+    this.output = this.registerObjectOutput<ColorRGB>('Color')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [hex] of inputIterators.cycleValues(this.input1)) {
-      if (!isValidHexColor(hex))
-        throw new Error('Excpected valid hex format.')
-      this.output.next(toColorARGB(hex))
+      const _hex = hexOps.cast(hex)
+      this.output.next(hexOps.convert.rgb(_hex))
     }
   }
 }

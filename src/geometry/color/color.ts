@@ -1,12 +1,6 @@
-export type ColorHex = `#${string}`
+import type { ColorHex } from './color-hex'
+import type { ColorHSL } from './color-hsl'
+import type { ColorHSV } from './color-hsv'
+import type { ColorRGB } from './color-rgb'
 
-export type ColorRGB = { r: number, g: number, b: number }
-export type ColorARGB = { a: number } & ColorRGB
-
-export type ColorHSL = { h: number, s: number, l: number }
-export type ColorAHSL = { a: number } & ColorHSL
-
-export type ColorHSV = { h: number, s: number, v: number }
-export type ColorAHSV = { a: number } & ColorHSV
-
-export type Color = ColorHex | ColorRGB | ColorARGB
+export type Color = ColorHex | ColorRGB | ColorHSL | ColorHSV

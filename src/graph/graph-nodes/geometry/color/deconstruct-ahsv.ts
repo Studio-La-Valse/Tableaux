@@ -1,5 +1,6 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsColorARGB, toColorHSV } from '@/geometry/color/color-rgb'
+import { hsvOps } from '@/geometry/color/color-hsv-ops'
+import { rgbOps } from '@/geometry/color/color-rgb-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -14,7 +15,7 @@ export class DeconstructAHSV extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Color').validate(assertIsColorARGB)
+    this.input = this.registerObjectInput('Color').validate(rgbOps.cast)
 
     this.output1 = this.registerNumberOutput('Alpha')
     this.output2 = this.registerNumberOutput('Hue')
@@ -24,11 +25,11 @@ export class DeconstructAHSV extends GraphNode {
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [argb] of inputIterators.cycleValues(this.input)) {
-      const hsl = toColorHSV(argb)
-      this.output1.next(argb.a)
-      this.output2.next(hsl.h)
-      this.output3.next(hsl.s)
-      this.output4.next(hsl.v)
+      const hsv = rgbOps.convert.hsv(argb)
+      this.output1.next(hsvOps.extractAlpha(hsv))
+      this.output2.next(hsv.h)
+      this.output3.next(hsv.s)
+      this.output4.next(hsv.v)
     }
   }
 }

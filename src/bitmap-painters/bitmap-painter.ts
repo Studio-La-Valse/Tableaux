@@ -1,9 +1,9 @@
 import type { Drawable } from '@/geometry/primitives/union/drawable/drawable'
 import type { Filter } from '@/geometry/primitives/union/drawable/filter'
 import type { Text } from '@/geometry/text/text'
+import { rgbOps } from '@/geometry/color/color-rgb-ops'
 import { formatCtx } from '@/geometry/text/font'
 import { identity } from '@/geometry/transform/transformation-matrix'
-import { formatCSSRGBA } from '../geometry/color/color-rgb'
 
 export function formatCtxFilter(filter: Filter): string {
   const parts: string[] = []
@@ -14,7 +14,7 @@ export function formatCtxFilter(filter: Filter): string {
 
   if (filter.dropShadow) {
     const { offset, color, size } = filter.dropShadow
-    const cssArgb = formatCSSRGBA(color)
+    const cssArgb = rgbOps.convert.css(color)
     parts.push(`drop-shadow(${offset.x}px ${offset.y}px ${size}px ${cssArgb})`)
   }
 
@@ -53,7 +53,7 @@ function applyFill(ctx: CanvasRenderingContext2D, element: Drawable) {
   if (!fill)
     return
 
-  ctx.fillStyle = formatCSSRGBA(fill)
+  ctx.fillStyle = rgbOps.convert.css(fill)
   ctx.fill()
 }
 
@@ -62,7 +62,7 @@ function applyStroke(ctx: CanvasRenderingContext2D, element: Drawable) {
   if (!stroke || !strokeWidth)
     return
 
-  ctx.strokeStyle = formatCSSRGBA(stroke)
+  ctx.strokeStyle = rgbOps.convert.css(stroke)
   ctx.lineWidth = strokeWidth
   ctx.stroke()
 }

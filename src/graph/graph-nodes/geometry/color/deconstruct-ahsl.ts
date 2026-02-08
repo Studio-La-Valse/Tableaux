@@ -1,5 +1,6 @@
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
-import { assertIsColorARGB, toColorHSL } from '@/geometry/color/color-rgb'
+import { hslOps } from '@/geometry/color/color-hsl-ops'
+import { rgbOps } from '@/geometry/color/color-rgb-ops'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -14,7 +15,7 @@ export class DeconstructAHSL extends GraphNode {
   constructor(modelId: string) {
     super(modelId)
 
-    this.input = this.registerObjectInput('Color').validate(assertIsColorARGB)
+    this.input = this.registerObjectInput('Color').validate(rgbOps.cast)
 
     this.output1 = this.registerNumberOutput('Alpha')
     this.output2 = this.registerNumberOutput('Hue')
@@ -24,9 +25,9 @@ export class DeconstructAHSL extends GraphNode {
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
     for await (const [argb] of inputIterators.cycleValues(this.input)) {
-      const hsl = toColorHSL(argb)
+      const hsl = rgbOps.convert.hsl(argb)
 
-      this.output1.next(argb.a)
+      this.output1.next(hslOps.extractAlpha(hsl))
       this.output2.next(hsl.h)
       this.output3.next(hsl.s)
       this.output4.next(hsl.l)

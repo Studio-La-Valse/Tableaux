@@ -1,5 +1,6 @@
-import type { ColorARGB } from '@/geometry/color/color'
+import type { ColorRGB } from '@/geometry/color/color-rgb'
 import type { InputIteratorsAsync } from '@/graph/core/input-iterators-async'
+import { clamp } from '@/geometry/color/alpha'
 import { GraphNode } from '../../../core/graph-node'
 import { GraphNodeType } from '../../decorators'
 
@@ -18,7 +19,7 @@ export class ConstructARGB extends GraphNode {
     this.input2 = this.registerNumberInput('Red')
     this.input3 = this.registerNumberInput('Green')
     this.input4 = this.registerNumberInput('Blue')
-    this.output = this.registerObjectOutput<ColorARGB>('Color')
+    this.output = this.registerObjectOutput<ColorRGB>('Color')
   }
 
   protected async solve(inputIterators: InputIteratorsAsync): Promise<void> {
@@ -28,7 +29,7 @@ export class ConstructARGB extends GraphNode {
       this.input3,
       this.input4,
     )) {
-      const res = { a, r, g, b }
+      const res = { a: clamp(a), r, g, b }
       this.output.next(res)
     }
   }
